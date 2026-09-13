@@ -11,7 +11,7 @@
 # ─────────────────────────────────────────────────────────────────
 
 [core]
-project_name = "Logistics solutions"
+project_name = "COSI - MRP"
 document_output_language = "English"
 output_folder = "{project-root}/.docs"
 
