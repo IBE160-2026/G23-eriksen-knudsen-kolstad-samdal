@@ -9,61 +9,76 @@ updated: 2026-09-13
 
 ## Executive Summary
 
-Små produksjonsbedrifter planlegger i dag ofte MRP i et Excel-ark bygget og forstått av én person. Når den personen slutter, stopper planleggingen opp — kunnskapen forsvinner med dem. COSI - MRP er en web-basert MRP-planlegger som gjør nettobehovsberegning, bestillingsforslag og eksepsjonsvarsling til en systematisk, innebygd prosess i verktøyet selv, i stedet for taus kunnskap i et regneark.
+I små produksjonsbedrifter kan MRP-planlegging være basert på et Excel-ark som bare én person kjenner godt. Det gjør planleggingen sårbar, tidkrevende og feilutsatt. COSI - MRP er en nettbasert løsning som gjør nettobehovsberegning, bestillingsforslag og eksepsjonsmeldinger (varsler om mangler, forsinkelser eller feil i dataene) til en fast, innebygd prosess i verktøyet selv.
 
-Kjerneleveransen (V1) er en fullverdig MRP-beregningsmotor — fra enkeltnivå til flernivå BOM-eksplosjon — med inndata via manuell registrering eller en fast Excel-mal, og resultater presentert i et forståelig dashboard. Markedet i dag tilbyr enten dyre abonnements-ERP-er (fra $49–350+/mnd) eller upolerte gratisalternativer; det finnes ikke noe godt mellomsteg, og det er der COSI - MRP sikter.
+Første versjon dekker enkeltnivå BOM (stykkliste) for ett ferdigprodukt, med inndata via en fast Excel-mal og resultater i en oversiktlig tabell. Lykkes dette, er neste steg flernivå BOM, flere produkter og sammenligning av ulike situasjoner og endringer, deretter innlogging og støtte for flere bedrifter.
 
-Dette er et gruppeprosjekt i IBE160 (4 medlemmer), med produktbrief levert 20. september og et ferdig testet, fungerende verktøy som mål innen desember. Lykkes kjernen, er neste steg innlogging og støtte for flere bedrifter samtidig — og på sikt, en mulighet til å teste verktøyet mot ekte bedrifter utenfor kursets rammer.
+Dette er et gruppeprosjekt i IBE160 (4 medlemmer), med produktbrief levert 20. september og et ferdig testet verktøy som mål innen desember.
 
 ## The Problem
 
-Bedrifter som i dag planlegger produksjon med MRP-logikk, gjør det som oftest i et Excel-ark bygget og vedlikeholdt av én person. Arket fungerer — men bare så lenge den personen er der. Når vedkommende slutter, blir syk eller er utilgjengelig, står bedriften igjen med to dårlige alternativer: bruke uker på å læres opp en erstatter i udokumenterte formler og stilltiende forutsetninger, eller kaste arket og tilpasse seg hva enn den nye ansatte kan fra før. Uansett stopper planleggingen opp, og kunnskap som aldri fantes noe sted utenom ett hode, forsvinner ut døra med personen.
+I mange små produksjonsbedrifter er MRP-planlegging basert på et Excel-ark bygget og vedlikeholdt av én person. Det gir fire problemer:
 
-Dette er et kunnskapssilo-problem like mye som et verktøyproblem: logikken i arket (hvorfor denne innkjøpstiden, hvorfor dette sikkerhetslageret, hvorfor denne partistørrelsen) er sjelden dokumentert noe annet sted enn i selve formlene.
+- **Viktig kunnskap er knyttet til én person:** logikken bak innkjøpstid, sikkerhetslager og partistørrelse er sjelden dokumentert andre steder enn i formlene. Forsvinner personen, forsvinner kunnskapen.
+- **Tidkrevende manuelt arbeid:** den ukentlige oppdateringen av nettobehov og bestillingsforslag gjøres for hånd.
+- **Risiko for feil:** manuelle formler og manuell inntasting gir regnefeil og kopieringsfeil som er vanskelige å oppdage.
+- **Dårlig oversikt ved endringer:** når noe endres midt i planen (f.eks. en justert MPS, produksjonsplanen), er det vanskelig å se konsekvensene uten å regne alt på nytt for hånd.
+
+Planleggingen blir vanskeligere, mer sårbar og mer tidkrevende når eieren av arket er borte. Bedriften må enten bruke uker på å lære opp en erstatter i udokumenterte formler, eller kaste arket og starte på nytt.
 
 ## Who This Serves
 
-**Primærbruker for kursleveransen:** en konstruert testcase — en fiktiv liten produsent (3–5 komponenter, 4–8 ukers horisont) bygget for å bevise at MRP-beregningslogikken er korrekt mot manuelt kontrollerte testdata.
+**Primærbruker:** en produksjonsplanlegger eller innkjøper i en liten produksjonsbedrift, ofte uten formell planleggingsbakgrunn. Personen "eier" i dag Excel-arket, eller må overta det når eieren er borte. Verktøyet skal gjøre beregningsgrunnlag, forutsetninger og resultater synlige og lette å forstå.
 
-**Den reelle brukeren problemet er designet for (utenfor kursets formelle omfang):** personen i en liten produksjonsbedrift — ofte uten formell planleggingsbakgrunn — som i dag "eier" Excel-arket, samt den som må overta planleggingen når den personen er borte.
+**Validering for kursleveransen:** verktøyet testes mot et konstruert testeksempel — en fiktiv liten produsent (5–10 komponenter, 8–12 uker) med manuelt kontrollerte fasitsvar. Dette er testmetoden, ikke selve målgruppen.
 
 ## The Solution
 
-En web-basert MRP-planlegger som fører brukeren gjennom en styrt, validert inndataflyt for grunnlagsdataene (MPS, BOM, lagerstatus, innkjøpstid, sikkerhetslager) — riktig struktur er innebygget i verktøyet, ikke noe brukeren må vite fra før. Verktøyet beregner deretter nettobehov, genererer bestillingsforslag og flagger avvik (eksepsjonsmeldinger) automatisk, presentert som en oversiktlig dashboard-/tabellvisning per uke og komponent — bygget for gjentakende, ukentlig bruk, ikke engangsoppsett.
+Brukeren laster opp en fast Excel-mal med grunnlagsdata: MPS (produksjonsplan), BOM (stykkliste), lagerstatus, planlagte mottak, innkjøpstid og sikkerhetslager. Excel-malen gir dataene en fast struktur. Systemet kontrollerer at nødvendige felt og verdier er fylt ut før beregningen starter.
 
-Kjernen er ikke bare selve beregningen (den er lærebok-MRP), men at *prosessen* er innebygd i verktøyet: riktig rekkefølge, riktige felt, riktig logikk — slik at kunnskapen ikke lenger sitter i ett hode og ett regneark, men i systemet selv.
+Verktøyet beregner deretter nettobehov, foreslår bestillinger og flagger avvik automatisk, presentert i en oversiktlig tabell per uke og komponent — bygget for gjentakende, ukentlig bruk.
+
+Kjernen er ikke selve beregningen (standard MRP-teori), men at hele prosessen — riktig struktur, rekkefølge og logikk — ligger i verktøyet, i stedet for hos én person.
 
 ## What Makes This Different
 
-Markedet i dag er delt i to: tunge, abonnementsbaserte "ERP-lite"-verktøy (MRPeasy, Katana, Fishbowl, Cin7 — fra $49–350+/mnd, bygget for hele produksjonsflyten) og gratis Excel-maler eller upolerte åpen kildekode-forsøk som gjør beregningen, men ikke guider brukeren gjennom den. Det finnes ikke noe midt imellom: et enkelt, standalone verktøy som gjør ekte flernivå MRP-beregning (ikke bare BOM-kost-rollup) med en brukervennlig, systematisk flyt.
+Sammenlignet med et egenutviklet Excel-ark: strukturen og logikken ligger i verktøyet, ikke i formler bare én person forstår. Beregningslogikken og forutsetningene forblir dokumentert i verktøyet selv om en ansatt slutter eller er fraværende.
 
-Ærlig sagt: differensieringen er ikke en hemmelig algoritme — MRP-logikken er standard fagteori, og det skal den være. Fortrinnet er at verktøyet gjør riktig prosess tilgjengelig for noen uten planleggingsbakgrunn, i stedet for å kreve enten en dyr lisens eller et regneark bygget av en ekspert som en dag slutter.
+Sammenlignet med et fullverdig ERP-system (et stort system for hele produksjonsstyringen): COSI - MRP er avgrenset til selve MRP-beregningen, og dermed enklere å ta i bruk for en liten bedrift.
+
+Dette er ikke en hemmelig metode — MRP-logikken er standard teori i faget. Fordelen er at verktøyet gjør riktig prosess tilgjengelig for noen uten planleggingsbakgrunn, i stedet for å kreve et helt ERP-system eller et regneark bygget av en ekspert som en dag slutter.
 
 ## Scope
 
-**V1 — kjerneleveranse (denne kursleveransen, frem mot ferdigstillelse i desember):**
-- Full MRP-beregningsmotor: nettobehov, bestillingsforslag, eksepsjonsmeldinger, fra enkeltnivå til flernivå BOM-eksplosjon
-- Inndata via manuell inntasting **eller** opplasting av en fast Excel-mal — malen låser brukeren til riktig struktur, samme prinsipp som differensieringen over
-- Dashboard-/tabellvisning av resultater per uke og komponent
-- Bygget for **én bedrift/ett datasett** om gangen
-- Ingen innlogging — verktøyet kjøres uten brukerkontoer i denne omgang
+**Første versjon (denne kursleveransen, frem mot desember):**
+- MRP-beregningsmotor for enkeltnivå BOM som viser bruttobehov, forventet lagerbeholdning, nettobehov, planlagte ordremottak, planlagte ordrefrigivelser og varsler om mangler, forsinkelser og feil
+- Ett ferdigprodukt med 5–10 komponenter, over 8–12 uker
+- Lot-for-lot (bestilt mengde lik behovet) som eneste bestillingsregel
+- Inndata via opplasting av en fast Excel-mal
+- Tabelloversikt over resultater per uke og komponent
+- Én bedrift/ett datasett om gangen
+- Ingen innlogging
 - Web/desktop (ikke mobiltilpasset)
 
-**Eksplisitt utenfor V1 (stretch goals — vurderes når kjerneleveransen står):**
-- Innlogging/brukerkontoer med lagring av data mellom økter
-- Støtte for flere bedrifter samtidig (multi-tenant)
+**Ikke med i første versjon (videreutvikling):**
+- Flernivå BOM (beregning gjennom flere nivåer i stykklisten)
+- Flere produkter samtidig
+- Flere bestillingsregler (f.eks. fast partistørrelse eller beregnet optimal bestillingsmengde)
+- Manuell inntasting som alternativ til Excel-opplasting
+- Innlogging/brukerkontoer med lagring
+- Støtte for flere bedrifter med adskilte data
 - Testing mot reelle bedrifter utover kurset (se Vision)
 
 ## Success Criteria
 
 Prosjektet er vellykket når:
 
-- **Beregningsmotoren er korrekt:** 100 % match mot manuelt kontrollerte testcase for både enkeltnivå- og flernivå BOM
-- **Eksepsjonshåndtering er pålitelig:** riktig eksepsjonstype utløses i hvert kjent avvikstilfelle, uten falske positiver eller negativer
-- **Verktøyet er forståelig uten forkunnskap:** en bruker uten kjennskap til koden kan lese og forstå dashboardet uten forklaring
-- **Systemet håndterer et realistisk scenario:** en komplett 8–12-ukers kjøring med flere komponenter og minst én midtveis-endring (f.eks. endret MPS) håndteres korrekt
-- **Levert innen frist:** et ferdig testet og fungerende prosjekt levert innen desember — slik gruppa selv har definert suksess for kurset
+- **Beregningsmotoren er korrekt:** 100 % samsvar med manuelt kontrollerte testeksempler for enkeltnivå BOM (5–10 komponenter, 8–12 uker)
+- **Eksepsjonshåndtering er pålitelig:** riktig type varsel utløses i hvert kjent avvikstilfelle, uten å gi feil varsel eller overse kjente avvik
+- **Inndatakvalitet kontrolleres:** systemet validerer Excel-malen og flagger mangler eller feil i strukturen før beregningen kjøres
+- **Verktøyet er forståelig uten forkunnskap:** etter en kort introduksjon finner og forklarer 3 av 3 testpersoner hovedresultatene (kritisk komponent, bestillingsmengde og bestillingsuke) uten hjelp fra utviklerne
+- **Systemet håndterer et realistisk scenario:** en komplett 8–12-ukers kjøring med 5–10 komponenter og minst én endring midtveis (f.eks. endret MPS) håndteres korrekt
 
 ## Vision
 
-Lykkes kjerneleveransen, er neste naturlige steg å bygge ut stretch-goals fra Scope: innlogging med lagrede data, og støtte for flere bedrifter samtidig. Derfra åpner det seg en mulighet enkelte i gruppa er interessert i å forfølge: å teste verktøyet mot reelle små bedrifter som i dag er avhengige av ett regneark og én person, for å se om kunnskapssilo-problemet faktisk lar seg løse utenfor en kontrollert testcase. Dette er ikke en del av kursets formelle omfang, men en retning verktøyet er designet for å kunne vokse inn i.
+Lykkes første versjon, er neste steg flernivå BOM, flere produkter og sammenligning av ulike situasjoner og endringer. Deretter følger innlogging med lagrede data og støtte for flere bedrifter. Derfra åpner muligheten for å teste verktøyet mot reelle små bedrifter som i dag er avhengige av ett regneark og én person. Dette er ikke en del av kursets formelle omfang, men en retning verktøyet er designet for å kunne vokse inn i. Utprøvingen skal undersøke om verktøyet kan redusere personavhengigheten i planleggingsarbeidet.
