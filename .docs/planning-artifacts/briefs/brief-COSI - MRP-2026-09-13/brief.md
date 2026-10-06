@@ -2,7 +2,7 @@
 title: COSI - MRP Product Brief
 status: draft
 created: 2026-09-13
-updated: 2026-09-13
+updated: 2026-10-06
 ---
 
 # Product Brief: COSI - MRP
@@ -36,7 +36,9 @@ Planleggingen blir vanskeligere, mer sårbar og mer tidkrevende når eieren av a
 
 Brukeren laster opp en fast Excel-mal med grunnlagsdata: MPS (produksjonsplan), BOM (stykkliste), lagerstatus, planlagte mottak, innkjøpstid og sikkerhetslager. Excel-malen gir dataene en fast struktur. Systemet kontrollerer at nødvendige felt og verdier er fylt ut før beregningen starter.
 
-Verktøyet beregner deretter nettobehov, foreslår bestillinger og flagger avvik automatisk, presentert i en oversiktlig tabell per uke og komponent — bygget for gjentakende, ukentlig bruk.
+Verktøyet beregner deretter nettobehov, foreslår bestillinger og flagger avvik automatisk, presentert i en oversiktlig tabell per uke og komponent — bygget for gjentakende, ukentlig bruk. Varsler vises direkte i tabellen: cellen for aktuell uke og komponent fremheves, og en kort melding forklarer hva som er galt. Komponenter med minst ett varsel markeres som kritiske, slik at brukeren raskt ser hvor det må handles.
+
+**Når planen endres:** endres noe midt i planen, for eksempel en justert MPS, oppdaterer brukeren Excel-malen og laster den opp på nytt. Verktøyet beregner hele planen på nytt og viser en før/etter-sammenligning mot forrige kjøring: hvilke bestillingsforslag som er nye, endret eller fjernet, og hvilke varsler som har kommet til eller forsvunnet. Slik ser brukeren konsekvensene av endringen uten å regne noe for hånd.
 
 Kjernen er ikke selve beregningen (standard MRP-teori), men at hele prosessen — riktig struktur, rekkefølge og logikk — ligger i verktøyet, i stedet for hos én person.
 
@@ -51,19 +53,28 @@ Dette er ikke en hemmelig metode — MRP-logikken er standard teori i faget. For
 ## Scope
 
 **Første versjon (denne kursleveransen, frem mot desember):**
-- MRP-beregningsmotor for enkeltnivå BOM som viser bruttobehov, forventet lagerbeholdning, nettobehov, planlagte ordremottak, planlagte ordrefrigivelser og varsler om mangler, forsinkelser og feil
+- MRP-beregningsmotor for enkeltnivå BOM som viser bruttobehov, forventet lagerbeholdning, nettobehov, planlagte ordremottak og planlagte ordrefrigivelser
 - Ett ferdigprodukt med 5–10 komponenter, over 8–12 uker
-- Lot-for-lot (bestilt mengde lik behovet) som eneste bestillingsregel
-- Inndata via opplasting av en fast Excel-mal
-- Tabelloversikt over resultater per uke og komponent
+- Lot-for-lot (bestilt mengde lik behovet) som bestillingsregel i kjernen
+- Inndata via opplasting av en fast Excel-mal, med validering av struktur, tomme celler og datatyper før beregning
+- Fire eksepsjonstyper, vist per uke og komponent:
+  - **Bruk av sikkerhetslager:** sikkerhetslager er en ekstra lagerbeholdning som fungerer som en buffer mot uventet høy etterspørsel eller forsinkelser i leveranser. Hvis bruttobehovet begynner å benytte seg av sikkerhetslageret før neste leveranse inn til lageret er planlagt, markeres det
+  - **Bestilling forsinket (fra lager til kunde):** bruttobehovet i en uke kan ikke dekkes fra lager i tide, fordi en bestilling måtte vært frigitt før første uke i horisonten. Leveransen videre til kunde blir dermed forsinket
+  - **Mottak forsinket (fra leverandør til lager):** et planlagt mottak fra leverandør er lagt til en senere uke enn uken der behovet oppstår, slik at mottaket kommer for sent og må fremskyndes
+  - **Innkjøpstid overskrider horisont:** innkjøpstiden for en komponent er lengre enn planleggingshorisonten
+- Tabelloversikt over resultater per uke og komponent, der varsler og kritiske komponenter fremheves
+- Ny opplasting ved endringer (f.eks. endret MPS), med før/etter-sammenligning mot forrige kjøring
 - Én bedrift/ett datasett om gangen
 - Ingen innlogging
 - Web/desktop (ikke mobiltilpasset)
 
+**Planlagt utvidelse i første versjon (etter at kjernen er ferdig og testet mot fasit):**
+- Fast partistørrelse som valgbar bestillingsregel per komponent, i tillegg til lot-for-lot. Bestilt mengde rundes opp til et helt antall partier, og overskuddet føres videre i forventet lagerbeholdning.
+
 **Ikke med i første versjon (videreutvikling):**
 - Flernivå BOM (beregning gjennom flere nivåer i stykklisten)
 - Flere produkter samtidig
-- Flere bestillingsregler (f.eks. fast partistørrelse eller beregnet optimal bestillingsmengde)
+- Andre bestillingsregler (f.eks. beregnet optimal bestillingsmengde)
 - Manuell inntasting som alternativ til Excel-opplasting
 - Innlogging/brukerkontoer med lagring
 - Støtte for flere bedrifter med adskilte data
@@ -74,10 +85,10 @@ Dette er ikke en hemmelig metode — MRP-logikken er standard teori i faget. For
 Prosjektet er vellykket når:
 
 - **Beregningsmotoren er korrekt:** 100 % samsvar med manuelt kontrollerte testeksempler for enkeltnivå BOM (5–10 komponenter, 8–12 uker)
-- **Eksepsjonshåndtering er pålitelig:** riktig type varsel utløses i hvert kjent avvikstilfelle, uten å gi feil varsel eller overse kjente avvik
+- **Eksepsjonshåndtering er pålitelig:** for hver av de fire eksepsjonstypene utløses riktig varsel i hvert kjent avvikstilfelle i testeksempelet, uten å gi feil varsel eller overse kjente avvik
 - **Inndatakvalitet kontrolleres:** systemet validerer Excel-malen og flagger mangler eller feil i strukturen før beregningen kjøres
 - **Verktøyet er forståelig uten forkunnskap:** etter en kort introduksjon finner og forklarer 3 av 3 testpersoner hovedresultatene (kritisk komponent, bestillingsmengde og bestillingsuke) uten hjelp fra utviklerne
-- **Systemet håndterer et realistisk scenario:** en komplett 8–12-ukers kjøring med 5–10 komponenter og minst én endring midtveis (f.eks. endret MPS) håndteres korrekt
+- **Systemet håndterer et realistisk scenario:** en komplett 8–12-ukers kjøring med 5–10 komponenter og minst én endring midtveis (f.eks. endret MPS) håndteres korrekt, og før/etter-sammenligningen viser nøyaktig de bestillingsforslagene og varslene som er endret
 
 ## Vision
 
