@@ -33,7 +33,7 @@ Prosjektbrief: MRP – Ukentlig komponentplan
 **Mål:** Oversette nettobehov til konkrete bestillingsforslag.
 - Beregn bestillingstidspunkt basert på innkjøpstid (offset bakover fra behovsuke)
 - Implementer lot-for-lot som bestillingsregel (fast partistørrelse kommer som utvidelse i fase 8)
-- **Test:** Verifiser at bestillingsforslag alltid ligger før behovsuken med korrekt offset. Test grensetilfeller (behov i uke 1, innkjøpstid > horisont).
+- **Test:** Verifiser at bestillingsforslag alltid ligger før behovsuken med korrekt offset. Test grensetilfeller (behov i uke 1, innkjøpstid = horisont og innkjøpstid > horisont).
 
 ### Fase 4 – Exception-meldinger
 **Mål:** Systemet skal varsle planlegger om avvik automatisk.

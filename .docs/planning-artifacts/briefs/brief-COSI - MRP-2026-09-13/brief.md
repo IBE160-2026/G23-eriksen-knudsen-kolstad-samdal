@@ -61,7 +61,7 @@ Dette er ikke en hemmelig metode — MRP-logikken er standard teori i faget. For
   - **Bruk av sikkerhetslager:** sikkerhetslager er en ekstra lagerbeholdning som fungerer som en buffer mot uventet høy etterspørsel eller forsinkelser i leveranser. Hvis bruttobehovet begynner å benytte seg av sikkerhetslageret før neste leveranse inn til lageret er planlagt, markeres det
   - **Bestilling forsinket (fra lager til kunde):** bruttobehovet i en uke kan ikke dekkes fra lager i tide, fordi en bestilling måtte vært frigitt før første uke i horisonten. Leveransen videre til kunde blir dermed forsinket
   - **Mottak forsinket (fra leverandør til lager):** et planlagt mottak fra leverandør er lagt til en senere uke enn uken der behovet oppstår, slik at mottaket kommer for sent og må fremskyndes
-  - **Innkjøpstid overskrider horisont:** innkjøpstiden for en komponent er lengre enn planleggingshorisonten
+  - **Innkjøpstid overskrider horisont:** innkjøpstiden for en komponent er like lang som eller lengre enn planleggingshorisonten. Da kan ingen ny bestilling frigis i tide til å dekke behov innenfor horisonten. Eksepsjonen gjelder komponenten og vises uavhengig av behov, mens «bestilling forsinket» gjelder en bestemt uke med udekket behov
 - Tabelloversikt over resultater per uke og komponent, der varsler og kritiske komponenter fremheves
 - Ny opplasting ved endringer (f.eks. endret MPS), med før/etter-sammenligning mot forrige kjøring
 - Én bedrift/ett datasett om gangen
