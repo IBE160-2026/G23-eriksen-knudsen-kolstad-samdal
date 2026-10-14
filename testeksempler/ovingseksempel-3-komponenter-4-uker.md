@@ -8,7 +8,7 @@ author: Carmen Kolstad
 # Øvingseksempel: MRP med 3 komponenter over 4 uker
 
 > **Utkast – skal kontrolleres før bruk som fasit.**
-> Tallene er ikke uavhengig kontrollert ennå. De skal regnes gjennom for hånd av minst ett annet gruppemedlem før de brukes som fasit i tester.
+> Tallene er ikke uavhengig kontrollert ennå. 
 
 Dette er et innledende øvingseksempel. Det endrer ikke prosjektets avgrensning i product brief (5–10 komponenter, 8–12 uker).
 
@@ -158,7 +158,7 @@ I denne situasjonen gjelder også varselet **«Under sikkerhetslager»** for K3 
 
 «Innkjøpstid overskrider horisont» utløses ikke, fordi alle innkjøpstidene er kortere enn horisonten på 4 uker.
 
-## Åpne spørsmål
+## Spørsmål
 
-- Forslag til gruppen: MRP-tabellen brukes som forventet resultat for beregningen, under forutsetning av at planlagte mottak kommer i tide. Kontrollberegningen for uke 2 forklarer mangelen dersom mottaket på 20 komponenter uteblir. Skal begge vises i appen slik skissen foreslår?
-- Forslag – til avklaring i gruppen: om `testeksempler/` er riktig mappe for testeksempler og fasit, og om eksempelet senere også skal finnes som Excel-fil.
+- Forslag: MRP-tabellen brukes som forventet resultat for beregningen, under forutsetning av at planlagte mottak kommer i tide. Kontrollberegningen for uke 2 forklarer mangelen dersom mottaket på 20 komponenter uteblir. Skal begge vises i appen slik skissen foreslår?
+
