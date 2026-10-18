@@ -2,7 +2,7 @@
 title: COSI - MRP Product Brief
 status: draft
 created: 2026-09-13
-updated: 2026-10-06
+updated: 2026-10-18
 ---
 
 # Product Brief: COSI - MRP
@@ -54,7 +54,7 @@ Dette er ikke en hemmelig metode — MRP-logikken er standard teori i faget. For
 
 **Første versjon (denne kursleveransen, frem mot desember):**
 - MRP-beregningsmotor for enkeltnivå BOM som viser bruttobehov, forventet lagerbeholdning, nettobehov, planlagte ordremottak og planlagte ordrefrigivelser
-- Ett ferdigprodukt med 5–10 komponenter, over 8–12 uker
+- Ett ferdigprodukt med valgfritt antall komponenter (brukeren oppgir antallet i Excel-malen), over 8–12 uker
 - Lot-for-lot (bestilt mengde lik behovet) som bestillingsregel i kjernen
 - Inndata via opplasting av en fast Excel-mal, med validering av struktur, tomme celler og datatyper før beregning
 - Fire eksepsjonstyper, vist per uke og komponent:
