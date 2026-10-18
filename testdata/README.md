@@ -12,7 +12,7 @@ Sensor kan bruke filene her for å prøve appen direkte etter README i roten av 
 | Fil | Innhold |
 |---|---|
 | `COSI-MRP-mal.xlsx` | Tom mal. Ark: Veiledning, Produkt, Prognostiserte behov, Komponenter, Planlagte mottak, Veien videre. Brukeren fyller kun ut gule celler. |
-| `testeksempel-01.xlsx` | Malen utfylt for en fiktiv kontorstolprodusent: 8 komponenter, 10 uker. Lastes opp som den er. Følger foreløpig den gamle malen (ark «MPS») og lages på nytt med `--alle` når den nye malen er godkjent. |
+| `testeksempel-01.xlsx` | Malen utfylt for en fiktiv kontorstolprodusent: 8 komponenter, 10 uker. Lastes opp som den er. Følger den nye malen. |
 | `testeksempel-01-fasit.xlsx` | Fasit: beregningsregler, fasittabell per uke og komponent, og forventede eksepsjoner. |
 | `lag_testdata.py` | Skriptet som lager filene. `uv run --with openpyxl python lag_testdata.py testdata` lager bare malen. Legg til `--alle` for også å lage testeksempel og fasit. |
 
