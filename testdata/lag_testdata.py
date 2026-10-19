@@ -64,6 +64,7 @@ def beregn(mps, komp, mottak):
             planlagt[uke - 1] += antall
     forventet, netto, ordremottak, frigivelse = [], [], [], [0] * h
     eksepsjoner = []
+    forfalte = []  # (indeks i eksepsjoner, forfalt antall, frigi_uke)
     if ledetid >= h:
         eksepsjoner.append((_id, "–", "Innkjøpstid overskrider horisont",
                             f"Innkjøpstid {ledetid} uker ≥ horisont {h} uker. "
@@ -81,14 +82,18 @@ def beregn(mps, komp, mottak):
                 frigivelse[frigi_uke - 1] += nb
             else:
                 frigivelse[0] += nb  # forfalt: må frigis straks
+                # Meldingen trenger total frigivelse i uke 1, som først er kjent etter løkken
+                forfalte.append((len(eksepsjoner), nb, frigi_uke))
                 if disponibel < 0:
                     eksepsjoner.append((_id, uke, "Bestilling forsinket",
-                                        f"Lager blir {disponibel} i uke {uke}. Bestillingen måtte vært "
-                                        f"frigitt i uke {frigi_uke}, før horisonten. Leveranse til kunde blir forsinket."))
+                                        f"Lager blir {disponibel} i uke {uke}. Bestillingen på {{nb}} måtte vært "
+                                        f"frigitt i uke {frigi_uke}, før horisonten. {{forfalt}} "
+                                        "Leveranse til kunde blir forsinket."))
                 else:
                     eksepsjoner.append((_id, uke, "Bruk av sikkerhetslager",
                                         f"Lager blir {disponibel} i uke {uke}, under sikkerhetslager {ss}, "
-                                        f"før ny leveranse kan komme inn (måtte vært frigitt i uke {frigi_uke})."))
+                                        f"før ny leveranse kan komme inn. Bestillingen på {{nb}} måtte vært "
+                                        f"frigitt i uke {frigi_uke}. {{forfalt}}"))
             senere = [u for u in range(uke + 1, h + 1) if planlagt[u - 1] > 0]
             if senere:
                 eksepsjoner.append((_id, uke, "Mottak forsinket",
@@ -96,6 +101,11 @@ def beregn(mps, komp, mottak):
                                     f"Vurder å fremskynde mottaket."))
         forrige = disponibel + nb
         forventet.append(forrige)
+    for i, antall, _ in forfalte:
+        kid, uke, typ, melding = eksepsjoner[i]
+        forfalt = (f"De {antall} er forfalt og tatt med i frigivelsen på {frigivelse[0]} i uke 1, "
+                   f"men kommer tidligst i uke {1 + ledetid}.")
+        eksepsjoner[i] = (kid, uke, typ, melding.format(nb=antall, forfalt=forfalt))
     rader = {
         "Bruttobehov": brutto,
         "Planlagte mottak": planlagt,
@@ -408,14 +418,18 @@ def lag_mal(produkt=None, mps=None, komponenter=None, mottak=None):
 # ---------- Fasit ----------
 
 REGLER = [
-    "Beregningsregler (utkast – gruppen må bekrefte):",
+    "Beregningsregler (bekreftet av gruppen):",
     "Notasjon: uke t = 1..H, lager før uke 1 = lagerbeholdning, SS = sikkerhetslager, L = innkjøpstid.",
     "1. Bruttobehov(t) = MPS(t) × antall per ferdigprodukt.",
     "2. Disponibel(t) = forventet lager(t−1) + planlagte mottak(t) − bruttobehov(t).",
     "3. Nettobehov(t) = maks(0, SS − disponibel(t)).",
     "4. Lot-for-lot: planlagt ordremottak(t) = nettobehov(t).",
     "5. Forventet lagerbeholdning(t) = disponibel(t) + planlagt ordremottak(t).",
-    "6. Planlagt ordrefrigivelse i uke t − L. Hvis t − L < 1 er frigivelsen forfalt og legges i uke 1 (må frigis straks).",
+    "6. Planlagt ordrefrigivelse i uke t − L. Hvis t − L < 1 er frigivelsen forfalt og legges i uke 1 (må frigis straks), "
+    "sammen med eventuelle ordinære frigivelser for uke 1. Eksepsjonsmeldingen oppgir hvor mye av uke 1 som er forfalt.",
+    "7. Et forfalt planlagt ordremottak vises likevel i uke t, der behovet er, selv om det fysisk kommer tidligst i uke 1 + L. "
+    "Forventet lagerbeholdning forutsetter altså at behovet dekkes i tide. Avviket varsles med eksepsjonen "
+    "«Bestilling forsinket» eller «Bruk av sikkerhetslager».",
     "",
     "Eksepsjoner:",
     "• Bestilling forsinket: frigivelsen er forfalt (t − L < 1) og disponibel(t) < 0. Kunden får ikke levert i tide.",
@@ -426,7 +440,7 @@ REGLER = [
     "• Innkjøpstid overskrider horisont: L ≥ H. Gjelder komponenten (uke «–»), uavhengig av behov.",
     "• En celle kan ha flere eksepsjoner. En komponent med minst én eksepsjon er kritisk.",
     "",
-    "Status: verdiene er beregnet med skript og MÅ kontrolleres for hånd av gruppen før de brukes som fasit.",
+    "Status: verdiene er beregnet med skript og kontrollert for hånd (2026-10-19).",
 ]
 
 

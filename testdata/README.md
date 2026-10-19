@@ -39,4 +39,4 @@ Radene som «kommer frem» er laget med betinget formatering og datavalidering, 
 | K07 Skruesett | Planlagt mottak som kommer i tide |
 | K08 Trekk | Sikkerhetslager 0 og frigivelse nøyaktig i uke 1 |
 
-**Status:** utkast. Fasiten er beregnet med skriptet og må kontrolleres for hånd av gruppen før den brukes som fasit. Beregningsreglene i arket *Regler* (bl.a. at forfalte frigivelser legges i uke 1) må også bekreftes.
+**Status:** kontrollert. Fasiten er beregnet med skriptet og kontrollert for hånd (2026-10-19). Beregningsreglene i arket *Regler* er bekreftet. Forfalte frigivelser legges i uke 1, og eksepsjonsmeldingen oppgir hvor mye av uke 1 som er forfalt. Forfalte ordremottak vises i uken behovet er, selv om de fysisk kommer senere.
