@@ -36,7 +36,7 @@ Planleggingen blir vanskeligere, mer sårbar og mer tidkrevende når eieren av a
 
 Brukeren laster opp en fast Excel-mal med grunnlagsdata: MPS (produksjonsplan), BOM (stykkliste), lagerstatus, planlagte mottak, ledetid og sikkerhetslager. Ledetid er innkjøpstid for komponenter som kjøpes inn, og produksjonstid for komponenter som settes sammen internt. Excel-malen gir dataene en fast struktur. Systemet kontrollerer at nødvendige felt og verdier er fylt ut før beregningen starter.
 
-Verktøyet beregner deretter nettobehov, foreslår bestillinger og flagger avvik automatisk, presentert i en oversiktlig tabell per uke og komponent — bygget for gjentakende, ukentlig bruk. Varsler vises direkte i tabellen: cellen for aktuell uke og komponent fremheves, og en kort melding forklarer hva som er galt. Komponenter med minst ett varsel markeres som kritiske, slik at brukeren raskt ser hvor det må handles.
+Verktøyet beregner deretter nettobehov, foreslår bestillinger og flagger avvik automatisk, presentert i en oversiktlig tabell per uke og komponent — bygget for gjentakende, ukentlig bruk. Varsler vises direkte i tabellen: cellen for aktuell uke og komponent fremheves, og en kort melding forklarer hva som er galt. Varsler og kritiske komponenter vises med tydelig tekst og et symbol, ikke bare med farge. Hvert varsel viser type, komponent, uke og en kort forklaring (f.eks. «⚠ Bruk av sikkerhetslager – 300-003, uke 1: lageret blir 20, under sikkerhetslager 50»). Komponenter med minst ett varsel markeres som kritiske (f.eks. «❗ Kritisk»), slik at brukeren raskt ser hvor det må handles.
 
 **Når planen endres:** endres noe midt i planen, for eksempel en justert MPS, oppdaterer brukeren Excel-malen og laster den opp på nytt. Verktøyet beregner hele planen på nytt og viser en før/etter-sammenligning mot forrige kjøring: hvilke bestillingsforslag som er nye, endret eller fjernet, og hvilke varsler som har kommet til eller forsvunnet. Slik ser brukeren konsekvensene av endringen uten å regne noe for hånd.
 
@@ -84,9 +84,12 @@ Dette er ikke en hemmelig metode — MRP-logikken er standard teori i faget. For
 Prosjektet er vellykket når:
 
 - **Beregningsmotoren er korrekt:** 100 % samsvar med manuelt kontrollerte testeksempler for flernivå BOM (5–10 komponenter fordelt på 3 nivåer, 8–12 uker)
+  - Fasiten er regnet ut uavhengig av verktøyets egen kode og kontrollert for hånd. Det holder ikke at den bare er generert av det samme skriptet som beregningen bygger på.
 - **Eksepsjonshåndtering er pålitelig:** for hver av de fire eksepsjonstypene utløses riktig varsel i hvert kjent avvikstilfelle i testeksempelet, uten å gi feil varsel eller overse kjente avvik
 - **Inndatakvalitet kontrolleres:** systemet validerer Excel-malen og flagger mangler eller feil i strukturen før beregningen kjøres
 - **Verktøyet er forståelig uten forkunnskap:** etter en kort introduksjon finner og forklarer 3 av 3 testpersoner hovedresultatene (kritisk komponent, bestillingsmengde og bestillingsuke) uten hjelp fra utviklerne
+  - Til avklaring i gruppen: hvem testpersonene er og hvordan de rekrutteres
+  - Til avklaring i gruppen: hva «uten hjelp» konkret tillater (f.eks. om skriftlig brukerveiledning kan leses)
 - **Systemet håndterer et realistisk scenario:** en komplett 8–12-ukers kjøring med 5–10 komponenter fordelt på 3 nivåer og minst én endring midtveis (f.eks. endret MPS) håndteres korrekt, og før/etter-sammenligningen viser nøyaktig de bestillingsforslagene og varslene som er endret
 
 ## Vision
