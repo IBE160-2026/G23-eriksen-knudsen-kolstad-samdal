@@ -19,6 +19,7 @@ Sensor kan bruke filene her for å prøve appen direkte etter README i roten av 
 | `fasit/testeksempel-NN-tabell.csv` | Fasittabellen som CSV: `varenummer,rad,uke,verdi`. |
 | `fasit/testeksempel-NN-eksepsjoner.csv` | Eksepsjonene som CSV: `varenummer,uke,type,melding`. Uke er «–» for «Ledetid overskrider horisont». |
 | `lag_testdata.py` | Skriptet som lager filene, med lesing av utfylt mal (`les_eksempel`) og MRP-beregning nivå for nivå (`beregn_flerniva`). Se under. |
+| `kontroll/testeksempel-02-kontroll-carmen.xlsx` | Kontrollen for hånd av fasiten for testeksempel 02: ett ark per del med beregningen uke for uke, og arket Forklaring med formlene. |
 | `tests/test_mrp.py` | Tester (pytest) av beregningen mot fasitene. |
 | `tests/data/testeksempel-01-fasit-2026-10-19-*.csv` | Tallene og eksepsjonene fra fasiten for testeksempel 01 fra 2026-10-19 (gammelt format, K01–K08 oversatt til 300-001–300-008). Brukes til å sjekke at det nye formatet gir de samme tallene. |
 
@@ -36,7 +37,7 @@ uv run --with openpyxl python lag_testdata.py . --mal      # bare hvis malen ska
 
 ## Malens struktur
 
-- **Veiledning:** hvordan malen fylles ut. Arknavnene er lenker til arkene.
+- **Veiledning:** hvordan malen fylles ut. Arknavnene er lenker til arkene. Eksempelet i arket (grønne celler) er bare en utfyllingshjelp og henger ikke sammen med testeksemplene.
 - **Stykkliste:** Nivå, Varenummer, Beskrivelse, Antall, Type, Lagerbeholdning, Sikkerhetslager, Ledetid (uker). Én rad per del ovenfra og ned (inntil 1000). Erstatter de tidligere arkene Produkt og Komponenter.
   - Nivå velges fra en nedtrekksliste: 0 (ferdigproduktet, alltid første rad og bare én), .1 (hovedkomponenter) og ..2 (delene som trengs for å bygge hovedkomponenten rett over). Rett under 0 kan bare .1 velges, og ..2 kan bare stå under .1 eller ..2. Fra ..2 kan man gå opp igjen til .1. Listen ligger i den skjulte kolonnen Z.
   - De skjulte kolonnene AA og AB lager en liste over varenumrene uten dubletter. Navnet `Varenumre` peker på den og vokser med antall ulike varenumre.
@@ -95,4 +96,4 @@ Kontorstol Pro, 10 uker, stykkliste på 3 nivåer:
 | .1 | 300-004 Hjul | Normalforløp, ingen falske varsler |
 | .1 | 300-005 Gassfjær | Ledetid 12 > horisont 10: Ledetid overskrider horisont, uten behov i horisonten |
 
-**Status for begge testeksemplene:** beregnet med skript, ikke kontrollert for hånd ennå. Beregningsreglene for ett nivå og de fire eksepsjonene ble bekreftet av gruppen 2026-10-19. Reglene for flernivå (bruttobehov fra delen over, summering og lavnivåkode) er nye og må bekreftes. Bruk arket Utregning i `testeksempel-02-fasit.xlsx` til kontrollen.
+**Status:** Kontrollert for hånd av Carmen 2026-10-24 (testeksempel 02, alle 8 deler, tall og eksepsjoner, se testdata/kontroll/). Testeksempel 01 samsvarer med fasiten fra 2026-10-19.

@@ -725,7 +725,8 @@ def lag_mal(mps=None, stykkliste=None, mottak=None):
 
 # ---------- Fasit ----------
 
-STATUS = "Status: beregnet med skript, ikke kontrollert for hånd ennå."
+STATUS = ("Status: Kontrollert for hånd av Carmen 2026-10-24 (testeksempel 02, alle 8 deler, tall og eksepsjoner, se testdata/kontroll/). "
+          "Testeksempel 01 samsvarer med fasiten fra 2026-10-19.")
 
 REGLER = [
     "Beregningsregler (regel 4–9 og eksepsjonene er bekreftet av gruppen 2026-10-19. Regel 1–3 for flernivå BOM "
