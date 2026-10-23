@@ -1,21 +1,23 @@
-"""Lager Excel-mal, testeksempel og fasit for COSI - MRP.
+"""Lager Excel-mal, testeksempler og fasiter for COSI - MRP.
 
-Bruk: uv run --with openpyxl python lag_testdata.py <testdata-mappe> [--alle]
+Bruk: uv run --with openpyxl python lag_testdata.py <testdata-mappe> [--mal] [--alle]
 
-Uten --alle lages bare malen. Med --alle lages også testeksempel 01 og fasit.
+--mal lager malen (COSI-MRP-mal.xlsx). --alle lager testeksemplene, fasitene (xlsx) og fasitene som CSV i
+<testdata-mappe>/fasit/, uten å røre malen.
 """
+import csv
 import sys
 from pathlib import Path
 
-from openpyxl import Workbook
+from openpyxl import Workbook, load_workbook
 from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
 from openpyxl.workbook.defined_name import DefinedName
 from openpyxl.formatting.rule import FormulaRule
 from openpyxl.worksheet.datavalidation import DataValidation
 from openpyxl.worksheet.hyperlink import Hyperlink
 
-UT = Path(sys.argv[1])
 MAKS_UKER = 12
+MIN_UKER = 8
 
 FONT = Font(name="Arial", size=10)
 FONT_FET = Font(name="Arial", size=10, bold=True)
@@ -48,13 +50,13 @@ EKSEMPEL_STYKKLISTE = [
 ]
 
 
-# ---------- Testeksempel 01: fiktiv kontorstolprodusent ----------
+# ---------- Testeksempel 01: fiktiv kontorstolprodusent, alle deler på nivå .1 ----------
 
 PRODUKT = "Kontorstol Basic"
 MPS = [20, 25, 30, 20, 35, 30, 25, 40, 30, 20]  # 10 ukers horisont
 
 # (varenummer, beskrivelse, antall per ferdigprodukt, lager, sikkerhetslager, ledetid, hensikt)
-# Testeksempel 01 er enkeltnivå: alle komponentene er innkjøpt og sitter på nivå .1.
+# Alle komponentene er innkjøpt og sitter på nivå .1.
 KOMPONENTER = [
     ("300-001", "Sete", 1, 200, 20, 2, "Normalforløp: første behov kan bestilles i tide"),
     ("300-002", "Rygg", 1, 60, 10, 1, "Normalforløp med ledetid 1 uke"),
@@ -69,21 +71,175 @@ KOMPONENTER = [
 # (varenummer, uke, antall)
 MOTTAK = [("300-005", 4, 100), ("300-007", 2, 120)]
 
+# Ferdigvaren har lager, sikkerhetslager og ledetid 0, slik at frigivelsene blir lik prognosen og delene får
+# de samme tallene som i fasiten fra 2026-10-19
+STYKKLISTE_01 = [("0", "100-001", PRODUKT, None, "Ferdigvare", 0, 0, 0)]
+STYKKLISTE_01 += [(".1", k[0], k[1], k[2], KJOPT, k[3], k[4], k[5]) for k in KOMPONENTER]
+HENSIKT_01 = {"100-001": "Ferdigvare uten lager, sikkerhetslager og ledetid: frigivelsene blir lik prognosen, "
+                         "så delene får de samme tallene som i fasiten fra 2026-10-19"}
+HENSIKT_01.update({k[0]: k[6] for k in KOMPONENTER})
 
-def beregn(mps, komp, mottak):
-    """MRP for én komponent etter reglene i arket 'Regler'."""
-    _id, _navn, per, lager, ss, ledetid = komp[:6]
-    h = len(mps)
-    brutto = [m * per for m in mps]
-    planlagt = [0] * h
-    for kid, uke, antall in mottak:
-        if kid == _id:
-            planlagt[uke - 1] += antall
+
+# ---------- Testeksempel 02: fiktiv kontorstolprodusent, stykkliste på 3 nivåer ----------
+
+PRODUKT_02 = "Kontorstol Pro"
+PROGNOSE_02 = [30, 30, 35, 25, 40, 35, 30, 45, 35, 30]  # 10 ukers horisont
+DELMONTERING = "Delmontering"
+RAAVARE_KJOPT = "Råvare (Kjøpes inn)"
+
+# Én rad per del ovenfra og ned, slik den fylles ut i malen. Skruesettet står to steder, og lager,
+# sikkerhetslager og ledetid står bare første gang.
+STYKKLISTE_02 = [
+    ("0", "100-001", PRODUKT_02, None, "Ferdigvare", 20, 5, 1),
+    (".1", "200-001", "Sete", 1, DELMONTERING, 30, 5, 1),
+    ("..2", "300-001", "Seteplate", 1, KJOPT, 120, 10, 2),
+    ("..2", "300-002", "Skruesett M6", 4, KJOPT, 400, 50, 1),
+    (".1", "200-002", "Rygg", 1, DELMONTERING, 85, 5, 1),
+    ("..2", "300-002", "Skruesett M6", 2, KJOPT, None, None, None),
+    ("..2", "300-003", "Ryggtrekk", 1, RAAVARE_KJOPT, 40, 30, 2),
+    (".1", "300-004", "Hjul", 5, KJOPT, 300, 30, 1),
+    (".1", "300-005", "Gassfjær", 1, KJOPT, 400, 10, 12),
+]
+MOTTAK_02 = [("200-002", 4, 40)]
+HENSIKT_02 = {
+    "100-001": "Ferdigvare med egen lagerbeholdning, sikkerhetslager og ledetid 1. Lageret går under 0 i uke 1: "
+               "Bestilling forsinket (til kunde). Den forfalte frigivelsen legges i uke 1 og blir bruttobehov "
+               "på nivå .1 i uke 1",
+    "200-001": "Delmontering med deler under seg. Får den forfalte frigivelsen fra 100-001 som bruttobehov i uke 1, "
+               "og lageret går under 0: Bestilling forsinket (til produksjonen av delen over)",
+    "300-001": "Bruttobehov = frigivelsene til Sete × 1. Normalforløp uten eksepsjon",
+    "300-002": "Står to steder: bruttobehov = frigivelsene til Sete × 4 + frigivelsene til Rygg × 2, summert uke "
+               "for uke",
+    "200-002": "Delmontering med planlagt mottak (egen produksjon) i uke 4, mens nettobehovet kommer i uke 3: "
+               "Mottak forsinket (fra egen produksjon)",
+    "300-003": "Råvare under Rygg. Lageret havner mellom 0 og sikkerhetslageret før en ny bestilling rekker "
+               "frem: Bruk av sikkerhetslager",
+    "300-004": "Normalforløp på nivå .1 uten eksepsjon (kontroll på at det ikke kommer falske varsler)",
+    "300-005": "Ledetid 12 > horisont 10: Ledetid overskrider horisont. Lageret dekker hele horisonten, så "
+               "eksepsjonen kommer uavhengig av behov",
+}
+
+
+# ---------- Lese et utfylt testeksempel ----------
+
+NIVAER_TALL = {"0": 0, ".1": 1, "..2": 2}
+
+
+class MalFeil(ValueError):
+    """Inndata som ikke følger reglene i malen."""
+
+
+def heltall(verdi, minst, hva):
+    if isinstance(verdi, float) and verdi.is_integer():
+        verdi = int(verdi)
+    if not isinstance(verdi, int) or isinstance(verdi, bool) or verdi < minst:
+        raise MalFeil(f"{hva} må være et heltall større enn eller lik {minst} (fikk {verdi!r}).")
+    return verdi
+
+
+def les_stykkliste(rader):
+    """Gjør radene i Stykkliste om til deler og koblinger.
+
+    rader er (Nivå, Varenummer, Beskrivelse, Antall, Type, Lagerbeholdning, Sikkerhetslager, Ledetid) ovenfra og
+    ned. Gir (deler, koblinger): deler er {varenummer: {...}} i den rekkefølgen de først står, der «nivå» er
+    lavnivåkoden (det dypeste nivået delen står på). koblinger er [(delen over, delen, antall)].
+    """
+    deler, koblinger, forekomster = {}, [], {}
+    over = []  # varenummeret på nærmeste rad over på hvert nivå
+    for n, rad in enumerate(rader, start=2):
+        niva_tekst, nr, beskrivelse, antall, typ, lager, ss, ledetid = rad
+        niva = NIVAER_TALL.get(str(niva_tekst).strip() if niva_tekst is not None else "")
+        if niva is None:
+            raise MalFeil(f"Rad {n}: ugyldig nivå {niva_tekst!r}. Bruk 0, .1 eller ..2.")
+        if n == 2 and niva != 0:
+            raise MalFeil("Rad 2: første rad må være nivå 0 (ferdigvaren).")
+        if n > 2 and niva == 0:
+            raise MalFeil(f"Rad {n}: det kan bare være ett nivå 0.")
+        if niva > len(over):
+            raise MalFeil(f"Rad {n}: nivå {niva_tekst} kan bare stå rett under nivå {'.' * (niva - 1)}{niva - 1}.")
+        if not nr or not beskrivelse:
+            raise MalFeil(f"Rad {n}: mangler varenummer eller beskrivelse.")
+        if typ not in TYPER:
+            raise MalFeil(f"Rad {n}: ugyldig type {typ!r}.")
+        if (niva == 0) != (typ == "Ferdigvare"):
+            raise MalFeil(f"Rad {n}: nivå 0 skal ha type Ferdigvare, og Ferdigvare brukes bare på nivå 0.")
+        if niva == 0 and antall is not None:
+            raise MalFeil("Rad 2: antall fylles ikke ut for nivå 0.")
+        if nr not in deler:
+            deler[nr] = {"beskrivelse": beskrivelse, "type": typ, "nivå": niva,
+                         "lager": heltall(lager, 0, f"Rad {n}: lagerbeholdning"),
+                         "ss": heltall(ss, 0, f"Rad {n}: sikkerhetslager"),
+                         "ledetid": heltall(ledetid, 0 if niva == 0 else 1, f"Rad {n}: ledetid")}
+            forekomster[nr] = 0
+        else:
+            d = deler[nr]
+            if (beskrivelse, typ) != (d["beskrivelse"], d["type"]):
+                raise MalFeil(f"Rad {n}: {nr} har annen beskrivelse eller type enn første gang.")
+            if (lager, ss, ledetid) != (None, None, None):
+                raise MalFeil(f"Rad {n}: lager, sikkerhetslager og ledetid for {nr} fylles bare ut første gang.")
+            d["nivå"] = max(d["nivå"], niva)
+        forekomster[nr] += 1
+        if niva > 0:
+            koblinger.append((over[niva - 1], nr, heltall(antall, 1, f"Rad {n}: antall")))
+        over = over[:niva] + [nr]
+    if not deler:
+        raise MalFeil("Stykklisten er tom.")
+    for forelder in dict.fromkeys(f for f, _, _ in koblinger):
+        if "Kjøpes inn" in deler[forelder]["type"]:
+            raise MalFeil(f"{forelder} har underdeler, men kjøpes inn.")
+        if forekomster[forelder] > 1:
+            raise MalFeil(f"{forelder} har underdeler og kan bare stå ett sted i stykklisten "
+                          f"(står {forekomster[forelder]} steder).")
+    return deler, koblinger
+
+
+def les_eksempel(fil):
+    """Leser et utfylt testeksempel slik appen skal: stykkliste, prognose og planlagte mottak."""
+    wb = load_workbook(fil)
+    rader = []
+    for rad in wb["Stykkliste"].iter_rows(min_row=2, max_col=8, values_only=True):
+        if rad[0] is None and rad[1] is None:
+            break
+        rader.append(rad)
+    deler, koblinger = les_stykkliste(rader)
+    prognose = []
+    for (verdi,) in wb[PROGNOSE].iter_rows(min_row=2, min_col=2, max_col=2, values_only=True):
+        if verdi is None:
+            break
+        prognose.append(heltall(verdi, 0, f"Prognostiserte behov uke {len(prognose) + 1}"))
+    if not MIN_UKER <= len(prognose) <= MAKS_UKER:
+        raise MalFeil(f"Horisonten må være {MIN_UKER}–{MAKS_UKER} sammenhengende uker (fikk {len(prognose)}).")
+    mottak = []
+    for nr, uke, antall in wb["Planlagte mottak"].iter_rows(min_row=2, max_col=3, values_only=True):
+        if (nr, uke, antall) == (None, None, None):
+            break
+        if nr not in deler:
+            raise MalFeil(f"Planlagt mottak: {nr!r} finnes ikke i Stykkliste.")
+        uke = heltall(uke, 1, f"Planlagt mottak for {nr}: uke")
+        if uke > len(prognose):
+            raise MalFeil(f"Planlagt mottak for {nr}: uke {uke} er utenfor horisonten.")
+        mottak.append((nr, uke, heltall(antall, 1, f"Planlagt mottak for {nr}: antall")))
+    return deler, koblinger, prognose, mottak
+
+
+# ---------- Beregning ----------
+
+def tall(x):
+    return f"({x})" if x < 0 else str(x)
+
+
+def beregn_del(nr, d, brutto, planlagt, logg=None, brutto_tekst=None):
+    """MRP for én del etter reglene i arket 'Regler'. Skriver utregningen uke for uke til logg hvis gitt."""
+    lager, ss, ledetid = d["lager"], d["ss"], d["ledetid"]
+    h = len(brutto)
+    videre = ("Leveranse til kunde blir forsinket." if d["nivå"] == 0
+              else "Leveransen til produksjonen av delen over blir forsinket.")
+    fra = "fra leverandør" if "Kjøpes inn" in d["type"] else "fra egen produksjon"
     forventet, netto, ordremottak, frigivelse = [], [], [], [0] * h
     eksepsjoner = []
     forfalte = []  # (indeks i eksepsjoner, forfalt antall, frigi_uke)
     if ledetid >= h:
-        eksepsjoner.append((_id, "–", "Ledetid overskrider horisont",
+        eksepsjoner.append((nr, "–", "Ledetid overskrider horisont",
                             f"Ledetid {ledetid} uker ≥ horisont {h} uker. "
                             "Ingen ny bestilling kan dekke behov innenfor horisonten."))
     forrige = lager
@@ -93,36 +249,51 @@ def beregn(mps, komp, mottak):
         nb = max(0, ss - disponibel)
         netto.append(nb)
         ordremottak.append(nb)
+        steg = []
         if nb > 0:
             frigi_uke = uke - ledetid
             if frigi_uke >= 1:
                 frigivelse[frigi_uke - 1] += nb
+                steg.append(f"Frigis i uke {uke} − {ledetid} = {frigi_uke}.")
             else:
                 frigivelse[0] += nb  # forfalt: må frigis straks
+                steg.append(f"Frigis i uke {uke} − {ledetid} = {frigi_uke}, før horisonten: forfalt, legges i uke 1.")
                 # Meldingen trenger total frigivelse i uke 1, som først er kjent etter løkken
                 forfalte.append((len(eksepsjoner), nb, frigi_uke))
                 if disponibel < 0:
-                    eksepsjoner.append((_id, uke, "Bestilling forsinket",
+                    eksepsjoner.append((nr, uke, "Bestilling forsinket",
                                         f"Lager blir {disponibel} i uke {uke}. Bestillingen på {{nb}} måtte vært "
-                                        f"frigitt i uke {frigi_uke}, før horisonten. {{forfalt}} "
-                                        "Leveranse til kunde blir forsinket."))
+                                        f"frigitt i uke {frigi_uke}, før horisonten. {{forfalt}} {videre}"))
                 else:
-                    eksepsjoner.append((_id, uke, "Bruk av sikkerhetslager",
+                    eksepsjoner.append((nr, uke, "Bruk av sikkerhetslager",
                                         f"Lager blir {disponibel} i uke {uke}, under sikkerhetslager {ss}, "
                                         f"før ny leveranse kan komme inn. Bestillingen på {{nb}} måtte vært "
                                         f"frigitt i uke {frigi_uke}. {{forfalt}}"))
             senere = [u for u in range(uke + 1, h + 1) if planlagt[u - 1] > 0]
             if senere:
-                eksepsjoner.append((_id, uke, "Mottak forsinket",
-                                    f"Nettobehov {nb} i uke {uke}, mens planlagt mottak ligger i uke {senere[0]}. "
-                                    f"Vurder å fremskynde mottaket."))
-        forrige = disponibel + nb
+                eksepsjoner.append((nr, uke, "Mottak forsinket",
+                                    f"Nettobehov {nb} i uke {uke}, mens planlagt mottak {fra} ligger i uke "
+                                    f"{senere[0]}. Vurder å fremskynde mottaket."))
+        ny = disponibel + nb
+        if logg is not None:
+            logg.append(("uke", f"Uke {uke}: " + (brutto_tekst[t] + " " if brutto_tekst else "")
+                         + f"Disponibel = {tall(forrige)} + {planlagt[t]} − {brutto[t]} = {disponibel}. "
+                         + f"Nettobehov = maks(0, {ss} − {tall(disponibel)}) = {nb}. "
+                         + (f"Planlagt ordremottak = {nb}. " if nb else "")
+                         + f"Forventet lager = {disponibel} + {nb} = {ny}. " + " ".join(steg)))
+        forrige = ny
         forventet.append(forrige)
     for i, antall, _ in forfalte:
         kid, uke, typ, melding = eksepsjoner[i]
         forfalt = (f"De {antall} er forfalt og tatt med i frigivelsen på {frigivelse[0]} i uke 1, "
                    f"men kommer tidligst i uke {1 + ledetid}.")
         eksepsjoner[i] = (kid, uke, typ, melding.format(nb=antall, forfalt=forfalt))
+    if logg is not None:
+        logg.append(("uke", "Planlagte ordrefrigivelser: " + ", ".join(
+            f"uke {u}: {v}" for u, v in enumerate(frigivelse, start=1) if v) + "." if any(frigivelse)
+                     else "Ingen planlagte ordrefrigivelser."))
+        for e in eksepsjoner:
+            logg.append(("eksepsjon", f"Eksepsjon, uke {e[1]}: {e[2]}. {e[3]}"))
     rader = {
         "Bruttobehov": brutto,
         "Planlagte mottak": planlagt,
@@ -132,6 +303,41 @@ def beregn(mps, komp, mottak):
         "Planlagte ordrefrigivelser": frigivelse,
     }
     return rader, eksepsjoner
+
+
+def beregn_flerniva(deler, koblinger, prognose, mottak, logg=None):
+    """MRP nivå for nivå. Delene regnes i rekkefølge etter lavnivåkode, så alle delene over er ferdige først.
+
+    Gir {varenummer: (rader, eksepsjoner)} i beregningsrekkefølge.
+    """
+    h = len(prognose)
+    resultat = {}
+    for nr in sorted(deler, key=lambda k: deler[k]["nivå"]):
+        d = deler[nr]
+        planlagt = [0] * h
+        for kid, uke, antall in mottak:
+            if kid == nr:
+                planlagt[uke - 1] += antall
+        if d["nivå"] == 0:
+            brutto = list(prognose)
+            brutto_tekst = [f"Bruttobehov = prognosen = {p}." for p in prognose]
+        else:
+            # Hvert sted delen står i stykklisten bidrar med frigivelsene til delen over × antall
+            kilder = [(f, a) for f, b, a in koblinger if b == nr]
+            frig = {f: resultat[f][0]["Planlagte ordrefrigivelser"] for f, _ in kilder}
+            brutto = [sum(frig[f][t] * a for f, a in kilder) for t in range(h)]
+            brutto_tekst = [f"Bruttobehov = " + " + ".join(f"{a} × {frig[f][t]} ({f})" for f, a in kilder)
+                            + (f" = {brutto[t]}." if len(kilder) > 1 or kilder[0][1] != 1 else ".")
+                            for t in range(h)]
+        if logg is not None:
+            kilde = ("prognosen" if d["nivå"] == 0 else
+                     " + ".join(f"frigivelsene til {f} × {a}" for f, a in kilder))
+            logg.append(("del", f"{nr} {d['beskrivelse']} – lavnivåkode {d['nivå']}, {d['type']}. Lager {d['lager']}, "
+                                f"SS {d['ss']}, L {d['ledetid']}. Bruttobehov fra {kilde}."
+                                + (f" Planlagte mottak: " + ", ".join(f"uke {u}: {v}" for u, v in
+                                   enumerate(planlagt, start=1) if v) + "." if any(planlagt) else "")))
+        resultat[nr] = beregn_del(nr, d, brutto, planlagt, logg, brutto_tekst)
+    return resultat
 
 
 # ---------- Hjelpefunksjoner for formatering ----------
@@ -519,53 +725,70 @@ def lag_mal(mps=None, stykkliste=None, mottak=None):
 
 # ---------- Fasit ----------
 
+STATUS = "Status: beregnet med skript, ikke kontrollert for hånd ennå."
+
 REGLER = [
-    "Beregningsregler (bekreftet av gruppen):",
+    "Beregningsregler (regel 4–9 og eksepsjonene er bekreftet av gruppen 2026-10-19. Regel 1–3 for flernivå BOM "
+    "og avklaringene nederst er lagt til 2026-10-23 og ikke bekreftet ennå):",
     "Notasjon: uke t = 1..H, lager før uke 1 = lagerbeholdning, SS = sikkerhetslager, L = ledetid.",
-    "1. Bruttobehov(t) = MPS(t) × antall per ferdigprodukt.",
-    "2. Disponibel(t) = forventet lager(t−1) + planlagte mottak(t) − bruttobehov(t).",
-    "3. Nettobehov(t) = maks(0, SS − disponibel(t)).",
-    "4. Lot-for-lot: planlagt ordremottak(t) = nettobehov(t).",
-    "5. Forventet lagerbeholdning(t) = disponibel(t) + planlagt ordremottak(t).",
-    "6. Planlagt ordrefrigivelse i uke t − L. Hvis t − L < 1 er frigivelsen forfalt og legges i uke 1 (må frigis straks), "
-    "sammen med eventuelle ordinære frigivelser for uke 1. Eksepsjonsmeldingen oppgir hvor mye av uke 1 som er forfalt.",
-    "7. Et forfalt planlagt ordremottak vises likevel i uke t, der behovet er, selv om det fysisk kommer tidligst i uke 1 + L. "
+    "1. Bruttobehov(t) for ferdigvaren (nivå 0) = prognostisert behov(t).",
+    "2. Bruttobehov(t) for en del lenger ned = planlagte ordrefrigivelser(t) for delen over × antall. Står delen "
+    "flere steder i stykklisten, summeres bidragene.",
+    "3. Delene regnes i rekkefølge etter lavnivåkode (det dypeste nivået delen står på), slik at alle delene over "
+    "er ferdig regnet før delen selv.",
+    "4. Disponibel(t) = forventet lager(t−1) + planlagte mottak(t) − bruttobehov(t).",
+    "5. Nettobehov(t) = maks(0, SS − disponibel(t)).",
+    "6. Lot-for-lot: planlagt ordremottak(t) = nettobehov(t).",
+    "7. Forventet lagerbeholdning(t) = disponibel(t) + planlagt ordremottak(t).",
+    "8. Planlagt ordrefrigivelse i uke t − L. Hvis t − L < 1 er frigivelsen forfalt og legges i uke 1 (må frigis straks), "
+    "sammen med eventuelle ordinære frigivelser for uke 1. Eksepsjonsmeldingen oppgir hvor mye av uke 1 som er forfalt. "
+    "En forfalt frigivelse blir dermed bruttobehov i uke 1 for delene under.",
+    "9. Et forfalt planlagt ordremottak vises likevel i uke t, der behovet er, selv om det fysisk kommer tidligst i uke 1 + L. "
     "Forventet lagerbeholdning forutsetter altså at behovet dekkes i tide. Avviket varsles med eksepsjonen "
     "«Bestilling forsinket» eller «Bruk av sikkerhetslager».",
     "",
     "Eksepsjoner:",
-    "• Bestilling forsinket: frigivelsen er forfalt (t − L < 1) og disponibel(t) < 0. Kunden får ikke levert i tide.",
+    "• Bestilling forsinket: frigivelsen er forfalt (t − L < 1) og disponibel(t) < 0. Leveransen videre blir forsinket: "
+    "til kunde for ferdigvaren, eller til produksjonen av delen over for deler lenger ned.",
     "• Bruk av sikkerhetslager: frigivelsen er forfalt (t − L < 1) og 0 ≤ disponibel(t) < SS. "
     "Lageret tærer på sikkerhetslageret før ny leveranse kan komme inn.",
-    "• Mottak forsinket: nettobehov(t) > 0 og det finnes et planlagt mottak i en senere uke. "
-    "Meldingen peker på første senere mottak, som bør fremskyndes.",
-    "• Ledetid overskrider horisont: L ≥ H. Gjelder komponenten (uke «–»), uavhengig av behov.",
-    "• En celle kan ha flere eksepsjoner. En komponent med minst én eksepsjon er kritisk.",
+    "• Mottak forsinket: nettobehov(t) > 0 og det finnes et planlagt mottak i en senere uke. Meldingen peker på første "
+    "senere mottak, som bør fremskyndes, og sier «fra leverandør» for deler som kjøpes inn og ellers «fra egen produksjon».",
+    "• Ledetid overskrider horisont: L ≥ H. Gjelder delen (uke «–»), uavhengig av behov.",
+    "• En celle kan ha flere eksepsjoner. En del med minst én eksepsjon er kritisk.",
     "",
-    "Status: verdiene er beregnet med skript og kontrollert for hånd (2026-10-19).",
+    "Avklaringer:",
+    "• En del med underdeler (f.eks. en delmontering) kan bare stå ett sted i stykklisten. Deler uten underdeler kan stå "
+    "flere steder, og behovet summeres.",
+    "• Antall er heltall ≥ 1, slik malen krever.",
+    "",
+    STATUS,
 ]
 
 
-def lag_fasit(produkt, mps, komponenter, mottak):
+def lag_fasit(tittel, deler, resultat, hensikt, logg=None):
     wb = Workbook()
-    h = len(mps)
+    h = len(next(iter(resultat.values()))[0]["Bruttobehov"])
 
     ws = wb.active
     ws.title = "Regler"
-    ws["A1"] = f"Fasit: testeksempel 01 – {produkt}"
+    ws["A1"] = f"Fasit: {tittel}"
     ws["A1"].font = FONT_TITTEL
     r = tekstblokk(ws, 3, REGLER)
     for rr in range(3, r):
         ws.merge_cells(start_row=rr, start_column=1, end_row=rr, end_column=8)
-        ws.row_dimensions[rr].height = 28 if len(str(ws.cell(rr, 1).value or "")) > 110 else 15
+        ws.row_dimensions[rr].height = 15 * (len(str(ws.cell(rr, 1).value or "")) // 110 + 1)
     r += 1
-    ws.cell(r, 1, "Hensikt med hver komponent i testeksempelet:").font = FONT_FET
-    hode(ws, r + 1, ["Varenummer", "Beskrivelse", "Hensikt"])
-    for i, k in enumerate(komponenter):
-        celle(ws, r + 2 + i, 1, k[0])
-        celle(ws, r + 2 + i, 2, k[1])
-        celle(ws, r + 2 + i, 3, k[6])
-        ws.merge_cells(start_row=r + 2 + i, start_column=3, end_row=r + 2 + i, end_column=8)
+    ws.cell(r, 1, "Hva hver del i testeksempelet skal teste:").font = FONT_FET
+    hode(ws, r + 1, ["Varenummer", "Beskrivelse", "Lavnivåkode", "Hensikt"])
+    for i, nr in enumerate(resultat):
+        rr = r + 2 + i
+        celle(ws, rr, 1, nr)
+        celle(ws, rr, 2, deler[nr]["beskrivelse"])
+        celle(ws, rr, 3, deler[nr]["nivå"]).alignment = Alignment(horizontal="center")
+        celle(ws, rr, 4, hensikt[nr]).alignment = Alignment(wrap_text=True, vertical="top")
+        ws.merge_cells(start_row=rr, start_column=4, end_row=rr, end_column=8)
+        ws.row_dimensions[rr].height = 15 * (len(hensikt[nr]) // 75 + 1)
     bredder(ws, {c: 14 for c in "ABCDEFGH"})
 
     ws_t = wb.create_sheet("Fasittabell")
@@ -574,18 +797,17 @@ def lag_fasit(produkt, mps, komponenter, mottak):
     hode(ws_e, 1, ["Varenummer", "Uke", "Eksepsjonstype", "Melding"])
 
     r, re_ = 2, 2
-    for k in komponenter:
-        rader, eks = beregn(mps, k, mottak)
+    for nr, (rader, eks) in resultat.items():
         varsel_uker = {e[1] for e in eks}
         kritisk = bool(eks)
         for navn, verdier in rader.items():
-            celle(ws_t, r, 1, k[0], FYLL_KRITISK if kritisk else None, fet=kritisk)
+            celle(ws_t, r, 1, nr, FYLL_KRITISK if kritisk else None, fet=kritisk)
             celle(ws_t, r, 2, navn)
             for t, v in enumerate(verdier):
                 fyll = FYLL_VARSEL if (t + 1) in varsel_uker and navn == "Nettobehov" else None
                 celle(ws_t, r, 3 + t, v, fyll).alignment = Alignment(horizontal="right")
             r += 1
-        r += 1  # tom rad mellom komponenter
+        r += 1  # tom rad mellom delene
         for e in eks:
             for i, v in enumerate(e):
                 celle(ws_e, re_, i + 1, v).alignment = Alignment(wrap_text=True, vertical="top")
@@ -596,21 +818,71 @@ def lag_fasit(produkt, mps, komponenter, mottak):
     ws_t.freeze_panes = "C2"
     bredder(ws_e, {"A": 14, "B": 6, "C": 30, "D": 90})
     ws_e.freeze_panes = "A2"
+
+    if logg is not None:
+        # Utregningen steg for steg, slik at fasiten kan regnes etter for hånd
+        ws_u = wb.create_sheet("Utregning")
+        ws_u["A1"] = f"Utregning steg for steg: {tittel}"
+        ws_u["A1"].font = FONT_TITTEL
+        r = tekstblokk(ws_u, 3, [
+            "Delene står i beregningsrekkefølge (lavnivåkode 0, 1, 2). Hver linje er én uke med reglene i arket "
+            "Regler. Tall i parentes er negative.",
+            STATUS,
+        ])
+        for stil, tekst in logg:
+            if stil == "del":
+                r += 1
+            c = ws_u.cell(r, 1, tekst)
+            c.font = FONT_FET if stil == "del" else (FONT_ROD if stil == "eksepsjon" else FONT)
+            c.alignment = Alignment(wrap_text=True, vertical="top")
+            ws_u.row_dimensions[r].height = 15 * (len(tekst) // 150 + 1)
+            r += 1
+        bredder(ws_u, {"A": 160})
     return wb
 
 
+def skriv_csv(resultat, prefiks):
+    """Fasiten som CSV for automatiske tester: <prefiks>-tabell.csv og <prefiks>-eksepsjoner.csv."""
+    prefiks.parent.mkdir(parents=True, exist_ok=True)
+    with open(f"{prefiks}-tabell.csv", "w", newline="", encoding="utf-8") as f:
+        w = csv.writer(f)
+        w.writerow(["varenummer", "rad", "uke", "verdi"])
+        for nr, (rader, _) in resultat.items():
+            for navn, verdier in rader.items():
+                for uke, v in enumerate(verdier, start=1):
+                    w.writerow([nr, navn, uke, v])
+    with open(f"{prefiks}-eksepsjoner.csv", "w", newline="", encoding="utf-8") as f:
+        w = csv.writer(f)
+        w.writerow(["varenummer", "uke", "type", "melding"])
+        for _, eks in resultat.values():
+            w.writerows(eks)
+
+
+def lag_eksempel(ut, nummer, produkt, prognose, stykkliste, mottak, hensikt, utregning=False):
+    """Lager testeksempelet i malens format, leser det tilbake slik appen skal, og lager fasiten av det."""
+    fil = ut / f"testeksempel-{nummer}.xlsx"
+    lag_mal(prognose, stykkliste, mottak).save(fil)
+    deler, koblinger, prognose_lest, mottak_lest = les_eksempel(fil)
+    logg = [] if utregning else None
+    resultat = beregn_flerniva(deler, koblinger, prognose_lest, mottak_lest, logg)
+    tittel = f"testeksempel {nummer} – {produkt}"
+    lag_fasit(tittel, deler, resultat, hensikt, logg).save(ut / f"testeksempel-{nummer}-fasit.xlsx")
+    skriv_csv(resultat, ut / "fasit" / f"testeksempel-{nummer}")
+    print(f"Testeksempel {nummer}: {len(deler)} deler, {len(prognose_lest)} uker")
+    for nr, (rader, eks) in resultat.items():
+        print(f"  {nr} {deler[nr]['beskrivelse']} (lavnivåkode {deler[nr]['nivå']})")
+        for navn, v in rader.items():
+            print(f"    {navn:28}", v)
+        for e in eks:
+            print("    !", e[1], e[2])
+
+
 if __name__ == "__main__":
-    lag_mal().save(UT / "COSI-MRP-mal.xlsx")
+    if len(sys.argv) < 3 or not {"--mal", "--alle"} & set(sys.argv[2:]):
+        sys.exit(__doc__)
+    UT = Path(sys.argv[1])
+    if "--mal" in sys.argv:
+        lag_mal().save(UT / "COSI-MRP-mal.xlsx")
     if "--alle" in sys.argv:
-        for k in KOMPONENTER:
-            rader, eks = beregn(MPS, k, MOTTAK)
-            print(k[0], k[6])
-            for navn, v in rader.items():
-                print(f"  {navn:28}", v)
-            for e in eks:
-                print("  !", e[1], e[2])
-        # Ferdigproduktet uten lager og ledetid gir samme behov på nivå .1 som prognosen ganget med antall
-        stykk = [("0", "100-001", PRODUKT, None, "Ferdigvare", 0, 0, 0)]
-        stykk += [(".1", k[0], k[1], k[2], KJOPT, k[3], k[4], k[5]) for k in KOMPONENTER]
-        lag_mal(MPS, stykk, MOTTAK).save(UT / "testeksempel-01.xlsx")
-        lag_fasit(PRODUKT, MPS, KOMPONENTER, MOTTAK).save(UT / "testeksempel-01-fasit.xlsx")
+        lag_eksempel(UT, "01", PRODUKT, MPS, STYKKLISTE_01, MOTTAK, HENSIKT_01)
+        lag_eksempel(UT, "02", PRODUKT_02, PROGNOSE_02, STYKKLISTE_02, MOTTAK_02, HENSIKT_02, utregning=True)

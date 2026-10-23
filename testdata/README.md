@@ -3,7 +3,7 @@
 Denne mappen samler Excel-malen og testeksemplene for COSI - MRP.
 
 - **Excel-mal:** den faste malen brukeren laster opp (prognostiserte behov/MPS, flernivå BOM, lagerstatus, planlagte mottak, ledetid og sikkerhetslager).
-- **Testeksempler med fasit:** fiktive datasett (5–10 komponenter, 8–12 uker) med manuelt utregnede fasittabeller per uke og komponent. Disse brukes som grunnlag for automatiske tester av beregningsmotoren og eksepsjonene.
+- **Testeksempler med fasit:** fiktive datasett (5–10 deler, 8–12 uker) i malens format, med fasittabeller per uke og del og forventede eksepsjoner. Fasitene finnes også som CSV, slik at automatiske tester av beregningsmotoren og eksepsjonene kan lese dem.
 
 Sensor kan bruke filene her for å prøve appen direkte etter README i roten av repoet.
 
@@ -12,9 +12,27 @@ Sensor kan bruke filene her for å prøve appen direkte etter README i roten av 
 | Fil | Innhold |
 |---|---|
 | `COSI-MRP-mal.xlsx` | Tom mal. Ark: Veiledning, Stykkliste, Prognostiserte behov, Planlagte mottak, Veien videre. Brukeren fyller kun ut gule celler. |
-| `testeksempel-01.xlsx` | Malen utfylt for en fiktiv kontorstolprodusent: 8 komponenter på ett nivå, 10 uker. Følger den eldre malen fra 2026-10-18 (Produkt- og Komponenter-ark, varenummer K01–K08) og må lages på nytt med `--alle` for å passe den nye malen. |
-| `testeksempel-01-fasit.xlsx` | Fasit: beregningsregler, fasittabell per uke og komponent, og forventede eksepsjoner. |
-| `lag_testdata.py` | Skriptet som lager filene. `uv run --with openpyxl python lag_testdata.py testdata` lager bare malen. Legg til `--alle` for også å lage testeksempel og fasit. |
+| `testeksempel-01.xlsx` | Malen utfylt for en fiktiv kontorstolprodusent: ferdigvaren 100-001 og 8 innkjøpte deler (300-001–300-008) på nivå .1, 10 uker. |
+| `testeksempel-01-fasit.xlsx` | Fasit: arkene Regler (beregningsregler og hva hver del tester), Fasittabell (per uke og del, også ferdigvaren) og Eksepsjoner. |
+| `testeksempel-02.xlsx` | Malen utfylt for en fiktiv kontorstolprodusent med stykkliste på 3 nivåer: ferdigvaren 100-001 og 7 deler, 10 uker. |
+| `testeksempel-02-fasit.xlsx` | Som fasiten for 01, pluss arket Utregning: hele beregningen steg for steg, del for del og uke for uke, slik at den kan regnes etter for hånd. |
+| `fasit/testeksempel-NN-tabell.csv` | Fasittabellen som CSV: `varenummer,rad,uke,verdi`. |
+| `fasit/testeksempel-NN-eksepsjoner.csv` | Eksepsjonene som CSV: `varenummer,uke,type,melding`. Uke er «–» for «Ledetid overskrider horisont». |
+| `lag_testdata.py` | Skriptet som lager filene, med lesing av utfylt mal (`les_eksempel`) og MRP-beregning nivå for nivå (`beregn_flerniva`). Se under. |
+| `tests/test_mrp.py` | Tester (pytest) av beregningen mot fasitene. |
+| `tests/data/testeksempel-01-fasit-2026-10-19-*.csv` | Tallene og eksepsjonene fra fasiten for testeksempel 01 fra 2026-10-19 (gammelt format, K01–K08 oversatt til 300-001–300-008). Brukes til å sjekke at det nye formatet gir de samme tallene. |
+
+## Slik lages filene og kjøres testene
+
+Kjør fra mappen `testdata/`:
+
+```
+uv run --with openpyxl python lag_testdata.py . --alle     # testeksempler, fasiter og CSV
+uv run --with openpyxl --with pytest pytest tests -v       # testene
+uv run --with openpyxl python lag_testdata.py . --mal      # bare hvis malen skal lages på nytt
+```
+
+`--alle` rører ikke `COSI-MRP-mal.xlsx`. Hvert testeksempel lages i malens format, leses tilbake fra xlsx-filen slik appen skal lese den, og fasiten regnes ut fra det som ble lest.
 
 ## Malens struktur
 
@@ -33,16 +51,48 @@ Sensor kan bruke filene her for å prøve appen direkte etter README i roten av 
 
 Radene som «kommer frem» er laget med betinget formatering og datavalidering, ikke makroer, slik at malen forblir en vanlig `.xlsx`. Alle rader finnes i filen fra start, men ser blanke ut til de åpnes, og det går ikke an å skrive i dem før da. Kolonnene til høyre for tabellene (Kontroll, lenke tilbake til veiledningen og de skjulte listekolonnene) er bare hjelpetekst og skal ikke leses inn av appen.
 
+## Beregningsregler i korte trekk
+
+Reglene står i arket *Regler* i fasitene.
+
+- Ferdigvaren (nivå 0) har prognosen som bruttobehov. For deler lenger ned er bruttobehovet planlagte ordrefrigivelser for delen over × antall. Står en del flere steder, summeres bidragene.
+- Delene regnes i rekkefølge etter lavnivåkode (det dypeste nivået delen står på).
+- Forfalte frigivelser legges i uke 1, og eksepsjonsmeldingen oppgir hvor mye av uke 1 som er forfalt. En forfalt frigivelse blir dermed bruttobehov i uke 1 for delene under. Forfalte ordremottak vises i uken behovet er, selv om de fysisk kommer senere.
+- Det finnes fire eksepsjoner:
+  - **Bestilling forsinket:** til kunde for ferdigvaren, til produksjonen av delen over ellers.
+  - **Bruk av sikkerhetslager.**
+  - **Mottak forsinket:** fra leverandør eller fra egen produksjon.
+  - **Ledetid overskrider horisont** (L ≥ H).
+- En del med underdeler kan bare stå ett sted i stykklisten. Antall er heltall ≥ 1.
+
 ## Testeksempel 01 – hva det dekker
 
-| Komponent | Tilfelle |
-|---|---|
-| K01 Sete, K02 Rygg | Normalforløp uten eksepsjoner |
-| K03 Hjul | Bestilling forsinket i uke 1 (behov i uke 1, lageret går under 0) |
-| K04 Armlene | Bruk av sikkerhetslager i uke 1 |
-| K05 Gassfjær | Mottak forsinket (behov i uke 3, planlagt mottak i uke 4) |
-| K06 Stolfot | Innkjøpstid = horisont (grensetilfelle) |
-| K07 Skruesett | Planlagt mottak som kommer i tide |
-| K08 Trekk | Sikkerhetslager 0 og frigivelse nøyaktig i uke 1 |
+Ferdigvaren 100-001 har lager, sikkerhetslager og ledetid 0. Frigivelsene blir derfor lik prognosen, og delene på nivå .1 får de samme tallene som i fasiten fra 2026-10-19. Testene sjekker dette.
 
-**Status:** kontrollert. Fasiten er beregnet med skriptet og kontrollert for hånd (2026-10-19). Beregningsreglene i arket *Regler* er bekreftet. Forfalte frigivelser legges i uke 1, og eksepsjonsmeldingen oppgir hvor mye av uke 1 som er forfalt. Forfalte ordremottak vises i uken behovet er, selv om de fysisk kommer senere.
+| Del | Tilfelle |
+|---|---|
+| 100-001 Kontorstol Basic | Ferdigvare som sender prognosen uendret videre (ingen eksepsjoner) |
+| 300-001 Sete, 300-002 Rygg | Normalforløp uten eksepsjoner |
+| 300-003 Hjul | Bestilling forsinket i uke 1 (behov i uke 1, lageret går under 0) |
+| 300-004 Armlene | Bruk av sikkerhetslager i uke 1 |
+| 300-005 Gassfjær | Mottak forsinket (behov i uke 3, planlagt mottak fra leverandør i uke 4) |
+| 300-006 Stolfot | Ledetid = horisont (grensetilfelle) |
+| 300-007 Skruesett | Planlagt mottak som kommer i tide |
+| 300-008 Trekk | Sikkerhetslager 0 og frigivelse nøyaktig i uke 1 |
+
+## Testeksempel 02 – hva det dekker
+
+Kontorstol Pro, 10 uker, stykkliste på 3 nivåer:
+
+| Nivå | Del | Tilfelle |
+|---|---|---|
+| 0 | 100-001 Kontorstol Pro (Ferdigvare) | Egen lagerbeholdning, sikkerhetslager og ledetid 1. Bestilling forsinket i uke 1 (til kunde). Den forfalte frigivelsen blir bruttobehov på nivå .1 i uke 1 |
+| .1 | 200-001 Sete (Delmontering) | Delmontering med deler under seg. Den forfalte frigivelsen fra ferdigvaren gir Bestilling forsinket i uke 1 (til produksjonen av delen over) |
+| ..2 | 300-001 Seteplate | Bruttobehov fra setets frigivelser, normalforløp |
+| ..2 | 300-002 Skruesett M6 | Står under både Sete (4 stk.) og Rygg (2 stk.). Behovet summeres |
+| .1 | 200-002 Rygg (Delmontering) | Planlagt mottak fra egen produksjon i uke 4, nettobehov i uke 3: Mottak forsinket |
+| ..2 | 300-003 Ryggtrekk (Råvare) | Bruk av sikkerhetslager i uke 2 |
+| .1 | 300-004 Hjul | Normalforløp, ingen falske varsler |
+| .1 | 300-005 Gassfjær | Ledetid 12 > horisont 10: Ledetid overskrider horisont, uten behov i horisonten |
+
+**Status for begge testeksemplene:** beregnet med skript, ikke kontrollert for hånd ennå. Beregningsreglene for ett nivå og de fire eksepsjonene ble bekreftet av gruppen 2026-10-19. Reglene for flernivå (bruttobehov fra delen over, summering og lavnivåkode) er nye og må bekreftes. Bruk arket Utregning i `testeksempel-02-fasit.xlsx` til kontrollen.
