@@ -9,6 +9,7 @@ from pathlib import Path
 
 from openpyxl import Workbook
 from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
+from openpyxl.workbook.defined_name import DefinedName
 from openpyxl.formatting.rule import FormulaRule
 from openpyxl.worksheet.datavalidation import DataValidation
 from openpyxl.worksheet.hyperlink import Hyperlink
@@ -28,8 +29,23 @@ FYLL_KRITISK = PatternFill("solid", fgColor="FCE4D6")
 TYNN = Side(style="thin", color="BFBFBF")
 RAMME = Border(left=TYNN, right=TYNN, top=TYNN, bottom=TYNN)
 
-KOMP_KOLONNER = ["Komponent-ID", "Navn", "Antall per ferdigprodukt",
-                 "Lagerbeholdning", "Sikkerhetslager", "Innkjøpstid (uker)"]
+STYKK_KOLONNER = ["Nivå", "Varenummer", "Beskrivelse", "Antall", "Type",
+                  "Lagerbeholdning", "Sikkerhetslager", "Ledetid (uker)"]
+NIVAER = ["0", ".1", "..2"]
+TYPER = ["Ferdigvare", "Delmontering", "Komponent (Kjøpes inn)", "Komponent (Produseres selv)",
+         "Råvare (Kjøpes inn)", "Råvare (Produseres selv)"]
+KJOPT = "Komponent (Kjøpes inn)"
+
+# Eksempelet i Veiledning: skruesettet brukes både i setet og i ryggen, og lager mm. står bare første gang
+EKSEMPEL_STYKKLISTE = [
+    ("0", "100-001", "Kontorstol Basic", None, "Ferdigvare", 10, 0, 1),
+    (".1", "200-001", "Sete", 1, "Delmontering", 40, 10, 1),
+    ("..2", "300-001", "Seteplate", 1, KJOPT, 50, 10, 2),
+    ("..2", "300-002", "Skruesett M6", 4, KJOPT, 150, 40, 2),
+    (".1", "200-002", "Rygg", 1, "Delmontering", 30, 5, 1),
+    ("..2", "300-002", "Skruesett M6", 2, KJOPT, None, None, None),
+    (".1", "300-003", "Hjul", 5, KJOPT, 80, 30, 1),
+]
 
 
 # ---------- Testeksempel 01: fiktiv kontorstolprodusent ----------
@@ -37,20 +53,21 @@ KOMP_KOLONNER = ["Komponent-ID", "Navn", "Antall per ferdigprodukt",
 PRODUKT = "Kontorstol Basic"
 MPS = [20, 25, 30, 20, 35, 30, 25, 40, 30, 20]  # 10 ukers horisont
 
-# (id, navn, antall per, lager, sikkerhetslager, innkjøpstid, hensikt)
+# (varenummer, beskrivelse, antall per ferdigprodukt, lager, sikkerhetslager, ledetid, hensikt)
+# Testeksempel 01 er enkeltnivå: alle komponentene er innkjøpt og sitter på nivå .1.
 KOMPONENTER = [
-    ("K01", "Sete", 1, 200, 20, 2, "Normalforløp: første behov kan bestilles i tide"),
-    ("K02", "Rygg", 1, 60, 10, 1, "Normalforløp med innkjøpstid 1 uke"),
-    ("K03", "Hjul", 5, 80, 30, 1, "Bestilling forsinket i uke 1 (lager går under 0)"),
-    ("K04", "Armlene", 2, 50, 20, 1, "Bruk av sikkerhetslager i uke 1 (lager mellom 0 og sikkerhetslager)"),
-    ("K05", "Gassfjær", 1, 75, 10, 2, "Mottak forsinket: behov i uke 3, planlagt mottak først i uke 4"),
-    ("K06", "Stolfot", 1, 400, 20, 10, "Innkjøpstid = horisont (grensetilfelle)"),
-    ("K07", "Skruesett", 4, 150, 40, 2, "Planlagt mottak i uke 2 kommer i tide (ingen eksepsjon)"),
-    ("K08", "Trekk", 1, 90, 0, 3, "Sikkerhetslager 0 og frigivelse nøyaktig i uke 1 (grensetilfelle)"),
+    ("300-001", "Sete", 1, 200, 20, 2, "Normalforløp: første behov kan bestilles i tide"),
+    ("300-002", "Rygg", 1, 60, 10, 1, "Normalforløp med ledetid 1 uke"),
+    ("300-003", "Hjul", 5, 80, 30, 1, "Bestilling forsinket i uke 1 (lager går under 0)"),
+    ("300-004", "Armlene", 2, 50, 20, 1, "Bruk av sikkerhetslager i uke 1 (lager mellom 0 og sikkerhetslager)"),
+    ("300-005", "Gassfjær", 1, 75, 10, 2, "Mottak forsinket: behov i uke 3, planlagt mottak først i uke 4"),
+    ("300-006", "Stolfot", 1, 400, 20, 10, "Ledetid = horisont (grensetilfelle)"),
+    ("300-007", "Skruesett", 4, 150, 40, 2, "Planlagt mottak i uke 2 kommer i tide (ingen eksepsjon)"),
+    ("300-008", "Trekk", 1, 90, 0, 3, "Sikkerhetslager 0 og frigivelse nøyaktig i uke 1 (grensetilfelle)"),
 ]
 
-# (komponent-id, uke, antall)
-MOTTAK = [("K05", 4, 100), ("K07", 2, 120)]
+# (varenummer, uke, antall)
+MOTTAK = [("300-005", 4, 100), ("300-007", 2, 120)]
 
 
 def beregn(mps, komp, mottak):
@@ -66,8 +83,8 @@ def beregn(mps, komp, mottak):
     eksepsjoner = []
     forfalte = []  # (indeks i eksepsjoner, forfalt antall, frigi_uke)
     if ledetid >= h:
-        eksepsjoner.append((_id, "–", "Innkjøpstid overskrider horisont",
-                            f"Innkjøpstid {ledetid} uker ≥ horisont {h} uker. "
+        eksepsjoner.append((_id, "–", "Ledetid overskrider horisont",
+                            f"Ledetid {ledetid} uker ≥ horisont {h} uker. "
                             "Ingen ny bestilling kan dekke behov innenfor horisonten."))
     forrige = lager
     for t in range(h):
@@ -163,16 +180,17 @@ def tekstblokk(ws, start, linjer, kol=1):
 PROGNOSE = "Prognostiserte behov"
 PROGNOSE_REF = f"'{PROGNOSE}'"
 PROGNOSE_START = 8    # uker som vises før brukeren har fylt ut noe
-KOMP_RADER = 500      # forhåndslagde komponentrader; antallet i Produkt styrer hvor mange som vises
 MOTTAK_RADER = 200
-ANTALL_KOMP = "Produkt!$B$2"
+STYKK_RADER = 1000    # én rad per del; samme del kan stå flere steder i stykklisten
 FONT_LENKE = Font(name="Arial", size=10, color="0563C1", underline="single")
 FONT_SKJULT = Font(name="Arial", size=10, color="FFFFFF")
 FONT_KOMMER = Font(name="Arial", size=10, italic=True, color="808080")
+FONT_ROD = Font(name="Arial", size=10, color="C00000")
 # Fyll i betinget formatering må ha både start- og sluttfarge for å vises riktig i Excel
 AKTIV_RAD = dict(fill=PatternFill("solid", start_color="FFF2CC", end_color="FFF2CC"),
                  border=RAMME, font=Font(color="000000"))
 UTFYLT = dict(fill=PatternFill("solid", start_color="FFFFFF", end_color="FFFFFF"), border=RAMME)
+GRAA = dict(fill=PatternFill("solid", start_color="E7E6E6", end_color="E7E6E6"), border=RAMME)
 
 
 def lenke(ws, ref, tekst, ark, celle_="A1"):
@@ -199,6 +217,11 @@ def vis_rad_naar(ws, omraade, formel, gul=True):
     """Rader i området blir gule med ramme når formelen er sann, ellers ser de blanke ut."""
     stil = AKTIV_RAD if gul else {k: v for k, v in AKTIV_RAD.items() if k != "fill"}
     ws.conditional_formatting.add(omraade, FormulaRule(formula=[formel], **stil))
+
+
+def graa_naar(ws, omraade, formel):
+    """Celler som skal stå tomme blir grå. Må legges til før vis_rad_naar, så den vinner."""
+    ws.conditional_formatting.add(omraade, FormulaRule(formula=[formel], stopIfTrue=True, **GRAA))
 
 
 def regel_validering(ws, omraade, formel, feil):
@@ -235,9 +258,33 @@ def overskrift(ws, rad, tekst):
     return rad + 1
 
 
-def lag_mal(produkt=None, mps=None, komponenter=None, mottak=None):
+def kontroll(n):
+    """Formel for Kontroll-kolonnen i Stykkliste: hva som mangler eller ikke stemmer i rad n."""
+    p, nx = n - 1, n + 1
+    forste = f"COUNTIF($B$1:$B{p},$B{n})=0"
+    deler = [
+        f'IF($A{n}="","Mangler nivå. ","")',
+        f'IF($B{n}="","Mangler varenummer. ","")',
+        f'IF($C{n}="","Mangler beskrivelse. ","")',
+        f'IF(AND($A{n}<>"",$A{n}&""<>"0",$D{n}=""),"Mangler antall. ","")',
+        f'IF($E{n}="","Mangler type. ","")',
+        f'IF(AND($B{n}<>"",{forste},COUNT($F{n}:$H{n})<3),"Mangler lager, sikkerhetslager eller ledetid. ","")',
+        f'IF(AND($B{n}<>"",NOT({forste}),COUNTIFS($B$1:$B{p},$B{n},$C$1:$C{p},$C{n})=0),'
+        f'"Annen beskrivelse enn første gang varenummeret står. ","")',
+        f'IF(AND($B{n}<>"",NOT({forste}),COUNTIFS($B$1:$B{p},$B{n},$E$1:$E{p},$E{n})=0),'
+        f'"Annen type enn første gang varenummeret står. ","")',
+        # Nivåene er 0, .1 og ..2, så lengre tekst betyr lavere nivå
+        f'IF(AND(ISNUMBER(SEARCH("Kjøpes inn",$E{n})),$A{nx}<>"",LEN($A{nx})>LEN($A{n})),'
+        f'"Har underkomponenter, men kjøpes inn. ","")',
+        f'IF(AND($A{n}&""="0",$E{n}<>"",$E{n}<>"Ferdigvare"),"Nivå 0 skal ha type Ferdigvare. ","")',
+        f'IF(AND($A{n}<>"",$A{n}&""<>"0",$E{n}="Ferdigvare"),"Ferdigvare brukes bare på nivå 0. ","")',
+    ]
+    return f'=IF(COUNTA($A{n}:$H{n})=0,"",' + "&".join(deler) + ")"
+
+
+def lag_mal(mps=None, stykkliste=None, mottak=None):
     wb = Workbook()
-    eksempel = produkt is not None
+    eksempel = mps is not None
 
     # Veiledning
     ws = wb.active
@@ -247,50 +294,132 @@ def lag_mal(produkt=None, mps=None, komponenter=None, mottak=None):
     ws["A1"].font = FONT_TITTEL
     r = overskrift(ws, 3, "Slik fyller du ut malen (klikk på arknavnet for å gå dit):")
     r = tekstrader(ws, r, [
-        ("Generelt", "Fyll kun ut gule celler. En celle blir hvit når den er fylt ut. Ikke endre arknavn, "
-                     "kolonneoverskrifter eller rekkefølge. Nye rader blir gule etter hvert som du fyller ut."),
-        (("Produkt", "Produkt"), "Navnet på ferdigproduktet (ett produkt per fil) og antall komponenter det "
-                                 "består av. Antallet bestemmer hvor mange rader som blir gule i arket Komponenter."),
+        ("Generelt", "Fyll kun ut gule celler. En celle blir hvit når den er fylt ut, og grå celler skal stå tomme. "
+                     "Ikke endre arknavn, kolonneoverskrifter eller rekkefølge. Nye rader blir gule etter hvert som "
+                     "du fyller ut."),
+        (("Stykkliste", "Stykkliste"), "Ferdigproduktet og alle delene det består av, med lagerstatus, "
+                                       "sikkerhetslager og ledetid. Én rad per del, ovenfra og ned. Nivå 0 er "
+                                       "ferdigproduktet (første rad, ett produkt per fil). Nivå .1 er "
+                                       "hovedkomponentene, f.eks. sete, rygg og armlene. Nivå ..2 er delene som "
+                                       "trengs for å bygge hovedkomponenten rett over. Neste rad kommer frem når "
+                                       "nivå og varenummer i raden over er fylt ut."),
         ((PROGNOSE, PROGNOSE), "Antall ferdigprodukter per uke. Fyll ut fra uke 1 og sammenhengende fremover. "
                                f"De {PROGNOSE_START} første ukene vises fra start, og neste uke kommer frem når "
                                f"alle ukene over er fylt ut. Horisonten er antall utfylte uker (8–{MAKS_UKER})."),
-        (("Komponenter", "Komponenter"), "Én rad per komponent. Dette er BOM (enkeltnivå), lagerstatus, "
-                                         "sikkerhetslager og innkjøpstid samlet. Trenger du flere rader, øker du "
-                                         "antall komponenter i arket Produkt."),
-        (("Planlagte mottak", "Planlagte mottak"), "Bestillinger som allerede er lagt hos leverandør. Én rad per "
-                                                   "mottak. Neste rad kommer frem når raden over er fylt ut. Arket "
+        (("Planlagte mottak", "Planlagte mottak"), "Bestillinger som allerede er lagt hos leverandør, og "
+                                                   "produksjonsordrer som allerede er startet. Én rad per "
+                                                   "mottak. Varenummer velges fra en liste som henter "
+                                                   "varenumrene fra Stykkliste og oppdateres av seg selv. "
+                                                   "Neste rad kommer frem når raden over er fylt ut. Arket "
                                                    "kan stå tomt hvis det ikke finnes planlagte mottak."),
         (("Veien videre", "Veien videre"), "Hva du gjør når malen er ferdig utfylt."),
-    ])
+    ], sluttkol=8)
+    r = overskrift(ws, r + 1, "Regler for nivåer i stykklisten:")
+    r = tekstrader(ws, r, [
+        (None, "Velg nivå fra nedtrekkslisten. Første rad må være 0, og det kan bare være ett nivå 0."),
+        (None, "Nivå .1 kan bare brukes når nivå 0 er lagt inn. Nivå ..2 kan bare brukes rett under en .1 "
+               "eller en annen ..2."),
+        (None, "Du kan gå opp igjen fra ..2 til .1 når delene til en hovedkomponent er lagt inn. En del på nivå "
+               "..2 tilhører nærmeste .1 over seg."),
+    ], sluttkol=8)
     r = overskrift(ws, r + 1, "Regler for verdier:")
     r = tekstrader(ws, r, [
+        (("Stykkliste", "Stykkliste"), "Samme del kan stå flere steder i stykklisten, f.eks. skruer. Den står "
+                                       "da med samme varenummer, beskrivelse og type hver gang."),
+        (("Stykkliste", "Stykkliste"), "Antall er hvor mange av delen som trengs per enhet av delen over, "
+                                       "heltall ≥ 1. Antall fylles ikke ut for nivå 0."),
+        (("Stykkliste", "Stykkliste"), "Type velges fra listen: " + ", ".join(TYPER) + ". Ferdigvare brukes "
+                                       "bare på nivå 0. En del med underkomponenter kan ikke være en type som "
+                                       "kjøpes inn."),
+        (("Stykkliste", "Stykkliste"), "Lagerbeholdning (ved starten av uke 1) og sikkerhetslager er heltall ≥ 0. "
+                                       "Ledetid er hele uker: innkjøpstid for deler som kjøpes inn og "
+                                       "produksjonstid for deler som produseres selv, heltall ≥ 1 (0 er lov for "
+                                       "ferdigvaren). De tre fylles "
+                                       "bare ut første gang et varenummer står i stykklisten."),
+        (("Stykkliste", "Stykkliste"), "Kolonnen «Kontroll» viser hva som mangler eller ikke stemmer i hver rad. "
+                                       "Den skal være tom når stykklisten er ferdig."),
         ((PROGNOSE, PROGNOSE), "Antall ferdigprodukter er heltall ≥ 0."),
-        (("Komponenter", "Komponenter"), "Komponent-ID må være unik. Antall per ferdigprodukt, lagerbeholdning "
-                                         "og sikkerhetslager er heltall ≥ 0. Innkjøpstid er hele uker, heltall ≥ 1."),
-        (("Komponenter", "Komponenter"), "Lagerbeholdning er beholdningen ved starten av uke 1."),
-        (("Planlagte mottak", "Planlagte mottak"), "Komponent-ID må finnes blant komponentene. Uke må ligge "
-                                                   "innenfor horisonten (1 til siste utfylte uke)."),
-    ])
-    r = overskrift(ws, r + 1, "Eksempel på en utfylt rad i Komponenter (grønn = kun eksempel, skal ikke kopieres inn):")
-    hode(ws, r, KOMP_KOLONNER)
-    for i, v in enumerate(["K01", "Sete", 1, 200, 20, 2]):
-        celle(ws, r + 1, i + 1, v, FYLL_EKSEMPEL)
+        (("Planlagte mottak", "Planlagte mottak"), "Varenummer velges fra listen. Uke må ligge innenfor "
+                                                   "horisonten (1 til siste utfylte uke)."),
+    ], sluttkol=8)
+    r = overskrift(ws, r + 1, "Forslag til varenummer:")
+    r = tekstrader(ws, r, [
+        (None, "Tre siffer for varegruppe, bindestrek og tre siffer løpenummer, f.eks. 300-002. 100 = "
+               "ferdigvarer, 200 = delmonteringer og deler som produseres selv, 300 = komponenter og råvarer "
+               "som kjøpes inn. Nummeret sier ikke noe om nivå, "
+               "slik at samme del kan brukes flere steder og flyttes i stykklisten uten å få nytt nummer. "
+               "Bindestreken gjør at Excel lagrer nummeret som tekst."),
+    ], sluttkol=8)
+    r = overskrift(ws, r + 1, "Eksempel (grønn = kun eksempel, skal ikke kopieres inn). "
+                              "Skruesettet brukes både i setet og i ryggen:")
+    hode(ws, r, STYKK_KOLONNER)
     ws.row_dimensions[r].height = 30
-    bredder(ws, {"A": 22, "B": 14, "C": 16, "D": 16, "E": 16, "F": 16, "G": 10})
+    for j, rad in enumerate(EKSEMPEL_STYKKLISTE):
+        for i, v in enumerate(rad):
+            celle(ws, r + 1 + j, i + 1, v, FYLL_EKSEMPEL)
+    bredder(ws, {"A": 22, "B": 14, "C": 18, "D": 10, "E": 26, "F": 16, "G": 16, "H": 12})
 
-    # Produkt
-    ws = wb.create_sheet("Produkt")
-    hode(ws, 1, ["Ferdigprodukt", "Antall komponenter"])
-    celle(ws, 2, 1, produkt, FYLL_INPUT)
-    celle(ws, 2, 2, len(komponenter) if eksempel else None, FYLL_INPUT)
-    dv = DataValidation(type="whole", operator="between", formula1="1", formula2=str(KOMP_RADER), allow_blank=True,
-                        showErrorMessage=True, errorTitle="Ugyldig verdi",
-                        error=f"Skriv et heltall fra 1 til {KOMP_RADER}.")
+    # Stykkliste: én rad per del ovenfra og ned. Neste rad vises når nivå og varenummer i raden over er
+    # fylt ut (overskriftsraden teller som utfylt, så rad 2 vises fra start)
+    ws = wb.create_sheet("Stykkliste")
+    ws.sheet_view.showGridLines = False
+    hode(ws, 1, STYKK_KOLONNER)
+    siste = STYKK_RADER + 1
+    for i in range(STYKK_RADER):
+        n = i + 2
+        rad = stykkliste[i] if eksempel and i < len(stykkliste) else [None] * len(STYKK_KOLONNER)
+        for k, v in enumerate(rad):
+            ws.cell(n, k + 1, v).font = FONT
+        ws.cell(n, 1).number_format = "@"  # ellers gjør Excel .1 om til tallet 0,1
+        ws.cell(n, 10, kontroll(n)).font = FONT_ROD
+        # Varenummerlisten til Planlagte mottak (skjulte kolonner): AA nummererer første forekomst av hvert
+        # varenummer, AB henter varenumrene i den rekkefølgen
+        ws.cell(n, 27, f'=IF(AND($B{n}<>"",COUNTIF($B$2:$B{n},$B{n})=1),MAX($AA$1:$AA{n - 1})+1,"")')
+        ws.cell(n, 28, f'=IFERROR(INDEX($B$2:$B${siste},MATCH(ROW()-1,$AA$2:$AA${siste},0)),"")')
+    forrige_fylt = "COUNTA($A1:$B1)=2"
+    forste = "COUNTIF($B$1:$B1,$B2)=0"
+    hvit_naar_utfylt(ws, f"A2:H{siste}")
+    graa_naar(ws, f"D2:D{siste}", '$A2&""="0"')
+    graa_naar(ws, f"F2:H{siste}", f'AND($B2<>"",NOT({forste}))')
+    vis_rad_naar(ws, f"A2:H{siste}", forrige_fylt)
+    # Nivålisten ligger i en skjult kolonne. Rad 2 kan bare være 0, raden rett under 0 bare .1
+    for n, niva in enumerate(NIVAER, start=2):
+        ws.cell(n, 26, niva).number_format = "@"
+    for kol in ["Z", "AA", "AB"]:
+        ws.column_dimensions[kol].hidden = True
+    # Navnet Varenumre er så langt som antall ulike varenumre, så listen vokser når stykklisten fylles ut
+    wb.defined_names["Varenumre"] = DefinedName(
+        "Varenumre", attr_text=f"OFFSET(Stykkliste!$AB$2,0,0,MAX(1,MAX(Stykkliste!$AA$2:$AA${siste})),1)")
+    dv = DataValidation(type="list", formula1='IF(ROW()=2,$Z$2,IF($A1&""="0",$Z$3,$Z$3:$Z$4))',
+                        allow_blank=True, showErrorMessage=True, errorTitle="Ugyldig nivå",
+                        error="Velg nivå fra listen. Første rad er nivå 0 (ferdigproduktet). Nivå .1 krever at "
+                              "nivå 0 er lagt inn, og ..2 må stå rett under en .1 eller en annen ..2.")
     ws.add_data_validation(dv)
-    dv.add("B2")
-    hvit_naar_utfylt(ws, "A2:B2")
-    bredder(ws, {"A": 30, "B": 20, "C": 4, "D": 18})
-    tilbake_lenke(ws, "D1")
+    dv.add(f"A2:A{siste}")
+    regel_validering(ws, f"B2:B{siste}", f'AND({forrige_fylt},$A2<>"")',
+                     "Fyll ut nivå og varenummer i raden over først, og velg nivå i denne raden.")
+    regel_validering(ws, f"C2:C{siste}", forrige_fylt, "Fyll ut nivå og varenummer i raden over først.")
+    regel_validering(ws, f"D2:D{siste}", f'AND({forrige_fylt},$A2&""<>"0",D2=INT(D2),D2>=1)',
+                     "Antall fylles ikke ut for nivå 0 (ferdigproduktet). Ellers må antall være et heltall "
+                     "større enn eller lik 1.")
+    dv = DataValidation(type="list", formula1='"' + ",".join(TYPER) + '"', allow_blank=True,
+                        showErrorMessage=True, errorTitle="Ugyldig type", error="Velg type fra listen.")
+    ws.add_data_validation(dv)
+    dv.add(f"E2:E{siste}")
+    regel_validering(ws, f"F2:G{siste}", f"AND({forrige_fylt},{forste},F2=INT(F2),F2>=0)",
+                     "Fylles bare ut første gang varenummeret står i stykklisten. Verdien må være et heltall "
+                     "større enn eller lik 0.")
+    regel_validering(ws, f"H2:H{siste}", f'AND({forrige_fylt},{forste},H2=INT(H2),H2>=IF($A2&""="0",0,1))',
+                     "Fylles bare ut første gang varenummeret står i stykklisten. Ledetid må være et heltall "
+                     "større enn eller lik 1 (0 er lov for ferdigproduktet).")
+    bredder(ws, {"A": 8, "B": 13, "C": 24, "D": 9, "E": 26, "F": 15, "G": 15, "H": 11, "I": 4, "J": 50,
+                 "K": 4, "L": 18})
+    ws.row_dimensions[1].height = 30
+    ws.freeze_panes = "A2"
+    ws["J1"] = "Kontroll"
+    ws["J1"].font = FONT_FET
+    ws["J1"].alignment = Alignment(vertical="center")
+    tilbake_lenke(ws, "L1")
 
     # Prognostiserte behov
     ws = wb.create_sheet(PROGNOSE)
@@ -320,40 +449,10 @@ def lag_mal(produkt=None, mps=None, komponenter=None, mottak=None):
     ws.freeze_panes = "A2"
     tilbake_lenke(ws, "D1")
 
-    # Komponenter: alle rader er forhåndslaget, og antallet i Produkt styrer hvor mange som vises
-    ws = wb.create_sheet("Komponenter")
-    ws.sheet_view.showGridLines = False
-    hode(ws, 1, KOMP_KOLONNER)
-    siste = KOMP_RADER + 1
-    for i in range(KOMP_RADER):
-        rad = komponenter[i][:6] if eksempel and i < len(komponenter) else [None] * 6
-        for k, v in enumerate(rad):
-            ws.cell(i + 2, k + 1, v).font = FONT
-    hvit_naar_utfylt(ws, f"A2:F{siste}")
-    vis_rad_naar(ws, f"A2:F{siste}", f"ROW()-1<={ANTALL_KOMP}")
-    utenfor = "Raden er utenfor antall komponenter i arket Produkt. Øk antallet der først."
-    regel_validering(ws, f"A2:A{siste}", f"AND(ROW()-1<={ANTALL_KOMP},COUNTIF($A$2:$A${siste},A2)=1)",
-                     utenfor + " Komponent-ID må også være unik.")
-    regel_validering(ws, f"B2:B{siste}", f"ROW()-1<={ANTALL_KOMP}", utenfor)
-    regel_validering(ws, f"C2:E{siste}", f"AND(ROW()-1<={ANTALL_KOMP},C2=INT(C2),C2>=0)",
-                     utenfor + " Verdien må være et heltall større enn eller lik 0.")
-    regel_validering(ws, f"F2:F{siste}", f"AND(ROW()-1<={ANTALL_KOMP},F2=INT(F2),F2>=1)",
-                     utenfor + " Innkjøpstid må være et heltall større enn eller lik 1.")
-    bredder(ws, {"A": 14, "B": 18, "C": 14, "D": 16, "E": 16, "F": 14, "G": 4, "H": 30, "I": 8})
-    ws.row_dimensions[1].height = 30
-    ws.freeze_panes = "A2"
-    tilbake_lenke(ws, "H1")
-    ws["H3"] = "Antall komponenter (fra Produkt):"
-    ws["H3"].font = FONT_FET
-    ws["I3"] = f"={ANTALL_KOMP}"
-    ws["I3"].font = FONT
-    ws["H4"] = f'=IF({ANTALL_KOMP}="","Fyll ut antall komponenter i arket Produkt først.","")'
-    ws["H4"].font = Font(name="Arial", size=10, color="C00000")
-
     # Planlagte mottak: neste rad vises når raden over er fylt ut (overskriftsraden teller som utfylt)
     ws = wb.create_sheet("Planlagte mottak")
     ws.sheet_view.showGridLines = False
-    hode(ws, 1, ["Komponent-ID", "Uke", "Antall"])
+    hode(ws, 1, ["Varenummer", "Uke", "Antall"])
     siste = MOTTAK_RADER + 1
     for i in range(MOTTAK_RADER):
         rad = mottak[i] if eksempel and i < len(mottak) else [None] * 3
@@ -366,9 +465,11 @@ def lag_mal(produkt=None, mps=None, komponenter=None, mottak=None):
     vis_rad_naar(ws, f"A3:C{siste}", "COUNTA($A2:$C2)=3")
     forrige_fylt = "COUNTA($A1:$C1)=3"
     horisont = f"COUNT({PROGNOSE_REF}!$B$2:$B${MAKS_UKER + 1})"
-    regel_validering(ws, f"A2:A{siste}",
-                     f"AND({forrige_fylt},COUNTIF(Komponenter!$A$2:$A${KOMP_RADER + 1},A2)>0)",
-                     "Fyll ut raden over først. Komponent-ID må finnes i arket Komponenter.")
+    dv = DataValidation(type="list", formula1="Varenumre", allow_blank=True, showErrorMessage=True,
+                        errorTitle="Ugyldig varenummer", error="Velg et varenummer fra listen. Listen viser "
+                                                               "varenumrene i arket Stykkliste.")
+    ws.add_data_validation(dv)
+    dv.add(f"A2:A{siste}")
     regel_validering(ws, f"B2:B{siste}", f"AND({forrige_fylt},B2=INT(B2),B2>=1,B2<={horisont})",
                      "Fyll ut raden over først. Uke må være et heltall fra 1 til siste utfylte uke "
                      f"i {PROGNOSE}.")
@@ -389,8 +490,8 @@ def lag_mal(produkt=None, mps=None, komponenter=None, mottak=None):
     c.font = FONT_KOMMER
     r = overskrift(ws, 5, "Steg for steg:")
     r = tekstrader(ws, r, [
-        ("1. Kontroller", "Se over at alle gule celler er fylt ut, at antall rader i Komponenter stemmer med "
-                          "antallet i Produkt, og at ukene i Prognostiserte behov er sammenhengende fra uke 1."),
+        ("1. Kontroller", "Se over at alle gule celler er fylt ut, at kolonnen Kontroll i Stykkliste er tom, og at "
+                          "ukene i Prognostiserte behov er sammenhengende fra uke 1."),
         ("2. Lagre", "Lagre filen som .xlsx. Filnavnet kan du velge selv, men arknavnene må ikke endres."),
         ("3. Last opp", "Last opp filen i COSI - MRP."),
         (None, "Kommer: lenke til appen og hvordan opplastingen gjøres."),
@@ -403,9 +504,10 @@ def lag_mal(produkt=None, mps=None, komponenter=None, mottak=None):
         (None, "Kommer: skisse av resultattabellen og forklaring av fremhevingene."),
         ("6. Håndter varsler", "Hvert varsel gjelder en uke og en komponent (eller hele komponenten):"),
         (None, "• Bruk av sikkerhetslager: lageret går under sikkerhetslageret før ny leveranse kan komme inn."),
-        (None, "• Bestilling forsinket: behovet kan ikke dekkes i tide, og leveransen til kunden blir forsinket."),
+        (None, "• Bestilling forsinket: behovet kan ikke dekkes i tide, og leveransen blir forsinket (til kunden "
+                "for ferdigproduktet, eller til produksjonen av delen over i stykklisten)."),
         (None, "• Mottak forsinket: et planlagt mottak kommer senere enn behovet og bør fremskyndes."),
-        (None, "• Innkjøpstid overskrider horisont: innkjøpstiden er like lang som eller lengre enn horisonten."),
+        (None, "• Ledetid overskrider horisont: ledetiden er like lang som eller lengre enn horisonten."),
         (None, "Kommer: anbefalte tiltak for hvert varsel."),
         ("7. Ved endringer", "Endres noe i planen, oppdaterer du malen og laster den opp på nytt. Appen viser da "
                              "hva som er nytt, endret eller fjernet sammenlignet med forrige kjøring."),
@@ -419,7 +521,7 @@ def lag_mal(produkt=None, mps=None, komponenter=None, mottak=None):
 
 REGLER = [
     "Beregningsregler (bekreftet av gruppen):",
-    "Notasjon: uke t = 1..H, lager før uke 1 = lagerbeholdning, SS = sikkerhetslager, L = innkjøpstid.",
+    "Notasjon: uke t = 1..H, lager før uke 1 = lagerbeholdning, SS = sikkerhetslager, L = ledetid.",
     "1. Bruttobehov(t) = MPS(t) × antall per ferdigprodukt.",
     "2. Disponibel(t) = forventet lager(t−1) + planlagte mottak(t) − bruttobehov(t).",
     "3. Nettobehov(t) = maks(0, SS − disponibel(t)).",
@@ -437,7 +539,7 @@ REGLER = [
     "Lageret tærer på sikkerhetslageret før ny leveranse kan komme inn.",
     "• Mottak forsinket: nettobehov(t) > 0 og det finnes et planlagt mottak i en senere uke. "
     "Meldingen peker på første senere mottak, som bør fremskyndes.",
-    "• Innkjøpstid overskrider horisont: L ≥ H. Gjelder komponenten (uke «–»), uavhengig av behov.",
+    "• Ledetid overskrider horisont: L ≥ H. Gjelder komponenten (uke «–»), uavhengig av behov.",
     "• En celle kan ha flere eksepsjoner. En komponent med minst én eksepsjon er kritisk.",
     "",
     "Status: verdiene er beregnet med skript og kontrollert for hånd (2026-10-19).",
@@ -458,7 +560,7 @@ def lag_fasit(produkt, mps, komponenter, mottak):
         ws.row_dimensions[rr].height = 28 if len(str(ws.cell(rr, 1).value or "")) > 110 else 15
     r += 1
     ws.cell(r, 1, "Hensikt med hver komponent i testeksempelet:").font = FONT_FET
-    hode(ws, r + 1, ["Komponent-ID", "Navn", "Hensikt"])
+    hode(ws, r + 1, ["Varenummer", "Beskrivelse", "Hensikt"])
     for i, k in enumerate(komponenter):
         celle(ws, r + 2 + i, 1, k[0])
         celle(ws, r + 2 + i, 2, k[1])
@@ -467,9 +569,9 @@ def lag_fasit(produkt, mps, komponenter, mottak):
     bredder(ws, {c: 14 for c in "ABCDEFGH"})
 
     ws_t = wb.create_sheet("Fasittabell")
-    hode(ws_t, 1, ["Komponent-ID", "Rad"] + [f"Uke {u}" for u in range(1, h + 1)])
+    hode(ws_t, 1, ["Varenummer", "Rad"] + [f"Uke {u}" for u in range(1, h + 1)])
     ws_e = wb.create_sheet("Eksepsjoner")
-    hode(ws_e, 1, ["Komponent-ID", "Uke", "Eksepsjonstype", "Melding"])
+    hode(ws_e, 1, ["Varenummer", "Uke", "Eksepsjonstype", "Melding"])
 
     r, re_ = 2, 2
     for k in komponenter:
@@ -507,5 +609,8 @@ if __name__ == "__main__":
                 print(f"  {navn:28}", v)
             for e in eks:
                 print("  !", e[1], e[2])
-        lag_mal(PRODUKT, MPS, KOMPONENTER, MOTTAK).save(UT / "testeksempel-01.xlsx")
+        # Ferdigproduktet uten lager og ledetid gir samme behov på nivå .1 som prognosen ganget med antall
+        stykk = [("0", "100-001", PRODUKT, None, "Ferdigvare", 0, 0, 0)]
+        stykk += [(".1", k[0], k[1], k[2], KJOPT, k[3], k[4], k[5]) for k in KOMPONENTER]
+        lag_mal(MPS, stykk, MOTTAK).save(UT / "testeksempel-01.xlsx")
         lag_fasit(PRODUKT, MPS, KOMPONENTER, MOTTAK).save(UT / "testeksempel-01-fasit.xlsx")
