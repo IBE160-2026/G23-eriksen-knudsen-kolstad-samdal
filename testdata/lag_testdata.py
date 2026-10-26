@@ -32,17 +32,17 @@ RAMME = Border(left=TYNN, right=TYNN, top=TYNN, bottom=TYNN)
 STYKK_KOLONNER = ["Nivå", "Varenummer", "Beskrivelse", "Antall", "Type",
                   "Lagerbeholdning", "Sikkerhetslager", "Ledetid (uker)"]
 NIVAER = ["0", ".1", "..2"]
-TYPER = ["Ferdigvare", "Delmontering", "Komponent (Kjøpes inn)", "Komponent (Produseres selv)",
-         "Råvare (Kjøpes inn)", "Råvare (Produseres selv)"]
+TYPER = ["Ferdigvare", "Komponent (Kjøpes inn)", "Komponent (Produseres selv)"]
 KJOPT = "Komponent (Kjøpes inn)"
+PROD = "Komponent (Produseres selv)"
 
 # Eksempelet i Veiledning: skruesettet brukes både i setet og i ryggen, og lager mm. står bare første gang
 EKSEMPEL_STYKKLISTE = [
     ("0", "100-001", "Kontorstol Basic", None, "Ferdigvare", 10, 0, 1),
-    (".1", "200-001", "Sete", 1, "Delmontering", 40, 10, 1),
+    (".1", "200-001", "Sete", 1, PROD, 40, 10, 1),
     ("..2", "300-001", "Seteplate", 1, KJOPT, 50, 10, 2),
     ("..2", "300-002", "Skruesett M6", 4, KJOPT, 150, 40, 2),
-    (".1", "200-002", "Rygg", 1, "Delmontering", 30, 5, 1),
+    (".1", "200-002", "Rygg", 1, PROD, 30, 5, 1),
     ("..2", "300-002", "Skruesett M6", 2, KJOPT, None, None, None),
     (".1", "300-003", "Hjul", 5, KJOPT, 80, 30, 1),
 ]
@@ -177,7 +177,7 @@ def tekstblokk(ws, start, linjer, kol=1):
 
 # ---------- Malen (inndatafilen brukeren laster opp) ----------
 
-PROGNOSE = "Prognostiserte behov"
+PROGNOSE = "MPS"
 PROGNOSE_REF = f"'{PROGNOSE}'"
 PROGNOSE_START = 8    # uker som vises før brukeren har fylt ut noe
 MOTTAK_RADER = 200
@@ -262,12 +262,24 @@ def kontroll(n):
     """Formel for Kontroll-kolonnen i Stykkliste: hva som mangler eller ikke stemmer i rad n."""
     p, nx = n - 1, n + 1
     forste = f"COUNTIF($B$1:$B{p},$B{n})=0"
+    typer = "{" + ",".join(f'"{t}"' for t in TYPER) + "}"
+    if n == 2:
+        nivaregel = [f'IF(AND($A{n}<>"",$A{n}&""<>"0"),"Første rad må være nivå 0. ","")']
+    else:
+        nivaregel = [
+            f'IF($A{n}&""="0","Bare første rad kan være nivå 0. ","")',
+            f'IF(AND($A{n}&""="..2",$A{p}&""<>".1",$A{p}&""<>"..2"),"Nivå ..2 må stå rett under .1 eller ..2. ","")',
+        ]
     deler = [
         f'IF($A{n}="","Mangler nivå. ","")',
+        # Innlimte verdier omgår nedtrekkslistene, så verdiene kontrolleres også her
+        f'IF(AND($A{n}<>"",ISNA(MATCH($A{n}&"",$Z$2:$Z$4,0))),"Ugyldig nivå, velg 0, .1 eller ..2. ","")',
+        *nivaregel,
         f'IF($B{n}="","Mangler varenummer. ","")',
         f'IF($C{n}="","Mangler beskrivelse. ","")',
         f'IF(AND($A{n}<>"",$A{n}&""<>"0",$D{n}=""),"Mangler antall. ","")',
         f'IF($E{n}="","Mangler type. ","")',
+        f'IF(AND($E{n}<>"",ISNA(MATCH($E{n},{typer},0))),"Ugyldig type, velg fra listen. ","")',
         f'IF(AND($B{n}<>"",{forste},COUNT($F{n}:$H{n})<3),"Mangler lager, sikkerhetslager eller ledetid. ","")',
         f'IF(AND($B{n}<>"",NOT({forste}),COUNTIFS($B$1:$B{p},$B{n},$C$1:$C{p},$C{n})=0),'
         f'"Annen beskrivelse enn første gang varenummeret står. ","")',
@@ -321,6 +333,13 @@ def lag_mal(mps=None, stykkliste=None, mottak=None):
                "eller en annen ..2."),
         (None, "Du kan gå opp igjen fra ..2 til .1 når delene til en hovedkomponent er lagt inn. En del på nivå "
                "..2 tilhører nærmeste .1 over seg."),
+        (None, "Kolonnen «Kontroll» sier fra hvis en rad bryter reglene over."),
+    ], sluttkol=8)
+    r = overskrift(ws, r + 1, "Regler for nedtrekkslister:")
+    r = tekstrader(ws, r, [
+        (None, "Ikke lim inn data i celler med nedtrekksliste: Nivå og Type i Stykkliste og Varenummer i "
+               "Planlagte mottak. Innliming fjerner listen og kontrollen av verdien i cellen. Velg verdien fra "
+               "listen eller skriv den inn. Har du limt inn ved et uhell, angrer du med Ctrl+Z."),
     ], sluttkol=8)
     r = overskrift(ws, r + 1, "Regler for verdier:")
     r = tekstrader(ws, r, [
@@ -336,8 +355,9 @@ def lag_mal(mps=None, stykkliste=None, mottak=None):
                                        "produksjonstid for deler som produseres selv, heltall ≥ 1 (0 er lov for "
                                        "ferdigvaren). De tre fylles "
                                        "bare ut første gang et varenummer står i stykklisten."),
-        (("Stykkliste", "Stykkliste"), "Kolonnen «Kontroll» viser hva som mangler eller ikke stemmer i hver rad. "
-                                       "Den skal være tom når stykklisten er ferdig."),
+        (("Stykkliste", "Stykkliste"), "Kolonnen «Kontroll» viser hva som mangler eller ikke stemmer i hver rad, "
+                                       "bl.a. brudd på reglene for nivåer og verdier som ikke finnes i "
+                                       "nedtrekkslistene. Den skal være tom når stykklisten er ferdig."),
         ((PROGNOSE, PROGNOSE), "Antall ferdigprodukter er heltall ≥ 0."),
         (("Planlagte mottak", "Planlagte mottak"), "Varenummer velges fra listen. Uke må ligge innenfor "
                                                    "horisonten (1 til siste utfylte uke)."),
@@ -345,8 +365,7 @@ def lag_mal(mps=None, stykkliste=None, mottak=None):
     r = overskrift(ws, r + 1, "Forslag til varenummer:")
     r = tekstrader(ws, r, [
         (None, "Tre siffer for varegruppe, bindestrek og tre siffer løpenummer, f.eks. 300-002. 100 = "
-               "ferdigvarer, 200 = delmonteringer og deler som produseres selv, 300 = komponenter og råvarer "
-               "som kjøpes inn. Nummeret sier ikke noe om nivå, "
+               "ferdigvarer, 200 = komponenter som produseres selv, 300 = komponenter som kjøpes inn. Nummeret sier ikke noe om nivå, "
                "slik at samme del kan brukes flere steder og flyttes i stykklisten uten å få nytt nummer. "
                "Bindestreken gjør at Excel lagrer nummeret som tekst."),
     ], sluttkol=8)
@@ -421,7 +440,7 @@ def lag_mal(mps=None, stykkliste=None, mottak=None):
     ws["J1"].alignment = Alignment(vertical="center")
     tilbake_lenke(ws, "L1")
 
-    # Prognostiserte behov
+    # MPS
     ws = wb.create_sheet(PROGNOSE)
     ws.sheet_view.showGridLines = False
     hode(ws, 1, ["Uke", "Antall ferdigprodukter"])
@@ -491,7 +510,7 @@ def lag_mal(mps=None, stykkliste=None, mottak=None):
     r = overskrift(ws, 5, "Steg for steg:")
     r = tekstrader(ws, r, [
         ("1. Kontroller", "Se over at alle gule celler er fylt ut, at kolonnen Kontroll i Stykkliste er tom, og at "
-                          "ukene i Prognostiserte behov er sammenhengende fra uke 1."),
+                          "ukene i MPS er sammenhengende fra uke 1."),
         ("2. Lagre", "Lagre filen som .xlsx. Filnavnet kan du velge selv, men arknavnene må ikke endres."),
         ("3. Last opp", "Last opp filen i COSI - MRP."),
         (None, "Kommer: lenke til appen og hvordan opplastingen gjøres."),

@@ -12,7 +12,7 @@ Bakgrunn og tekniske innspill fra PRD-arbeidet som hører hjemme i arkitekturen 
 ## Innspill til arkitekturen
 
 - **Lokal lagring av siste kjøring (FR-19):** Uten innlogging og serverlagring er nettleserens lokale lagring (for eksempel `localStorage` eller IndexedDB) det naturlige stedet. Arkitekturen bør velge og begrunne. En kjøring med 500 komponenter og 12 uker er liten nok for begge.
-- **Beregning skilt fra resten (NFR-1):** Beregningen bør være en ren funksjon med inndata (ferdigprodukt, prognostiserte behov, komponenter, planlagte mottak) og utdata (resultattabell, eksepsjoner). Excel-lesing, lagring og visning kaller den. Da kan testene bruke fasiten direkte.
+- **Beregning skilt fra resten (NFR-1):** Beregningen bør være en ren funksjon med inndata (ferdigprodukt, MPS, komponenter, planlagte mottak) og utdata (resultattabell, eksepsjoner). Excel-lesing, lagring og visning kaller den. Da kan testene bruke fasiten direkte.
 - **Samme beregning for fasit og app:** `testdata/lag_testdata.py` inneholder en referanseberegning (`beregn`). Appen bør ikke importere skriptet. Testene skal sammenligne med fasitfilene, som er kontrollert for hånd, ikke med skriptet.
 - **Valideringsreglene (FR-3)** er de samme som datavalideringen i `lag_testdata.py` (`lag_mal`). Endres malen, må begge oppdateres.
 - **Eksport (FR-22):** Et Excel-bibliotek for skriving trengs. Det kan være det samme som brukes til lesing.

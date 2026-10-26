@@ -52,18 +52,18 @@ Første versjon dekker ett ferdigprodukt med enkeltnivå BOM. Målet er at prose
 
 ## 3. Ordliste
 
-- **Excel-mal** – Den faste filen `COSI-MRP-mal.xlsx` som brukeren fyller ut og laster opp. Ark: Veiledning, Produkt, Prognostiserte behov, Komponenter, Planlagte mottak, Veien videre.
+- **Excel-mal** – Den faste filen `COSI-MRP-mal.xlsx` som brukeren fyller ut og laster opp. Ark: Veiledning, Produkt, MPS, Komponenter, Planlagte mottak, Veien videre.
 - **Ferdigprodukt** – Det ene produktet planen gjelder for. Har et navn og et oppgitt antall komponenter.
 - **Komponent** – En del i ferdigproduktet. Har Komponent-ID, navn, antall per ferdigprodukt, lagerbeholdning, sikkerhetslager og innkjøpstid. Ett ferdigprodukt har 1–500 komponenter.
 - **BOM (stykkliste)** – Listen over komponenter med antall per ferdigprodukt. I v1 har den bare ett nivå.
-- **Prognostiserte behov (MPS)** – Antall ferdigprodukter som trengs per uke. Kalles «Prognostiserte behov» i Excel-malen.
-- **Horisont (H)** – Antall uker som er fylt ut sammenhengende fra uke 1 i prognostiserte behov. Gyldig mellom 8 og 12.
+- **MPS (hovedplan)** – Antall ferdigprodukter som trengs per uke. Arket heter «MPS» i Excel-malen.
+- **Horisont (H)** – Antall uker som er fylt ut sammenhengende fra uke 1 i MPS. Gyldig mellom 8 og 12.
 - **Uke (t)** – Én periode i horisonten, nummerert 1 til H.
 - **Lagerbeholdning** – Antall på lager før uke 1.
 - **Sikkerhetslager (SS)** – Den laveste lagerbeholdningen planen skal holde.
 - **Innkjøpstid (L)** – Antall uker fra en bestilling frigis til den mottas. Minst 1.
 - **Planlagt mottak** – Et mottak som allerede er bestilt og kommer i en bestemt uke. Oppgis i Excel-malen.
-- **Bruttobehov** – Behovet for en komponent i en uke: prognostiserte behov × antall per ferdigprodukt.
+- **Bruttobehov** – Behovet for en komponent i en uke: MPS × antall per ferdigprodukt.
 - **Disponibel beholdning** – Forventet lagerbeholdning fra uken før + planlagte mottak − bruttobehov. Regnes før nye ordrer.
 - **Nettobehov** – Det som mangler for å holde sikkerhetslageret: maks(0, SS − disponibel beholdning).
 - **Bestillingsregel** – Regelen som gjør nettobehov om til bestilt mengde. I v1 lot-for-lot, med fast partistørrelse som utvidelse.
@@ -98,7 +98,7 @@ Brukeren kan velge og laste opp én `.xlsx`-fil fra sin egen maskin. Gjelder UJ-
 
 #### FR-2: Kontroller malens struktur
 
-Appen kontrollerer at filen har arkene Produkt, Prognostiserte behov, Komponenter og Planlagte mottak, med kolonneoverskriftene fra Excel-malen. Gjelder UJ-3.
+Appen kontrollerer at filen har arkene Produkt, MPS, Komponenter og Planlagte mottak, med kolonneoverskriftene fra Excel-malen. Gjelder UJ-3.
 
 **Konsekvenser (testbare):**
 - Mangler et ark eller en overskrift, blir det en valideringsfeil som nevner arket og hva som mangler.
@@ -112,7 +112,7 @@ Appen kontrollerer hver verdi etter disse reglene. Gjelder UJ-3.
 |---|---|---|
 | Produkt | Ferdigprodukt (A2) | Må være fylt ut |
 | Produkt | Antall komponenter (B2) | Heltall fra 1 til 500 |
-| Prognostiserte behov | Antall per uke | Heltall ≥ 0. Horisonten er antall sammenhengende utfylte uker fra uke 1 og må være 8–12. Er en uke fylt ut etter et hull, er det en feil. |
+| MPS | Antall per uke | Heltall ≥ 0. Horisonten er antall sammenhengende utfylte uker fra uke 1 og må være 8–12. Er en uke fylt ut etter et hull, er det en feil. |
 | Komponenter | Komponent-ID | Fylt ut og unik |
 | Komponenter | Navn | Fylt ut |
 | Komponenter | Antall per ferdigprodukt, Lagerbeholdning, Sikkerhetslager | Heltall ≥ 0 |
@@ -141,7 +141,7 @@ Er det minst én valideringsfeil, vises alle feilene i én liste og ingen beregn
 
 #### FR-5: Beregn bruttobehov
 
-For hver komponent og uke beregner appen bruttobehov(t) = prognostiserte behov(t) × antall per ferdigprodukt.
+For hver komponent og uke beregner appen bruttobehov(t) = MPS(t) × antall per ferdigprodukt.
 
 **Konsekvenser (testbare):**
 - Bruttobehov for K03 Hjul i testeksempel 01 er 100, 125, 150, 100, 175, 150, 125, 200, 150, 100.
