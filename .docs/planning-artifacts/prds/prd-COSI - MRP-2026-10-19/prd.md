@@ -2,7 +2,7 @@
 title: COSI - MRP PRD
 status: draft
 created: 2026-10-19
-updated: 2026-10-19
+updated: 2026-10-26
 ---
 
 # PRD: COSI - MRP
@@ -11,17 +11,19 @@ updated: 2026-10-19
 
 Denne PRD-en beskriver hva første versjon av COSI - MRP skal gjøre. Den er skrevet for gruppen G23 i IBE160, for sensor og for de neste stegene i BMAD (arkitektur, epics og stories). Den bygger på product brief (`.docs/planning-artifacts/briefs/brief-COSI - MRP-2026-09-13/brief.md`), faglærers tilbakemelding (`tilbakemelding-product-brief.md` i samme mappe) og testdataene i `testdata/`. Den gjentar ikke innholdet i dem.
 
-Begrepene i §3 Ordliste brukes likt i hele dokumentet. Funksjonene står i §4, med funksjonskrav (FR-1 til FR-27) under hver funksjon. Kravene har faste nummer, så epics, stories og tester kan vise til dem. Antagelser er merket `[ASSUMPTION]` der de står og samlet i §10. Tekniske valg og bakgrunn står i `addendum.md` i denne mappen.
+Begrepene i §3 Ordliste brukes likt i hele dokumentet. Funksjonene står i §4, med funksjonskrav (FR-1 til FR-28) under hver funksjon. Kravene har faste nummer, så epics, stories og tester kan vise til dem. Antagelser er merket `[ASSUMPTION]` der de står og samlet i §10. Tekniske valg og bakgrunn står i `addendum.md` i denne mappen.
 
 **Status:** Utkast laget på rask vei 2026-10-19. Alt som var tilgjengelig da, regnes som bestemt. Gruppen går gjennom utkastet på et felles møte og kan endre det.
 
+**Oppdatert 2026-10-26:** Flernivå BOM er med i v1, slik briefen sier fra 2026-10-22. Excel-malen er bygd om: arkene Produkt og Komponenter er erstattet av arket Stykkliste, arket med ukebehov heter MPS, og «innkjøpstid» heter nå «ledetid».
+
 ## 1. Visjon
 
-I små produksjonsbedrifter er MRP-planleggingen ofte et Excel-ark som bare én person forstår. Logikken for innkjøpstid, sikkerhetslager og bestillinger ligger skjult i formler. Er personen borte, stopper planleggingen, eller den gjøres feil.
+I små produksjonsbedrifter er MRP-planleggingen ofte et Excel-ark som bare én person forstår. Logikken for ledetid, sikkerhetslager og bestillinger ligger skjult i formler. Er personen borte, stopper planleggingen, eller den gjøres feil.
 
 COSI - MRP er en nettbasert app som legger hele MRP-prosessen inn i verktøyet. Planleggeren fyller ut en fast Excel-mal og laster den opp. Appen sjekker dataene, beregner nettobehov og bestillingsforslag for hver uke og komponent, og varsler om avvik. Alt vises i én oversiktlig tabell. Hver tall har en forklaring av hvordan det er regnet ut, så en ny planlegger kan forstå planen uten å kunne formlene.
 
-Første versjon dekker ett ferdigprodukt med enkeltnivå BOM. Målet er at prosessen er korrekt, kan etterprøves og er lett å forstå. Bredden kommer senere: flernivå BOM, flere produkter, flere språk og flere bedrifter.
+Første versjon dekker ett ferdigprodukt med flernivå BOM (stykkliste) på inntil tre nivåer. Behovet brytes ned nivå for nivå, fra ferdigproduktet via hovedkomponentene til delene de bygges av. Målet er at prosessen er korrekt, kan etterprøves og er lett å forstå. Bredden kommer senere: flere produkter, flere språk og flere bedrifter.
 
 ## 2. Målbruker
 
@@ -35,35 +37,41 @@ Første versjon dekker ett ferdigprodukt med enkeltnivå BOM. Målet er at prose
 
 ### 2.2 Ikke-brukere (v1)
 
-- Bedrifter med flernivå stykklister eller flere ferdigprodukter som skal planlegges samlet.
+- Bedrifter med flere ferdigprodukter som skal planlegges samlet, eller stykklister med mer enn tre nivåer.
 - Brukere som trenger et fullt ERP-system med produksjon, økonomi og ordrehåndtering.
 - Flere brukere som skal samarbeide om samme plan samtidig.
 
 ### 2.3 Viktige brukerreiser
 
 - **UJ-1. Kari lager ukens bestillingsplan.**
-  Kari er innkjøper i en liten møbelprodusent og har overtatt planleggingen etter en kollega som har sluttet. Mandag morgen fyller hun ut Excel-malen med ukens prognose, lagerbeholdning og planlagte mottak. Hun åpner COSI - MRP i nettleseren og laster opp filen. Appen sjekker filen og viser resultattabellen. Øverst ser hun at to komponenter er merket kritiske. Hun klikker på den røde cellen for hjul i uke 1 og leser: «Lager blir -20 i uke 1. Bestillingen på 50 måtte vært frigitt i uke 0 …». Hun bestiller hjul samme dag, ringer leverandøren av gassfjær for å få mottaket fremskyndet, og eksporterer resultatet til Excel for å ha det lagret. **Unntak:** Hvis hun lurer på hvorfor nettobehovet er 50, åpner hun forklaringen på raden og ser hvordan det er regnet.
+  Kari er innkjøper i en liten møbelprodusent og har overtatt planleggingen etter en kollega som har sluttet. Mandag morgen fyller hun ut Excel-malen med ukens MPS, lagerbeholdning og planlagte mottak. Stykklisten for stolen ligger allerede i filen fra forrige uke. Hun åpner COSI - MRP i nettleseren og laster opp filen. Appen sjekker filen og viser resultattabellen. Øverst ser hun at to komponenter er merket kritiske. Hun klikker på den røde cellen for hjul i uke 1 og leser: «Lager blir -20 i uke 1. Bestillingen på 50 måtte vært frigitt i uke 0 …». Hun bestiller hjul samme dag, ringer leverandøren av gassfjær for å få mottaket fremskyndet, og eksporterer resultatet til Excel for å ha det lagret. **Unntak:** Hvis hun lurer på hvorfor nettobehovet er 50, åpner hun forklaringen på raden og ser hvordan det er regnet.
 
 - **UJ-2. Kari ser hva en endret prognose betyr.**
-  Onsdag får Kari beskjed om at salget venter 15 flere stoler i uke 5. Hun endrer prognosen i Excel-filen og laster den opp på nytt. Appen husker mandagens kjøring og viser en før/etter-sammenligning. Hun ser hvilke bestillingsforslag som er nye, endret eller fjernet, og at det er kommet et nytt varsel for armlene. Hun justerer bestillingen uten å regne noe selv. **Unntak:** Hvis hun vil starte helt på nytt med et annet datasett, velger hun å se bort fra forrige kjøring, og da vises ingen sammenligning.
+  Onsdag får Kari beskjed om at salget venter 15 flere stoler i uke 5. Hun endrer MPS i Excel-filen og laster den opp på nytt. Appen husker mandagens kjøring og viser en før/etter-sammenligning. Hun ser hvilke bestillingsforslag som er nye, endret eller fjernet, og at det er kommet et nytt varsel for armlene. Hun justerer bestillingen uten å regne noe selv. **Unntak:** Hvis hun vil starte helt på nytt med et annet datasett, velger hun å se bort fra forrige kjøring, og da vises ingen sammenligning.
 
 - **UJ-3. Kari retter feil i filen.**
-  Kari laster opp en fil der hun har glemt sikkerhetslageret for én komponent og skrevet «ca. 40» i et antall. Appen gjør ingen beregning. Den viser en samlet liste: «Komponenter, rad 5, Sikkerhetslager: mangler verdi» og «Planlagte mottak, rad 3, Antall: må være et heltall». Hun retter begge feilene i Excel, laster opp filen igjen og kommer videre til resultattabellen (UJ-1).
+  Kari laster opp en fil der hun har glemt sikkerhetslageret for én komponent og skrevet «ca. 40» i et antall. Appen gjør ingen beregning. Den viser en samlet liste: «Stykkliste, rad 5, Sikkerhetslager: mangler verdi» og «Planlagte mottak, rad 3, Antall: må være et heltall». Hun retter begge feilene i Excel, laster opp filen igjen og kommer videre til resultattabellen (UJ-1).
 
 ## 3. Ordliste
 
-- **Excel-mal** – Den faste filen `COSI-MRP-mal.xlsx` som brukeren fyller ut og laster opp. Ark: Veiledning, Produkt, MPS, Komponenter, Planlagte mottak, Veien videre.
-- **Ferdigprodukt** – Det ene produktet planen gjelder for. Har et navn og et oppgitt antall komponenter.
-- **Komponent** – En del i ferdigproduktet. Har Komponent-ID, navn, antall per ferdigprodukt, lagerbeholdning, sikkerhetslager og innkjøpstid. Ett ferdigprodukt har 1–500 komponenter.
-- **BOM (stykkliste)** – Listen over komponenter med antall per ferdigprodukt. I v1 har den bare ett nivå.
+- **Excel-mal** – Den faste filen `COSI-MRP-mal.xlsx` som brukeren fyller ut og laster opp. Ark: Veiledning, Stykkliste, MPS, Planlagte mottak, Veien videre.
+- **BOM (stykkliste)** – Ferdigproduktet og alle delene det består av, én rad per del ovenfra og ned, i arket Stykkliste. Kolonner: Nivå, Varenummer, Beskrivelse, Antall, Type, Lagerbeholdning, Sikkerhetslager og Ledetid (uker). Inntil 1000 rader.
+- **Nivå** – Hvor i stykklisten en del står: 0 (ferdigproduktet), .1 (hovedkomponentene) eller ..2 (delene som trengs for å bygge hovedkomponenten rett over). Første rad er alltid 0, og det finnes bare én rad med nivå 0. Nivå ..2 står rett under en .1 eller en annen ..2.
+- **Overordnet del** – Delen en rad hører til: nærmeste rad over med ett nivå høyere. For nivå .1 er det ferdigproduktet.
+- **Varenummer** – Delens identitet. Samme varenummer betyr samme del. Malen foreslår varegruppe-løpenummer (100-xxx ferdigvare, 200-xxx produseres selv, 300-xxx kjøpes inn), men appen krever ikke et bestemt format.
+- **Ferdigprodukt** – Det ene produktet planen gjelder for, på nivå 0 med type Ferdigvare.
+- **Komponent** – En del på nivå .1 eller ..2. Har varenummer, beskrivelse, antall per enhet av overordnet del, type, lagerbeholdning, sikkerhetslager og ledetid.
+- **Type** – Ferdigvare, Komponent (Kjøpes inn) eller Komponent (Produseres selv). Ferdigvare brukes bare på nivå 0. En del som kjøpes inn, kan ikke ha underkomponenter.
+- **Felles del** – En del som står flere steder i stykklisten, for eksempel skruer som brukes både i setet og i ryggen. Den har samme varenummer, beskrivelse og type hver gang. Lagerbeholdning, sikkerhetslager og ledetid står bare første gang.
+- **Lavnivåkode** – Det laveste nivået (største nivåtall) en del står på i stykklisten. En felles del beregnes én gang, på sin lavnivåkode, etter at alle overordnede deler er beregnet.
 - **MPS (hovedplan)** – Antall ferdigprodukter som trengs per uke. Arket heter «MPS» i Excel-malen.
 - **Horisont (H)** – Antall uker som er fylt ut sammenhengende fra uke 1 i MPS. Gyldig mellom 8 og 12.
 - **Uke (t)** – Én periode i horisonten, nummerert 1 til H.
 - **Lagerbeholdning** – Antall på lager før uke 1.
 - **Sikkerhetslager (SS)** – Den laveste lagerbeholdningen planen skal holde.
-- **Innkjøpstid (L)** – Antall uker fra en bestilling frigis til den mottas. Minst 1.
-- **Planlagt mottak** – Et mottak som allerede er bestilt og kommer i en bestemt uke. Oppgis i Excel-malen.
-- **Bruttobehov** – Behovet for en komponent i en uke: MPS × antall per ferdigprodukt.
+- **Ledetid (L)** – Antall uker fra en ordre frigis til den mottas: innkjøpstid for deler som kjøpes inn, produksjonstid for deler som produseres selv. Minst 1 for komponenter. 0 er lov for ferdigproduktet.
+- **Planlagt mottak** – Et innkjøp som allerede er bestilt, eller en produksjonsordre som allerede er startet, og som kommer i en bestemt uke. Oppgis i Excel-malen.
+- **Bruttobehov** – Behovet for en del i en uke. For ferdigproduktet er det MPS. For en komponent er det summen av planlagte ordrefrigivelser for hver overordnet del × antall per enhet.
 - **Disponibel beholdning** – Forventet lagerbeholdning fra uken før + planlagte mottak − bruttobehov. Regnes før nye ordrer.
 - **Nettobehov** – Det som mangler for å holde sikkerhetslageret: maks(0, SS − disponibel beholdning).
 - **Bestillingsregel** – Regelen som gjør nettobehov om til bestilt mengde. I v1 lot-for-lot, med fast partistørrelse som utvidelse.
@@ -73,11 +81,12 @@ Første versjon dekker ett ferdigprodukt med enkeltnivå BOM. Målet er at prose
 - **Planlagt ordrefrigivelse** – Uken og mengden en foreslått bestilling må frigis: uke t − L.
 - **Forfalt frigivelse** – En planlagt ordrefrigivelse der t − L < 1. Den legges i uke 1.
 - **Forventet lagerbeholdning** – Disponibel beholdning + planlagt ordremottak.
-- **Bestillingsforslag** – En planlagt ordrefrigivelse med komponent, uke og mengde. Det er dette brukeren handler på.
-- **Eksepsjon** – Et varsel om avvik for en komponent, enten i en bestemt uke eller for hele komponenten. Det er fire eksepsjonstyper (§4.3).
-- **Kritisk komponent** – En komponent med minst én eksepsjon.
+- **Bestillingsforslag** – En planlagt ordrefrigivelse med del, uke og mengde. Det er dette brukeren handler på. For deler som kjøpes inn er det et innkjøp, for deler som produseres selv en produksjonsordre.
+- **Eksepsjon** – Et varsel om avvik for en del, enten i en bestemt uke eller for hele delen. Det er fire eksepsjonstyper (§4.3).
+- **Kritisk komponent** – En del med minst én eksepsjon. Gjelder alle nivåer, også ferdigproduktet.
 - **Kjøring** – Én beregning fra én opplastet Excel-mal. Gir én resultattabell.
-- **Resultattabell** – Visningen av en kjøring: radene bruttobehov, planlagte mottak, forventet lagerbeholdning, nettobehov, planlagte ordremottak og planlagte ordrefrigivelser, per uke og komponent, med eksepsjonene markert.
+- **Resultattabell** – Visningen av en kjøring: radene bruttobehov, planlagte mottak, forventet lagerbeholdning, nettobehov, planlagte ordremottak og planlagte ordrefrigivelser, per uke og del, med eksepsjonene markert.
+- **Kontroll-kolonnen** – Hjelpekolonnen til høyre i arket Stykkliste i Excel-malen. Den viser hva som mangler eller ikke stemmer i hver rad, mens brukeren fyller ut. Appen leser den ikke inn.
 - **Før/etter-sammenligning** – Visningen av forskjellene i bestillingsforslag og eksepsjoner mellom forrige kjøring og den nye.
 - **Valideringsfeil** – En feil i den opplastede filen som hindrer beregningen. Har ark, rad eller celle og årsak.
 - **Fasit** – Den manuelt kontrollerte forventede resultattabellen og eksepsjonslisten for et testeksempel (`testdata/testeksempel-01-fasit.xlsx`).
@@ -86,7 +95,7 @@ Første versjon dekker ett ferdigprodukt med enkeltnivå BOM. Målet er at prose
 
 ### 4.1 Opplasting og validering av Excel-malen
 
-**Beskrivelse:** Brukeren laster opp en utfylt Excel-mal. Før noe beregnes, sjekker appen at filen følger malen og at alle verdier er gyldige. Finnes det valideringsfeil, gjøres ingen beregning, og alle feilene vises samlet, så brukeren kan rette alt på én gang. Reglene er de samme som datavalideringen i Excel-malen. Appen sjekker dem likevel selv, fordi brukeren kan ha limt inn verdier eller brukt et annet regneark som ikke håndhever valideringen. Gjelder UJ-1 og UJ-3.
+**Beskrivelse:** Brukeren laster opp en utfylt Excel-mal. Før noe beregnes, sjekker appen at filen følger malen og at alle verdier er gyldige. Finnes det valideringsfeil, gjøres ingen beregning, og alle feilene vises samlet, så brukeren kan rette alt på én gang. Reglene er de samme som datavalideringen og Kontroll-kolonnen i Excel-malen. Appen sjekker dem likevel selv. Malen ber brukeren om ikke å lime inn i celler med nedtrekksliste (Nivå, Type og Varenummer i Planlagte mottak), men Excel kan ikke hindre det uten makroer, og innliming fjerner både listen og valideringen i cellen. Brukeren kan også ha brukt et annet regneark som ikke håndhever valideringen. Gjelder UJ-1 og UJ-3.
 
 #### FR-1: Last opp Excel-mal
 
@@ -98,11 +107,12 @@ Brukeren kan velge og laste opp én `.xlsx`-fil fra sin egen maskin. Gjelder UJ-
 
 #### FR-2: Kontroller malens struktur
 
-Appen kontrollerer at filen har arkene Produkt, MPS, Komponenter og Planlagte mottak, med kolonneoverskriftene fra Excel-malen. Gjelder UJ-3.
+Appen kontrollerer at filen har arkene Stykkliste, MPS og Planlagte mottak, med kolonneoverskriftene fra Excel-malen. Gjelder UJ-3.
 
 **Konsekvenser (testbare):**
 - Mangler et ark eller en overskrift, blir det en valideringsfeil som nevner arket og hva som mangler.
-- Arkene Veiledning og Veien videre, og hjelpetekstene til høyre for tabellene, leses ikke inn og påvirker ikke valideringen.
+- Arkene Veiledning og Veien videre, Kontroll-kolonnen og de andre hjelpekolonnene til høyre for tabellene (lenker og skjulte lister) leses ikke inn og påvirker ikke valideringen.
+- En fil laget etter den gamle malen (med arkene Produkt og Komponenter) gir en valideringsfeil om at arket Stykkliste mangler.
 
 #### FR-3: Kontroller verdiene
 
@@ -110,22 +120,25 @@ Appen kontrollerer hver verdi etter disse reglene. Gjelder UJ-3.
 
 | Ark | Felt | Regel |
 |---|---|---|
-| Produkt | Ferdigprodukt (A2) | Må være fylt ut |
-| Produkt | Antall komponenter (B2) | Heltall fra 1 til 500 |
+| Stykkliste | Rader | Fra rad 2 og sammenhengende nedover, inntil 1000 rader. Minst én rad med nivå .1. |
+| Stykkliste | Nivå | 0, .1 eller ..2. Første rad er 0, og ingen andre rader er 0. Nivå ..2 står rett under .1 eller ..2. |
+| Stykkliste | Varenummer | Fylt ut. En del kan ikke stå under seg selv (samme varenummer som en overordnet del). |
+| Stykkliste | Beskrivelse | Fylt ut. Lik for alle rader med samme varenummer. |
+| Stykkliste | Antall | Tom for nivå 0. Ellers heltall ≥ 1 (antall per enhet av overordnet del). |
+| Stykkliste | Type | Ferdigvare, Komponent (Kjøpes inn) eller Komponent (Produseres selv). Ferdigvare på nivå 0 og bare der. Lik for alle rader med samme varenummer. En del som kjøpes inn, har ingen rader under seg på lavere nivå. |
+| Stykkliste | Lagerbeholdning, Sikkerhetslager | Heltall ≥ 0. Fylt ut første gang varenummeret står, og tom de neste gangene. |
+| Stykkliste | Ledetid (uker) | Heltall ≥ 1 (≥ 0 for nivå 0). Fylt ut første gang varenummeret står, og tom de neste gangene. |
 | MPS | Antall per uke | Heltall ≥ 0. Horisonten er antall sammenhengende utfylte uker fra uke 1 og må være 8–12. Er en uke fylt ut etter et hull, er det en feil. |
-| Komponenter | Komponent-ID | Fylt ut og unik |
-| Komponenter | Navn | Fylt ut |
-| Komponenter | Antall per ferdigprodukt, Lagerbeholdning, Sikkerhetslager | Heltall ≥ 0 |
-| Komponenter | Innkjøpstid (uker) | Heltall ≥ 1 |
-| Komponenter | Antall rader | Lik antall komponenter i Produkt |
-| Planlagte mottak | Komponent-ID | Finnes i Komponenter |
+| Planlagte mottak | Varenummer | Finnes i Stykkliste |
 | Planlagte mottak | Uke | Heltall fra 1 til H |
 | Planlagte mottak | Antall | Heltall ≥ 1 |
 
 **Konsekvenser (testbare):**
 - Hver regel i tabellen har minst ett testtilfelle som gir nøyaktig én valideringsfeil.
+- En verdi limt inn i en celle med nedtrekksliste, for eksempel nivå «3» eller typen «Delmontering», gir en valideringsfeil selv om Excel ikke stoppet den.
 - Et tomt ark for planlagte mottak er gyldig.
-- En komponent med lagerbeholdning 0 eller sikkerhetslager 0 er gyldig.
+- En del med lagerbeholdning 0 eller sikkerhetslager 0 er gyldig.
+- Et varenummer som står flere steder med samme beskrivelse og type, og med lager, sikkerhetslager og ledetid bare første gang, er gyldig.
 
 #### FR-4: Vis alle valideringsfeil samlet
 
@@ -137,22 +150,33 @@ Er det minst én valideringsfeil, vises alle feilene i én liste og ingen beregn
 
 ### 4.2 MRP-beregning
 
-**Beskrivelse:** Appen beregner en MRP-tabell for hver komponent over hele horisonten med reglene som er bekreftet i fasiten (`testdata/testeksempel-01-fasit.xlsx`, arket Regler). Beregningen er standard MRP for enkeltnivå BOM med lot-for-lot. Gjelder UJ-1.
+**Beskrivelse:** Appen beregner én MRP-tabell for hvert varenummer over hele horisonten, også for ferdigproduktet. Beregningen er standard MRP for flernivå BOM med lot-for-lot. Den gjøres nivå for nivå ovenfra og ned: planlagte ordrefrigivelser for en del, ganget med antall per enhet, blir bruttobehov for delene rett under. Reglene per del (FR-6–FR-8) er de som er bekreftet i fasiten (`testdata/testeksempel-01-fasit.xlsx`, arket Regler). Gjelder UJ-1.
 
 #### FR-5: Beregn bruttobehov
 
-For hver komponent og uke beregner appen bruttobehov(t) = MPS(t) × antall per ferdigprodukt.
+For ferdigproduktet (nivå 0) er bruttobehov(t) = MPS(t). For en komponent er bruttobehov(t) summen, over alle rader der varenummeret står, av planlagt ordrefrigivelse(t) for den overordnede delen × antall på raden.
 
 **Konsekvenser (testbare):**
-- Bruttobehov for K03 Hjul i testeksempel 01 er 100, 125, 150, 100, 175, 150, 125, 200, 150, 100.
+- Med lagerbeholdning, sikkerhetslager og ledetid 0 for ferdigproduktet er frigivelsene for ferdigproduktet lik MPS. Da er bruttobehovet for 300-003 Hjul (antall 5) i testeksempel 01 100, 125, 150, 100, 175, 150, 125, 200, 150, 100.
+- Har ferdigproduktet ledetid 1, er bruttobehovet for delene på nivå .1 forskjøvet én uke tidligere enn MPS.
+- En del på nivå ..2 får bruttobehov fra frigivelsene til delen på nivå .1 rett over, ikke fra MPS.
+
+#### FR-28: Beregn felles deler én gang
+
+En del som står flere steder i stykklisten, beregnes én gang, med samlet bruttobehov fra alle overordnede deler (FR-5). Den beregnes på sin lavnivåkode, etter at alle delene den står under er beregnet. Lagerbeholdning, sikkerhetslager og ledetid hentes fra første rad med varenummeret. Planlagte mottak for varenummeret gjelder den samlede tabellen.
+
+**Konsekvenser (testbare):**
+- Skruesett M6 brukt 4 per sete og 2 per rygg får bruttobehov(t) = 4 × frigivelse sete(t) + 2 × frigivelse rygg(t), i én tabell.
+- En del som står både på nivå .1 og ..2, beregnes etter alle delene på nivå .1, med behov fra begge.
+- Lageret til en felles del brukes bare én gang, ikke én gang per forekomst.
 
 #### FR-6: Beregn disponibel beholdning og nettobehov
 
-For hver uke beregner appen disponibel(t) = forventet lagerbeholdning(t−1) + planlagte mottak(t) − bruttobehov(t). Forventet lagerbeholdning før uke 1 er lagerbeholdningen. Deretter beregnes nettobehov(t) = maks(0, SS − disponibel(t)).
+For hver del og uke beregner appen disponibel(t) = forventet lagerbeholdning(t−1) + planlagte mottak(t) − bruttobehov(t). Forventet lagerbeholdning før uke 1 er lagerbeholdningen. Deretter beregnes nettobehov(t) = maks(0, SS − disponibel(t)).
 
 **Konsekvenser (testbare):**
 - Nettobehov for alle komponenter i testeksempel 01 er identisk med fasiten.
-- Flere planlagte mottak for samme komponent og uke legges sammen.
+- Flere planlagte mottak for samme varenummer og uke legges sammen.
 
 #### FR-7: Beregn planlagte ordremottak og forventet lagerbeholdning
 
@@ -164,12 +188,13 @@ Med lot-for-lot er planlagt ordremottak(t) = nettobehov(t), og forventet lagerbe
 
 #### FR-8: Beregn planlagte ordrefrigivelser
 
-Hvert planlagt ordremottak i uke t gir en planlagt ordrefrigivelse i uke t − L. Er t − L < 1, er frigivelsen forfalt og legges i uke 1 sammen med vanlige frigivelser for uke 1. Behov innenfor horisonten som skulle vært frigitt før uke 1, tas med. Frigivelser for behov etter horisonten tas ikke med.
+Hvert planlagt ordremottak i uke t gir en planlagt ordrefrigivelse i uke t − L. Er t − L < 1, er frigivelsen forfalt og legges i uke 1 sammen med vanlige frigivelser for uke 1. Behov innenfor horisonten som skulle vært frigitt før uke 1, tas med. Frigivelser for behov etter horisonten tas ikke med. Er L = 0 (bare lov for ferdigproduktet), frigis ordren i samme uke som den mottas.
 
 **Konsekvenser (testbare):**
-- K03 Hjul (L = 1) i testeksempel 01 har frigivelse 175 i uke 1 (50 forfalt + 125 vanlig).
-- K08 Trekk (L = 3) med første nettobehov i uke 4 har frigivelse i uke 1 som ikke er forfalt, og den gir ingen eksepsjon.
+- 300-003 Hjul (L = 1) i testeksempel 01 har frigivelse 175 i uke 1 (50 forfalt + 125 vanlig).
+- 300-008 Trekk (L = 3) med første nettobehov i uke 4 har frigivelse i uke 1 som ikke er forfalt, og den gir ingen eksepsjon.
 - Alle planlagte ordrefrigivelser i testeksempel 01 er identisk med fasiten.
+- En forfalt frigivelse for en del på nivå .1 gir bruttobehov i uke 1 for delene under den.
 
 **Funksjonsspesifikke NFR-er:**
 - Beregningen er deterministisk. Samme fil gir alltid samme resultat.
@@ -177,46 +202,46 @@ Hvert planlagt ordremottak i uke t gir en planlagt ordrefrigivelse i uke t − L
 
 ### 4.3 Eksepsjoner
 
-**Beskrivelse:** Appen finner fire eksepsjonstyper under beregningen. Hver eksepsjon har komponent, uke (eller «–» for hele komponenten), type og en kort melding på norsk som forklarer hva som er galt og hva brukeren kan gjøre. En uke kan ha flere eksepsjoner. En komponent med minst én eksepsjon er kritisk. Definisjonene følger briefen og fasiten. Gjelder UJ-1.
+**Beskrivelse:** Appen finner fire eksepsjonstyper under beregningen, for deler på alle nivåer. Hver eksepsjon har varenummer, uke (eller «–» for hele delen), type og en kort melding på norsk som forklarer hva som er galt og hva brukeren kan gjøre. En uke kan ha flere eksepsjoner. En del med minst én eksepsjon er kritisk. Definisjonene følger briefen og fasiten. Gjelder UJ-1.
 
-#### FR-9: Innkjøpstid overskrider horisont
+#### FR-9: Ledetid overskrider horisont
 
-Er L ≥ H, får komponenten eksepsjonen «Innkjøpstid overskrider horisont» med uke «–», uansett behov.
+Er L ≥ H, får delen eksepsjonen «Ledetid overskrider horisont» med uke «–», uansett behov.
 
 **Konsekvenser (testbare):**
-- K06 Stolfot (L = 10, H = 10) i testeksempel 01 får eksepsjonen selv om nettobehovet er 0 i alle uker.
-- En komponent med L = H − 1 får ikke eksepsjonen.
+- 300-006 Stolfot (L = 10, H = 10) i testeksempel 01 får eksepsjonen selv om nettobehovet er 0 i alle uker.
+- En del med L = H − 1 får ikke eksepsjonen.
 
 #### FR-10: Bestilling forsinket
 
-Har en uke t nettobehov > 0, forfalt frigivelse (t − L < 1) og disponibel(t) < 0, får uken eksepsjonen «Bestilling forsinket». Meldingen oppgir disponibel beholdning, forfalt mengde, uken frigivelsen skulle vært gjort, total frigivelse i uke 1 og tidligste mottaksuke (1 + L).
+Har en uke t nettobehov > 0, forfalt frigivelse (t − L < 1) og disponibel(t) < 0, får uken eksepsjonen «Bestilling forsinket». Meldingen oppgir disponibel beholdning, forfalt mengde, uken frigivelsen skulle vært gjort, total frigivelse i uke 1 og tidligste mottaksuke (1 + L). Den sier også hva som blir forsinket: leveransen til kunde for ferdigproduktet, eller produksjonen av den overordnede delen for en komponent.
 
 **Konsekvenser (testbare):**
-- K03 Hjul får eksepsjonen i uke 1 med meldingen fra fasiten: «Lager blir -20 i uke 1. Bestillingen på 50 måtte vært frigitt i uke 0, før horisonten. De 50 er forfalt og tatt med i frigivelsen på 175 i uke 1, men kommer tidligst i uke 2. Leveranse til kunde blir forsinket.»
+- 300-003 Hjul får eksepsjonen i uke 1 med meldingen fra fasiten: «Lager blir -20 i uke 1. Bestillingen på 50 måtte vært frigitt i uke 0, før horisonten. De 50 er forfalt og tatt med i frigivelsen på 175 i uke 1, men kommer tidligst i uke 2. Leveranse til kunde blir forsinket.»
 
 #### FR-11: Bruk av sikkerhetslager
 
 Har en uke t nettobehov > 0, forfalt frigivelse og 0 ≤ disponibel(t) < SS, får uken eksepsjonen «Bruk av sikkerhetslager». Meldingen inneholder de samme opplysningene om forfalt mengde som i FR-10.
 
 **Konsekvenser (testbare):**
-- K04 Armlene får eksepsjonen i uke 1 (disponibel 10, SS 20), med 10 forfalt av frigivelsen på 60.
+- 300-004 Armlene får eksepsjonen i uke 1 (disponibel 10, SS 20), med 10 forfalt av frigivelsen på 60.
 - En uke kan ikke få både «Bestilling forsinket» og «Bruk av sikkerhetslager».
 
 #### FR-12: Mottak forsinket
 
-Har en uke t nettobehov > 0, og finnes det et planlagt mottak for komponenten i en senere uke, får uken eksepsjonen «Mottak forsinket». Meldingen viser til det første senere mottaket og foreslår å fremskynde det.
+Har en uke t nettobehov > 0, og finnes det et planlagt mottak for varenummeret i en senere uke, får uken eksepsjonen «Mottak forsinket». Meldingen viser til det første senere mottaket og foreslår å fremskynde det: hos leverandøren for deler som kjøpes inn, i egen produksjon for deler som produseres selv.
 
 **Konsekvenser (testbare):**
-- K05 Gassfjær får eksepsjonen i uke 3, med henvisning til mottaket i uke 4.
-- K07 Skruesett, med mottak i uke 2 før første nettobehov i uke 3, får ingen eksepsjon.
+- 300-005 Gassfjær får eksepsjonen i uke 3, med henvisning til mottaket i uke 4.
+- 300-007 Skruesett, med mottak i uke 2 før første nettobehov i uke 3, får ingen eksepsjon.
 
 #### FR-13: Marker kritiske komponenter
 
-En komponent med minst én eksepsjon markeres som kritisk.
+En del med minst én eksepsjon markeres som kritisk, på alle nivåer.
 
 **Konsekvenser (testbare):**
-- I testeksempel 01 er nøyaktig K03, K04, K05 og K06 kritiske.
-- Eksepsjonslisten for testeksempel 01 er identisk med fasiten: samme komponent, uke, type og melding, og ingen andre.
+- I testeksempel 01 er nøyaktig 300-003, 300-004, 300-005 og 300-006 kritiske.
+- Eksepsjonslisten for testeksempel 01 er identisk med fasiten: samme varenummer, uke, type og melding, og ingen andre.
 
 ### 4.4 Resultattabell
 
@@ -224,11 +249,12 @@ En komponent med minst én eksepsjon markeres som kritisk.
 
 #### FR-14: Vis MRP-tabell per komponent
 
-Appen viser, for hver komponent, radene bruttobehov, planlagte mottak, forventet lagerbeholdning, nettobehov, planlagte ordremottak og planlagte ordrefrigivelser, med én kolonne per uke i horisonten. Ferdigproduktets navn og horisonten vises over tabellen.
+Appen viser, for hvert varenummer, radene bruttobehov, planlagte mottak, forventet lagerbeholdning, nettobehov, planlagte ordremottak og planlagte ordrefrigivelser, med én kolonne per uke i horisonten. Hver del vises med varenummer, beskrivelse, nivå og type. Ferdigproduktets navn og horisonten vises over tabellen.
 
 **Konsekvenser (testbare):**
 - Alle tall i tabellen for testeksempel 01 er identisk med fasiten.
 - Tabellen har nøyaktig H ukekolonner.
+- En felles del vises med én tabell, ikke én per forekomst i stykklisten.
 
 #### FR-15: Fremhev eksepsjoner i tabellen
 
@@ -240,29 +266,31 @@ En celle for en uke og komponent med en eksepsjon fremheves, og meldingen kan le
 
 #### FR-16: Vis kritiske komponenter først
 
-Appen viser et sammendrag over tabellen: antall kritiske komponenter og en liste over dem med eksepsjonstyper. Kritiske komponenter merkes tydelig i tabellen, og brukeren kan gå direkte fra sammendraget til komponenten. `[ASSUMPTION: kritiske komponenter står øverst i tabellen, og resten følger rekkefølgen i Excel-malen.]`
+Appen viser et sammendrag over tabellen: antall kritiske komponenter og en liste over dem med eksepsjonstyper. Kritiske komponenter merkes tydelig i tabellen, og brukeren kan gå direkte fra sammendraget til komponenten. `[ASSUMPTION: kritiske komponenter står øverst i tabellen, og resten følger rekkefølgen i stykklisten.]`
 
 **Konsekvenser (testbare):**
-- For testeksempel 01 viser sammendraget 4 kritiske komponenter: K03, K04, K05 og K06.
+- For testeksempel 01 viser sammendraget 4 kritiske komponenter: 300-003, 300-004, 300-005 og 300-006.
 
 #### FR-17: Vis bestillingsforslag
 
-Appen viser en liste over alle bestillingsforslag i kjøringen: komponent, frigivelsesuke og mengde, sortert etter uke. Forslag med forfalt mengde merkes.
+Appen viser en liste over alle bestillingsforslag i kjøringen: varenummer, beskrivelse, frigivelsesuke, mengde og om forslaget er et innkjøp (Komponent (Kjøpes inn)) eller en produksjonsordre (Ferdigvare og Komponent (Produseres selv)), sortert etter uke. Forslag med forfalt mengde merkes.
 
 **Konsekvenser (testbare):**
 - Listen for testeksempel 01 har én linje per planlagt ordrefrigivelse > 0 i fasiten, med samme mengde og uke.
+- Alle forslagene for komponentene i testeksempel 01 er innkjøp.
 
 #### FR-18: Forklar beregningen
 
-Hver rad i MRP-tabellen har en kort forklaring på norsk av hvordan den er beregnet, med reglene fra §4.2. For hver celle kan brukeren se tallene som ga resultatet. Hver eksepsjonstype har en forklaring av hvorfor den slo til. `[ASSUMPTION: forklaringen vises når brukeren peker på eller klikker på raden eller cellen, ikke som fast tekst.]`
+Hver rad i MRP-tabellen har en kort forklaring på norsk av hvordan den er beregnet, med reglene fra §4.2. For hver celle kan brukeren se tallene som ga resultatet. For bruttobehov til en komponent viser forklaringen hvilke overordnede deler behovet kommer fra, og antallet per enhet. Hver eksepsjonstype har en forklaring av hvorfor den slo til. `[ASSUMPTION: forklaringen vises når brukeren peker på eller klikker på raden eller cellen, ikke som fast tekst.]`
 
 **Konsekvenser (testbare):**
-- For K03 Hjul, uke 1, kan brukeren se: forventet lagerbeholdning før uke 1 = 80, planlagte mottak = 0, bruttobehov = 100, disponibel = -20, SS = 30, nettobehov = 50.
+- For 300-003 Hjul, uke 1, kan brukeren se: forventet lagerbeholdning før uke 1 = 80, planlagte mottak = 0, bruttobehov = 100, disponibel = -20, SS = 30, nettobehov = 50.
 - Alle seks radtypene og alle fire eksepsjonstypene har en forklaring.
+- For en felles del viser forklaringen av bruttobehovet bidraget fra hver overordnet del.
 
 ### 4.5 Endringer og før/etter-sammenligning
 
-**Beskrivelse:** Når noe endres midt i planen, for eksempel prognosen, endrer brukeren Excel-filen og laster den opp på nytt. Appen husker siste vellykkede kjøring lokalt på brukerens maskin, uten innlogging, og sammenligner den nye kjøringen med den. Brukeren kan også starte på nytt uten sammenligning. Gjelder UJ-2.
+**Beskrivelse:** Når noe endres midt i planen, for eksempel MPS, endrer brukeren Excel-filen og laster den opp på nytt. Appen husker siste vellykkede kjøring lokalt på brukerens maskin, uten innlogging, og sammenligner den nye kjøringen med den. Brukeren kan også starte på nytt uten sammenligning. Gjelder UJ-2.
 
 #### FR-19: Husk siste kjøring lokalt
 
@@ -282,7 +310,7 @@ Gjelder UJ-2.
 
 **Konsekvenser (testbare):**
 - Lastes samme fil opp to ganger, vises «ingen endringer».
-- Øker prognosen for én uke i testeksempel 01, viser sammenligningen nøyaktig de bestillingsforslagene og eksepsjonene som er ulike mellom de to fasitene. Krever et eget testeksempel med fasit (se §9 Åpne spørsmål, nr. 2).
+- Øker MPS for én uke i testeksempel 01, viser sammenligningen nøyaktig de bestillingsforslagene og eksepsjonene som er ulike mellom de to fasitene. Krever et eget testeksempel med fasit (se §9 Åpne spørsmål, nr. 2).
 - Endringer i resultattabellen som ikke påvirker bestillingsforslag eller eksepsjoner, vises ikke som endringer. `[ASSUMPTION]`
 
 #### FR-21: Start på nytt uten sammenligning
@@ -293,7 +321,7 @@ Brukeren kan slette den lagrede kjøringen. Neste opplasting vises da uten samme
 - Etter sletting vises ingen før/etter-sammenligning ved neste opplasting.
 
 **Notater:**
-- Har den nye filen et annet ferdigprodukt eller andre komponenter enn forrige kjøring, viser sammenligningen nye og fjernede komponenter som egne linjer. `[ASSUMPTION]`
+- Har den nye filen et annet ferdigprodukt eller andre varenumre enn forrige kjøring, viser sammenligningen nye og fjernede deler som egne linjer. `[ASSUMPTION]`
 
 ### 4.6 Eksport av resultater
 
@@ -301,7 +329,7 @@ Brukeren kan slette den lagrede kjøringen. Neste opplasting vises da uten samme
 
 #### FR-22: Eksporter kjøring til fil
 
-Brukeren kan laste ned resultatet av den viste kjøringen som en Excel-fil (`.xlsx`). Filen inneholder resultattabellen per komponent og uke, listen over bestillingsforslag, eksepsjonslisten med meldinger, og ferdigproduktets navn, horisont og tidspunkt for kjøringen. `[ASSUMPTION: formatet er .xlsx, siden brukeren allerede arbeider i Excel.]`
+Brukeren kan laste ned resultatet av den viste kjøringen som en Excel-fil (`.xlsx`). Filen inneholder resultattabellen per del og uke, listen over bestillingsforslag, eksepsjonslisten med meldinger, og ferdigproduktets navn, horisont og tidspunkt for kjøringen. `[ASSUMPTION: formatet er .xlsx, siden brukeren allerede arbeider i Excel.]`
 
 **Konsekvenser (testbare):**
 - Tallene i den eksporterte filen for testeksempel 01 er identisk med fasiten.
@@ -317,11 +345,11 @@ Når en før/etter-sammenligning vises, tas den med i eksporten. `[ASSUMPTION]`
 
 ### 4.7 Fast partistørrelse (planlagt utvidelse)
 
-**Beskrivelse:** Når kjernen (§4.1–4.6) er ferdig og testet mot fasit, legges fast partistørrelse til som valgbar bestillingsregel per komponent. Excel-malen får en valgfri kolonne «Partistørrelse» i arket Komponenter. Er cellen tom, brukes lot-for-lot. Planlagt ordremottak rundes opp til et helt antall partier, og overskuddet føres videre i forventet lagerbeholdning. Planlegges som eget, senere epic, slik faglærer anbefaler.
+**Beskrivelse:** Når kjernen (§4.1–4.6) er ferdig og testet mot fasit, legges fast partistørrelse til som valgbar bestillingsregel per del. Excel-malen får en valgfri kolonne «Partistørrelse» i arket Stykkliste, som fylles ut første gang varenummeret står, slik som lager, sikkerhetslager og ledetid. Er cellen tom, brukes lot-for-lot. Planlagt ordremottak rundes opp til et helt antall partier, og overskuddet føres videre i forventet lagerbeholdning. Planlegges som eget, senere epic, slik faglærer anbefaler.
 
 #### FR-24: Les partistørrelse
 
-Appen leser den valgfrie kolonnen «Partistørrelse». Verdien er tom eller et heltall ≥ 1. En fil uten kolonnen er gyldig og gir lot-for-lot for alle komponenter.
+Appen leser den valgfrie kolonnen «Partistørrelse». Verdien er tom eller et heltall ≥ 1. En fil uten kolonnen er gyldig og gir lot-for-lot for alle deler.
 
 **Konsekvenser (testbare):**
 - `testdata/testeksempel-01.xlsx` gir samme resultat før og etter at utvidelsen er laget.
@@ -358,7 +386,7 @@ Fra appens startside kan brukeren laste ned den tomme Excel-malen og testeksempe
 - **NFR-2 Automatiske tester mot fasit:** Hvert testeksempel i `testdata/` har automatiske tester som sammenligner resultattabell og eksepsjoner med fasiten. Testene kjøres med én kommando som er beskrevet i README.
 - **NFR-3 Kjørbar for sensor:** Appen kan startes lokalt etter README, uten nøkler, betalte kontoer eller tjenester som gruppen driver. Excel-malen og testeksemplene ligger i repoet.
 - **NFR-4 Data blir på brukerens maskin:** Opplastede filer og lagrede kjøringer sendes ikke til eksterne tjenester. `[ASSUMPTION]`
-- **NFR-5 Ytelse:** En kjøring med 500 komponenter og 12 uker, fra opplasting til resultattabell, tar under 3 sekunder på en vanlig bærbar PC. `[ASSUMPTION: grensen er satt av gruppen og ikke målt ennå.]`
+- **NFR-5 Ytelse:** En kjøring med 1000 rader i stykklisten, tre nivåer og 12 uker, fra opplasting til resultattabell, tar under 3 sekunder på en vanlig bærbar PC. `[ASSUMPTION: grensen er satt av gruppen og ikke målt ennå.]`
 - **NFR-6 Plattform:** Webapp for PC i nyere versjoner av Chrome, Edge og Firefox. Ikke tilpasset mobil i v1.
 - **NFR-7 Språk:** All tekst i appen, også valideringsfeil og eksepsjonsmeldinger, er på norsk i v1. Tekstene samles slik at engelsk kan legges til senere uten å endre beregningen.
 - **NFR-8 Lesbarhet:** Eksepsjoner og kritiske komponenter markeres ikke med farge alene (se FR-15). Tabellen kan leses uten å scrolle sideveis på en 1366 piksler bred skjerm når horisonten er 12 uker. `[ASSUMPTION]`
@@ -376,7 +404,7 @@ Fra appens startside kan brukeren laste ned den tomme Excel-malen og testeksempe
 ### 7.1 Med i v1
 
 - Opplasting og validering av Excel-malen (FR-1–FR-4)
-- MRP-beregning for enkeltnivå BOM og ett ferdigprodukt med lot-for-lot (FR-5–FR-8)
+- MRP-beregning for flernivå BOM (inntil tre nivåer, med felles deler) og ett ferdigprodukt med lot-for-lot (FR-5–FR-8, FR-28)
 - Fire eksepsjonstyper og kritiske komponenter (FR-9–FR-13)
 - Resultattabell med fremheving, sammendrag, bestillingsforslag og forklaringer (FR-14–FR-18)
 - Lokal lagring av siste kjøring og før/etter-sammenligning (FR-19–FR-21)
@@ -386,7 +414,7 @@ Fra appens startside kan brukeren laste ned den tomme Excel-malen og testeksempe
 
 ### 7.2 Ikke med i v1
 
-- **Flernivå BOM** – videreutvikling. Ikke nødvendig for å vise prosessen.
+- **Mer enn tre nivåer i stykklisten** – videreutvikling.
 - **Flere ferdigprodukter samtidig** – videreutvikling.
 - **Andre bestillingsregler** (f.eks. beregnet optimal bestillingsmengde) – videreutvikling.
 - **Inntasting i appen** som alternativ til Excel – videreutvikling.
@@ -399,13 +427,13 @@ Fra appens startside kan brukeren laste ned den tomme Excel-malen og testeksempe
 ## 8. Suksessmål
 
 **Primære**
-- **SM-1 Korrekt beregning:** 100 % samsvar mellom resultattabellen og fasiten for alle testeksempler i `testdata/`, for hver uke, komponent og rad. Gjelder FR-5–FR-8, FR-14.
+- **SM-1 Korrekt beregning:** 100 % samsvar mellom resultattabellen og fasiten for alle testeksempler i `testdata/`, for hver uke, del og rad. Minst ett testeksempel har 5–10 komponenter fordelt på 3 nivåer og minst én felles del. Gjelder FR-5–FR-8, FR-14, FR-28.
 - **SM-2 Pålitelige eksepsjoner:** For hver av de fire eksepsjonstypene utløses riktig eksepsjon i hvert kjent avvikstilfelle, uten falske eller manglende eksepsjoner. Gjelder FR-9–FR-13.
 - **SM-3 Forståelig uten forkunnskap:** Etter en kort introduksjon finner og forklarer 3 av 3 testpersoner en kritisk komponent, bestillingsmengde og bestillingsuke uten hjelp fra utviklerne. Gjelder FR-15–FR-18.
 
 **Sekundære**
 - **SM-4 Inndata kontrolleres:** Hver valideringsregel i FR-3 har en test der en fil med nøyaktig den feilen gir nøyaktig én valideringsfeil med riktig ark, rad og årsak. Gjelder FR-2–FR-4.
-- **SM-5 Endringer håndteres:** En komplett kjøring over 8–12 uker med 5–10 komponenter og minst én endring midtveis (f.eks. endret prognose) gir en før/etter-sammenligning som viser nøyaktig de endrede bestillingsforslagene og eksepsjonene. Gjelder FR-19–FR-21.
+- **SM-5 Endringer håndteres:** En komplett kjøring over 8–12 uker med 5–10 komponenter fordelt på 3 nivåer og minst én endring midtveis (f.eks. endret MPS) gir en før/etter-sammenligning som viser nøyaktig de endrede bestillingsforslagene og eksepsjonene. Gjelder FR-19–FR-21.
 - **SM-6 Kjørbar for sensor:** En person utenfor gruppen kan starte appen etter README og kjøre testeksempel 01 uten hjelp. Gjelder NFR-3.
 
 **Mot-mål (skal ikke optimaliseres)**
@@ -416,20 +444,22 @@ Fra appens startside kan brukeren laste ned den tomme Excel-malen og testeksempe
 ## 9. Åpne spørsmål
 
 1. Skal gruppemøtet bekrefte eller endre antagelsene i §10? Det gjelder særlig eksportformat, sortering og hvordan forklaringene vises.
-2. Det trengs et testeksempel 02 med endret prognose og egen fasit for å teste før/etter-sammenligningen (FR-20, SM-5). Hvem lager det, og når?
+2. Det trengs et testeksempel 02 med endret MPS og egen fasit for å teste før/etter-sammenligningen (FR-20, SM-5). Hvem lager det, og når?
 3. Det trengs et testeksempel med fast partistørrelse og egen fasit (FR-25). Dette lages når utvidelsen starter.
 4. Hvem er testpersonene til brukertesten (SM-3), og hvordan ser den korte introduksjonen ut?
 5. Skal appen også vise en ukeoversikt per uke (alle bestillingsforslag i en uke), i tillegg til listen sortert etter uke (FR-17)?
 6. Hvilken frist gjelder? Den er ikke kommunisert ennå, men ventes midt i desember 2026.
+7. Det trengs et testeksempel med 5–10 komponenter fordelt på 3 nivåer, minst én felles del og egen fasit (FR-5, FR-28, SM-1). Testeksempel 01 har bare nivå 0 og .1. Det kan være det samme som testeksempel 02 i spørsmål 2. **Svar (2026-10-26):** Testeksempelet lages i løpet av noen dager.
+8. Fasitmeldingen for «Bestilling forsinket» i testeksempel 01 sier «Leveranse til kunde blir forsinket» for 300-003 Hjul, som er en komponent på nivå .1. Etter FR-10 og briefen skal den si at produksjonen av ferdigproduktet blir forsinket. Skal fasiten endres? **Svar (2026-10-26):** Ordnes når de nye testeksemplene lages.
 
 ## 10. Antagelser
 
-- §4.4 FR-16 – Kritiske komponenter står øverst i tabellen. Resten følger rekkefølgen i Excel-malen.
+- §4.4 FR-16 – Kritiske komponenter står øverst i tabellen. Resten følger rekkefølgen i stykklisten.
 - §4.4 FR-18 – Forklaringen vises når brukeren peker på eller klikker på raden eller cellen.
 - §4.5 FR-20 – Endringer som ikke påvirker bestillingsforslag eller eksepsjoner, vises ikke som endringer.
 - §4.5 Notater – Nye og fjernede komponenter vises som egne linjer i sammenligningen.
 - §4.6 FR-22 – Eksportformatet er `.xlsx`.
 - §4.6 FR-23 – Før/etter-sammenligningen tas med i eksporten.
 - §5 NFR-4 – Data sendes ikke til eksterne tjenester.
-- §5 NFR-5 – Grensen på 3 sekunder for 500 komponenter og 12 uker.
+- §5 NFR-5 – Grensen på 3 sekunder for 1000 rader og 12 uker.
 - §5 NFR-8 – Tabellen kan leses uten å scrolle sideveis på en 1366 piksler bred skjerm.
