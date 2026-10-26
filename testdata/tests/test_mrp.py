@@ -119,9 +119,9 @@ RAD_0 = ("0", "100-001", "Stol", None, "Ferdigvare", 0, 0, 0)
 
 def test_delmontering_med_underdeler_kan_ikke_staa_to_steder():
     rader = [RAD_0,
-             (".1", "200-001", "Sete", 1, "Delmontering", 5, 0, 1),
+             (".1", "200-001", "Sete", 1, lt.PROD, 5, 0, 1),
              ("..2", "300-001", "Plate", 1, lt.KJOPT, 5, 0, 1),
-             (".1", "200-001", "Sete", 1, "Delmontering", None, None, None)]
+             (".1", "200-001", "Sete", 1, lt.PROD, None, None, None)]
     with pytest.raises(lt.MalFeil, match="kan bare stå ett sted"):
         lt.les_stykkliste(rader)
 
