@@ -10,3 +10,7 @@
 - [ ] 2026-10-28 [prd-carmen-utkast](998-2026-10-28-00-44-07-prd-carmen-utkast.md) — Excel-malen: ingen Kontroll-kolonne i Planlagte mottak, og en tom rad i stykklisten blir ikke flagget
 - [ ] 2026-10-28 [prd-carmen-utkast](998-2026-10-28-00-44-07-prd-carmen-utkast.md) — språklige forbedringer i PRD-utkastet gjenstår (terminologi, gjentakelser, plasseringen av regelen om første rad i FR-03/FR-04)
 - [ ] 2026-10-28 [prd-carmen-utkast](998-2026-10-28-00-44-07-prd-carmen-utkast.md) — en privat claude.ai-side med en eldre versjon av PRD-utkastet finnes fortsatt. Avgjør om den skal slettes
+- [ ] 2026-10-28 [testeksempel-02-fasit-materiell](997-2026-10-28-20-52-08-testeksempel-02-fasit-materiell.md) — testeksempel-02-fasit-med-materiell.xlsx bruker gamle typer og lages ikke av lag_testdata.py. Den må oppdateres for hånd når testdataene får de nye typene
+- [ ] 2026-10-29 [testeksempel-02-fasit-materiell](997-2026-10-28-20-52-08-testeksempel-02-fasit-materiell.md) — testeksempel 02 på main bruker arket «Prognostiserte behov» og gamle typer. En app bygd etter malen (arket MPS) kan ikke lese fila
+- [ ] 2026-10-29 [testeksempel-02-fasit-materiell](997-2026-10-28-20-52-08-testeksempel-02-fasit-materiell.md) — Odas testeksempel-02.xlsx (nytt format) får konflikt med fila på main. Gruppen må velge versjon
+- [ ] 2026-10-29 [testeksempel-02-fasit-materiell](997-2026-10-28-20-52-08-testeksempel-02-fasit-materiell.md) — testdata/README.md på main beskriver ikke testeksempel 02
