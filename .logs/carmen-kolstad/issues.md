@@ -14,3 +14,4 @@
 - [ ] 2026-10-29 [testeksempel-02-fasit-materiell](997-2026-10-28-20-52-08-testeksempel-02-fasit-materiell.md) — testeksempel 02 på main bruker arket «Prognostiserte behov» og gamle typer. En app bygd etter malen (arket MPS) kan ikke lese fila
 - [ ] 2026-10-29 [testeksempel-02-fasit-materiell](997-2026-10-28-20-52-08-testeksempel-02-fasit-materiell.md) — Odas testeksempel-02.xlsx (nytt format) får konflikt med fila på main. Gruppen må velge versjon
 - [ ] 2026-10-29 [testeksempel-02-fasit-materiell](997-2026-10-28-20-52-08-testeksempel-02-fasit-materiell.md) — testdata/README.md på main beskriver ikke testeksempel 02
+- [ ] 2026-10-29 [fremdriftsplan-steg-1-og-leveringsdato](996-2026-10-29-20-22-00-fremdriftsplan-steg-1-og-leveringsdato.md) — fremdriftsplanen: leveringsdatoen (H19) er fast og følger ikke Dag 0. Dag 0 (C2) er tom, så de andre stegene har ingen datoer
