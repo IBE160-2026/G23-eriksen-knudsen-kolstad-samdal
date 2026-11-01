@@ -10,7 +10,9 @@ Legge de nye begrepene FR, NFR, SM og tomtilstand med definisjon inn i ordbanken
 - Legge forkortelsene i tabellen Forkortelser og tomtilstand i App og test.
 
 ### Resultat
-Endret `.docs/ordbank.md`, ikke committet:
+Committet i 740e61a sammen med tidligere stagede endringer i ordbanken (ordboken fra product brief og engelske fagbegreper) og ordbankregelen i `CLAUDE.md`. Ikke pushet.
+
+Endret `.docs/ordbank.md`:
 - FR, NFR og SM er lagt inn i Forkortelser i alfabetisk rekkefølge. SM står for suksessmål, slik `prd.md` §2 bruker det.
 - Tomtilstand (*empty state*) er lagt inn i App og test.
 - `updated` er satt til 2026-11-01.
