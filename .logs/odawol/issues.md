@@ -10,5 +10,6 @@
 - [ ] 2026-11-01 [brainstorming-research-for-prd](996-2026-11-01-17-52-26-brainstorming-research-for-prd.md) — researchtemaene merket «Kritisk før PRD» må gjennomgås (`.docs/brainstorming/brainstorm-research-for-prd-2026-11-01/brainstorm.html`)
 - [ ] 2026-11-01 [prd-odas-forslag](995-2026-11-01-19-11-35-prd-odas-forslag.md) — Odas egne ideer og formålet med PRD-forslaget mangler, så kravene gjengir foreløpig briefen og ordbanken
 - [ ] 2026-11-01 [prd-odas-forslag](995-2026-11-01-19-11-35-prd-odas-forslag.md) — gruppen må avgjøre de åpne spørsmålene i `prd.md` §8 i Odas forslag
-- [ ] 2026-11-01 [prd-odas-forslag](995-2026-11-01-19-11-35-prd-odas-forslag.md) — de nye begrepene FR, NFR, SM og tomtilstand er ikke lagt inn i ordbanken
+- [x] 2026-11-01 [prd-odas-forslag](995-2026-11-01-19-11-35-prd-odas-forslag.md) — de nye begrepene FR, NFR, SM og tomtilstand er ikke lagt inn i ordbanken (løst 2026-11-01)
 - [ ] 2026-11-01 [prd-odas-forslag](995-2026-11-01-19-11-35-prd-odas-forslag.md) — den godkjente proposalen er ikke funnet i repoet
+- [ ] 2026-11-01 [ordbank-prd-begreper](994-2026-11-01-21-26-06-ordbank-prd-begreper.md) — spørsmål 13 i `prd.md` §8 sier fortsatt at begrepene ikke er lagt inn i ordbanken, og må oppdateres
