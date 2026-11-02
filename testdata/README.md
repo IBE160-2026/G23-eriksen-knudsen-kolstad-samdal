@@ -37,14 +37,17 @@ Radene som «kommer frem» er laget med betinget formatering og datavalidering, 
 
 ## Testeksempel 01 – hva det dekker
 
-| Komponent | Tilfelle |
+| Del | Tilfelle |
 |---|---|
-| K01 Sete, K02 Rygg | Normalforløp uten eksepsjoner |
-| K03 Hjul | Bestilling forsinket i uke 1 (behov i uke 1, lageret går under 0) |
-| K04 Armlene | Bruk av sikkerhetslager i uke 1 |
-| K05 Gassfjær | Mottak forsinket (behov i uke 3, planlagt mottak i uke 4) |
-| K06 Stolfot | Innkjøpstid = horisont (grensetilfelle) |
-| K07 Skruesett | Planlagt mottak som kommer i tide |
-| K08 Trekk | Sikkerhetslager 0 og frigivelse nøyaktig i uke 1 |
+| 100-001 Kontorstol Basic | Ferdigproduktet uten lager, sikkerhetslager og ledetid, så frigivelsene er lik MPS |
+| 300-001 Sete, 300-002 Rygg | Normalforløp uten eksepsjoner |
+| 300-003 Hjul | Bestilling forsinket i uke 1 (behov i uke 1, lageret går under 0) |
+| 300-004 Armlene | Bruk av sikkerhetslager i uke 1 |
+| 300-005 Gassfjær | Mottak forsinket: behov i uke 3, planlagt mottak i uke 4 må fremskyndes til uke 3. Mottaket står i uke 4 i tabellen, lageret er 0 i uke 3, og det lages ingen ny ordre for uke 3 |
+| 300-006 Stolfot | Ledetid fra ferdigproduktet = horisont (grensetilfelle). Eksepsjonen slår til selv om lageret holder hele horisonten, fordi planen er for kort til å vise behov etter uke 10 |
+| 300-007 Skruesett | Planlagt mottak som kommer i tide og trengs (verken Mottak forsinket eller Kanseller mottak) |
+| 300-008 Trekk | Sikkerhetslager 0 og frigivelse nøyaktig i uke 1 |
 
-**Status:** kontrollert. Fasiten er beregnet med skriptet og kontrollert for hånd (2026-10-19). Beregningsreglene i arket *Regler* er bekreftet. Forfalte frigivelser legges i uke 1, og eksepsjonsmeldingen oppgir hvor mye av uke 1 som er forfalt. Forfalte ordremottak vises i uken behovet er, selv om de fysisk kommer senere.
+**Status:** kontrollert. Fasiten følger PRD-reglene fra 2026-11-02 (FR-6/FR-12 fremskynding, FR-9 ledetid fra ferdigproduktet, FR-29 Kanseller mottak). Den har nå også en tabell for ferdigproduktet 100-001. Fasiten er beregnet med skriptet og kontrollert for hånd (2026-10-19, endringene for 300-005, 300-006 og 100-001 2026-11-02). Forfalte frigivelser legges i uke 1, og eksepsjonsmeldingen oppgir hvor mye av uke 1 som er forfalt. Forfalte ordremottak vises i uken behovet er, selv om de fysisk kommer senere.
+
+`beregn()` i skriptet regner flernivå (nivå for nivå, felles deler én gang på lavnivåkoden). Testeksempel 01 har bare to nivåer. Testeksempelet med tre nivåer og felles deler kommer.

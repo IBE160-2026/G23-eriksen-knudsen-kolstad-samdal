@@ -91,9 +91,9 @@ Forslaget bygger på Excel-malen for flernivå stykkliste (Sebastian, 2026-10-23
 | Eksepsjon (*exception message*) | Et varsel om avvik for en del, i en uke eller for hele delen. **[BESLUTNING]** Se merknad 3. | eksepsjonsmelding, exception |
 | Bestilling forsinket | Forfalt frigivelse og disponibel beholdning < 0. Leveransen blir forsinket til kunden (ferdigproduktet) eller til produksjonen av delen over. | Bestilling forsinket – nytt bestillingsforslag |
 | Bruk av sikkerhetslager | Forfalt frigivelse og 0 ≤ disponibel beholdning < SS. | Under sikkerhetslager |
-| Mottak forsinket | Nettobehov > 0 og et planlagt mottak ligger i en senere uke. Mottaket regnes som fremskyndet til uken med nettobehovet, og det lages planlagt ordremottak bare for et eventuelt restbehov (PRD FR-6, FR-12, endret 2026-11-02). | – |
-| Kanseller mottak | Et planlagt mottak som ikke trengs noe sted i horisonten: delen får ikke noe nettobehov fra mottaksuken til uke H når mottaket tas bort (PRD FR-29, ny 2026-11-02). | Utsett mottak (ikke en egen eksepsjon) |
-| Ledetid overskrider horisont | Ledetid fra ferdigproduktet ≥ H. Gjelder hele delen (PRD FR-9, endret 2026-11-02). | Innkjøpstid overskrider horisont |
+| Mottak forsinket | Nettobehov > 0 og et planlagt mottak ligger i en senere uke. Mottaket regnes som fremskyndet til uken med nettobehovet, og det lages planlagt ordremottak bare for et eventuelt restbehov. Resultattabellen viser mottaket i uken det er lagt inn (PRD FR-6, FR-12, endret 2026-11-02). | – |
+| Kanseller mottak | Et planlagt mottak som ikke trengs noe sted i horisonten: delen får ikke noe nettobehov fra mottaksuken til uke H når mottaket tas bort og ingen andre mottak fremskyndes (PRD FR-29, ny 2026-11-02). | Utsett mottak (ikke en egen eksepsjon) |
+| Ledetid overskrider horisont | Ledetid fra ferdigproduktet ≥ H. Gjelder hele delen, uansett lager: planen er for kort til å vise behov som må bestilles nå (PRD FR-9, endret 2026-11-02). | Innkjøpstid overskrider horisont |
 | Kritisk del | En del med minst én eksepsjon. Markeres i resultattabellen, så brukeren raskt ser hvor det må handles. | kritisk komponent (se merknad 1) |
 | Avvik | At planen ikke går opp for en del, f.eks. at lageret går under sikkerhetslager eller at en bestilling kommer for sent. Avvik gir eksepsjoner. | – |
 | Falsk positiv / falsk negativ | Feil i eksepsjonene: en eksepsjon uten avvik (falsk positiv), eller et avvik uten eksepsjon (falsk negativ). | – |

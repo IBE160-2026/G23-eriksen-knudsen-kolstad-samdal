@@ -127,6 +127,7 @@ Appen kontrollerer hver verdi etter disse reglene. Gjelder UJ-3.
 | Stykkliste | Beskrivelse | Fylt ut. Lik for alle rader med samme varenummer. |
 | Stykkliste | Antall | Tom for nivå 0. Ellers heltall ≥ 1 (antall per enhet av overordnet del). |
 | Stykkliste | Type | Ferdigvare, Komponent (Kjøpes inn) eller Komponent (Produseres selv). Ferdigvare på nivå 0 og bare der. Lik for alle rader med samme varenummer. En del som kjøpes inn, har ingen rader under seg på lavere nivå. |
+| Stykkliste | Underdeler | Står en del med underdeler flere steder, kan underdelene stå bare under første forekomst eller likt under hver forekomst (samme varenumre og antall, rekkefølgen spiller ingen rolle). Ulike underdeler under to forekomster er en feil. Beregningen bruker underdelene én gang (FR-28). |
 | Stykkliste | Lagerbeholdning, Sikkerhetslager | Heltall ≥ 0. Fylt ut første gang varenummeret står, og tom de neste gangene. |
 | Stykkliste | Ledetid (uker) | Heltall ≥ 1 (≥ 0 for nivå 0). Fylt ut første gang varenummeret står, og tom de neste gangene. |
 | MPS | Antall per uke | Heltall ≥ 0. Horisonten er antall sammenhengende utfylte uker fra uke 1 og må være 8–12. Er en uke fylt ut etter et hull, er det en feil. |
@@ -140,6 +141,9 @@ Appen kontrollerer hver verdi etter disse reglene. Gjelder UJ-3.
 - Et tomt ark for planlagte mottak er gyldig.
 - En del med lagerbeholdning 0 eller sikkerhetslager 0 er gyldig.
 - Et varenummer som står flere steder med samme beskrivelse og type, og med lager, sikkerhetslager og ledetid bare første gang, er gyldig.
+- En del som produseres selv og står to ganger, med de samme underdelene under begge forekomstene, er gyldig, og underdelene får samme bruttobehov som om de bare sto én gang.
+- Den samme delen med underdeler bare under første forekomst er gyldig og gir samme resultat.
+- Står det et annet antall eller en annen underdel under andre forekomst, gir det én valideringsfeil som nevner varenummeret og begge radene.
 
 #### FR-4: Vis alle valideringsfeil samlet
 
@@ -175,20 +179,20 @@ En del som står flere steder i stykklisten, beregnes én gang, med samlet brutt
 
 For hver del og uke beregner appen disponibel(t) = forventet lagerbeholdning(t−1) + planlagte mottak(t) − bruttobehov(t). Forventet lagerbeholdning før uke 1 er lagerbeholdningen. Deretter beregnes nettobehov(t) = maks(0, SS − disponibel(t)).
 
-Er nettobehov(t) > 0 og finnes det planlagte mottak for varenummeret i senere uker, regnes det første senere mottaket som fremskyndet til uke t. Hele mottaket flyttes, og disponibel(t) og nettobehov(t) regnes på nytt. Er nettobehovet fortsatt > 0, flyttes neste senere mottak, og så videre. Bare et nettobehov som står igjen når det ikke finnes flere senere mottak, gir planlagt ordremottak (FR-7). Hvert flyttet mottak gir eksepsjonen «Mottak forsinket» (FR-12). Dette følger standardregelen i MRP om at åpne ordrer fremskyndes før nye ordrer lages.
+Er nettobehov(t) > 0 og finnes det planlagte mottak for varenummeret i senere uker, regnes det første senere mottaket som fremskyndet til uke t. Hele mottaket regnes med fra uke t, og nettobehov(t) regnes på nytt. Er nettobehovet fortsatt > 0, fremskyndes neste senere mottak, og så videre. Bare et nettobehov som står igjen når det ikke finnes flere senere mottak, gir planlagt ordremottak (FR-7). Hvert flyttet mottak gir eksepsjonen «Mottak forsinket» (FR-12). Dette følger standardregelen i MRP om at åpne ordrer fremskyndes før nye ordrer lages. Resultattabellen viser likevel mottaket i uken det er lagt inn i Excel-malen, og forventet lagerbeholdning regnes uten mottaket til det kommer (FR-7). Slik ser brukeren hva som skjer hvis mottaket ikke blir fremskyndet. Bestemt av Sebastian 2026-11-02.
 
 **Konsekvenser (testbare):**
-- Nettobehov for alle komponenter i testeksempel 01 er identisk med fasiten (etter at fasiten for 300-005 er oppdatert, se §9 spørsmål 9).
+- Nettobehov for alle komponenter i testeksempel 01 er identisk med fasiten.
 - Flere planlagte mottak for samme varenummer og uke legges sammen.
-- 300-005 Gassfjær i testeksempel 01: mottaket på 100 i uke 4 regnes som mottatt i uke 3. Uke 3 får da ikke noe planlagt ordremottak, og forventet lagerbeholdning blir 100 i uke 3 og 80 i uke 4.
+- 300-005 Gassfjær i testeksempel 01: mottaket på 100 i uke 4 dekker behovet i uke 3. Uke 3 får da ikke noe planlagt ordremottak. Planlagte mottak viser 100 i uke 4, og forventet lagerbeholdning blir 0 i uke 3 og 80 i uke 4.
 - Det lages aldri både et planlagt ordremottak og et flyttet mottak for det samme nettobehovet, med mindre mottaket er for lite.
 
 #### FR-7: Beregn planlagte ordremottak og forventet lagerbeholdning
 
-Med lot-for-lot er planlagt ordremottak(t) = nettobehov(t), og forventet lagerbeholdning(t) = disponibel(t) + planlagt ordremottak(t). Et forfalt planlagt ordremottak vises likevel i uke t, der behovet er, selv om det fysisk kommer tidligst i uke 1 + L. Forventet lagerbeholdning forutsetter altså at behovet dekkes i tide. Avviket vises som eksepsjon (FR-10, FR-11). Dette er en bevisst forenkling. De fleste ERP-systemene planlegger i stedet fremover fra i dag og viser mangelen i forventet lagerbeholdning (se addendum).
+Med lot-for-lot er planlagt ordremottak(t) = nettobehov(t), og forventet lagerbeholdning(t) = disponibel(t) + planlagt ordremottak(t) − fremskyndede mottak (FR-6) som ikke er kommet ennå. Et forfalt planlagt ordremottak vises likevel i uke t, der behovet er, selv om det fysisk kommer tidligst i uke 1 + L. Forventet lagerbeholdning forutsetter altså at behovet dekkes i tide. Avviket vises som eksepsjon (FR-10, FR-11). Dette er en bevisst forenkling. De fleste ERP-systemene planlegger i stedet fremover fra i dag og viser mangelen i forventet lagerbeholdning (se addendum).
 
 **Konsekvenser (testbare):**
-- Forventet lagerbeholdning er aldri under SS når lot-for-lot brukes.
+- Forventet lagerbeholdning er aldri under SS når lot-for-lot brukes, unntatt i ukene før et mottak som må fremskyndes (FR-6, FR-12).
 - Planlagte ordremottak og forventet lagerbeholdning for alle komponenter i testeksempel 01 er identisk med fasiten.
 
 #### FR-8: Beregn planlagte ordrefrigivelser
@@ -211,7 +215,7 @@ Hvert planlagt ordremottak i uke t gir en planlagt ordrefrigivelse i uke t − L
 
 #### FR-9: Ledetid overskrider horisont
 
-Er ledetiden fra ferdigproduktet ≥ H, får delen eksepsjonen «Ledetid overskrider horisont» med uke «–», uansett behov. Ledetiden fra ferdigproduktet er den største summen av L langs en sti i stykklisten fra ferdigproduktet ned til og med delen. Står delen flere steder, gjelder den lengste stien. Meldingen oppgir summen og stien den kommer fra.
+Er ledetiden fra ferdigproduktet ≥ H, får delen eksepsjonen «Ledetid overskrider horisont» med uke «–», uansett behov. Ledetiden fra ferdigproduktet er den største summen av L langs en sti i stykklisten fra ferdigproduktet ned til og med delen. Står delen flere steder, gjelder den lengste stien. Eksepsjonen sier ikke at delen mangler, men at planen er for kort til å vise behov etter uke H som må bestilles nå. Meldingen oppgir summen og stien den kommer fra, og foreslår lengre horisont.
 
 **Konsekvenser (testbare):**
 - 300-006 Stolfot (L = 10, H = 10) under et ferdigprodukt med L = 0 i testeksempel 01 får eksepsjonen selv om nettobehovet er 0 i alle uker.
@@ -238,13 +242,13 @@ Har en uke t nettobehov > 0, forfalt frigivelse og 0 ≤ disponibel(t) < SS, få
 Når et planlagt mottak regnes som fremskyndet til uke t (FR-6), får uke t eksepsjonen «Mottak forsinket». Meldingen oppgir mottaket (uke og antall), uken det må fremskyndes til, og hvor det må gjøres: hos leverandøren for deler som kjøpes inn, i egen produksjon for deler som produseres selv. Det lages ikke noe nytt bestillingsforslag for den delen av behovet mottaket dekker.
 
 **Konsekvenser (testbare):**
-- 300-005 Gassfjær får eksepsjonen i uke 3: mottaket på 100 i uke 4 må fremskyndes til uke 3. Det lages ingen frigivelse for uke 3-behovet.
+- 300-005 Gassfjær får eksepsjonen i uke 3: mottaket på 100 i uke 4 må fremskyndes til uke 3. Det lages ingen frigivelse for uke 3-behovet, og mottaket står fortsatt i uke 4 i tabellen.
 - 300-007 Skruesett, med mottak i uke 2 før første nettobehov i uke 3, får ingen eksepsjon.
 - Er mottaket for lite til å dekke nettobehovet, får uken både denne eksepsjonen og et planlagt ordremottak for resten.
 
 #### FR-29: Kanseller mottak
 
-Et planlagt mottak som ikke trengs noe sted i horisonten, får eksepsjonen «Kanseller mottak» i mottaksuken. Mottaket trengs ikke hvis delen ikke får noe nettobehov fra mottaksuken til og med uke H når mottaket tas bort fra beregningen. Meldingen foreslår å kansellere eller utsette mottaket. Et mottak som kommer for tidlig, men som trengs senere i horisonten, gir ingen eksepsjon. Grunnen er at det ville gitt mange varsler uten reell handling (SM-C2).
+Et planlagt mottak som ikke trengs noe sted i horisonten, får eksepsjonen «Kanseller mottak» i mottaksuken. Mottaket trengs ikke hvis delen ikke får noe nettobehov fra mottaksuken til og med uke H når mottaket tas bort fra beregningen. Under denne kontrollen fremskyndes ingen andre mottak (FR-6). Ellers kunne appen rådet til å kansellere et tidlig mottak og samtidig fremskynde et senere (bestemt av Sebastian 2026-11-02). Meldingen foreslår å kansellere eller utsette mottaket. Et mottak som kommer for tidlig, men som trengs senere i horisonten, gir ingen eksepsjon. Grunnen er at det ville gitt mange varsler uten reell handling (SM-C2).
 
 **Konsekvenser (testbare):**
 - 300-007 Skruesett (mottak i uke 2, nettobehov fra uke 3) får ikke eksepsjonen.
@@ -467,7 +471,7 @@ Fra appens startside kan brukeren laste ned den tomme Excel-malen og testeksempe
 6. Hvilken frist gjelder? Den er ikke kommunisert ennå, men ventes midt i desember 2026.
 7. Det trengs et testeksempel med 5–10 komponenter fordelt på 3 nivåer, minst én felles del og egen fasit (FR-5, FR-28, SM-1). Testeksempel 01 har bare nivå 0 og .1. Det kan være det samme som testeksempel 02 i spørsmål 2. **Svar (2026-10-26):** Testeksempelet lages i løpet av noen dager.
 8. Fasitmeldingen for «Bestilling forsinket» i testeksempel 01 sier «Leveranse til kunde blir forsinket» for 300-003 Hjul, som er en komponent på nivå .1. Etter FR-10 og briefen skal den si at produksjonen av ferdigproduktet blir forsinket. Skal fasiten endres? **Svar (2026-10-26):** Ordnes når de nye testeksemplene lages.
-9. Fasiten for testeksempel 01 må oppdateres for 300-005 Gassfjær etter FR-6/FR-12 (2026-11-02). Mottaket i uke 4 regnes som mottatt i uke 3. Planlagt ordremottak og frigivelse for uke 3-behovet (10, frigitt i uke 1) faller bort, og forventet lagerbeholdning og senere ordrer endres. `beregn()` i `testdata/lag_testdata.py` og fasitreglene må endres samtidig. Hvem gjør det, og når?
+9. ~~Fasiten for testeksempel 01 må oppdateres for 300-005 Gassfjær etter FR-6/FR-12.~~ Løst 2026-11-02: `beregn()` og fasiten er oppdatert. Mottaket står i uke 4 og dekker behovet i uke 3 uten ny ordre.
 10. Briefen og addendumet til briefen definerer fire eksepsjonstyper, og «Mottak forsinket» står der med den gamle regelen. Skal briefen oppdateres med FR-6/FR-12 og den nye typen «Kanseller mottak» (FR-29), eller er det nok at PRD-en gjelder?
 11. Testeksempelet med tre nivåer (spørsmål 7) bør ha minst én del der ledetiden fra ferdigproduktet er ≥ H uten at noen enkelt ledetid er det (FR-9), og ett planlagt mottak som ikke trengs (FR-29).
 
