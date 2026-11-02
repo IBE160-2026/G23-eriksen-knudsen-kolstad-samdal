@@ -2,7 +2,7 @@
 title: COSI - MRP Ordbank
 status: forslag
 created: 2026-10-21
-updated: 2026-10-30
+updated: 2026-11-02
 ---
 
 # Ordbank: COSI - MRP
@@ -73,6 +73,9 @@ Forslaget bygger på Excel-malen for flernivå stykkliste (Sebastian, 2026-10-23
 | Planlagt ordrefrigivelse (*planned order release*) | Mengden som må bestilles eller settes i produksjon i uke t − L. | planlagt frigivelse, planlagt bestilling |
 | Frigi | Å sende en ordre: bestille fra leverandør eller starte produksjon internt. | – |
 | Offset | Tidsforskyvning bakover med ledetiden: en ordre som må være mottatt i uke 6 med ledetid 2, må frigis i uke 4. | – |
+| Kumulativ ledetid (*cumulative lead time*) | Den lengste summen av ledetider langs en sti fra delen ned gjennom stykklisten: delens egen L pluss den største kumulative ledetiden blant underkomponentene. For en del uten underkomponenter er den lik L. Kilde: ASCM Dictionary, 18. utg., s. 47. | samlet ledetid, stablet ledetid, kritisk sti |
+| Lavnivåkode (*low-level code*) | Det laveste nivået en del står på i stykklisten. Nettobehovet for delen beregnes først når alle bruttobehov ned til dette nivået er beregnet, så en felles del beregnes én gang. Kilde: ASCM Dictionary, 18. utg., s. 109. | laveste nivå (alene) |
+| Omplanleggingsantakelse (*rescheduling assumption*) | MRP antar at et planlagt mottak kan fremskyndes lettere enn en ny ordre kan frigis og mottas. Planlagt ordremottak lages derfor først når alle planlagte mottak er brukt. Kilde: ASCM Dictionary, 18. utg., s. 164. Se research om MRP-regler (2026-11-02). | – |
 | Forventet lagerbeholdning (*projected on-hand*) | Disponibel beholdning + planlagt ordremottak. | forventet lager, forventet beholdning, beregnet lager |
 | Forfalt frigivelse | En planlagt ordrefrigivelse der t − L < 1. Den legges i uke 1 og blir bruttobehov i uke 1 for underkomponentene. | bestilling før planstart, uke 0 |
 | Bestillingsforslag | Det brukeren handler på: del, frigivelsesuke og mengde. | – |
