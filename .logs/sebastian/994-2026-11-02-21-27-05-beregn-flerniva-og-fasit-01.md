@@ -44,10 +44,12 @@ Sebastian ba om å oppdatere `beregn()` og fasit 01 i `testdata/lag_testdata.py`
 - Malen og testeksempel-01.xlsx fikk bare nytt tidsstempel og ble tilbakestilt.
 - Sebastian har kontrollert de nye fasitverdiene. Status i fasitens Regler-ark og i README er «kontrollert for hånd».
 - Sebastian godkjente FR-29-regelen: under kontrollen fremskyndes ingen andre mottak, ellers kunne appen rådet til å kansellere et tidlig mottak og fremskynde et senere. Regelen er skrevet inn i PRD FR-29 og i ordbanken.
+- Sebastian godkjente at mottak etter uke H ignoreres (FR-3 avviser dem uansett: uke må være 1–H) og at «Bestilling forsinket» sier «Leveranse til kunde» for deler rett under ferdigproduktet.
+- Underdeler under en del som står flere steder, valg B: underdelene kan stå bare under første forekomst eller likt under hver. Ulike underdeler er en valideringsfeil.
+  - Ny regel og tre testbare konsekvenser i PRD FR-3.
+  - `struktur()` gir `ValueError` når underdelene er ulike.
+  - Sjekket med skript: én rad med antall 2, samme blokk to ganger og underdeler bare under første forekomst gir like bruttobehov. Ulike blokker gir feilen.
 - Kodeendringene og dokumentendringene er ikke committet (venter på Sebastian).
 
 ### Åpne punkter
-- Valg i `beregn()` som må bekreftes:
-  - Planlagte mottak etter uke H blir ignorert.
-  - Står en del med underdeler flere steder, telles underdelene bare under første forekomst.
-  - «Bestilling forsinket» for deler rett under ferdigproduktet sier «Leveranse til kunde blir forsinket».
+- Malens Kontroll-kolonne skal også vise feil når en del med underdeler står flere steder med ulike underdeler (PRD FR-3).
