@@ -16,4 +16,4 @@
 - [ ] 2026-11-02 [research-for-prd](995-2026-11-02-16-53-23-research-for-prd.md) — kjør Finalize i `bmad-prd` når testeksempelet med tre nivåer og fasiten finnes
 - [ ] 2026-11-02 [beregn-flerniva-og-fasit-01](994-2026-11-02-21-27-05-beregn-flerniva-og-fasit-01.md) — kontroller for hånd nye fasitverdier for 300-005 og meldingene for 300-005/300-006 i `testeksempel-01-fasit.xlsx`
 - [ ] 2026-11-02 [beregn-flerniva-og-fasit-01](994-2026-11-02-21-27-05-beregn-flerniva-og-fasit-01.md) — bekreft valgene i `beregn()`: FR-29-tolkningen (uten fremskynding av andre mottak), mottak etter uke H ignoreres, underdeler telles bare under første forekomst av en del, «Leveranse til kunde» for deler rett under ferdigproduktet
-- [ ] 2026-11-02 [beregn-flerniva-og-fasit-01](994-2026-11-02-21-27-05-beregn-flerniva-og-fasit-01.md) — lukk PRD §9 spm. 9 (fasit for 300-005 er oppdatert)
+- [x] 2026-11-02 [beregn-flerniva-og-fasit-01](994-2026-11-02-21-27-05-beregn-flerniva-og-fasit-01.md) — lukk PRD §9 spm. 9 (fasit for 300-005 er oppdatert) (løst 2026-11-02)
