@@ -49,7 +49,7 @@ Sebastian ba om å oppdatere `beregn()` og fasit 01 i `testdata/lag_testdata.py`
   - Ny regel og tre testbare konsekvenser i PRD FR-3.
   - `struktur()` gir `ValueError` når underdelene er ulike.
   - Sjekket med skript: én rad med antall 2, samme blokk to ganger og underdeler bare under første forekomst gir like bruttobehov. Ulike blokker gir feilen.
-- Kodeendringene og dokumentendringene er ikke committet (venter på Sebastian).
+- Kode, fasit, PRD, ordbank og README er committet i b842795 og pushet til `Sebastian/Branch` sammen med loggene.
 
 ### Åpne punkter
 - Malens Kontroll-kolonne skal også vise feil når en del med underdeler står flere steder med ulike underdeler (PRD FR-3).
