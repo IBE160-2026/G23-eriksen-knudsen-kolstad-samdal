@@ -73,6 +73,7 @@ Forslaget bygger på Excel-malen for flernivå stykkliste (Sebastian, 2026-10-23
 | Planlagt ordrefrigivelse (*planned order release*) | Mengden som må bestilles eller settes i produksjon i uke t − L. | planlagt frigivelse, planlagt bestilling |
 | Frigi | Å sende en ordre: bestille fra leverandør eller starte produksjon internt. | – |
 | Offset | Tidsforskyvning bakover med ledetiden: en ordre som må være mottatt i uke 6 med ledetid 2, må frigis i uke 4. | – |
+| Ledetid fra ferdigproduktet | For en del: den største summen av L langs en sti i stykklisten fra ferdigproduktet ned til og med delen. Brukes i «Ledetid overskrider horisont» (PRD FR-9). Ikke det samme som kumulativ ledetid, som regnes nedover fra delen. | ledetid fra toppen |
 | Kumulativ ledetid (*cumulative lead time*) | Den lengste summen av ledetider langs en sti fra delen ned gjennom stykklisten: delens egen L pluss den største kumulative ledetiden blant underkomponentene. For en del uten underkomponenter er den lik L. Kilde: ASCM Dictionary, 18. utg., s. 47. | samlet ledetid, stablet ledetid, kritisk sti |
 | Lavnivåkode (*low-level code*) | Det laveste nivået en del står på i stykklisten. Nettobehovet for delen beregnes først når alle bruttobehov ned til dette nivået er beregnet, så en felles del beregnes én gang. Kilde: ASCM Dictionary, 18. utg., s. 109. | laveste nivå (alene) |
 | Omplanleggingsantakelse (*rescheduling assumption*) | MRP antar at et planlagt mottak kan fremskyndes lettere enn en ny ordre kan frigis og mottas. Planlagt ordremottak lages derfor først når alle planlagte mottak er brukt. Kilde: ASCM Dictionary, 18. utg., s. 164. Se research om MRP-regler (2026-11-02). | – |
@@ -90,8 +91,9 @@ Forslaget bygger på Excel-malen for flernivå stykkliste (Sebastian, 2026-10-23
 | Eksepsjon (*exception message*) | Et varsel om avvik for en del, i en uke eller for hele delen. **[BESLUTNING]** Se merknad 3. | eksepsjonsmelding, exception |
 | Bestilling forsinket | Forfalt frigivelse og disponibel beholdning < 0. Leveransen blir forsinket til kunden (ferdigproduktet) eller til produksjonen av delen over. | Bestilling forsinket – nytt bestillingsforslag |
 | Bruk av sikkerhetslager | Forfalt frigivelse og 0 ≤ disponibel beholdning < SS. | Under sikkerhetslager |
-| Mottak forsinket | Nettobehov > 0 og et planlagt mottak ligger i en senere uke. | – |
-| Ledetid overskrider horisont | L ≥ H. Gjelder hele delen. | Innkjøpstid overskrider horisont |
+| Mottak forsinket | Nettobehov > 0 og et planlagt mottak ligger i en senere uke. Mottaket regnes som fremskyndet til uken med nettobehovet, og det lages planlagt ordremottak bare for et eventuelt restbehov (PRD FR-6, FR-12, endret 2026-11-02). | – |
+| Kanseller mottak | Et planlagt mottak som ikke trengs noe sted i horisonten: delen får ikke noe nettobehov fra mottaksuken til uke H når mottaket tas bort (PRD FR-29, ny 2026-11-02). | Utsett mottak (ikke en egen eksepsjon) |
+| Ledetid overskrider horisont | Ledetid fra ferdigproduktet ≥ H. Gjelder hele delen (PRD FR-9, endret 2026-11-02). | Innkjøpstid overskrider horisont |
 | Kritisk del | En del med minst én eksepsjon. Markeres i resultattabellen, så brukeren raskt ser hvor det må handles. | kritisk komponent (se merknad 1) |
 | Avvik | At planen ikke går opp for en del, f.eks. at lageret går under sikkerhetslager eller at en bestilling kommer for sent. Avvik gir eksepsjoner. | – |
 | Falsk positiv / falsk negativ | Feil i eksepsjonene: en eksepsjon uten avvik (falsk positiv), eller et avvik uten eksepsjon (falsk negativ). | – |

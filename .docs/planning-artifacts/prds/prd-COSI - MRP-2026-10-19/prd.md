@@ -2,7 +2,7 @@
 title: COSI - MRP PRD
 status: draft
 created: 2026-10-19
-updated: 2026-10-26
+updated: 2026-11-02
 ---
 
 # PRD: COSI - MRP
@@ -11,7 +11,7 @@ updated: 2026-10-26
 
 Denne PRD-en beskriver hva første versjon av COSI - MRP skal gjøre. Den er skrevet for gruppen G23 i IBE160, for sensor og for de neste stegene i BMAD (arkitektur, epics og stories). Den bygger på product brief (`.docs/planning-artifacts/briefs/brief-COSI - MRP-2026-09-13/brief.md`), faglærers tilbakemelding (`tilbakemelding-product-brief.md` i samme mappe) og testdataene i `testdata/`. Den gjentar ikke innholdet i dem.
 
-Begrepene i §3 Ordliste brukes likt i hele dokumentet. Funksjonene står i §4, med funksjonskrav (FR-1 til FR-28) under hver funksjon. Kravene har faste nummer, så epics, stories og tester kan vise til dem. Antagelser er merket `[ASSUMPTION]` der de står og samlet i §10. Tekniske valg og bakgrunn står i `addendum.md` i denne mappen.
+Begrepene i §3 Ordliste brukes likt i hele dokumentet. Funksjonene står i §4, med funksjonskrav (FR-1 til FR-29) under hver funksjon. Kravene har faste nummer, så epics, stories og tester kan vise til dem. Antagelser er merket `[ASSUMPTION]` der de står og samlet i §10. Tekniske valg og bakgrunn står i `addendum.md` i denne mappen.
 
 **Status:** Utkast laget på rask vei 2026-10-19. Alt som var tilgjengelig da, regnes som bestemt. Gruppen går gjennom utkastet på et felles møte og kan endre det.
 
@@ -70,7 +70,8 @@ Første versjon dekker ett ferdigprodukt med flernivå BOM (stykkliste) på innt
 - **Lagerbeholdning** – Antall på lager før uke 1.
 - **Sikkerhetslager (SS)** – Den laveste lagerbeholdningen planen skal holde.
 - **Ledetid (L)** – Antall uker fra en ordre frigis til den mottas: innkjøpstid for deler som kjøpes inn, produksjonstid for deler som produseres selv. Minst 1 for komponenter. 0 er lov for ferdigproduktet.
-- **Planlagt mottak** – Et innkjøp som allerede er bestilt, eller en produksjonsordre som allerede er startet, og som kommer i en bestemt uke. Oppgis i Excel-malen.
+- **Ledetid fra ferdigproduktet** – For en del: den største summen av ledetider langs en sti i stykklisten fra ferdigproduktet ned til og med delen. Sier hvor mange uker før behovet for ferdigproduktet delen må bestilles (FR-9).
+- **Planlagt mottak** – Et innkjøp som allerede er bestilt, eller en produksjonsordre som allerede er startet, og som kommer i en bestemt uke. Oppgis i Excel-malen. Beregningen kan regne det som fremskyndet (FR-6).
 - **Bruttobehov** – Behovet for en del i en uke. For ferdigproduktet er det MPS. For en komponent er det summen av planlagte ordrefrigivelser for hver overordnet del × antall per enhet.
 - **Disponibel beholdning** – Forventet lagerbeholdning fra uken før + planlagte mottak − bruttobehov. Regnes før nye ordrer.
 - **Nettobehov** – Det som mangler for å holde sikkerhetslageret: maks(0, SS − disponibel beholdning).
@@ -82,7 +83,7 @@ Første versjon dekker ett ferdigprodukt med flernivå BOM (stykkliste) på innt
 - **Forfalt frigivelse** – En planlagt ordrefrigivelse der t − L < 1. Den legges i uke 1.
 - **Forventet lagerbeholdning** – Disponibel beholdning + planlagt ordremottak.
 - **Bestillingsforslag** – En planlagt ordrefrigivelse med del, uke og mengde. Det er dette brukeren handler på. For deler som kjøpes inn er det et innkjøp, for deler som produseres selv en produksjonsordre.
-- **Eksepsjon** – Et varsel om avvik for en del, enten i en bestemt uke eller for hele delen. Det er fire eksepsjonstyper (§4.3).
+- **Eksepsjon** – Et varsel om avvik for en del, enten i en bestemt uke eller for hele delen. Det er fem eksepsjonstyper (§4.3).
 - **Kritisk komponent** – En del med minst én eksepsjon. Gjelder alle nivåer, også ferdigproduktet.
 - **Kjøring** – Én beregning fra én opplastet Excel-mal. Gir én resultattabell.
 - **Resultattabell** – Visningen av en kjøring: radene bruttobehov, planlagte mottak, forventet lagerbeholdning, nettobehov, planlagte ordremottak og planlagte ordrefrigivelser, per uke og del, med eksepsjonene markert.
@@ -150,7 +151,7 @@ Er det minst én valideringsfeil, vises alle feilene i én liste og ingen beregn
 
 ### 4.2 MRP-beregning
 
-**Beskrivelse:** Appen beregner én MRP-tabell for hvert varenummer over hele horisonten, også for ferdigproduktet. Beregningen er standard MRP for flernivå BOM med lot-for-lot. Den gjøres nivå for nivå ovenfra og ned: planlagte ordrefrigivelser for en del, ganget med antall per enhet, blir bruttobehov for delene rett under. Reglene per del (FR-6–FR-8) er de som er bekreftet i fasiten (`testdata/testeksempel-01-fasit.xlsx`, arket Regler). Gjelder UJ-1.
+**Beskrivelse:** Appen beregner én MRP-tabell for hvert varenummer over hele horisonten, også for ferdigproduktet. Beregningen er standard MRP for flernivå BOM med lot-for-lot. Den gjøres nivå for nivå ovenfra og ned: planlagte ordrefrigivelser for en del, ganget med antall per enhet, blir bruttobehov for delene rett under. Reglene per del (FR-6–FR-8) er de som er bekreftet i fasiten (`testdata/testeksempel-01-fasit.xlsx`, arket Regler), med én endring fra 2026-11-02: planlagte mottak som kommer for sent, regnes som fremskyndet før nye ordrer lages (FR-6). Reglene er sjekket mot litteraturen og ERP-systemer i `.docs/planning-artifacts/research/academic-lit-mrp-regler-forfalte-ordrer-eksepsjoner-h-2026-11-02/research.md`. Gjelder UJ-1.
 
 #### FR-5: Beregn bruttobehov
 
@@ -174,13 +175,17 @@ En del som står flere steder i stykklisten, beregnes én gang, med samlet brutt
 
 For hver del og uke beregner appen disponibel(t) = forventet lagerbeholdning(t−1) + planlagte mottak(t) − bruttobehov(t). Forventet lagerbeholdning før uke 1 er lagerbeholdningen. Deretter beregnes nettobehov(t) = maks(0, SS − disponibel(t)).
 
+Er nettobehov(t) > 0 og finnes det planlagte mottak for varenummeret i senere uker, regnes det første senere mottaket som fremskyndet til uke t. Hele mottaket flyttes, og disponibel(t) og nettobehov(t) regnes på nytt. Er nettobehovet fortsatt > 0, flyttes neste senere mottak, og så videre. Bare et nettobehov som står igjen når det ikke finnes flere senere mottak, gir planlagt ordremottak (FR-7). Hvert flyttet mottak gir eksepsjonen «Mottak forsinket» (FR-12). Dette følger standardregelen i MRP om at åpne ordrer fremskyndes før nye ordrer lages.
+
 **Konsekvenser (testbare):**
-- Nettobehov for alle komponenter i testeksempel 01 er identisk med fasiten.
+- Nettobehov for alle komponenter i testeksempel 01 er identisk med fasiten (etter at fasiten for 300-005 er oppdatert, se §9 spørsmål 9).
 - Flere planlagte mottak for samme varenummer og uke legges sammen.
+- 300-005 Gassfjær i testeksempel 01: mottaket på 100 i uke 4 regnes som mottatt i uke 3. Uke 3 får da ikke noe planlagt ordremottak, og forventet lagerbeholdning blir 100 i uke 3 og 80 i uke 4.
+- Det lages aldri både et planlagt ordremottak og et flyttet mottak for det samme nettobehovet, med mindre mottaket er for lite.
 
 #### FR-7: Beregn planlagte ordremottak og forventet lagerbeholdning
 
-Med lot-for-lot er planlagt ordremottak(t) = nettobehov(t), og forventet lagerbeholdning(t) = disponibel(t) + planlagt ordremottak(t). Et forfalt planlagt ordremottak vises likevel i uke t, der behovet er, selv om det fysisk kommer tidligst i uke 1 + L. Forventet lagerbeholdning forutsetter altså at behovet dekkes i tide. Avviket vises som eksepsjon (FR-10, FR-11).
+Med lot-for-lot er planlagt ordremottak(t) = nettobehov(t), og forventet lagerbeholdning(t) = disponibel(t) + planlagt ordremottak(t). Et forfalt planlagt ordremottak vises likevel i uke t, der behovet er, selv om det fysisk kommer tidligst i uke 1 + L. Forventet lagerbeholdning forutsetter altså at behovet dekkes i tide. Avviket vises som eksepsjon (FR-10, FR-11). Dette er en bevisst forenkling. De fleste ERP-systemene planlegger i stedet fremover fra i dag og viser mangelen i forventet lagerbeholdning (se addendum).
 
 **Konsekvenser (testbare):**
 - Forventet lagerbeholdning er aldri under SS når lot-for-lot brukes.
@@ -202,15 +207,16 @@ Hvert planlagt ordremottak i uke t gir en planlagt ordrefrigivelse i uke t − L
 
 ### 4.3 Eksepsjoner
 
-**Beskrivelse:** Appen finner fire eksepsjonstyper under beregningen, for deler på alle nivåer. Hver eksepsjon har varenummer, uke (eller «–» for hele delen), type og en kort melding på norsk som forklarer hva som er galt og hva brukeren kan gjøre. En uke kan ha flere eksepsjoner. En del med minst én eksepsjon er kritisk. Definisjonene følger briefen og fasiten. Gjelder UJ-1.
+**Beskrivelse:** Appen finner fem eksepsjonstyper under beregningen, for deler på alle nivåer. Hver eksepsjon har varenummer, uke (eller «–» for hele delen), type og en kort melding på norsk som forklarer hva som er galt og hva brukeren kan gjøre. En uke kan ha flere eksepsjoner. En del med minst én eksepsjon er kritisk. Definisjonene følger briefen og fasiten. Gjelder UJ-1.
 
 #### FR-9: Ledetid overskrider horisont
 
-Er L ≥ H, får delen eksepsjonen «Ledetid overskrider horisont» med uke «–», uansett behov.
+Er ledetiden fra ferdigproduktet ≥ H, får delen eksepsjonen «Ledetid overskrider horisont» med uke «–», uansett behov. Ledetiden fra ferdigproduktet er den største summen av L langs en sti i stykklisten fra ferdigproduktet ned til og med delen. Står delen flere steder, gjelder den lengste stien. Meldingen oppgir summen og stien den kommer fra.
 
 **Konsekvenser (testbare):**
-- 300-006 Stolfot (L = 10, H = 10) i testeksempel 01 får eksepsjonen selv om nettobehovet er 0 i alle uker.
-- En del med L = H − 1 får ikke eksepsjonen.
+- 300-006 Stolfot (L = 10, H = 10) under et ferdigprodukt med L = 0 i testeksempel 01 får eksepsjonen selv om nettobehovet er 0 i alle uker.
+- En del med ledetid fra ferdigproduktet H − 1 får ikke eksepsjonen.
+- Med H = 10, ferdigprodukt L = 1, del på nivå .1 L = 4 og del under den på nivå ..2 L = 5, får delen på nivå ..2 eksepsjonen (1 + 4 + 5 = 10), selv om ingen enkelt ledetid er ≥ H. Delen på nivå .1 (1 + 4 = 5) får den ikke.
 
 #### FR-10: Bestilling forsinket
 
@@ -229,11 +235,21 @@ Har en uke t nettobehov > 0, forfalt frigivelse og 0 ≤ disponibel(t) < SS, få
 
 #### FR-12: Mottak forsinket
 
-Har en uke t nettobehov > 0, og finnes det et planlagt mottak for varenummeret i en senere uke, får uken eksepsjonen «Mottak forsinket». Meldingen viser til det første senere mottaket og foreslår å fremskynde det: hos leverandøren for deler som kjøpes inn, i egen produksjon for deler som produseres selv.
+Når et planlagt mottak regnes som fremskyndet til uke t (FR-6), får uke t eksepsjonen «Mottak forsinket». Meldingen oppgir mottaket (uke og antall), uken det må fremskyndes til, og hvor det må gjøres: hos leverandøren for deler som kjøpes inn, i egen produksjon for deler som produseres selv. Det lages ikke noe nytt bestillingsforslag for den delen av behovet mottaket dekker.
 
 **Konsekvenser (testbare):**
-- 300-005 Gassfjær får eksepsjonen i uke 3, med henvisning til mottaket i uke 4.
+- 300-005 Gassfjær får eksepsjonen i uke 3: mottaket på 100 i uke 4 må fremskyndes til uke 3. Det lages ingen frigivelse for uke 3-behovet.
 - 300-007 Skruesett, med mottak i uke 2 før første nettobehov i uke 3, får ingen eksepsjon.
+- Er mottaket for lite til å dekke nettobehovet, får uken både denne eksepsjonen og et planlagt ordremottak for resten.
+
+#### FR-29: Kanseller mottak
+
+Et planlagt mottak som ikke trengs noe sted i horisonten, får eksepsjonen «Kanseller mottak» i mottaksuken. Mottaket trengs ikke hvis delen ikke får noe nettobehov fra mottaksuken til og med uke H når mottaket tas bort fra beregningen. Meldingen foreslår å kansellere eller utsette mottaket. Et mottak som kommer for tidlig, men som trengs senere i horisonten, gir ingen eksepsjon. Grunnen er at det ville gitt mange varsler uten reell handling (SM-C2).
+
+**Konsekvenser (testbare):**
+- 300-007 Skruesett (mottak i uke 2, nettobehov fra uke 3) får ikke eksepsjonen.
+- En del med lager over SS i hele horisonten og et planlagt mottak får eksepsjonen i mottaksuken.
+- Et mottak som er regnet som fremskyndet (FR-6), kan ikke få eksepsjonen.
 
 #### FR-13: Marker kritiske komponenter
 
@@ -285,7 +301,7 @@ Hver rad i MRP-tabellen har en kort forklaring på norsk av hvordan den er bereg
 
 **Konsekvenser (testbare):**
 - For 300-003 Hjul, uke 1, kan brukeren se: forventet lagerbeholdning før uke 1 = 80, planlagte mottak = 0, bruttobehov = 100, disponibel = -20, SS = 30, nettobehov = 50.
-- Alle seks radtypene og alle fire eksepsjonstypene har en forklaring.
+- Alle seks radtypene og alle fem eksepsjonstypene har en forklaring.
 - For en felles del viser forklaringen av bruttobehovet bidraget fra hver overordnet del.
 
 ### 4.5 Endringer og før/etter-sammenligning
@@ -405,7 +421,7 @@ Fra appens startside kan brukeren laste ned den tomme Excel-malen og testeksempe
 
 - Opplasting og validering av Excel-malen (FR-1–FR-4)
 - MRP-beregning for flernivå BOM (inntil tre nivåer, med felles deler) og ett ferdigprodukt med lot-for-lot (FR-5–FR-8, FR-28)
-- Fire eksepsjonstyper og kritiske komponenter (FR-9–FR-13)
+- Fem eksepsjonstyper og kritiske komponenter (FR-9–FR-13, FR-29)
 - Resultattabell med fremheving, sammendrag, bestillingsforslag og forklaringer (FR-14–FR-18)
 - Lokal lagring av siste kjøring og før/etter-sammenligning (FR-19–FR-21)
 - Eksport til Excel (FR-22–FR-23)
@@ -428,7 +444,7 @@ Fra appens startside kan brukeren laste ned den tomme Excel-malen og testeksempe
 
 **Primære**
 - **SM-1 Korrekt beregning:** 100 % samsvar mellom resultattabellen og fasiten for alle testeksempler i `testdata/`, for hver uke, del og rad. Minst ett testeksempel har 5–10 komponenter fordelt på 3 nivåer og minst én felles del. Gjelder FR-5–FR-8, FR-14, FR-28.
-- **SM-2 Pålitelige eksepsjoner:** For hver av de fire eksepsjonstypene utløses riktig eksepsjon i hvert kjent avvikstilfelle, uten falske eller manglende eksepsjoner. Gjelder FR-9–FR-13.
+- **SM-2 Pålitelige eksepsjoner:** For hver av de fem eksepsjonstypene utløses riktig eksepsjon i hvert kjent avvikstilfelle, uten falske eller manglende eksepsjoner. Gjelder FR-9–FR-13, FR-29.
 - **SM-3 Forståelig uten forkunnskap:** Etter en kort introduksjon finner og forklarer 3 av 3 testpersoner en kritisk komponent, bestillingsmengde og bestillingsuke uten hjelp fra utviklerne. Gjelder FR-15–FR-18.
 
 **Sekundære**
@@ -451,9 +467,13 @@ Fra appens startside kan brukeren laste ned den tomme Excel-malen og testeksempe
 6. Hvilken frist gjelder? Den er ikke kommunisert ennå, men ventes midt i desember 2026.
 7. Det trengs et testeksempel med 5–10 komponenter fordelt på 3 nivåer, minst én felles del og egen fasit (FR-5, FR-28, SM-1). Testeksempel 01 har bare nivå 0 og .1. Det kan være det samme som testeksempel 02 i spørsmål 2. **Svar (2026-10-26):** Testeksempelet lages i løpet av noen dager.
 8. Fasitmeldingen for «Bestilling forsinket» i testeksempel 01 sier «Leveranse til kunde blir forsinket» for 300-003 Hjul, som er en komponent på nivå .1. Etter FR-10 og briefen skal den si at produksjonen av ferdigproduktet blir forsinket. Skal fasiten endres? **Svar (2026-10-26):** Ordnes når de nye testeksemplene lages.
+9. Fasiten for testeksempel 01 må oppdateres for 300-005 Gassfjær etter FR-6/FR-12 (2026-11-02). Mottaket i uke 4 regnes som mottatt i uke 3. Planlagt ordremottak og frigivelse for uke 3-behovet (10, frigitt i uke 1) faller bort, og forventet lagerbeholdning og senere ordrer endres. `beregn()` i `testdata/lag_testdata.py` og fasitreglene må endres samtidig. Hvem gjør det, og når?
+10. Briefen og addendumet til briefen definerer fire eksepsjonstyper, og «Mottak forsinket» står der med den gamle regelen. Skal briefen oppdateres med FR-6/FR-12 og den nye typen «Kanseller mottak» (FR-29), eller er det nok at PRD-en gjelder?
+11. Testeksempelet med tre nivåer (spørsmål 7) bør ha minst én del der ledetiden fra ferdigproduktet er ≥ H uten at noen enkelt ledetid er det (FR-9), og ett planlagt mottak som ikke trengs (FR-29).
 
 ## 10. Antagelser
 
+- §4.2 FR-6 – Et planlagt mottak kan regnes som fremskyndet fra en hvilken som helst senere uke i horisonten, og hele mottaket flyttes. ERP-systemer begrenser dette ofte med en omplanleggingshorisont, men det tas ikke med i v1.
 - §4.4 FR-16 – Kritiske komponenter står øverst i tabellen. Resten følger rekkefølgen i stykklisten.
 - §4.4 FR-18 – Forklaringen vises når brukeren peker på eller klikker på raden eller cellen.
 - §4.5 FR-20 – Endringer som ikke påvirker bestillingsforslag eller eksepsjoner, vises ikke som endringer.
