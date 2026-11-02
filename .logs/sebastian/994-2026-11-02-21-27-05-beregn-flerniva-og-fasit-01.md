@@ -42,12 +42,12 @@ Sebastian ba om å oppdatere `beregn()` og fasit 01 i `testdata/lag_testdata.py`
 - `.docs/ordbank.md`: «Mottak forsinket» og «Ledetid overskrider horisont» er presisert.
 - `testdata/README.md`: tabellen for testeksempel 01 bruker varenumre og «ledetid». Beskrivelsen av 300-005 og 300-006 og statusen er oppdatert. Dette lukker et punkt i issues.
 - Malen og testeksempel-01.xlsx fikk bare nytt tidsstempel og ble tilbakestilt.
+- Sebastian har kontrollert de nye fasitverdiene. Status i fasitens Regler-ark og i README er «kontrollert for hånd».
+- Sebastian godkjente FR-29-regelen: under kontrollen fremskyndes ingen andre mottak, ellers kunne appen rådet til å kansellere et tidlig mottak og fremskynde et senere. Regelen er skrevet inn i PRD FR-29 og i ordbanken.
 - Kodeendringene og dokumentendringene er ikke committet (venter på Sebastian).
 
 ### Åpne punkter
-- Kontroller for hånd de nye fasitverdiene for 300-005 og meldingene for 300-005 og 300-006 i testeksempel-01-fasit.xlsx.
-- Valg som må bekreftes:
-  - FR-29: «trengs ikke» er tolket som at det ikke er noe nettobehov fra mottaksuken når mottaket fjernes *og ingen andre mottak fremskyndes*.
+- Valg i `beregn()` som må bekreftes:
   - Planlagte mottak etter uke H blir ignorert.
   - Står en del med underdeler flere steder, telles underdelene bare under første forekomst.
   - «Bestilling forsinket» for deler rett under ferdigproduktet sier «Leveranse til kunde blir forsinket».
