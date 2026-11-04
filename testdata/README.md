@@ -2,7 +2,7 @@
 
 Denne mappen samler Excel-malen og testeksemplene for COSI - MRP.
 
-- **Excel-mal:** den faste malen brukeren laster opp (MPS, flernivå BOM, lagerstatus, planlagte mottak, ledetid og sikkerhetslager).
+- **Excel-mal:** den faste malen brukeren laster opp (MPS, flernivå BOM, lagerstatus, valgfrie åpne bestillinger/planlagte mottak, ledetid og sikkerhetslager).
 - **Testeksempler med fasit:** fiktive datasett (5–10 komponenter, 8–12 uker) med manuelt utregnede fasittabeller per uke og komponent. Disse brukes som grunnlag for automatiske tester av beregningsmotoren og eksepsjonene.
 
 Sensor kan bruke filene her for å prøve appen direkte etter README i roten av repoet.
@@ -28,7 +28,7 @@ Sensor kan bruke filene her for å prøve appen direkte etter README i roten av 
   - Neste rad kommer frem når nivå og varenummer i raden over er fylt ut.
   - Varenummer: forslaget er varegruppe-løpenummer, f.eks. 100-001 (ferdigvare), 200-001 (komponent som produseres selv), 300-001 (komponent som kjøpes inn).
 - **MPS** (en periode kalt «Prognostiserte behov»): uke 1–12 og antall ferdigprodukter. Åtte uker (minste horisont) vises fra start, og neste uke kommer frem når ukene over er fylt ut. Horisonten er antall sammenhengende utfylte uker fra uke 1 (8–12).
-- **Planlagte mottak:** Varenummer, Uke, Antall. Varenummer velges fra en nedtrekksliste med varenumrene i Stykkliste, som oppdateres av seg selv. Én rad per mottak (innkjøp eller produksjonsordre som allerede er startet), og neste rad kommer frem når raden over er fylt ut (inntil 200). Arket kan stå tomt.
+- **Planlagte mottak:** Varenummer, Forventet mottaksuke, Bestilt antall. Varenummer velges fra en nedtrekksliste med varenumrene i Stykkliste, som oppdateres av seg selv. Én rad per åpen bestilling som er lagt hos leverandør eller produksjonsordre som allerede er startet. Arket er valgfritt og kan stå tomt hvis kunden ikke har slike bestillinger. Forventet mottaksuke må være innenfor planleggingshorisonten; neste rad kommer frem når raden over er fylt ut (inntil 200).
 - **Veien videre:** hva brukeren gjør etter utfylling. Utkast, bygges ut etter hvert som appen utvikles.
 
 Det skal ikke limes inn data i celler med nedtrekksliste (Nivå og Type i Stykkliste, Varenummer i Planlagte mottak). Innliming fjerner listen og valideringen i cellen. Regelen står i Veiledning, og Kontroll-kolonnen fanger opp ugyldige nivåer og typer.

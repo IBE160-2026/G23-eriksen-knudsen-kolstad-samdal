@@ -318,12 +318,13 @@ def lag_mal(mps=None, stykkliste=None, mottak=None):
         ((PROGNOSE, PROGNOSE), "Antall ferdigprodukter per uke. Fyll ut fra uke 1 og sammenhengende fremover. "
                                f"De {PROGNOSE_START} første ukene vises fra start, og neste uke kommer frem når "
                                f"alle ukene over er fylt ut. Horisonten er antall utfylte uker (8–{MAKS_UKER})."),
-        (("Planlagte mottak", "Planlagte mottak"), "Bestillinger som allerede er lagt hos leverandør, og "
-                                                   "produksjonsordrer som allerede er startet. Én rad per "
-                                                   "mottak. Varenummer velges fra en liste som henter "
-                                                   "varenumrene fra Stykkliste og oppdateres av seg selv. "
-                                                   "Neste rad kommer frem når raden over er fylt ut. Arket "
-                                                   "kan stå tomt hvis det ikke finnes planlagte mottak."),
+        (("Planlagte mottak", "Planlagte mottak"), "Valgfritt: åpne bestillinger som allerede er lagt hos "
+                               "leverandør, og produksjonsordrer som allerede er startet. "
+                               "Én rad per bestilling/mottak. Oppgi varenummer, forventet "
+                               "mottaksuke og bestilt antall. Varenummer velges fra en "
+                               "liste som henter varenumrene fra Stykkliste. Neste rad "
+                               "kommer frem når raden over er fylt ut. Arket kan stå tomt "
+                               "hvis kunden ikke har åpne bestillinger eller planlagte mottak."),
         (("Veien videre", "Veien videre"), "Hva du gjør når malen er ferdig utfylt."),
     ], sluttkol=8)
     r = overskrift(ws, r + 1, "Regler for nivåer i stykklisten:")
@@ -359,8 +360,9 @@ def lag_mal(mps=None, stykkliste=None, mottak=None):
                                        "bl.a. brudd på reglene for nivåer og verdier som ikke finnes i "
                                        "nedtrekkslistene. Den skal være tom når stykklisten er ferdig."),
         ((PROGNOSE, PROGNOSE), "Antall ferdigprodukter er heltall ≥ 0."),
-        (("Planlagte mottak", "Planlagte mottak"), "Varenummer velges fra listen. Uke må ligge innenfor "
-                                                   "horisonten (1 til siste utfylte uke)."),
+        (("Planlagte mottak", "Planlagte mottak"), "Varenummer velges fra listen. Forventet mottaksuke må "
+                               "ligge innenfor horisonten (1 til siste utfylte uke). "
+                               "Bestilt antall må være et heltall større enn eller lik 1."),
     ], sluttkol=8)
     r = overskrift(ws, r + 1, "Forslag til varenummer:")
     r = tekstrader(ws, r, [
@@ -471,7 +473,7 @@ def lag_mal(mps=None, stykkliste=None, mottak=None):
     # Planlagte mottak: neste rad vises når raden over er fylt ut (overskriftsraden teller som utfylt)
     ws = wb.create_sheet("Planlagte mottak")
     ws.sheet_view.showGridLines = False
-    hode(ws, 1, ["Varenummer", "Uke", "Antall"])
+    hode(ws, 1, ["Varenummer", "Forventet mottaksuke", "Bestilt antall"])
     siste = MOTTAK_RADER + 1
     for i in range(MOTTAK_RADER):
         rad = mottak[i] if eksempel and i < len(mottak) else [None] * 3
@@ -494,7 +496,7 @@ def lag_mal(mps=None, stykkliste=None, mottak=None):
                      f"i {PROGNOSE}.")
     regel_validering(ws, f"C2:C{siste}", f"AND({forrige_fylt},C2=INT(C2),C2>=1)",
                      "Fyll ut raden over først. Antall må være et heltall større enn eller lik 1.")
-    bredder(ws, {"A": 14, "B": 8, "C": 10, "D": 4, "E": 18})
+    bredder(ws, {"A": 14, "B": 24, "C": 16, "D": 4, "E": 18})
     ws.freeze_panes = "A2"
     tilbake_lenke(ws, "E1")
 
