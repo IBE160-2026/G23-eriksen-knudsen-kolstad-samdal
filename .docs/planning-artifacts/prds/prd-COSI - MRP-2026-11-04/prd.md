@@ -1,13 +1,13 @@
 - Excel-malen skal ha et valgfritt område for åpne/fremtidige bestillinger, med materiale, bestilt mengde og forventet mottaksuke.
 ---
-title: COSI - MRP PRD
+title: Forslag til PRD: COSI - MRP
 status: draft
 created: 2026-11-04
 updated: 2026-11-04
 language: norsk
 ---
 
-# PRD-utkast: COSI - MRP
+# Forslag til PRD: COSI - MRP
 
 > **Status:** Arbeidsutkast under utarbeidelse med coaching path. Dette dokumentet inneholder foreløpig visjon og funksjonsområder, ikke en ferdig PRD. Punkter merket **[ÅPENT SPØRSMÅL]** må avklares før kravene ferdigstilles.
 
