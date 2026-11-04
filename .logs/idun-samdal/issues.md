@@ -1,3 +1,3 @@
 # Åpne punkter
 - [x] 2026-11-04 [prd-coaching-start](996-2026-11-04-20-20-56-prd-coaching-start.md) — Avklar om lagerkapasitetsberegningen inkluderer planlagte mottak og reserverer sikkerhetslager (mottak avklares; sikkerhetslager videreføres som eget punkt; oppdatert 2026-11-04).
-- [ ] 2026-11-04 [prd-coaching-start](996-2026-11-04-20-20-56-prd-coaching-start.md) — Avklar om sikkerhetslager reserveres i beregningen av lagerbasert produksjonskapasitet.
+- [x] 2026-11-04 [prd-coaching-start](996-2026-11-04-20-20-56-prd-coaching-start.md) — Avklar om sikkerhetslager reserveres i beregningen av lagerbasert produksjonskapasitet (løst 2026-11-04).
