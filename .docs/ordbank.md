@@ -123,6 +123,7 @@ Forslaget bygger på Excel-malen for flernivå stykkliste (Sebastian, 2026-10-23
 | Testeksempel | Et utfylt datasett med fasit, i `testdata/` (01–04). | øvingseksempel (slettet, se merknad 4) |
 | Fasit | Manuelt kontrollert forventet resultattabell og eksepsjonsliste for et testeksempel. | – |
 | Valideringstilfelle | En fil i `testdata/validering/` med nøyaktig én kjent valideringsfeil, eller ingen feil for gyldige grenseverdier. | feilfil |
+| Dekningstabell | Tabellen i `testdata/README.md` som viser hvilket testeksempel eller valideringstilfelle hvert krav testes i. | dekningsoversikt, testmatrise |
 | Vercel | Tjenesten appen publiseres på, med en lenke som kan åpnes uten installasjon. Vercel leverer bare appens kode. Innlesing, validering, beregning og lagring av kjøringer skjer i brukerens nettleser (PRD NFR-4, besluttet 2026-11-05). | – |
 | Grensetilfelle (*edge case*) | Testtilfelle i ytterkanten av det normale, f.eks. behov i uke 1, eller ledetid lik eller lengre enn horisonten. | – |
 | Tomtilstand (*empty state*) | Det appen viser før det finnes data å vise, altså før første opplasting av Excel-malen. Forteller brukeren hva som skal gjøres. | – |
@@ -131,6 +132,7 @@ Forslaget bygger på Excel-malen for flernivå stykkliste (Sebastian, 2026-10-23
 
 | Begrep | Definisjon | Ikke bruk |
 |---|---|---|
+| Avklaring | Et spørsmål gruppen har svart på, med svar og begrunnelse. Samles i `.docs/prosjektstyring/avklaringer.pptx`, ett lysbilde per avklaring. Status er «Forslag» til gruppen har bekreftet den. | beslutning (om forslag som ikke er bekreftet) |
 | Product brief | Kort dokument som beskriver problemet, brukerne, løsningen og omfanget. Første steg i BMAD-flyten, før PRD og arkitektur. | – |
 | Addendum | Tilleggsdokument til briefen med detaljer som hører hjemme i senere dokumenter (arkitektur, implementeringsplan), f.eks. faseplanen. Ved avvik gjelder briefen. | – |
 | Personavhengighet | At viktig kunnskap eller arbeid bare finnes hos én person, så bedriften blir sårbar når personen er borte. Problemet verktøyet skal løse. | – |
