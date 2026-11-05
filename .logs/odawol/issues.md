@@ -1,7 +1,7 @@
 # Åpne punkter
 
 - [x] 2026-10-31 [hent-sesjonslogg-skill](999-2026-10-31-20-01-49-hent-sesjonslogg-skill.md) — gruppen må avgjøre hvordan `main` og `Oda/Branch` flettes: `main` mangler flernivå-testdataene, og grenen mangler nyeste ordbank (løst 2026-10-31: grenen har nå begge, erstattet av punktet om å få `Oda/Branch` inn på `main`)
-- [ ] 2026-10-31 [hent-sesjonslogg-skill](999-2026-10-31-20-01-49-hent-sesjonslogg-skill.md) — ordbanken og malen er uenige: «Prognostiserte behov» og seks typer mot «MPS» og tre typer. Gruppen må velge, jf. merknad 2 i ordbanken
+- [x] 2026-10-31 [hent-sesjonslogg-skill](999-2026-10-31-20-01-49-hent-sesjonslogg-skill.md) — ordbanken og malen er uenige: «Prognostiserte behov» og seks typer mot «MPS» og tre typer. Gruppen må velge, jf. merknad 2 i ordbanken (løst 2026-11-05: besluttet av gruppen, arket heter MPS og det er tre typer, se [merge-sebastian-prd](993-2026-11-05-17-26-30-merge-sebastian-prd.md))
 - [ ] 2026-10-31 [hent-sesjonslogg-skill](999-2026-10-31-20-01-49-hent-sesjonslogg-skill.md) — gruppen må avgjøre hvordan `Oda/Branch` kommer inn på `main`: `main` har fortsatt eldre testdata uten CSV-fasit, tester og Carmens kontroll
 - [ ] 2026-11-01 [gjennomgang-testeksempel-02](998-2026-11-01-11-46-19-gjennomgang-testeksempel-02.md) — fasiten med Materiell bruker Delmontering og Råvare, mens testeksempel 02 på `Oda/Branch` bruker Komponent (Produseres selv) og Komponent (Kjøpes inn)
 - [ ] 2026-11-01 [gjennomgang-testeksempel-02](998-2026-11-01-11-46-19-gjennomgang-testeksempel-02.md) — regel 1–3 for flernivå BOM og avklaringene står som «ikke bekreftet ennå» i fasiten for testeksempel 02. Gruppen må bekrefte dem
@@ -13,3 +13,5 @@
 - [x] 2026-11-01 [prd-odas-forslag](995-2026-11-01-19-11-35-prd-odas-forslag.md) — de nye begrepene FR, NFR, SM og tomtilstand er ikke lagt inn i ordbanken (løst 2026-11-01)
 - [ ] 2026-11-01 [prd-odas-forslag](995-2026-11-01-19-11-35-prd-odas-forslag.md) — den godkjente proposalen er ikke funnet i repoet
 - [ ] 2026-11-01 [ordbank-prd-begreper](994-2026-11-01-21-26-06-ordbank-prd-begreper.md) — spørsmål 13 i `prd.md` §8 sier fortsatt at begrepene ikke er lagt inn i ordbanken, og må oppdateres
+- [ ] 2026-11-05 [merge-sebastian-prd](993-2026-11-05-17-26-30-merge-sebastian-prd.md) — Odas PRD-utkast i `prd-COSI - MRP-2026-11-01/` må sammenlignes med Sebastians PRD, og det som er verdt å beholde, må foreslås inn i hans
+- [ ] 2026-11-05 [merge-sebastian-prd](993-2026-11-05-17-26-30-merge-sebastian-prd.md) — §9 nr. 4 i Sebastians PRD (testpersoner og introduksjon til brukertesten, SM-3) tas opp på gruppemøtet
