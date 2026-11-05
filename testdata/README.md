@@ -46,7 +46,7 @@ Radene som «kommer frem» er laget med betinget formatering og datavalidering, 
 
 | Del | Tilfelle |
 |---|---|
-| 100-001 Kontorstol Basic | Ferdigproduktet uten lager, sikkerhetslager og ledetid, så frigivelsene er lik MPS |
+| 100-002 Kontorstol Basic | Ferdigproduktet uten lager, sikkerhetslager og ledetid, så frigivelsene er lik MPS |
 | 300-001 Sete, 300-002 Rygg | Normalforløp uten eksepsjoner |
 | 300-003 Hjul | Bestilling forsinket i uke 1 (behov i uke 1, lageret går under 0) |
 | 300-004 Armlene | Bruk av sikkerhetslager i uke 1 |
@@ -95,7 +95,7 @@ Testeksempel 04 samler tilfellene som ikke er dekket av 01–03. Horisonten er 1
 
 | Del | Tilfelle |
 |---|---|
-| 100-001 Kontorstol Ergo | Planlagt mottak (produksjonsordre) på ferdigproduktet som kommer i tide |
+| 100-003 Kontorstol Ergo | Planlagt mottak (produksjonsordre) på ferdigproduktet som kommer i tide |
 | 300-022 Skruesett M8 | Under Sete og Rygg. Ledetid fra ferdigproduktet 1 + 4 + 7 = 12 = H langs den lengste stien, uten at noen enkelt ledetid er ≥ H. Bestilling forsinket i uke 7 med begge delene over i meldingen |
 | 300-021 Ryggplate | Ledetid fra ferdigproduktet 11 = H − 1: ingen eksepsjon |
 | 300-023 Monteringsbrakett | Står både på nivå .1 og ..2: én tabell på lavnivåkode 2, behov fra begge |
@@ -129,7 +129,7 @@ Hvor hvert tilfelle i PRD-en testes. «Validering» betyr `validering/` (se READ
 | FR-6 / FR-12 | Mottaket for lite: fremskyndet mottak og ny ordre i samme uke | 04 (300-026) |
 | FR-6 / FR-12 | To mottak fremskyndes til samme uke | 04 (300-028) |
 | FR-6 | To mottak i samme uke legges sammen | 04 (300-027) |
-| FR-6 / FR-29 | Mottak i tide som trengs: ingen eksepsjon | 01 (300-007), 04 (100-001, 300-027) |
+| FR-6 / FR-29 | Mottak i tide som trengs: ingen eksepsjon | 01 (300-007), 04 (100-003, 300-027) |
 | FR-7 | Lager under SS før et fremskyndet mottak | 01 (300-005), 02 (200-002), 04 (300-028) |
 | FR-8 | Forfalt frigivelse legges i uke 1, også på nivå .1 som behov for delene under | 01, 02 (100-001 → 200-001) |
 | FR-8 | Frigivelse nøyaktig i uke 1 er ikke forfalt | 01 (300-008) |
@@ -142,5 +142,6 @@ Hvor hvert tilfelle i PRD-en testes. «Validering» betyr `validering/` (se READ
 | FR-29 | Kanseller mottak | 02 (300-005) |
 | FR-13 / FR-15 | Flere eksepsjoner på én del og i én celle | 02 (300-005), 04 (300-022, 300-026, 300-028) |
 | FR-17 | Bestillingsforslag med innkjøp, produksjonsordre og forfalt mengde | arket Bestillingsforslag i alle fasitene |
+| FR-19 / FR-20 | Siste kjøring per ferdigprodukt: hvert testeksempel har eget varenummer på nivå 0, så 02 → 01 → 03 skal sammenligne 03 med 02 | 01 (100-002), 02 og 03 (100-001), 04 (100-003) |
 | FR-20 | Nye, endrede og fjernede forslag, nye og borte eksepsjoner, ingen endringer | 03 (arket Sammenligning) |
 | FR-24–FR-26 | Fast partistørrelse | ikke laget ennå (planlagt utvidelse) |

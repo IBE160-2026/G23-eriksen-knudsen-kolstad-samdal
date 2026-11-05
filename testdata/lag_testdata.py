@@ -81,7 +81,7 @@ MPS = [20, 25, 30, 20, 35, 30, 25, 40, 30, 20]  # 10 ukers horisont
 # Testeksempel 01 har to nivåer: ferdigproduktet uten lager, SS og ledetid, og åtte innkjøpte deler på nivå .1.
 # Da er frigivelsene for ferdigproduktet lik MPS, og tallene for delene er de samme som før flernivå.
 STYKKLISTE_01 = [
-    ("0", "100-001", PRODUKT, None, "Ferdigvare", 0, 0, 0),
+    ("0", "100-002", PRODUKT, None, "Ferdigvare", 0, 0, 0),
     (".1", "300-001", "Sete", 1, KJOPT, 200, 20, 2),
     (".1", "300-002", "Rygg", 1, KJOPT, 60, 10, 1),
     (".1", "300-003", "Hjul", 5, KJOPT, 80, 30, 1),
@@ -93,7 +93,7 @@ STYKKLISTE_01 = [
 ]
 
 HENSIKT_01 = {
-    "100-001": "Ferdigproduktet uten lager, sikkerhetslager og ledetid: frigivelsene er lik MPS",
+    "100-002": "Ferdigproduktet uten lager, sikkerhetslager og ledetid: frigivelsene er lik MPS",
     "300-001": "Normalforløp: første behov kan bestilles i tide",
     "300-002": "Normalforløp med ledetid 1 uke",
     "300-003": "Bestilling forsinket i uke 1 (lager går under 0)",
@@ -108,7 +108,7 @@ HENSIKT_01 = {
 MOTTAK = [("300-005", 4, 100), ("300-007", 2, 120)]
 
 STATUS_01 = ("Status: verdiene er beregnet med skript og kontrollert for hånd (2026-10-19, endringene for 300-005, "
-             "300-006 og 100-001 2026-11-02).")
+             "300-006 og 100-002 2026-11-02).")
 
 
 # ---------- Testeksempel 02: flernivå (tre nivåer), laget av Carmen 2026-10-29 og tilpasset 2026-11-05 ----------
@@ -196,7 +196,7 @@ PRODUKT_04 = "Kontorstol Ergo"
 MPS_04 = [20, 30, 25, 0, 30, 35, 0, 20, 25, 30, 40, 30]  # 12 ukers horisont (største), med uker uten behov
 
 STYKKLISTE_04 = [
-    ("0", "100-001", PRODUKT_04, None, "Ferdigvare", 20, 0, 1),
+    ("0", "100-003", PRODUKT_04, None, "Ferdigvare", 20, 0, 1),
     (".1", "200-010", "Sete", 1, PROD, 70, 5, 4),
     ("..2", "300-022", "Skruesett M8", 4, KJOPT, 1000, 0, 7),
     ("..2", "300-023", "Monteringsbrakett", 1, KJOPT, 120, 10, 1),
@@ -218,26 +218,26 @@ STYKKLISTE_04 = [
     (".1", "300-028", "Hodestøtte", 1, KJOPT, 10, 0, 1),
 ]
 
-MOTTAK_04 = [("100-001", 2, 20), ("300-026", 3, 30), ("300-027", 4, 20), ("300-027", 4, 30),
+MOTTAK_04 = [("100-003", 2, 20), ("300-026", 3, 30), ("300-027", 4, 20), ("300-027", 4, 30),
              ("300-028", 3, 10), ("300-028", 5, 15)]
 
 HENSIKT_04 = {
-    "100-001": "Ferdigprodukt med planlagt mottak (produksjonsordre) på 20 i uke 2 som kommer i tide og trengs. "
+    "100-003": "Ferdigprodukt med planlagt mottak (produksjonsordre) på 20 i uke 2 som kommer i tide og trengs. "
                "Uke 4 og 7 har MPS 0. Horisonten er 12 uker",
     "200-010": "Ledetid 4 og lager som dekker de fire første ukene: ingen forfalt frigivelse",
     "300-022": "Står under Sete og Rygg. Ledetid fra ferdigproduktet er 1 + 4 + 7 = 12 = H langs den lengste stien, "
                "selv om ingen enkelt ledetid er ≥ H (via Rygg er den 11). Bestilling forsinket i uke 7, og meldingen "
                "nevner begge delene over",
     "300-023": "Står både på nivå .1 (2 per stol) og på nivå ..2 (1 per sete). Beregnes én gang på lavnivåkode 2, med "
-               "bruttobehov = 2 × frigivelsene til 100-001 + 1 × frigivelsene til 200-010",
+               "bruttobehov = 2 × frigivelsene til 100-003 + 1 × frigivelsene til 200-010",
     "200-011": "Ledetid 3, ingen eksepsjon",
     "300-021": "Ledetid fra ferdigproduktet er 1 + 3 + 7 = 11 = H − 1: ingen eksepsjon",
     "200-012": "Står to ganger på nivå .1 med de samme underdelene i ulik rekkefølge. Bruttobehov = 2 × frigivelsene "
-               "til 100-001",
+               "til 100-003",
     "300-024": "Underdel av 200-012. Telles én gang: bruttobehov = 1 × frigivelsene til 200-012, ikke 2 ×",
     "300-025": "Underdel av 200-012 med sikkerhetslager. Telles én gang: bruttobehov = 2 × frigivelsene til 200-012",
     "200-013": "Står to ganger på nivå .1, med underdeler bare under første forekomst. Bruttobehov = 2 × frigivelsene "
-               "til 100-001",
+               "til 100-003",
     "300-029": "Underdel av 200-013: bruttobehov = 5 × frigivelsene til 200-013. Lageret dekker hele horisonten",
     "300-026": "Lager 0 og sikkerhetslager 0. Mottaket på 30 i uke 3 er for lite til behovet på 40 i uke 1: samme uke "
                "får både Mottak forsinket og Bestilling forsinket for resten (to eksepsjoner i én celle)",
@@ -1347,11 +1347,11 @@ def kontroller():
     t, _e = beregn(MPS_04, STYKKLISTE_04, MOTTAK_04)
     frig = {vn: r["Planlagte ordrefrigivelser"] for vn, r in t.items()}
     h = len(MPS_04)
-    assert t["300-023"]["Bruttobehov"] == [2 * frig["100-001"][u] + frig["200-010"][u] for u in range(h)]
+    assert t["300-023"]["Bruttobehov"] == [2 * frig["100-003"][u] + frig["200-010"][u] for u in range(h)]
     assert t["300-024"]["Bruttobehov"] == frig["200-012"]
     assert t["300-025"]["Bruttobehov"] == [2 * q for q in frig["200-012"]]
     assert t["300-029"]["Bruttobehov"] == [5 * q for q in frig["200-013"]]
-    assert t["200-012"]["Bruttobehov"] == t["200-013"]["Bruttobehov"] == [2 * q for q in frig["100-001"]]
+    assert t["200-012"]["Bruttobehov"] == t["200-013"]["Bruttobehov"] == [2 * q for q in frig["100-003"]]
     assert t["300-022"]["Bruttobehov"] == [4 * frig["200-010"][u] + 2 * frig["200-011"][u] for u in range(h)]
     assert t["300-027"]["Planlagte mottak"][3] == 50
     a = kjoring(MPS_02, STYKKLISTE_02, MOTTAK_02)
