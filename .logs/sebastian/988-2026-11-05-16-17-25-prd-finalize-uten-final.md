@@ -35,7 +35,7 @@ Sebastian vil legge fram en ferdig PRD for gruppen på møtet i dag. Han ba om �
   - Brukerreisene er strammet inn.
   - Addendumet har fått et leserkart, gruppert innspill til arkitekturen og en ny del «Innspill til UX».
 - **Språk:** Rundt 70 rettelser i begge dokumentene. Numrene på lukkede spørsmål vises nå riktig i Markdown. Tre nye begreper er lagt inn i ordbanken: frysing, dempingsterskel og nervøsitet i planen.
-- PRD-en er fortsatt `status: draft`. Endringene var ikke committet da loggen ble skrevet.
+- PRD-en er fortsatt `status: draft`. Alt, også rapportene, er committet og pushet til `Sebastian/Branch` som 365876b.
 
 ### Åpne punkter
 - Etter gruppemøtet: før inn gruppens endringer, sett `status: final` (Finalize steg 7) og merge til `main`.
