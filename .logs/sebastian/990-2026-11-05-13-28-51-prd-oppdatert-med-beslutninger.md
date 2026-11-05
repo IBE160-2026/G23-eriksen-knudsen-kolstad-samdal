@@ -25,7 +25,7 @@ Oppdatere PRD-en for COSI - MRP med beslutningene i `beslutninger-2026-11-05.md`
 - `.docs/ordbank.md`: Excel-mal og Prognostiserte behov rettet (arket heter MPS), nytt begrep Omplanleggingshorisont.
 - `beslutninger-2026-11-05.md`: merknad om at beslutningene er ført inn ved Update.
 - `.memlog.md`: 7 nye linjer (event, decision, 4× change, assumption).
-- PRD-endringene er ikke committet.
+- Committet og pushet til `Sebastian/Branch` som f0b1024 (prd.md, addendum.md, beslutninger-2026-11-05.md, .memlog.md, ordbank.md).
 
 ### Åpne punkter
 - Bekreft tre tolkninger som ble utledet ved innføringen: felles del står i tabellen der den står første gang (FR-16), et annet ferdigprodukt avgjøres på varenummeret på nivå 0 (FR-20), og en eksport uten sammenligning har ikke arket Sammenligning (FR-23).
