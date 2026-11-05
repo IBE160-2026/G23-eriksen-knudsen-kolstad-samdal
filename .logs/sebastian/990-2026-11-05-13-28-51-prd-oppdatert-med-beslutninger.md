@@ -28,7 +28,7 @@ Oppdatere PRD-en for COSI - MRP med beslutningene i `beslutninger-2026-11-05.md`
 - Committet og pushet til `Sebastian/Branch` som f0b1024 (prd.md, addendum.md, beslutninger-2026-11-05.md, .memlog.md, ordbank.md).
 
 ### Åpne punkter
-- Bekreft tre tolkninger som ble utledet ved innføringen: felles del står i tabellen der den står første gang (FR-16), et annet ferdigprodukt avgjøres på varenummeret på nivå 0 (FR-20), og en eksport uten sammenligning har ikke arket Sammenligning (FR-23).
+- ~~Bekreft tre tolkninger som ble utledet ved innføringen (FR-16, FR-20, FR-23).~~ Bekreftet av Sebastian 2026-11-05 og ført i `.memlog.md`.
 - Seksjonen «Avvik mellom malen og PRD-en» i `.docs/ordbank.md` er utdatert (PRD-en ble oppdatert 2026-10-26) og bør fjernes eller merkes som løst.
 - Kjør Finalize i `bmad-prd` (memlog-revisjon, avstemming mot kildene, gjennomgang, polering, `status: final`).
 - Testpersoner og introduksjon for brukertesten (SM-3, §9 spm. 4) står fortsatt åpent (allerede i `issues.md`).
