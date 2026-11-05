@@ -21,6 +21,11 @@ Samle avklaringen om testeksempler, altså om hvert dokument bør ta for seg én
 - Ordbank: «Avklaring» og «Dekningstabell» lagt til.
 - Commit `4af1c86` (ikke pushet). Byggeskriptet ligger bare i scratchpad og er ikke i repoet.
 
+### Oppfølging samme kveld: OneNote i stedet for PowerPoint
+- Oda ville heller ha OneNote. Notatblokken «COSI - MRP G23» er opprettet i OneDrive (`C:\Users\odawk\OneDrive\Dokumenter\OneNote Notebooks\COSI - MRP G23`) med seksjonen Avklaringer. Den har 6 sider: Oversikt, Avklaring 1–4 og «Mal: ny avklaring». Hver avklaring har en statustabell, spørsmål, avklaring, begrunnelse, underlag og kommentarer fra gruppen.
+- Laget med OneNote-COM. Sidene er kontrollert ved å eksportere dem til PDF.
+- `avklaringer.pptx` er fjernet fra repoet (`b37c946`). Den finnes i git-historikken (`4af1c86`). Ordbankens «Avklaring» viser nå til OneNote.
+
 ### Åpne punkter
-- Gruppen må bekrefte avklaring 1–4 i `avklaringer.pptx`.
+- Gruppen må bekrefte avklaring 1–4 i OneNote (seksjonen Avklaringer).
 - Ordbanken definerer «Valideringstilfelle» som en fil med nøyaktig én feil, men V-F05 har tre feil og V-F06 to. Definisjonen bør justeres.
