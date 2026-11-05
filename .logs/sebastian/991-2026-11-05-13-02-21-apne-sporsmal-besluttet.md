@@ -31,7 +31,7 @@ Sebastian kjørte `/bmad-help`. Svaret var at neste steg er Finalize i `bmad-prd
 - `brief.md` og `addendum.md` til briefen har fått en merknad øverst om at briefen er frosset og at PRD-en gjelder.
 - Øvingseksempelet ble ikke slettet. Det finnes bare på `origin/Carmen/Branch` og `origin/Oda/Branch`, ikke på `Sebastian/Branch` eller `main`, og andres grener endres ikke herfra.
 - I `issues.md` er disse punktene lukket: [BESLUTNING]-punktene i ordbanken, gruppemøtet, fasitene for FR-12/FR-28, briefen, og det gamle Finalize-punktet (videreført).
-- Endringene i ordbanken, briefen og beslutningsfila er ikke committet. Bare loggen er committet.
+- Endringene i ordbanken, briefen og beslutningsfila er committet i 9851b76 og pushet til `origin/Sebastian/Branch` sammen med loggen, etter at Sebastian ba om det.
 
 ### Åpne punkter
 - Kjør Finalize i `bmad-prd` med `beslutninger-2026-11-05.md`, i et nytt vindu.
