@@ -132,7 +132,7 @@ Forslaget bygger på Excel-malen for flernivå stykkliste (Sebastian, 2026-10-23
 
 | Begrep | Definisjon | Ikke bruk |
 |---|---|---|
-| Avklaring | Et spørsmål gruppen har svart på, med svar og begrunnelse. Samles i `.docs/prosjektstyring/avklaringer.pptx`, ett lysbilde per avklaring. Status er «Forslag» til gruppen har bekreftet den. | beslutning (om forslag som ikke er bekreftet) |
+| Avklaring | Et spørsmål gruppen har svart på, med svar og begrunnelse. Samles i OneNote-notatblokken «COSI - MRP G23», seksjonen Avklaringer, én side per avklaring. Status er «Forslag» til gruppen har bekreftet den. | beslutning (om forslag som ikke er bekreftet) |
 | Product brief | Kort dokument som beskriver problemet, brukerne, løsningen og omfanget. Første steg i BMAD-flyten, før PRD og arkitektur. | – |
 | Addendum | Tilleggsdokument til briefen med detaljer som hører hjemme i senere dokumenter (arkitektur, implementeringsplan), f.eks. faseplanen. Ved avvik gjelder briefen. | – |
 | Personavhengighet | At viktig kunnskap eller arbeid bare finnes hos én person, så bedriften blir sårbar når personen er borte. Problemet verktøyet skal løse. | – |
