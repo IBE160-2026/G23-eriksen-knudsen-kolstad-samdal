@@ -82,6 +82,50 @@ HENSIKT_01 = {
 # (varenummer, uke, antall)
 MOTTAK = [("300-005", 4, 100), ("300-007", 2, 120)]
 
+STATUS_01 = ("Status: verdiene er beregnet med skript og kontrollert for hånd (2026-10-19, endringene for 300-005, "
+             "300-006 og 100-001 2026-11-02).")
+
+
+# ---------- Testeksempel 02: flernivå (tre nivåer), laget av Carmen 2026-10-29 og tilpasset 2026-11-05 ----------
+
+PRODUKT_02 = "Kontorstol Pro"
+MPS_02 = [30, 30, 35, 25, 40, 35, 30, 45, 35, 30]  # 10 ukers horisont
+
+STYKKLISTE_02 = [
+    ("0", "100-001", PRODUKT_02, None, "Ferdigvare", 20, 5, 1),
+    (".1", "200-001", "Sete", 1, PROD, 30, 5, 1),
+    ("..2", "300-001", "Seteplate", 1, KJOPT, 120, 10, 2),
+    ("..2", "300-002", "Skruesett M6", 4, KJOPT, 400, 50, 1),
+    (".1", "200-002", "Rygg", 1, PROD, 85, 5, 1),
+    ("..2", "300-002", "Skruesett M6", 2, KJOPT, None, None, None),
+    ("..2", "300-003", "Ryggtrekk", 1, KJOPT, 20, 30, 2),
+    (".1", "300-004", "Hjul", 5, KJOPT, 300, 30, 1),
+    (".1", "300-005", "Gassfjær", 1, KJOPT, 400, 10, 12),
+]
+
+MOTTAK_02 = [("200-002", 4, 40), ("300-005", 5, 50)]
+
+HENSIKT_02 = {
+    "100-001": "Ferdigprodukt med egen lagerbeholdning, sikkerhetslager og ledetid 1. Lageret går under 0 i uke 1: "
+               "Bestilling forsinket (til kunde). Den forfalte frigivelsen legges i uke 1 og blir bruttobehov på nivå .1 i uke 1",
+    "200-001": "Produseres selv og har deler under seg. Får den forfalte frigivelsen fra 100-001 som bruttobehov i uke 1, "
+               "og lageret går under 0: Bestilling forsinket. Delen over er ferdigproduktet, så leveransen til kunde blir forsinket",
+    "200-002": "Produseres selv, med planlagt mottak i uke 4 mens nettobehovet kommer i uke 3: Mottak forsinket. Mottaket "
+               "fremskyndes i egen produksjon, og det lages ingen ny ordre for uke 3",
+    "300-001": "Bruttobehov = frigivelsene til Sete × 1. Normalforløp uten eksepsjon",
+    "300-002": "Står to steder: bruttobehov = frigivelsene til Sete × 4 + frigivelsene til Rygg × 2, summert uke for uke",
+    "300-003": "Lageret (20) er under sikkerhetslageret (30) fra start, og en ny bestilling kommer tidligst i uke 3: "
+               "Bruk av sikkerhetslager i uke 1",
+    "300-004": "Normalforløp på nivå .1 uten eksepsjon (kontroll på at det ikke kommer falske varsler)",
+    "300-005": "Ledetid fra ferdigproduktet 1 + 12 = 13 ≥ horisont 10: Ledetid overskrider horisont, selv om lageret dekker "
+               "hele horisonten. Det planlagte mottaket på 50 i uke 5 trengs ikke: Kanseller mottak",
+}
+
+STATUS_02 = ("Status: beregnet med skript 2026-11-05 etter PRD-reglene fra 2026-11-02. Bygger på Carmens fasit, "
+             "kontrollert for hånd 2026-10-24. Endringene må kontrolleres for hånd: 200-002 (mottaket fremskyndes), "
+             "300-002 og 300-003 (nytt bruttobehov fra 200-002), 300-003 (lager 20 i stedet for 40), "
+             "300-005 (ledetid fra ferdigproduktet 13, nytt mottak i uke 5 som skal kanselleres) og meldingen for 200-001.")
+
 
 # ---------- Beregning (PRD §4.2–4.3) ----------
 
@@ -140,13 +184,14 @@ def mrp_del(brutto, mottak, lager, ss, ledetid, fremskynd=True):
     h = len(brutto)
     planlagt = list(mottak)
     forventet, netto, ordremottak, frigivelse = [], [], [], [0] * h
-    fremskyndet, forfalte = [], []
+    fremskyndet, forfalte, spor = [], [], []
     forrige = lager
     for t in range(h):
         uke = t + 1
         disponibel = forrige + planlagt[t] - brutto[t]
         nb = max(0, ss - disponibel)
         uten = disponibel  # disponibel før noe mottak er fremskyndet, som tabellen viser
+        steg = dict(forrige=forrige, mottak=planlagt[t], brutto=brutto[t], disponibel=disponibel, nb=nb, flytt=[])
         # FR-6: senere planlagte mottak fremskyndes før det lages nye ordrer
         for u in range(t + 1, h):
             if nb == 0 or not fremskynd:
@@ -155,6 +200,8 @@ def mrp_del(brutto, mottak, lager, ss, ledetid, fremskynd=True):
                 fremskyndet.append(dict(uke=uke, fra=u + 1, antall=planlagt[u], disponibel=uten))
                 planlagt[t] += planlagt[u]
                 disponibel += planlagt[u]
+                steg["flytt"].append(dict(fra=u + 1, antall=planlagt[u], disponibel=disponibel,
+                                          nb=max(0, ss - disponibel)))
                 planlagt[u] = 0
                 nb = max(0, ss - disponibel)
         netto.append(nb)
@@ -169,6 +216,9 @@ def mrp_del(brutto, mottak, lager, ss, ledetid, fremskynd=True):
         forrige = disponibel + nb
         ikke_kommet = sum(f["antall"] for f in fremskyndet if f["fra"] > uke)
         forventet.append(forrige - ikke_kommet)
+        steg.update(ordremottak=nb, slutt=forrige, vist=forrige - ikke_kommet,
+                    frigi_uke=uke - ledetid if nb > 0 else None)
+        spor.append(steg)
     rader = {
         "Bruttobehov": list(brutto),
         "Planlagte mottak": list(mottak),
@@ -177,10 +227,10 @@ def mrp_del(brutto, mottak, lager, ss, ledetid, fremskynd=True):
         "Planlagte ordremottak": ordremottak,
         "Planlagte ordrefrigivelser": frigivelse,
     }
-    return rader, fremskyndet, forfalte
+    return rader, fremskyndet, forfalte, spor
 
 
-def beregn(mps, stykkliste, mottak):
+def beregn(mps, stykkliste, mottak, detaljer=None):
     """Flernivå MRP for hele stykklisten.
 
     Gir {varenummer: rader} i stykklistens rekkefølge og eksepsjonene som (varenummer, uke, type, melding),
@@ -202,7 +252,7 @@ def beregn(mps, stykkliste, mottak):
             if mvn == vn and 1 <= uke <= h:
                 planlagt[uke - 1] += antall
         lager, ss, ledetid = d["lager"], d["ss"], d["ledetid"]
-        rader, fremskyndet, forfalte = mrp_del(brutto, planlagt, lager, ss, ledetid)
+        rader, fremskyndet, forfalte, spor = mrp_del(brutto, planlagt, lager, ss, ledetid)
         tabeller[vn] = rader
         eks = []
 
@@ -249,12 +299,15 @@ def beregn(mps, stykkliste, mottak):
             if planlagt[u] > 0 and (u + 1) not in flyttet:
                 uten = list(planlagt)
                 uten[u] = 0
-                rader_uten, _, _ = mrp_del(brutto, uten, lager, ss, ledetid, fremskynd=False)
+                rader_uten = mrp_del(brutto, uten, lager, ss, ledetid, fremskynd=False)[0]
                 if not any(rader_uten["Nettobehov"][u:]):
                     eks.append((vn, u + 1, "Kanseller mottak",
                                 f"Det planlagte mottaket på {planlagt[u]} i uke {u + 1} trengs ikke i horisonten "
                                 f"(uke {u + 1}–{h}). Vurder å kansellere eller utsette det."))
         eksepsjoner += sorted(eks, key=lambda e: 0 if e[1] == "–" else e[1])
+        if detaljer is not None:
+            detaljer[vn] = dict(del_=d, llk=llk[vn], rot=vn == rot, spor=spor, mottak=planlagt,
+                                kilder=[(f, a) for f, b, a in kanter if b == vn])
     rang = {vn: i for i, vn in enumerate(rekkefolge)}
     eksepsjoner.sort(key=lambda e: rang[e[0]])  # stabil sortering: ukeordenen per del beholdes
     return {vn: tabeller[vn] for vn in rekkefolge}, eksepsjoner
@@ -416,8 +469,26 @@ def kontroll(n):
         f'"Har underkomponenter, men kjøpes inn. ","")',
         f'IF(AND($A{n}&""="0",$E{n}<>"",$E{n}<>"Ferdigvare"),"Nivå 0 skal ha type Ferdigvare. ","")',
         f'IF(AND($A{n}<>"",$A{n}&""<>"0",$E{n}="Ferdigvare"),"Ferdigvare brukes bare på nivå 0. ","")',
+        underdeler(n),
     ]
     return f'=IF(COUNTA($A{n}:$H{n})=0,"",' + "&".join(deler) + ")"
+
+
+def underdeler(n):
+    """Del av Kontroll-formelen: underdelene i rad n skal være like dem under første forekomst av delen over (FR-3).
+
+    Bruker de skjulte hjelpekolonnene AC (overordnet varenummer for en ..2-rad) og AD (raden til nærmeste .1 over).
+    Første blokk er blokken til første ..2-rad med samme overordnede del. En senere blokk er lik hvis den har like mange
+    rader og hver rad (varenummer, antall) står like mange ganger i begge blokkene, så rekkefølgen spiller ingen rolle.
+    """
+    s = STYKK_RADER + 1
+    ac, ad, b, d = (f"${k}$2:${k}${s}" for k in ("AC", "AD", "B", "D"))
+    forste = f"INDEX({ad},MATCH($AC{n},{ac},0))"
+    like_rader = (f"COUNTIFS({ac},$AC{n},{ad},$AD{n},{b},$B{n},{d},$D{n})"
+                  f"<>COUNTIFS({ac},$AC{n},{ad},{forste},{b},$B{n},{d},$D{n})")
+    like_mange = f"COUNTIFS({ac},$AC{n},{ad},$AD{n})<>COUNTIFS({ac},$AC{n},{ad},{forste})"
+    return (f'IF($AC{n}="","",IF($AD{n}={forste},"",IF(OR({like_rader},{like_mange}),'
+            f'"Andre underdeler under "&$AC{n}&" enn første gang (rad "&{forste}&"). ","")))')
 
 
 def lag_mal(mps=None, stykkliste=None, mottak=None):
@@ -521,6 +592,10 @@ def lag_mal(mps=None, stykkliste=None, mottak=None):
         # varenummer, AB henter varenumrene i den rekkefølgen
         ws.cell(n, 27, f'=IF(AND($B{n}<>"",COUNTIF($B$2:$B{n},$B{n})=1),MAX($AA$1:$AA{n - 1})+1,"")')
         ws.cell(n, 28, f'=IFERROR(INDEX($B$2:$B${siste},MATCH(ROW()-1,$AA$2:$AA${siste},0)),"")')
+        # Hjelpekolonner for underdelskontrollen: AD er raden til nærmeste .1 over (eller raden selv),
+        # AC er varenummeret til den overordnede delen for en ..2-rad
+        ws.cell(n, 30, f'=IF($A{n}&""=".1",ROW(),' + ('""' if n == 2 else f'IF($A{n}&""="0","",$AD{n - 1})') + ")")
+        ws.cell(n, 29, f'=IF(AND($A{n}&""="..2",N($AD{n})>0),INDEX($B:$B,$AD{n}),"")')
     forrige_fylt = "COUNTA($A1:$B1)=2"
     forste = "COUNTIF($B$1:$B1,$B2)=0"
     hvit_naar_utfylt(ws, f"A2:H{siste}")
@@ -530,7 +605,7 @@ def lag_mal(mps=None, stykkliste=None, mottak=None):
     # Nivålisten ligger i en skjult kolonne. Rad 2 kan bare være 0, raden rett under 0 bare .1
     for n, niva in enumerate(NIVAER, start=2):
         ws.cell(n, 26, niva).number_format = "@"
-    for kol in ["Z", "AA", "AB"]:
+    for kol in ["Z", "AA", "AB", "AC", "AD"]:
         ws.column_dimensions[kol].hidden = True
     # Navnet Varenumre er så langt som antall ulike varenumre, så listen vokser når stykklisten fylles ut
     wb.defined_names["Varenumre"] = DefinedName(
@@ -698,25 +773,81 @@ REGLER = [
     "• Kanseller mottak: delen får ikke noe nettobehov fra mottaksuken til og med uke H når mottaket tas bort "
     "(og ingen andre mottak fremskyndes). Eksepsjonen står i mottaksuken. Fremskyndede mottak får den ikke.",
     "• En celle kan ha flere eksepsjoner. En del med minst én eksepsjon er kritisk.",
-    "",
-    "Status: verdiene er beregnet med skript og kontrollert for hånd (2026-10-19, endringene for 300-005, 300-006 "
-    "og 100-001 2026-11-02).",
 ]
 
 
-def lag_fasit(produkt, mps, stykkliste, mottak, hensikt):
+def neg(x):
+    return f"({x})" if x < 0 else str(x)
+
+
+def beregningsrekkefolge(tabeller, detaljer):
+    rekke = list(tabeller)
+    return sorted(detaljer, key=lambda v: (detaljer[v]["llk"], rekke.index(v)))
+
+
+def utregning(tabeller, eks, detaljer):
+    """Tekstlinjer for arket Utregning: hver del i beregningsrekkefølge, uke for uke etter reglene i arket Regler."""
+    linjer = []
+    for vn in beregningsrekkefolge(tabeller, detaljer):
+        x = detaljer[vn]
+        d = x["del_"]
+        if x["rot"]:
+            kilde = "Bruttobehov fra MPS."
+        else:
+            kilde = "Bruttobehov fra frigivelsene til " + " + ".join(f"{f} × {a}" for f, a in x["kilder"]) + "."
+        mottak = [f"uke {u}: {m}" for u, m in enumerate(x["mottak"], start=1) if m]
+        linjer.append(("del", f"{vn} {d['beskrivelse']} – lavnivåkode {x['llk']}, {d['type']}. Lager {d['lager']}, "
+                              f"SS {d['ss']}, L {d['ledetid']}. {kilde}"
+                              + (f" Planlagte mottak: {', '.join(mottak)}." if mottak else "")))
+        ss = d["ss"]
+        flyttet_fra = {f["fra"]: u for u, st in enumerate(x["spor"], start=1) for f in st["flytt"]}
+        for t, st in enumerate(x["spor"]):
+            uke = t + 1
+            if x["rot"]:
+                b = f"Bruttobehov = MPS = {st['brutto']}."
+            else:
+                ledd = " + ".join(f"{a} × {tabeller[f]['Planlagte ordrefrigivelser'][t]} ({f})" for f, a in x["kilder"])
+                b = f"Bruttobehov = {ledd} = {st['brutto']}."
+            disp = f"Disponibel = {neg(st['forrige'])} + {st['mottak']} − {st['brutto']} = {st['disponibel']}"
+            if uke in flyttet_fra:
+                disp += f" (mottaket i uke {uke} er regnet med i uke {flyttet_fra[uke]})"
+            tekst = [b, disp + ".", f"Nettobehov = maks(0, {ss} − {neg(st['disponibel'])}) = {st['nb']}."]
+            for f in st["flytt"]:
+                tekst.append(f"Mottaket på {f['antall']} i uke {f['fra']} fremskyndes: disponibel = {f['disponibel']}, "
+                             f"nettobehov = maks(0, {ss} − {neg(f['disponibel'])}) = {f['nb']}.")
+            if st["ordremottak"]:
+                tekst.append(f"Planlagt ordremottak = {st['ordremottak']}.")
+            tekst.append(f"Forventet lager = {neg(st['slutt'] - st['ordremottak'])} + {st['ordremottak']} = {st['slutt']}.")
+            if st["vist"] != st["slutt"]:
+                tekst.append(f"Tabellen viser {st['vist']}, fordi det fremskyndede mottaket ikke er kommet ennå.")
+            if st["frigi_uke"] is not None:
+                fu = st["frigi_uke"]
+                tekst.append(f"Frigis i uke {uke} − {d['ledetid']} = {fu}"
+                             + (", før horisonten: forfalt, legges i uke 1." if fu < 1 else "."))
+            linjer.append(("uke", f"Uke {uke}: " + " ".join(tekst)))
+        frig = [f"uke {u}: {v}" for u, v in enumerate(tabeller[vn]["Planlagte ordrefrigivelser"], start=1) if v]
+        linjer.append(("sum", "Planlagte ordrefrigivelser: " + ", ".join(frig) + "." if frig
+                       else "Ingen planlagte ordrefrigivelser."))
+        for e in eks:
+            if e[0] == vn:
+                linjer.append(("eks", f"Eksepsjon, uke {e[1]}: {e[2]}. {e[3]}"))
+    return linjer
+
+
+def lag_fasit(nr, produkt, mps, stykkliste, mottak, hensikt, status):
     wb = Workbook()
     h = len(mps)
-    tabeller, eks = beregn(mps, stykkliste, mottak)
+    detaljer = {}
+    tabeller, eks = beregn(mps, stykkliste, mottak, detaljer)
     beskrivelse = {}
     for rad in stykkliste:
         beskrivelse.setdefault(rad[1], rad[2])
 
     ws = wb.active
     ws.title = "Regler"
-    ws["A1"] = f"Fasit: testeksempel 01 – {produkt}"
+    ws["A1"] = f"Fasit: testeksempel {nr} – {produkt}"
     ws["A1"].font = FONT_TITTEL
-    r = tekstblokk(ws, 3, REGLER)
+    r = tekstblokk(ws, 3, REGLER + ["", status])
     for rr in range(3, r):
         ws.merge_cells(start_row=rr, start_column=1, end_row=rr, end_column=8)
         lengde = len(str(ws.cell(rr, 1).value or ""))
@@ -758,19 +889,53 @@ def lag_fasit(produkt, mps, stykkliste, mottak, hensikt):
     ws_t.freeze_panes = "C2"
     bredder(ws_e, {"A": 14, "B": 6, "C": 30, "D": 90})
     ws_e.freeze_panes = "A2"
+
+    ws_u = wb.create_sheet("Utregning")
+    ws_u["A1"] = f"Utregning steg for steg: testeksempel {nr} – {produkt}"
+    ws_u["A1"].font = FONT_TITTEL
+    ws_u["A2"] = ("Delene står i beregningsrekkefølge (lavnivåkode 0, 1, 2). Hver linje er én uke med reglene i arket "
+                  "Regler. Tall i parentes er negative.")
+    ws_u["A3"] = status
+    for c in ("A2", "A3"):
+        ws_u[c].font = FONT
+    r = 5
+    for slag, tekst in utregning(tabeller, eks, detaljer):
+        if slag == "del" and r > 5:
+            r += 1
+        c = ws_u.cell(r, 1, tekst)
+        c.font = FONT_FET if slag == "del" else FONT
+        c.alignment = Alignment(wrap_text=True, vertical="top")
+        ws_u.row_dimensions[r].height = 15 * (1 + len(tekst) // 150)
+        r += 1
+    ws_u.column_dimensions["A"].width = 160
+
+    ws_m = wb.create_sheet("Materiell")
+    hode(ws_m, 1, ["Varenummer", "Beskrivelse", "Lavnivåkode"])
+    for i, vn in enumerate(beregningsrekkefolge(tabeller, detaljer), start=2):
+        celle(ws_m, i, 1, vn)
+        celle(ws_m, i, 2, detaljer[vn]["del_"]["beskrivelse"])
+        celle(ws_m, i, 3, detaljer[vn]["llk"])
+    bredder(ws_m, {"A": 14, "B": 22, "C": 14})
     return wb
 
+
+TESTEKSEMPLER = [
+    ("01", PRODUKT, MPS, STYKKLISTE_01, MOTTAK, HENSIKT_01, STATUS_01),
+    ("02", PRODUKT_02, MPS_02, STYKKLISTE_02, MOTTAK_02, HENSIKT_02, STATUS_02),
+]
 
 if __name__ == "__main__":
     lag_mal().save(UT / "COSI-MRP-mal.xlsx")
     if "--alle" in sys.argv:
-        tabeller, eks = beregn(MPS, STYKKLISTE_01, MOTTAK)
-        for vn, rader in tabeller.items():
-            print(vn, HENSIKT_01[vn])
-            for navn, v in rader.items():
-                print(f"  {navn:28}", v)
-            for e in eks:
-                if e[0] == vn:
-                    print("  !", e[1], e[2])
-        lag_mal(MPS, STYKKLISTE_01, MOTTAK).save(UT / "testeksempel-01.xlsx")
-        lag_fasit(PRODUKT, MPS, STYKKLISTE_01, MOTTAK, HENSIKT_01).save(UT / "testeksempel-01-fasit.xlsx")
+        for nr, produkt, mps, stykk, mottak, hensikt, status in TESTEKSEMPLER:
+            tabeller, eks = beregn(mps, stykk, mottak)
+            print(f"===== Testeksempel {nr}: {produkt}")
+            for vn, rader in tabeller.items():
+                print(vn, hensikt[vn])
+                for navn, v in rader.items():
+                    print(f"  {navn:28}", v)
+                for e in eks:
+                    if e[0] == vn:
+                        print("  !", e[1], e[2])
+            lag_mal(mps, stykk, mottak).save(UT / f"testeksempel-{nr}.xlsx")
+            lag_fasit(nr, produkt, mps, stykk, mottak, hensikt, status).save(UT / f"testeksempel-{nr}-fasit.xlsx")

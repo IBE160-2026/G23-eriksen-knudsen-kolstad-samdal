@@ -469,11 +469,11 @@ Fra appens startside kan brukeren laste ned den tomme Excel-malen og testeksempe
 4. Hvem er testpersonene til brukertesten (SM-3), og hvordan ser den korte introduksjonen ut?
 5. Skal appen også vise en ukeoversikt per uke (alle bestillingsforslag i en uke), i tillegg til listen sortert etter uke (FR-17)?
 6. Hvilken frist gjelder? Den er ikke kommunisert ennå, men ventes midt i desember 2026.
-7. Det trengs et testeksempel med 5–10 komponenter fordelt på 3 nivåer, minst én felles del og egen fasit (FR-5, FR-28, SM-1). Testeksempel 01 har bare nivå 0 og .1. Det kan være det samme som testeksempel 02 i spørsmål 2. **Svar (2026-10-26):** Testeksempelet lages i løpet av noen dager.
+7. Det trengs et testeksempel med 5–10 komponenter fordelt på 3 nivåer, minst én felles del og egen fasit (FR-5, FR-28, SM-1). Testeksempel 01 har bare nivå 0 og .1. Det kan være det samme som testeksempel 02 i spørsmål 2. **Svar (2026-10-26):** Testeksempelet lages i løpet av noen dager. **Løst 2026-11-05:** testeksempel 02 (Kontorstol Pro, 8 deler på 3 nivåer, felles del 300-002) med fasit. Før/etter-sammenligningen i spørsmål 2 trenger derfor et eget testeksempel 03.
 8. Fasitmeldingen for «Bestilling forsinket» i testeksempel 01 sier «Leveranse til kunde blir forsinket» for 300-003 Hjul, som er en komponent på nivå .1. Etter FR-10 og briefen skal den si at produksjonen av ferdigproduktet blir forsinket. Skal fasiten endres? **Svar (2026-10-26):** Ordnes når de nye testeksemplene lages.
 9. ~~Fasiten for testeksempel 01 må oppdateres for 300-005 Gassfjær etter FR-6/FR-12.~~ Løst 2026-11-02: `beregn()` og fasiten er oppdatert. Mottaket står i uke 4 og dekker behovet i uke 3 uten ny ordre.
 10. Briefen og addendumet til briefen definerer fire eksepsjonstyper, og «Mottak forsinket» står der med den gamle regelen. Skal briefen oppdateres med FR-6/FR-12 og den nye typen «Kanseller mottak» (FR-29), eller er det nok at PRD-en gjelder?
-11. Testeksempelet med tre nivåer (spørsmål 7) bør ha minst én del der ledetiden fra ferdigproduktet er ≥ H uten at noen enkelt ledetid er det (FR-9), og ett planlagt mottak som ikke trengs (FR-29).
+11. Testeksempelet med tre nivåer (spørsmål 7) bør ha minst én del der ledetiden fra ferdigproduktet er ≥ H uten at noen enkelt ledetid er det (FR-9), og ett planlagt mottak som ikke trengs (FR-29). **Delvis løst 2026-11-05:** testeksempel 02 har et mottak som ikke trengs (300-005 i uke 5). Tilfellet for FR-9 mangler.
 
 ## 10. Antagelser
 
