@@ -15,3 +15,5 @@
 - [ ] 2026-11-01 [ordbank-prd-begreper](994-2026-11-01-21-26-06-ordbank-prd-begreper.md) — spørsmål 13 i `prd.md` §8 sier fortsatt at begrepene ikke er lagt inn i ordbanken, og må oppdateres
 - [ ] 2026-11-05 [merge-sebastian-prd](993-2026-11-05-17-26-30-merge-sebastian-prd.md) — Odas PRD-utkast i `prd-COSI - MRP-2026-11-01/` må sammenlignes med Sebastians PRD, og det som er verdt å beholde, må foreslås inn i hans
 - [ ] 2026-11-05 [merge-sebastian-prd](993-2026-11-05-17-26-30-merge-sebastian-prd.md) — §9 nr. 4 i Sebastians PRD (testpersoner og introduksjon til brukertesten, SM-3) tas opp på gruppemøtet
+- [ ] 2026-11-05 [avklaringer-powerpoint](992-2026-11-05-19-02-25-avklaringer-powerpoint.md) — gruppen må bekrefte avklaring 1–4 om testeksempler i `.docs/prosjektstyring/avklaringer.pptx`
+- [ ] 2026-11-05 [avklaringer-powerpoint](992-2026-11-05-19-02-25-avklaringer-powerpoint.md) — ordbanken definerer «Valideringstilfelle» som én feil per fil, men V-F05 og V-F06 har flere feil. Definisjonen bør justeres
