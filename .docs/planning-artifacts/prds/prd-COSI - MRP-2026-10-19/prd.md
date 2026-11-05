@@ -114,6 +114,8 @@ Appen kontrollerer at filen har arkene Stykkliste, MPS og Planlagte mottak, med 
 - Mangler et ark eller en overskrift, blir det en valideringsfeil som nevner arket og hva som mangler.
 - Arkene Veiledning og Veien videre, Kontroll-kolonnen og de andre hjelpekolonnene til høyre for tabellene (lenker og skjulte lister) leses ikke inn og påvirker ikke valideringen.
 - En fil laget etter den gamle malen (med arkene Produkt og Komponenter) gir en valideringsfeil om at arket Stykkliste mangler.
+- Mangler et ark eller en overskrift, kontrolleres likevel de verdiene som ikke avhenger av det som mangler (FR-3), slik at alle feilene vises samlet (FR-4). Kontroller som avhenger av det som mangler, hoppes over: uten arket MPS er horisonten ukjent, så ukene i Planlagte mottak kontrolleres ikke, og uten en kolonne kontrolleres ikke verdiene i den. Slik blir det ingen følgefeil. Bestemt av Sebastian 2026-11-05.
+- `testdata/validering/V-F06.xlsx` (overskriften «Ledetid (uker)» mangler og et mottak har antall 0) gir nøyaktig to valideringsfeil.
 
 #### FR-3: Kontroller verdiene
 
@@ -136,7 +138,7 @@ Appen kontrollerer hver verdi etter disse reglene. Gjelder UJ-3.
 | Planlagte mottak | Antall | Heltall ≥ 1 |
 
 **Konsekvenser (testbare):**
-- Hver regel i tabellen har minst ett testtilfelle som gir nøyaktig én valideringsfeil.
+- Hver regel i tabellen har minst ett testtilfelle som gir nøyaktig én valideringsfeil (`testdata/validering/`).
 - En verdi limt inn i en celle med nedtrekksliste, for eksempel nivå «3» eller typen «Delmontering», gir en valideringsfeil selv om Excel ikke stoppet den.
 - Et tomt ark for planlagte mottak er gyldig.
 - En del med lagerbeholdning 0 eller sikkerhetslager 0 er gyldig.
@@ -330,7 +332,8 @@ Gjelder UJ-2.
 
 **Konsekvenser (testbare):**
 - Lastes samme fil opp to ganger, vises «ingen endringer».
-- Øker MPS for én uke i testeksempel 01, viser sammenligningen nøyaktig de bestillingsforslagene og eksepsjonene som er ulike mellom de to fasitene. Krever et eget testeksempel med fasit (se §9 Åpne spørsmål, nr. 2).
+- Lastes testeksempel 02 og så 03 opp (MPS i uke 2 økt fra 30 til 45), eller 03 og så 02, viser sammenligningen nøyaktig linjene i arket Sammenligning i `testdata/testeksempel-03-fasit.xlsx`.
+- Et bestillingsforslag er identifisert av varenummer og frigivelsesuke. Samme varenummer og uke med ny mengde er «endret mengde». Flytter et forslag uke, vises det som fjernet i den gamle uken og nytt i den nye. En eksepsjon er identifisert av varenummer, uke og type, og en endret melding alene er ingen endring. Bestemt av Sebastian 2026-11-05.
 - Endringer i resultattabellen som ikke påvirker bestillingsforslag eller eksepsjoner, vises ikke som endringer. `[ASSUMPTION]`
 
 #### FR-21: Start på nytt uten sammenligning
@@ -464,16 +467,16 @@ Fra appens startside kan brukeren laste ned den tomme Excel-malen og testeksempe
 ## 9. Åpne spørsmål
 
 1. Skal gruppemøtet bekrefte eller endre antagelsene i §10? Det gjelder særlig eksportformat, sortering og hvordan forklaringene vises.
-2. Det trengs et testeksempel 02 med endret MPS og egen fasit for å teste før/etter-sammenligningen (FR-20, SM-5). Hvem lager det, og når?
+2. Det trengs et testeksempel 02 med endret MPS og egen fasit for å teste før/etter-sammenligningen (FR-20, SM-5). Hvem lager det, og når? **Løst 2026-11-05:** testeksempel 03 (testeksempel 02 med økt MPS i uke 2) med fasit og arket Sammenligning.
 3. Det trengs et testeksempel med fast partistørrelse og egen fasit (FR-25). Dette lages når utvidelsen starter.
 4. Hvem er testpersonene til brukertesten (SM-3), og hvordan ser den korte introduksjonen ut?
 5. Skal appen også vise en ukeoversikt per uke (alle bestillingsforslag i en uke), i tillegg til listen sortert etter uke (FR-17)?
 6. Hvilken frist gjelder? Den er ikke kommunisert ennå, men ventes midt i desember 2026.
-7. Det trengs et testeksempel med 5–10 komponenter fordelt på 3 nivåer, minst én felles del og egen fasit (FR-5, FR-28, SM-1). Testeksempel 01 har bare nivå 0 og .1. Det kan være det samme som testeksempel 02 i spørsmål 2. **Svar (2026-10-26):** Testeksempelet lages i løpet av noen dager. **Løst 2026-11-05:** testeksempel 02 (Kontorstol Pro, 8 deler på 3 nivåer, felles del 300-002) med fasit. Før/etter-sammenligningen i spørsmål 2 trenger derfor et eget testeksempel 03.
+7. Det trengs et testeksempel med 5–10 komponenter fordelt på 3 nivåer, minst én felles del og egen fasit (FR-5, FR-28, SM-1). Testeksempel 01 har bare nivå 0 og .1. Det kan være det samme som testeksempel 02 i spørsmål 2. **Svar (2026-10-26):** Testeksempelet lages i løpet av noen dager. **Løst 2026-11-05:** testeksempel 02 (Kontorstol Pro, 8 deler på 3 nivåer, felles del 300-002) med fasit. Før/etter-sammenligningen i spørsmål 2 trenger derfor et eget testeksempel 03. **Løst 2026-11-05:** testeksempel 03.
 8. Fasitmeldingen for «Bestilling forsinket» i testeksempel 01 sier «Leveranse til kunde blir forsinket» for 300-003 Hjul, som er en komponent på nivå .1. Etter FR-10 og briefen skal den si at produksjonen av ferdigproduktet blir forsinket. Skal fasiten endres? **Svar (2026-10-26):** Ordnes når de nye testeksemplene lages.
 9. ~~Fasiten for testeksempel 01 må oppdateres for 300-005 Gassfjær etter FR-6/FR-12.~~ Løst 2026-11-02: `beregn()` og fasiten er oppdatert. Mottaket står i uke 4 og dekker behovet i uke 3 uten ny ordre.
 10. Briefen og addendumet til briefen definerer fire eksepsjonstyper, og «Mottak forsinket» står der med den gamle regelen. Skal briefen oppdateres med FR-6/FR-12 og den nye typen «Kanseller mottak» (FR-29), eller er det nok at PRD-en gjelder?
-11. Testeksempelet med tre nivåer (spørsmål 7) bør ha minst én del der ledetiden fra ferdigproduktet er ≥ H uten at noen enkelt ledetid er det (FR-9), og ett planlagt mottak som ikke trengs (FR-29). **Delvis løst 2026-11-05:** testeksempel 02 har et mottak som ikke trengs (300-005 i uke 5). Tilfellet for FR-9 mangler.
+11. Testeksempelet med tre nivåer (spørsmål 7) bør ha minst én del der ledetiden fra ferdigproduktet er ≥ H uten at noen enkelt ledetid er det (FR-9), og ett planlagt mottak som ikke trengs (FR-29). **Løst 2026-11-05:** testeksempel 02 har et mottak som ikke trengs (300-005 i uke 5), og testeksempel 04 har tilfellet for FR-9 (300-022, 1 + 4 + 7 = 12 = H).
 
 ## 10. Antagelser
 

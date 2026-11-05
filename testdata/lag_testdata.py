@@ -4,7 +4,11 @@ Bruk: uv run --with openpyxl python lag_testdata.py <testdata-mappe> [--alle]
 
 Uten --alle lages bare malen. Med --alle lages også testeksempel 01 og fasit.
 """
+import datetime
+import io
+import re
 import sys
+import zipfile
 from pathlib import Path
 
 from openpyxl import Workbook
@@ -15,6 +19,27 @@ from openpyxl.worksheet.datavalidation import DataValidation
 from openpyxl.worksheet.hyperlink import Hyperlink
 
 UT = Path(sys.argv[1])
+FAST_TID = datetime.datetime(2026, 11, 5)  # brukes i alle filene, så en ny kjøring gir like filer når innholdet er likt
+
+
+def lagre(wb, sti):
+    """Lagrer arbeidsboken med fast tid i dokumentegenskaper og zip, og skriver bare når innholdet er endret."""
+    wb.properties.created = wb.properties.modified = FAST_TID
+    rå = io.BytesIO()
+    wb.save(rå)
+    ut = io.BytesIO()
+    with zipfile.ZipFile(rå) as inn, zipfile.ZipFile(ut, "w", zipfile.ZIP_DEFLATED) as zut:
+        for info in inn.infolist():
+            ny = zipfile.ZipInfo(info.filename, date_time=(1980, 1, 1, 0, 0, 0))
+            ny.compress_type = zipfile.ZIP_DEFLATED
+            innhold = inn.read(info.filename)
+            if info.filename == "docProps/core.xml":  # openpyxl setter «modified» til nå ved lagring
+                innhold = re.sub(rb"(<dcterms:modified[^>]*>)[^<]*", rb"\g<1>2026-11-05T00:00:00Z", innhold)
+            zut.writestr(ny, innhold)
+    data = ut.getvalue()
+    sti = Path(sti)
+    if not sti.exists() or sti.read_bytes() != data:
+        sti.write_bytes(data)
 MAKS_UKER = 12
 
 FONT = Font(name="Arial", size=10)
@@ -121,10 +146,113 @@ HENSIKT_02 = {
                "hele horisonten. Det planlagte mottaket på 50 i uke 5 trengs ikke: Kanseller mottak",
 }
 
-STATUS_02 = ("Status: beregnet med skript 2026-11-05 etter PRD-reglene fra 2026-11-02. Bygger på Carmens fasit, "
-             "kontrollert for hånd 2026-10-24. Endringene må kontrolleres for hånd: 200-002 (mottaket fremskyndes), "
-             "300-002 og 300-003 (nytt bruttobehov fra 200-002), 300-003 (lager 20 i stedet for 40), "
-             "300-005 (ledetid fra ferdigproduktet 13, nytt mottak i uke 5 som skal kanselleres) og meldingen for 200-001.")
+STATUS_02 = ("Status: beregnet med skript 2026-11-05 etter PRD-reglene fra 2026-11-02 og kontrollert for hånd "
+             "(Carmen 2026-10-24, endringene for 200-002, 300-002, 300-003, 300-005 og 200-001 Sebastian 2026-11-05).")
+
+# Forventede eksepsjoner per del: (uke, type). Skriptet stopper hvis beregn() gir noe annet (se kontroller()).
+FORVENTET_01 = {
+    "300-003": [(1, "Bestilling forsinket")],
+    "300-004": [(1, "Bruk av sikkerhetslager")],
+    "300-005": [(3, "Mottak forsinket")],
+    "300-006": [("–", "Ledetid overskrider horisont")],
+}
+FORVENTET_02 = {
+    "100-001": [(1, "Bestilling forsinket")],
+    "200-001": [(1, "Bestilling forsinket")],
+    "200-002": [(3, "Mottak forsinket")],
+    "300-003": [(1, "Bruk av sikkerhetslager")],
+    "300-005": [("–", "Ledetid overskrider horisont"), (5, "Kanseller mottak")],
+}
+
+
+# ---------- Testeksempel 03: testeksempel 02 med økt MPS i uke 2, for før/etter-sammenligningen ----------
+
+MPS_03 = list(MPS_02)
+MPS_03[1] = 45  # uke 2: 30 → 45
+HENSIKT_03 = dict(HENSIKT_02)
+HENSIKT_03.update({
+    "100-001": "Som i testeksempel 02, men MPS i uke 2 er økt fra 30 til 45. Bestilling forsinket i uke 1 som før, "
+               "med større frigivelse i uke 1",
+    "200-002": "Mottaket i uke 4 må nå fremskyndes til uke 2 i stedet for uke 3 (eksepsjonen flytter uke)",
+    "300-002": "Får et nytt bestillingsforslag i uke 1",
+    "300-004": "Ny eksepsjon: Bruk av sikkerhetslager i uke 1, fordi behovet i uke 1 øker",
+})
+FORVENTET_03 = {
+    "100-001": [(1, "Bestilling forsinket")],
+    "200-001": [(1, "Bestilling forsinket")],
+    "200-002": [(2, "Mottak forsinket")],
+    "300-003": [(1, "Bruk av sikkerhetslager")],
+    "300-004": [(1, "Bruk av sikkerhetslager")],
+    "300-005": [("–", "Ledetid overskrider horisont"), (5, "Kanseller mottak")],
+}
+STATUS_03 = ("Status: beregnet med skript og kontrollert for hånd 2026-11-05. Testeksempelet er testeksempel 02 med "
+             "MPS i uke 2 økt fra 30 til 45. Arket Sammenligning viser forskjellene i bestillingsforslag og eksepsjoner "
+             "begge veier (02 → 03 og 03 → 02).")
+
+
+# ---------- Testeksempel 04: grensetilfeller (tre nivåer, 12 uker) ----------
+
+PRODUKT_04 = "Kontorstol Ergo"
+MPS_04 = [20, 30, 25, 0, 30, 35, 0, 20, 25, 30, 40, 30]  # 12 ukers horisont (største), med uker uten behov
+
+STYKKLISTE_04 = [
+    ("0", "100-001", PRODUKT_04, None, "Ferdigvare", 20, 0, 1),
+    (".1", "200-010", "Sete", 1, PROD, 70, 5, 4),
+    ("..2", "300-022", "Skruesett M8", 4, KJOPT, 1000, 0, 7),
+    ("..2", "300-023", "Monteringsbrakett", 1, KJOPT, 120, 10, 1),
+    (".1", "200-011", "Rygg", 1, PROD, 40, 5, 3),
+    ("..2", "300-021", "Ryggplate", 1, KJOPT, 400, 10, 7),
+    ("..2", "300-022", "Skruesett M8", 2, KJOPT, None, None, None),
+    (".1", "200-012", "Armlene", 1, PROD, 20, 0, 1),
+    ("..2", "300-024", "Armlenepute", 1, KJOPT, 200, 0, 1),
+    ("..2", "300-025", "Skrue M5", 2, KJOPT, 500, 20, 1),
+    (".1", "300-023", "Monteringsbrakett", 2, KJOPT, None, None, None),
+    (".1", "200-012", "Armlene", 1, PROD, None, None, None),
+    ("..2", "300-025", "Skrue M5", 2, KJOPT, None, None, None),
+    ("..2", "300-024", "Armlenepute", 1, KJOPT, None, None, None),
+    (".1", "200-013", "Fotkryss", 1, PROD, 300, 0, 2),
+    ("..2", "300-029", "Hjul", 5, KJOPT, 2000, 0, 1),
+    (".1", "200-013", "Fotkryss", 1, PROD, None, None, None),
+    (".1", "300-026", "Låseskive", 4, KJOPT, 0, 0, 1),
+    (".1", "300-027", "Trekk", 1, KJOPT, 40, 0, 2),
+    (".1", "300-028", "Hodestøtte", 1, KJOPT, 10, 0, 1),
+]
+
+MOTTAK_04 = [("100-001", 2, 20), ("300-026", 3, 30), ("300-027", 4, 20), ("300-027", 4, 30),
+             ("300-028", 3, 10), ("300-028", 5, 15)]
+
+HENSIKT_04 = {
+    "100-001": "Ferdigprodukt med planlagt mottak (produksjonsordre) på 20 i uke 2 som kommer i tide og trengs. "
+               "Uke 4 og 7 har MPS 0. Horisonten er 12 uker",
+    "200-010": "Ledetid 4 og lager som dekker de fire første ukene: ingen forfalt frigivelse",
+    "300-022": "Står under Sete og Rygg. Ledetid fra ferdigproduktet er 1 + 4 + 7 = 12 = H langs den lengste stien, "
+               "selv om ingen enkelt ledetid er ≥ H (via Rygg er den 11). Bestilling forsinket i uke 7, og meldingen "
+               "nevner begge delene over",
+    "300-023": "Står både på nivå .1 (2 per stol) og på nivå ..2 (1 per sete). Beregnes én gang på lavnivåkode 2, med "
+               "bruttobehov = 2 × frigivelsene til 100-001 + 1 × frigivelsene til 200-010",
+    "200-011": "Ledetid 3, ingen eksepsjon",
+    "300-021": "Ledetid fra ferdigproduktet er 1 + 3 + 7 = 11 = H − 1: ingen eksepsjon",
+    "200-012": "Står to ganger på nivå .1 med de samme underdelene i ulik rekkefølge. Bruttobehov = 2 × frigivelsene "
+               "til 100-001",
+    "300-024": "Underdel av 200-012. Telles én gang: bruttobehov = 1 × frigivelsene til 200-012, ikke 2 ×",
+    "300-025": "Underdel av 200-012 med sikkerhetslager. Telles én gang: bruttobehov = 2 × frigivelsene til 200-012",
+    "200-013": "Står to ganger på nivå .1, med underdeler bare under første forekomst. Bruttobehov = 2 × frigivelsene "
+               "til 100-001",
+    "300-029": "Underdel av 200-013: bruttobehov = 5 × frigivelsene til 200-013. Lageret dekker hele horisonten",
+    "300-026": "Lager 0 og sikkerhetslager 0. Mottaket på 30 i uke 3 er for lite til behovet på 40 i uke 1: samme uke "
+               "får både Mottak forsinket og Bestilling forsinket for resten (to eksepsjoner i én celle)",
+    "300-027": "To planlagte mottak i samme uke (20 + 30 i uke 4) legges sammen til 50. De kommer i tide og trengs",
+    "300-028": "To planlagte mottak (uke 3 og uke 5) fremskyndes begge til uke 2: to eksepsjoner Mottak forsinket i "
+               "samme uke",
+}
+FORVENTET_04 = {
+    "300-022": [("–", "Ledetid overskrider horisont"), (7, "Bestilling forsinket")],
+    "300-026": [(1, "Bestilling forsinket"), (1, "Mottak forsinket")],
+    "300-028": [(2, "Mottak forsinket"), (2, "Mottak forsinket")],
+}
+STATUS_04 = ("Status: beregnet med skript og kontrollert for hånd 2026-11-05. Testeksempelet samler "
+             "grensetilfellene som ikke er dekket av testeksempel 01–03.")
+
 
 
 # ---------- Beregning (PRD §4.2–4.3) ----------
@@ -465,7 +593,8 @@ def kontroll(n):
         f'IF(AND($B{n}<>"",NOT({forste}),COUNTIFS($B$1:$B{p},$B{n},$E$1:$E{p},$E{n})=0),'
         f'"Annen type enn første gang varenummeret står. ","")',
         # Nivåene er 0, .1 og ..2, så lengre tekst betyr lavere nivå
-        f'IF(AND(ISNUMBER(SEARCH("Kjøpes inn",$E{n})),$A{nx}<>"",LEN($A{nx})>LEN($A{n})),'
+        f'IF(AND(ISNUMBER(SEARCH("Kjøpes inn",$E{n})),ISNUMBER(MATCH($A{n}&"",$Z$2:$Z$4,0)),$A{nx}<>"",'
+        f'LEN($A{nx})>LEN($A{n})),'
         f'"Har underkomponenter, men kjøpes inn. ","")',
         f'IF(AND($A{n}&""="0",$E{n}<>"",$E{n}<>"Ferdigvare"),"Nivå 0 skal ha type Ferdigvare. ","")',
         f'IF(AND($A{n}<>"",$A{n}&""<>"0",$E{n}="Ferdigvare"),"Ferdigvare brukes bare på nivå 0. ","")',
@@ -834,11 +963,66 @@ def utregning(tabeller, eks, detaljer):
     return linjer
 
 
-def lag_fasit(nr, produkt, mps, stykkliste, mottak, hensikt, status):
-    wb = Workbook()
-    h = len(mps)
+def bestillingsforslag(tabeller, detaljer):
+    """Bestillingsforslagene (FR-17): én linje per planlagt ordrefrigivelse > 0, sortert etter uke og stykkliste.
+
+    Gir (varenummer, beskrivelse, uke, mengde, art, forfalt mengde). Forfalt mengde er den delen av frigivelsen i uke 1
+    som skulle vært frigitt før horisonten.
+    """
+    linjer = []
+    rekke = list(tabeller)
+    for vn, rader in tabeller.items():
+        d = detaljer[vn]["del_"]
+        art = "Innkjøp" if d["type"] == KJOPT else "Produksjonsordre"
+        forfalt = sum(st["ordremottak"] for st in detaljer[vn]["spor"]
+                      if st["frigi_uke"] is not None and st["frigi_uke"] < 1)
+        for u, q in enumerate(rader["Planlagte ordrefrigivelser"], start=1):
+            if q:
+                linjer.append((vn, d["beskrivelse"], u, q, art, forfalt if u == 1 else 0))
+    return sorted(linjer, key=lambda x: (x[2], rekke.index(x[0])))
+
+
+def sammenligning(for_, etter):
+    """Før/etter-sammenligning (FR-20) mellom to kjøringer, hver gitt som (tabeller, eksepsjoner, detaljer).
+
+    Et bestillingsforslag er identifisert av varenummer og frigivelsesuke. Samme varenummer og uke med ny mengde er
+    «Endret mengde». Flytter et forslag uke, vises det som «Fjernet» i den gamle uken og «Nytt» i den nye.
+    En eksepsjon er identifisert av varenummer, uke og type. En endret melding alene er ingen endring.
+    """
+    def forslag(k):
+        return {(x[0], x[2]): x for x in bestillingsforslag(k[0], k[2])}
+    f1, f2 = forslag(for_), forslag(etter)
+    rekke = list(etter[0]) + [v for v in for_[0] if v not in etter[0]]
+    linjer = []
+    for vn, u in sorted(set(f1) | set(f2), key=lambda k: (rekke.index(k[0]), k[1])):
+        a, b = f1.get((vn, u)), f2.get((vn, u))
+        if a and b and a[3] != b[3]:
+            linjer.append(("Bestillingsforslag", "Endret mengde", vn, u, a[3], b[3], ""))
+        elif a and not b:
+            linjer.append(("Bestillingsforslag", "Fjernet", vn, u, a[3], None, ""))
+        elif b and not a:
+            linjer.append(("Bestillingsforslag", "Nytt", vn, u, None, b[3], ""))
+    e1 = {e[:3]: e for e in for_[1]}
+    e2 = {e[:3]: e for e in etter[1]}
+    for k in sorted(set(e1) | set(e2), key=lambda k: (rekke.index(k[0]), 0 if k[1] == "–" else k[1])):
+        if k in e1 and k not in e2:
+            linjer.append(("Eksepsjon", "Borte", k[0], k[1], k[2], None, e1[k][3]))
+        elif k in e2 and k not in e1:
+            linjer.append(("Eksepsjon", "Ny", k[0], k[1], None, k[2], e2[k][3]))
+    return linjer
+
+
+def kjoring(mps, stykkliste, mottak):
     detaljer = {}
     tabeller, eks = beregn(mps, stykkliste, mottak, detaljer)
+    return tabeller, eks, detaljer
+
+
+def lag_fasit(nr, produkt, mps, stykkliste, mottak, hensikt, status, sammenlign=()):
+    """Fasit for ett testeksempel. sammenlign er en liste med (overskrift, kjøring før, kjøring etter)."""
+    wb = Workbook()
+    h = len(mps)
+    tabeller, eks, detaljer = kjoring(mps, stykkliste, mottak)
     beskrivelse = {}
     for rad in stykkliste:
         beskrivelse.setdefault(rad[1], rad[2])
@@ -916,18 +1100,280 @@ def lag_fasit(nr, produkt, mps, stykkliste, mottak, hensikt, status):
         celle(ws_m, i, 2, detaljer[vn]["del_"]["beskrivelse"])
         celle(ws_m, i, 3, detaljer[vn]["llk"])
     bredder(ws_m, {"A": 14, "B": 22, "C": 14})
+
+    ws_b = wb.create_sheet("Bestillingsforslag")
+    hode(ws_b, 1, ["Varenummer", "Beskrivelse", "Frigivelsesuke", "Mengde", "Art", "Forfalt mengde"])
+    for i, linje in enumerate(bestillingsforslag(tabeller, detaljer), start=2):
+        for k, v in enumerate(linje, start=1):
+            celle(ws_b, i, k, v if (k != 6 or v) else None)
+    bredder(ws_b, {"A": 14, "B": 22, "C": 14, "D": 10, "E": 18, "F": 16})
+    ws_b.freeze_panes = "A2"
+
+    if sammenlign:
+        ws_s = wb.create_sheet("Sammenligning")
+        ws_s["A1"] = "Før/etter-sammenligning (FR-20)"
+        ws_s["A1"].font = FONT_TITTEL
+        r = tekstblokk(ws_s, 2, [
+            "Et bestillingsforslag er identifisert av varenummer og frigivelsesuke. Samme varenummer og uke med ny "
+            "mengde er «Endret mengde». Flytter et forslag uke, vises det som «Fjernet» i den gamle uken og «Nytt» i "
+            "den nye.",
+            "En eksepsjon er identifisert av varenummer, uke og type. En endret melding alene er ingen endring.",
+            "Lastes samme fil opp to ganger, er det ingen endringer.",
+        ])
+        for rr in range(2, r):
+            ws_s.merge_cells(start_row=rr, start_column=1, end_row=rr, end_column=7)
+            ws_s.row_dimensions[rr].height = 28
+        r += 1
+        for tittel, for_, etter in sammenlign:
+            ws_s.cell(r, 1, tittel).font = FONT_FET
+            hode(ws_s, r + 1, ["Hva", "Endring", "Varenummer", "Uke", "Før", "Etter", "Melding"])
+            r += 2
+            for linje in sammenligning(for_, etter):
+                for k, v in enumerate(linje, start=1):
+                    celle(ws_s, r, k, v).alignment = Alignment(wrap_text=True, vertical="top")
+                r += 1
+            r += 1
+        bredder(ws_s, {"A": 18, "B": 16, "C": 12, "D": 6, "E": 26, "F": 26, "G": 80})
     return wb
 
 
+# ---------- Valideringstilfeller (FR-1–FR-4) ----------
+# Hver fil bygger på testeksempel 02 og har nøyaktig én valideringsfeil (unntak: V-F05 har tre, V-F06 to, og G-filene har
+# ingen). Radnumrene er Excel-rader i arket. Testeksempel 02 har disse radene i Stykkliste:
+# 2: 0 100-001, 3: .1 200-001, 4: ..2 300-001, 5: ..2 300-002, 6: .1 200-002, 7: ..2 300-002 (gjentatt),
+# 8: ..2 300-003, 9: .1 300-004, 10: .1 300-005.
+
+def _rad(stykk, excel_rad, **endr):
+    """Kopi av stykklisten der én rad (Excel-rad) har fått nye verdier."""
+    felt = ["niva", "vn", "besk", "antall", "type", "lager", "ss", "ledetid"]
+    ny = [list(r) for r in stykk]
+    for k, v in endr.items():
+        ny[excel_rad - 2][felt.index(k)] = v
+    return [tuple(r) for r in ny]
+
+
+def _sett_inn(stykk, excel_rad, *rader):
+    return stykk[:excel_rad - 2] + list(rader) + stykk[excel_rad - 2:]
+
+
+def _mps(**uker):
+    m = list(MPS_02)
+    for k, v in uker.items():
+        u = int(k[1:])
+        while len(m) < u:
+            m.append(None)
+        m[u - 1] = v
+    return m
+
+
+S02, M02, R02 = STYKKLISTE_02, MPS_02, MOTTAK_02
+_REPETER = ("..2", "300-001", "Seteplate", 1, KJOPT, None, None, None)
+
+# (id, beskrivelse, ark, rad/celle, felt, regel, (stykkliste, mps, mottak), etterbehandling eller None)
+VALIDERING = [
+    ("S01", "Tom rad midt i stykklisten", "Stykkliste", "rad 9", "Rader", "FR-3: rader sammenhengende fra rad 2",
+     (_sett_inn(S02, 9, (None,) * 8), M02, R02[:1]), None),  # mottaket for 300-005 (under den tomme raden) er tatt ut
+    ("S02", "Ingen rad med nivå .1", "Stykkliste", "rad 2", "Rader", "FR-3: minst én rad med nivå .1",
+     (S02[:1], M02, []), None),
+    ("S03", "1001 rader i stykklisten", "Stykkliste", "rad 1002", "Rader", "FR-3: inntil 1000 rader",
+     (_sett_inn(S02, 5, *[_REPETER] * 992), M02, R02), None),
+    ("S04", "Ugyldig nivå «3»", "Stykkliste", "A8", "Nivå", "FR-3: nivå er 0, .1 eller ..2",
+     (_rad(S02, 8, niva="3"), M02, R02), None),
+    ("S05", "Første rad er nivå .1", "Stykkliste", "A2", "Nivå", "FR-3: første rad er 0",
+     (_rad(S02, 2, niva=".1", antall=1, type=PROD), M02, R02), None),
+    ("S06", "To rader med nivå 0", "Stykkliste", "A11", "Nivå", "FR-3: ingen andre rader er 0",
+     (S02 + [("0", "100-002", "Kontorstol Pro 2", None, "Ferdigvare", 0, 0, 0)], M02, R02), None),
+    ("S07", "Nivå ..2 rett under nivå 0", "Stykkliste", "A3", "Nivå", "FR-3: ..2 står rett under .1 eller ..2",
+     (_rad(S02, 3, niva="..2"), M02, R02), None),
+    ("S08", "Varenummer mangler", "Stykkliste", "B8", "Varenummer", "FR-3: varenummer fylt ut",
+     (_rad(S02, 8, vn=None), M02, R02), None),
+    ("S09", "Del står under seg selv", "Stykkliste", "B6", "Varenummer", "FR-3: en del kan ikke stå under seg selv",
+     (_sett_inn(S02, 6, ("..2", "200-001", "Sete", 1, PROD, None, None, None)), M02, R02), None),
+    ("S10", "Beskrivelse mangler", "Stykkliste", "C9", "Beskrivelse", "FR-3: beskrivelse fylt ut",
+     (_rad(S02, 9, besk=None), M02, R02), None),
+    ("S11", "Annen beskrivelse for samme varenummer", "Stykkliste", "C7", "Beskrivelse",
+     "FR-3: lik beskrivelse for samme varenummer", (_rad(S02, 7, besk="Skruesett M8"), M02, R02), None),
+    ("S12", "Antall fylt ut for nivå 0", "Stykkliste", "D2", "Antall", "FR-3: antall tom for nivå 0",
+     (_rad(S02, 2, antall=1), M02, R02), None),
+    ("S13", "Antall mangler", "Stykkliste", "D9", "Antall", "FR-3: antall heltall ≥ 1",
+     (_rad(S02, 9, antall=None), M02, R02), None),
+    ("S14", "Antall 0", "Stykkliste", "D9", "Antall", "FR-3: antall heltall ≥ 1",
+     (_rad(S02, 9, antall=0), M02, R02), None),
+    ("S15", "Antall med desimal (1,5)", "Stykkliste", "D4", "Antall", "FR-3: antall heltall ≥ 1",
+     (_rad(S02, 4, antall=1.5), M02, R02), None),
+    ("S16", "Antall er tekst («fem»)", "Stykkliste", "D9", "Antall", "FR-3: antall heltall ≥ 1",
+     (_rad(S02, 9, antall="fem"), M02, R02), None),
+    ("S17", "Type som ikke finnes i listen («Råvare (Kjøpes inn)»)", "Stykkliste", "E8", "Type",
+     "FR-3: type fra listen", (_rad(S02, 8, type="Råvare (Kjøpes inn)"), M02, R02), None),
+    ("S18", "Ferdigvare på nivå .1", "Stykkliste", "E9", "Type", "FR-3: Ferdigvare bare på nivå 0",
+     (_rad(S02, 9, type="Ferdigvare"), M02, R02), None),
+    ("S19", "Nivå 0 er ikke Ferdigvare", "Stykkliste", "E2", "Type", "FR-3: Ferdigvare på nivå 0",
+     (_rad(S02, 2, type=PROD), M02, R02), None),
+    ("S20", "Annen type for samme varenummer", "Stykkliste", "E7", "Type", "FR-3: lik type for samme varenummer",
+     (_rad(S02, 7, type=PROD), M02, R02), None),
+    ("S21", "Del som kjøpes inn, har underdeler", "Stykkliste", "E3", "Type",
+     "FR-3: en del som kjøpes inn, har ingen rader under seg", (_rad(S02, 3, type=KJOPT), M02, R02), None),
+    ("S22", "Ulike underdeler under samme del", "Stykkliste", "rad 12", "Underdeler",
+     "FR-3: underdelene er like under hver forekomst",
+     (S02 + [(".1", "200-001", "Sete", 1, PROD, None, None, None),
+             ("..2", "300-001", "Seteplate", 2, KJOPT, None, None, None)], M02, R02), None),
+    ("S23", "Negativ lagerbeholdning", "Stykkliste", "F9", "Lagerbeholdning", "FR-3: heltall ≥ 0",
+     (_rad(S02, 9, lager=-5), M02, R02), None),
+    ("S24", "Sikkerhetslager med desimal (2,5)", "Stykkliste", "G4", "Sikkerhetslager", "FR-3: heltall ≥ 0",
+     (_rad(S02, 4, ss=2.5), M02, R02), None),
+    ("S25", "Lagerbeholdning mangler første gang varenummeret står", "Stykkliste", "F8", "Lagerbeholdning",
+     "FR-3: fylt ut første gang", (_rad(S02, 8, lager=None), M02, R02), None),
+    ("S26", "Lagerbeholdning fylt ut andre gang varenummeret står", "Stykkliste", "F7", "Lagerbeholdning",
+     "FR-3: tom de neste gangene", (_rad(S02, 7, lager=10), M02, R02), None),
+    ("S27", "Ledetid 0 for en komponent", "Stykkliste", "H9", "Ledetid (uker)", "FR-3: heltall ≥ 1 (≥ 0 for nivå 0)",
+     (_rad(S02, 9, ledetid=0), M02, R02), None),
+    ("S28", "Ledetid mangler", "Stykkliste", "H10", "Ledetid (uker)", "FR-3: fylt ut første gang",
+     (_rad(S02, 10, ledetid=None), M02, R02), None),
+    ("S29", "Ledetid fylt ut andre gang varenummeret står", "Stykkliste", "H7", "Ledetid (uker)",
+     "FR-3: tom de neste gangene", (_rad(S02, 7, ledetid=1), M02, R02), None),
+    ("M01", "Negativt antall i MPS", "MPS", "uke 3", "Antall per uke", "FR-3: heltall ≥ 0",
+     (S02, _mps(u3=-5), R02), None),
+    ("M02", "Uke fylt ut etter et hull (uke 9 tom, uke 10 fylt)", "MPS", "uke 10", "Antall per uke",
+     "FR-3: ingen uke fylt ut etter et hull", (S02, _mps(u9=None), R02), None),
+    ("M03", "Horisont på 7 uker", "MPS", "uke 8", "Antall per uke", "FR-3: horisonten er 8–12 uker",
+     (S02, MPS_02[:7], R02), None),
+    ("M04", "Antall er tekst («tretti»)", "MPS", "uke 2", "Antall per uke", "FR-3: heltall ≥ 0",
+     (S02, _mps(u2="tretti"), R02), None),
+    ("M05", "Antall med desimal (30,5)", "MPS", "uke 2", "Antall per uke", "FR-3: heltall ≥ 0",
+     (S02, _mps(u2=30.5), R02), None),
+    ("P01", "Varenummer som ikke finnes i Stykkliste", "Planlagte mottak", "A3", "Varenummer",
+     "FR-3: varenummer finnes i Stykkliste", (S02, M02, [R02[0], ("300-099", 5, 50)]), None),
+    ("P02", "Uke 0", "Planlagte mottak", "B3", "Uke", "FR-3: uke fra 1 til H",
+     (S02, M02, [R02[0], ("300-005", 0, 50)]), None),
+    ("P03", "Uke etter horisonten (uke 11, H = 10)", "Planlagte mottak", "B3", "Uke", "FR-3: uke fra 1 til H",
+     (S02, M02, [R02[0], ("300-005", 11, 50)]), None),
+    ("P04", "Antall 0", "Planlagte mottak", "C3", "Antall", "FR-3: antall heltall ≥ 1",
+     (S02, M02, [R02[0], ("300-005", 5, 0)]), None),
+    ("F01", "Arket MPS mangler", "MPS", "–", "Ark", "FR-2: arkene Stykkliste, MPS og Planlagte mottak finnes",
+     (S02, M02, R02), "slett_mps"),
+    ("F02", "Kolonneoverskriften «Ledetid (uker)» mangler", "Stykkliste", "H1", "Overskrift",
+     "FR-2: kolonneoverskriftene fra malen", (S02, M02, R02), "feil_overskrift"),
+    ("F03", "Fil etter den gamle malen (arkene Produkt og Komponenter)", "Stykkliste", "–", "Ark",
+     "FR-2: gammel mal gir feil om at Stykkliste mangler", (S02, M02, R02), "gammel_mal"),
+    ("F04", "Fil som ikke er .xlsx (CSV)", "–", "–", "Fil", "FR-1: bare .xlsx tas imot", None, "csv"),
+    ("F05", "Tre feil på tre ark", "Stykkliste, MPS, Planlagte mottak", "D9, uke 3, B2", "Antall, Antall per uke, Uke",
+     "FR-4: alle feilene vises samlet (3 feil)", (_rad(S02, 9, antall=0), _mps(u3=-5), [("200-002", 0, 40)]), None),
+    ("F06", "Strukturfeil og verdifeil i samme fil: overskriften «Ledetid (uker)» mangler, og et mottak har antall 0",
+     "Stykkliste, Planlagte mottak", "H1, C3", "Overskrift, Antall",
+     "FR-2 og FR-4: verdier som ikke avhenger av kolonnen som mangler, kontrolleres likevel (2 feil)",
+     (S02, M02, [R02[0], ("300-005", 5, 0)]), "feil_overskrift"),
+    ("G01", "Gyldig: horisont 8 uker", "–", "–", "–", "FR-3: grenseverdi, ingen feil", (S02, MPS_02[:8], R02), None),
+    ("G02", "Gyldig: horisont 12 uker", "–", "–", "–", "FR-3: grenseverdi, ingen feil",
+     (S02, MPS_02 + [25, 40], R02), None),
+    ("G03", "Gyldig: tomt ark Planlagte mottak", "–", "–", "–", "FR-3: tomt ark er gyldig, ingen feil",
+     (S02, M02, []), None),
+    ("G04", "Gyldig: del med underdeler to ganger, likt og bare første gang", "–", "–", "–",
+     "FR-3: underdeler like eller bare første gang, ingen feil",
+     (S02 + [(".1", "200-001", "Sete", 1, PROD, None, None, None),
+             ("..2", "300-002", "Skruesett M6", 4, KJOPT, None, None, None),
+             ("..2", "300-001", "Seteplate", 1, KJOPT, None, None, None),
+             (".1", "200-002", "Rygg", 1, PROD, None, None, None)], M02, R02), None),
+]
+
+
+def _antall_feil(vid):
+    return {"F04": None, "F05": 3, "F06": 2}.get(vid, 0 if vid.startswith("G") else 1)
+
+
+def lag_valideringsfiler(mappe):
+    """Lager filene i testdata/validering/ og README.md med forventet resultat for hver fil."""
+    mappe.mkdir(exist_ok=True)
+    nye = {f"V-{v[0]}.csv" if v[7] == "csv" else f"V-{v[0]}.xlsx" for v in VALIDERING}
+    for gammel in mappe.glob("V-*"):
+        if gammel.name not in nye:
+            gammel.unlink()
+    rader = []
+    for vid, besk, ark, sted, felt, regel, data, etter in VALIDERING:
+        navn = f"V-{vid}.csv" if etter == "csv" else f"V-{vid}.xlsx"
+        if etter == "csv":
+            (mappe / navn).write_text("Nivå;Varenummer;Beskrivelse\n0;100-001;Kontorstol Pro\n", encoding="utf-8")
+        else:
+            stykk, mps, mottak = data
+            wb = lag_mal(mps, stykk[:STYKK_RADER], mottak)
+            ws = wb["Stykkliste"]
+            for i, rad in enumerate(stykk[STYKK_RADER:], start=STYKK_RADER + 2):
+                for k, v in enumerate(rad, start=1):
+                    ws.cell(i, k, v).font = FONT
+            if etter == "slett_mps":
+                del wb[PROGNOSE]
+            elif etter == "feil_overskrift":
+                ws["H1"] = "Ledetid"
+            elif etter == "gammel_mal":
+                ws.title = "Komponenter"
+                wb.create_sheet("Produkt", 1)["A1"] = "Produktnavn"
+                wb["Produkt"]["B1"] = PRODUKT_02
+            lagre(wb, mappe / navn)
+        n = _antall_feil(vid)
+        rader.append((navn, besk, "avvist" if n is None else str(n), ark, sted, felt, regel))
+    linjer = [
+        "# Valideringstilfeller",
+        "",
+        "Filene her tester valideringen før beregningen (PRD FR-1–FR-4). De lages av `lag_testdata.py` "
+        "(`--alle`) og bygger på testeksempel 02. Hver fil har nøyaktig én feil, unntatt V-F05 (tre feil på tre ark, "
+        "FR-4), V-F06 (en strukturfeil og en verdifeil) og G-filene (gyldige grenseverdier, ingen feil). V-F04 er ikke en Excel-fil og skal avvises (FR-1).",
+        "",
+        "Kolonnen «Feil» er antall valideringsfeil appen skal vise. Sted er cellen eller raden feilen gjelder. "
+        "Ordlyden i feilmeldingen bestemmer appen, men den skal oppgi ark, rad eller celle, felt og årsak (FR-4).",
+        "",
+        "Antagelser:",
+        "",
+        "- Mangler et ark eller en overskrift (FR-2), kontrolleres likevel de verdiene som ikke avhenger av det som "
+        "mangler (FR-3). Kontroller som avhenger av det, hoppes over: uten MPS er horisonten ukjent, så ukene i Planlagte "
+        "mottak kontrolleres ikke, og uten overskriften «Ledetid (uker)» kontrolleres ikke ledetidene. V-F01–F03 har "
+        "ingen andre feil og gir én feil. V-F06 har i tillegg en verdifeil og gir to (bestemt av Sebastian 2026-11-05).",
+        "- V-S05 og V-S19 har ingen rad med typen Ferdigvare. Det regnes ikke som en egen feil.",
+        "- V-S01 har ingen planlagte mottak for delene under den tomme raden, så det blir ikke en ekstra feil om appen "
+        "slutter å lese ved den tomme raden.",
+        "- V-S03 har 1001 rader, så rad 1002 ligger utenfor malens 1000 rader.",
+        "",
+        "| Fil | Tilfelle | Feil | Ark | Sted | Felt | Regel |",
+        "|---|---|---|---|---|---|---|",
+    ] + [f"| `{a}` | {b} | {c} | {d} | {e} | {f} | {g} |" for a, b, c, d, e, f, g in rader]
+    (mappe / "README.md").write_text("\n".join(linjer) + "\n", encoding="utf-8")
+
+
+def kontroller():
+    """Stopper hvis beregn() gir andre eksepsjoner enn det testeksemplene skal teste, eller hvis viktige tall endres."""
+    for nr, _p, mps, stykk, mottak, _h, _s, forventet in TESTEKSEMPLER:
+        _t, eks = beregn(mps, stykk, mottak)
+        fikk = sorted((e[0], str(e[1]), e[2]) for e in eks)
+        skal = sorted((vn, str(u), typ) for vn, liste in forventet.items() for u, typ in liste)
+        assert fikk == skal, f"Testeksempel {nr}: forventet {skal}, fikk {fikk}"
+    t, _e = beregn(MPS_04, STYKKLISTE_04, MOTTAK_04)
+    frig = {vn: r["Planlagte ordrefrigivelser"] for vn, r in t.items()}
+    h = len(MPS_04)
+    assert t["300-023"]["Bruttobehov"] == [2 * frig["100-001"][u] + frig["200-010"][u] for u in range(h)]
+    assert t["300-024"]["Bruttobehov"] == frig["200-012"]
+    assert t["300-025"]["Bruttobehov"] == [2 * q for q in frig["200-012"]]
+    assert t["300-029"]["Bruttobehov"] == [5 * q for q in frig["200-013"]]
+    assert t["200-012"]["Bruttobehov"] == t["200-013"]["Bruttobehov"] == [2 * q for q in frig["100-001"]]
+    assert t["300-022"]["Bruttobehov"] == [4 * frig["200-010"][u] + 2 * frig["200-011"][u] for u in range(h)]
+    assert t["300-027"]["Planlagte mottak"][3] == 50
+    a = kjoring(MPS_02, STYKKLISTE_02, MOTTAK_02)
+    assert sammenligning(a, a) == [], "Samme kjøring to ganger skal gi ingen endringer"
+
+
 TESTEKSEMPLER = [
-    ("01", PRODUKT, MPS, STYKKLISTE_01, MOTTAK, HENSIKT_01, STATUS_01),
-    ("02", PRODUKT_02, MPS_02, STYKKLISTE_02, MOTTAK_02, HENSIKT_02, STATUS_02),
+    ("01", PRODUKT, MPS, STYKKLISTE_01, MOTTAK, HENSIKT_01, STATUS_01, FORVENTET_01),
+    ("02", PRODUKT_02, MPS_02, STYKKLISTE_02, MOTTAK_02, HENSIKT_02, STATUS_02, FORVENTET_02),
+    ("03", PRODUKT_02, MPS_03, STYKKLISTE_02, MOTTAK_02, HENSIKT_03, STATUS_03, FORVENTET_03),
+    ("04", PRODUKT_04, MPS_04, STYKKLISTE_04, MOTTAK_04, HENSIKT_04, STATUS_04, FORVENTET_04),
 ]
 
 if __name__ == "__main__":
-    lag_mal().save(UT / "COSI-MRP-mal.xlsx")
+    lagre(lag_mal(), UT / "COSI-MRP-mal.xlsx")
     if "--alle" in sys.argv:
-        for nr, produkt, mps, stykk, mottak, hensikt, status in TESTEKSEMPLER:
+        kontroller()
+        k02 = kjoring(MPS_02, STYKKLISTE_02, MOTTAK_02)
+        k03 = kjoring(MPS_03, STYKKLISTE_02, MOTTAK_02)
+        sammen = {"03": [("Fra testeksempel 02 til 03 (02 lastet opp først, så 03)", k02, k03),
+                         ("Fra testeksempel 03 til 02 (03 lastet opp først, så 02)", k03, k02)]}
+        for nr, produkt, mps, stykk, mottak, hensikt, status, _f in TESTEKSEMPLER:
             tabeller, eks = beregn(mps, stykk, mottak)
             print(f"===== Testeksempel {nr}: {produkt}")
             for vn, rader in tabeller.items():
@@ -937,5 +1383,7 @@ if __name__ == "__main__":
                 for e in eks:
                     if e[0] == vn:
                         print("  !", e[1], e[2])
-            lag_mal(mps, stykk, mottak).save(UT / f"testeksempel-{nr}.xlsx")
-            lag_fasit(nr, produkt, mps, stykk, mottak, hensikt, status).save(UT / f"testeksempel-{nr}-fasit.xlsx")
+            lagre(lag_mal(mps, stykk, mottak), UT / f"testeksempel-{nr}.xlsx")
+            lagre(lag_fasit(nr, produkt, mps, stykk, mottak, hensikt, status, sammen.get(nr, ())),
+                  UT / f"testeksempel-{nr}-fasit.xlsx")
+        lag_valideringsfiler(UT / "validering")

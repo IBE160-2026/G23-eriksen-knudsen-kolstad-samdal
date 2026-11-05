@@ -13,10 +13,15 @@ Sensor kan bruke filene her for å prøve appen direkte etter README i roten av 
 |---|---|
 | `COSI-MRP-mal.xlsx` | Tom mal. Ark: Veiledning, Stykkliste, MPS, Planlagte mottak, Veien videre. Brukeren fyller kun ut gule celler. |
 | `testeksempel-01.xlsx` | Malen utfylt for en fiktiv kontorstolprodusent: 8 komponenter (300-001–300-008) på nivå .1, alle innkjøpt, 10 uker. Laget med den gjeldende malen. |
-| `testeksempel-01-fasit.xlsx` | Fasit: beregningsregler, fasittabell per uke og del, forventede eksepsjoner, utregning steg for steg og lavnivåkode per del (Materiell). |
+| `testeksempel-01-fasit.xlsx` | Fasit med arkene Regler, Fasittabell (per uke og del), Eksepsjoner, Utregning (steg for steg), Materiell (lavnivåkode per del) og Bestillingsforslag (FR-17). |
 | `testeksempel-02.xlsx` | Malen utfylt for Kontorstol Pro: 8 deler på tre nivåer (0, .1, ..2), felles del, 10 uker. Laget med den gjeldende malen. |
 | `testeksempel-02-fasit.xlsx` | Fasit for testeksempel 02, med de samme arkene som fasit 01. |
-| `lag_testdata.py` | Skriptet som lager filene. `uv run --with openpyxl python lag_testdata.py testdata` lager bare malen. Legg til `--alle` for også å lage testeksempel og fasit. |
+| `testeksempel-03.xlsx` | Testeksempel 02 med MPS i uke 2 økt fra 30 til 45. Brukes til før/etter-sammenligningen (FR-20). |
+| `testeksempel-03-fasit.xlsx` | Fasit for testeksempel 03, med et ekstra ark Sammenligning: forskjellene mellom 02 og 03 begge veier. |
+| `testeksempel-04.xlsx` | Grensetilfeller: Kontorstol Ergo, 14 deler på tre nivåer, 12 uker. |
+| `testeksempel-04-fasit.xlsx` | Fasit for testeksempel 04, med de samme arkene som fasit 01. |
+| `validering/` | Valideringstilfeller: én fil per regel i FR-1–FR-4, med forventet resultat i `validering/README.md`. |
+| `lag_testdata.py` | Skriptet som lager filene. `uv run --with openpyxl python lag_testdata.py testdata` lager bare malen. Legg til `--alle` for også å lage testeksemplene, fasitene og valideringstilfellene. Med `--alle` kontrollerer skriptet først at hvert testeksempel gir nøyaktig de eksepsjonene det skal teste, og stopper ellers. Filene lagres med fast tid, så en ny kjøring gir like filer når innholdet er likt. |
 
 ## Malens struktur
 
@@ -69,4 +74,73 @@ Carmen laget testeksempelet 2026-10-29 og kontrollerte fasiten for hånd 2026-10
 | 300-004 Hjul | Normalforløp på nivå .1, ingen falske varsler |
 | 300-005 Gassfjær | Ledetid fra ferdigproduktet 13 ≥ horisont 10, og et planlagt mottak som ikke trengs (Kanseller mottak) |
 
-**Status:** beregnet med skriptet 2026-11-05. Endringene mot Carmens kontrollerte fasit må kontrolleres for hånd: 200-002, 300-002, 300-003, 300-005 og meldingen for 200-001. Testeksempelet mangler en del der ledetiden fra ferdigproduktet er ≥ H uten at noen enkelt ledetid er det (PRD §9 spm. 11).
+**Status:** kontrollert. Fasiten er beregnet med skriptet og kontrollert for hånd (Carmen 2026-10-24, endringene for 200-002, 300-002, 300-003, 300-005 og 200-001 Sebastian 2026-11-05).
+
+## Testeksempel 03 – før/etter-sammenligning
+
+Testeksempel 03 er testeksempel 02 med MPS i uke 2 økt fra 30 til 45. Det tester FR-20: last opp 02 og så 03, eller 03 og så 02. Arket Sammenligning i fasiten viser nøyaktig hva sammenligningen skal vise i begge retninger. Lastes samme fil opp to ganger, skal den vise «ingen endringer».
+
+| Retning | Bestillingsforslag | Eksepsjoner |
+|---|---|---|
+| 02 → 03 | 7 med endret mengde, 1 nytt (300-002 uke 1) | Ny: 200-002 Mottak forsinket uke 2 og 300-004 Bruk av sikkerhetslager uke 1. Borte: 200-002 Mottak forsinket uke 3 |
+| 03 → 02 | 7 med endret mengde, 1 fjernet (300-002 uke 1) | Det motsatte |
+
+Regler for sammenligningen (bestemt 2026-11-05, PRD FR-20): Et bestillingsforslag er identifisert av varenummer og frigivelsesuke. Samme varenummer og uke med ny mengde er «Endret mengde». Flytter et forslag uke, vises det som «Fjernet» i den gamle uken og «Nytt» i den nye. En eksepsjon er identifisert av varenummer, uke og type. En endret melding alene er ingen endring.
+
+**Status:** kontrollert. Beregnet med skriptet og kontrollert for hånd 2026-11-05.
+
+## Testeksempel 04 – grensetilfeller
+
+Testeksempel 04 samler tilfellene som ikke er dekket av 01–03. Horisonten er 12 uker (største), og MPS er 0 i uke 4 og 7.
+
+| Del | Tilfelle |
+|---|---|
+| 100-001 Kontorstol Ergo | Planlagt mottak (produksjonsordre) på ferdigproduktet som kommer i tide |
+| 300-022 Skruesett M8 | Under Sete og Rygg. Ledetid fra ferdigproduktet 1 + 4 + 7 = 12 = H langs den lengste stien, uten at noen enkelt ledetid er ≥ H. Bestilling forsinket i uke 7 med begge delene over i meldingen |
+| 300-021 Ryggplate | Ledetid fra ferdigproduktet 11 = H − 1: ingen eksepsjon |
+| 300-023 Monteringsbrakett | Står både på nivå .1 og ..2: én tabell på lavnivåkode 2, behov fra begge |
+| 200-012 Armlene, 300-024, 300-025 | Del med underdeler som står to ganger med de samme underdelene i ulik rekkefølge. Underdelene telles én gang |
+| 200-013 Fotkryss, 300-029 | Del med underdeler som står to ganger, med underdelene bare under første forekomst |
+| 300-026 Låseskive | Mottaket er for lite: Mottak forsinket og Bestilling forsinket i samme uke |
+| 300-027 Trekk | To planlagte mottak i samme uke legges sammen |
+| 300-028 Hodestøtte | To planlagte mottak fremskyndes til samme uke: to Mottak forsinket i én celle |
+
+**Status:** kontrollert. Beregnet med skriptet og kontrollert for hånd 2026-11-05.
+
+## Dekning
+
+Hvor hvert tilfelle i PRD-en testes. «Validering» betyr `validering/` (se README der).
+
+| Krav | Tilfelle | Testes i |
+|---|---|---|
+| FR-1 | `.xlsx` godtas, annen fil avvises | 01–04, validering V-F04 |
+| FR-2 | Ark eller overskrift mangler, gammel mal | validering V-F01–F03 |
+| FR-2 / FR-4 | Strukturfeil og verdifeil i samme fil gir begge feilene | validering V-F06 |
+| FR-3 | Hver regel i tabellen gir nøyaktig én feil | validering V-S01–S29, V-M01–M05, V-P01–P04 |
+| FR-3 | Gyldige grenseverdier: horisont 8 og 12, tomt mottaksark, like underdeler | validering V-G01–G04, 01 (lager og SS 0), 04 (H = 12) |
+| FR-4 | Tre feil på tre ark vises samlet | validering V-F05 |
+| FR-5 | Ferdigprodukt uten lager og ledetid (frigivelse = MPS) | 01 |
+| FR-5 | Ferdigprodukt med lager og ledetid 1 (behovet forskyves) | 02, 04 |
+| FR-5 | Behov på nivå ..2 fra delen over, ikke fra MPS | 02, 04 |
+| FR-28 | Felles del under to deler på samme nivå | 02 (300-002), 04 (300-022) |
+| FR-28 | Felles del på både nivå .1 og ..2 | 04 (300-023) |
+| FR-28 / FR-3 | Del med underdeler flere steder: like underdeler eller bare første gang | 04 (200-012, 200-013) |
+| FR-6 / FR-12 | Mottak fremskyndes, innkjøp og egen produksjon | 01 (300-005), 02 (200-002) |
+| FR-6 / FR-12 | Mottaket for lite: fremskyndet mottak og ny ordre i samme uke | 04 (300-026) |
+| FR-6 / FR-12 | To mottak fremskyndes til samme uke | 04 (300-028) |
+| FR-6 | To mottak i samme uke legges sammen | 04 (300-027) |
+| FR-6 / FR-29 | Mottak i tide som trengs: ingen eksepsjon | 01 (300-007), 04 (100-001, 300-027) |
+| FR-7 | Lager under SS før et fremskyndet mottak | 01 (300-005), 02 (200-002), 04 (300-028) |
+| FR-8 | Forfalt frigivelse legges i uke 1, også på nivå .1 som behov for delene under | 01, 02 (100-001 → 200-001) |
+| FR-8 | Frigivelse nøyaktig i uke 1 er ikke forfalt | 01 (300-008) |
+| FR-9 | Én ledetid = H | 01 (300-006) |
+| FR-9 | Ledetid fra ferdigproduktet > H | 02 (300-005) |
+| FR-9 | Summen langs stien = H, ingen enkelt ledetid ≥ H, lengste sti av to | 04 (300-022) |
+| FR-9 | Ledetid fra ferdigproduktet = H − 1: ingen eksepsjon | 04 (300-021) |
+| FR-10 | Bestilling forsinket: ferdigprodukt, del rett under (til kunde), del på ..2 (produksjonen av delene over) | 02, 01, 04 |
+| FR-11 | Bruk av sikkerhetslager på nivå .1 og ..2 | 01 (300-004), 02 (300-003), 03 (300-004) |
+| FR-29 | Kanseller mottak | 02 (300-005) |
+| FR-13 / FR-15 | Flere eksepsjoner på én del og i én celle | 02 (300-005), 04 (300-022, 300-026, 300-028) |
+| FR-17 | Bestillingsforslag med innkjøp, produksjonsordre og forfalt mengde | arket Bestillingsforslag i alle fasitene |
+| FR-20 | Nye, endrede og fjernede forslag, nye og borte eksepsjoner, ingen endringer | 03 (arket Sammenligning) |
+| FR-24–FR-26 | Fast partistørrelse | ikke laget ennå (planlagt utvidelse) |
