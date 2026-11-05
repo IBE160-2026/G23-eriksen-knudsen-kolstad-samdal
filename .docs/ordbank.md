@@ -9,7 +9,7 @@ updated: 2026-11-05
 
 Felles begreper for brief, PRD, arkitektur, stories, Excel-mal, kode og app. Bruk begrepet i første kolonne. Ordene i «Ikke bruk» er synonymer som finnes i dokumentene i dag. Engelsk fagbegrep står i kursiv i parentes, så det er lett å slå opp i MRP-litteraturen. Bruk det norske begrepet i dokumenter og kode.
 
-Forslaget bygger på Excel-malen for flernivå stykkliste (Sebastian, 2026-10-23) og på testdataene med fasit for testeksempel 01 og 02 (fasit for 02 kontrollert for hånd 2026-10-24). Punkter merket **[BESLUTNING]** må gruppen avgjøre. Forkortelser og begreper om prosjektet og verktøyet er hentet fra ordboken til product brief (Sebastian, 2026-10-30), som er slått sammen inn her.
+Forslaget bygger på Excel-malen for flernivå stykkliste (Sebastian, 2026-10-23) og på testdataene med fasit for testeksempel 01 og 02 (fasit for 02 kontrollert for hånd 2026-10-24). Punktene som var merket **[BESLUTNING]**, ble avgjort 2026-11-05 (se Merknader og `prds/prd-COSI - MRP-2026-10-19/beslutninger-2026-11-05.md`). Forkortelser og begreper om prosjektet og verktøyet er hentet fra ordboken til product brief (Sebastian, 2026-10-30), som er slått sammen inn her.
 
 ## Forkortelser
 
@@ -23,7 +23,7 @@ Forslaget bygger på Excel-malen for flernivå stykkliste (Sebastian, 2026-10-23
 | IBE160 | – | Emnet ved Høgskolen i Molde som prosjektet er en del av. |
 | L | Ledetid | Se *Ledetid*. |
 | L4L | Lot-for-lot | Se *Lot-for-lot*. |
-| MPS | Master Production Schedule | Hovedproduksjonsplan: hvor mange ferdigprodukter som skal være ferdige hver uke. Brukes ikke lenger i malen, se *Prognostiserte behov* og merknad 2. |
+| MPS | Master Production Schedule | Hovedproduksjonsplan: hvor mange ferdigprodukter som skal være ferdige hver uke. Står bare i parentes første gang i et dokument: «Prognostiserte behov (MPS)». Se *Prognostiserte behov* og merknad 2. |
 | MRP | Material Requirements Planning | Materialbehovsplanlegging: metode som ut fra prognostiserte behov, stykkliste, lagerbeholdning og ledetid beregner hva som må bestilles eller produseres, hvor mye og når. |
 | MRP II | Manufacturing Resource Planning | Videreutvikling av MRP som også tar med kapasitet, økonomi og andre ressurser. Nevnt i tilbakemeldingen fra faglærer. |
 | PRD | Product Requirements Document | Kravdokument som bygger på briefen og beskriver i detalj hva verktøyet skal gjøre. |
@@ -36,7 +36,7 @@ Forslaget bygger på Excel-malen for flernivå stykkliste (Sebastian, 2026-10-23
 |---|---|---|
 | Excel-mal | Den faste filen `COSI-MRP-mal.xlsx` som brukeren fyller ut og laster opp. Arkene er Stykkliste, Prognostiserte behov og Planlagte mottak. | fil, regneark (om malen) |
 | Stykkliste (BOM, *multi-level BOM*) | Ferdigproduktet og alle delene det består av, én rad per del, ovenfra og ned. Flernivå (deler kan selv bestå av andre deler), med nivå 0, .1 og ..2 i v1. | – |
-| Del | Én rad i stykklisten, uansett nivå og type. **[BESLUTNING]** Se merknad 1. | komponent (som samlebegrep), vare |
+| Del | Én rad i stykklisten, uansett nivå og type. Samlebegrepet i dokumenter, kode og app (besluttet 2026-11-05, se merknad 1). | komponent (som samlebegrep), vare |
 | Ferdigprodukt (*end item*) | Delen på nivå 0, med type Ferdigvare. Ett per fil. | produkt, Produkt A |
 | Varenummer | Unik ID for en del, f.eks. 300-002 (varegruppe-løpenummer). Samme del har samme varenummer overalt i stykklisten. | Komponent-ID, komponent_id, K01 |
 | Beskrivelse | Navnet på delen, f.eks. «Skruesett M6». | navn |
@@ -44,9 +44,8 @@ Forslaget bygger på Excel-malen for flernivå stykkliste (Sebastian, 2026-10-23
 | Delen over (overordnet del) | Nærmeste del på nivået over. En del på ..2 tilhører nærmeste .1 over seg. | forelder, parent |
 | Underkomponent | En del som står rett under en annen del i stykklisten. | barn, child |
 | Antall (*quantity per*) | Hvor mange av delen som trengs per enhet av delen over. Heltall ≥ 1. Fylles ikke ut for nivå 0. | antall per ferdigprodukt, antall per A, antall per produkt |
-| Type | Ferdigvare, Delmontering, Komponent (Kjøpes inn), Komponent (Produseres selv), Råvare (Kjøpes inn) eller Råvare (Produseres selv). En del som kjøpes inn kan ikke ha underkomponenter. | – |
-| Delmontering | En del som settes sammen internt av underkomponenter, f.eks. Sete. | sammenstilling, modul |
-| Prognostiserte behov | Antall ferdigprodukter per uke (arket i malen). **[BESLUTNING]** Se merknad 2. | MPS, prognose, produksjonsplan |
+| Type | Ferdigvare, Komponent (Kjøpes inn) eller Komponent (Produseres selv). Ferdigvare brukes bare på nivå 0. En del som kjøpes inn, kan ikke ha underkomponenter. «Komponent» brukes bare om typen (besluttet 2026-11-05, se merknad 1 og 5). | Delmontering, Råvare (som typer) |
+| Prognostiserte behov | Antall ferdigprodukter per uke (arket i malen). Brukes i malen og appen. I dokumenter skrives «Prognostiserte behov (MPS)» første gang (besluttet 2026-11-05, se merknad 2). | MPS (alene), prognose, produksjonsplan |
 | Lagerbeholdning (*on-hand inventory*) | Antall på lager ved starten av uke 1. Fylles ut første gang varenummeret står. | startlager, lagerstatus |
 | Sikkerhetslager (SS, *safety stock*) | Laveste forventede lagerbeholdning planen skal holde. Fylles ut første gang varenummeret står. | buffer |
 | Ledetid (L, *lead time*) | Hele uker fra en ordre frigis til den mottas: innkjøpstid for deler som kjøpes inn, produksjonstid for deler som produseres selv. Heltall ≥ 1, 0 er lov for ferdigproduktet. | innkjøpstid (alene), leveringstid |
@@ -88,7 +87,7 @@ Forslaget bygger på Excel-malen for flernivå stykkliste (Sebastian, 2026-10-23
 
 | Begrep | Definisjon | Ikke bruk |
 |---|---|---|
-| Eksepsjon (*exception message*) | Et varsel om avvik for en del, i en uke eller for hele delen. **[BESLUTNING]** Se merknad 3. | eksepsjonsmelding, exception |
+| Eksepsjon (*exception message*) | En melding om avvik for en del, i en uke eller for hele delen. Brukes i dokumenter, kode og i teksten i appen (besluttet 2026-11-05, se merknad 3). | varsel, eksepsjonsmelding, exception |
 | Bestilling forsinket | Forfalt frigivelse og disponibel beholdning < 0. Leveransen blir forsinket til kunden (ferdigproduktet) eller til produksjonen av delen over. | Bestilling forsinket – nytt bestillingsforslag |
 | Bruk av sikkerhetslager | Forfalt frigivelse og 0 ≤ disponibel beholdning < SS. | Under sikkerhetslager |
 | Mottak forsinket | Nettobehov > 0 og et planlagt mottak ligger i en senere uke. Mottaket regnes som fremskyndet til uken med nettobehovet, og det lages planlagt ordremottak bare for et eventuelt restbehov. Resultattabellen viser mottaket i uken det er lagt inn (PRD FR-6, FR-12, endret 2026-11-02). | – |
@@ -112,9 +111,10 @@ Forslaget bygger på Excel-malen for flernivå stykkliste (Sebastian, 2026-10-23
 | Valideringsfeil | En feil i filen som appen finner, og som stopper beregningen. Oppgir ark, rad og årsak. | feilmelding |
 | Resultattabell | MRP-tabellen per del og uke, med eksepsjonene markert. | MRP-tabell, resultatside, oversikt |
 | Før/etter-sammenligning | Forskjellen i bestillingsforslag og eksepsjoner mellom forrige og ny kjøring. | – |
-| Testeksempel | Et utfylt datasett med fasit, i `testdata/`. | øvingseksempel (se merknad 4) |
+| Testeksempel | Et utfylt datasett med fasit, i `testdata/` (01–04). | øvingseksempel (slettet, se merknad 4) |
 | Fasit | Manuelt kontrollert forventet resultattabell og eksepsjonsliste for et testeksempel. | – |
 | Valideringstilfelle | En fil i `testdata/validering/` med nøyaktig én kjent valideringsfeil, eller ingen feil for gyldige grenseverdier. | feilfil |
+| Vercel | Tjenesten appen publiseres på, med en lenke som kan åpnes uten installasjon. Vercel leverer bare appens kode. Innlesing, validering, beregning og lagring av kjøringer skjer i brukerens nettleser (PRD NFR-4, besluttet 2026-11-05). | – |
 | Grensetilfelle (*edge case*) | Testtilfelle i ytterkanten av det normale, f.eks. behov i uke 1, eller ledetid lik eller lengre enn horisonten. | – |
 
 ## Prosjekt og omfang
@@ -129,10 +129,13 @@ Forslaget bygger på Excel-malen for flernivå stykkliste (Sebastian, 2026-10-23
 
 ## Merknader
 
-1. **Del eller komponent?** Malen og testdataene bruker «del» om alle radene, fordi «Komponent» er en av verdiene i Type. Brief, PRD og Veien videre i malen bruker «komponent» som samlebegrep («per uke og komponent», «kritisk komponent»). Forslag: «del» som samlebegrep og «komponent» bare om typen.
-2. **Prognostiserte behov eller MPS?** Malen og testdataene har gått over til «Prognostiserte behov» (tidligere MPS). Brief bruker fortsatt MPS. Forslag: følge malen og oppdatere brief og PRD.
-3. **Eksepsjon eller varsel?** «Eksepsjon» er fagbegrepet og brukes i PRD og fasit. Brief og Veien videre i malen bruker «varsel» om det brukeren ser. Forslag: «eksepsjon» i dokumenter og kode, «varsel» bare i appens tekst.
-4. **Øvingseksempelet** (3 komponenter, 4 uker) er utenfor omfanget og bruker gamle begreper (tilgjengelig, registrert mottak, innkjøpstid, uke 0). Det kan kalles testeksempel 00 hvis det beholdes.
+Besluttet av Sebastian 2026-11-05 (se `prds/prd-COSI - MRP-2026-10-19/beslutninger-2026-11-05.md`).
+
+1. **Del eller komponent?** «Del» er samlebegrepet for alle rader i stykklisten, som i malen og testdataene. «Komponent» brukes bare om typen. «Kritisk komponent» blir «kritisk del».
+2. **Prognostiserte behov eller MPS?** «Prognostiserte behov» i malen og appen. I dokumenter skrives «Prognostiserte behov (MPS)» første gang, så fagbegrepet er lett å kjenne igjen.
+3. **Eksepsjon eller varsel?** «Eksepsjon» overalt, også i appen. Forklaringene i appen gjør begrepet forståelig.
+4. **Øvingseksempelet** (3 komponenter, 4 uker) slettes. Det finnes bare på grenene til Carmen og Oda, ikke på `main`.
+5. **Typelisten:** tre typer (Ferdigvare, Komponent (Kjøpes inn), Komponent (Produseres selv)), som i malen, PRD-en og testdataene. Delmontering og Råvare er ikke egne typer.
 
 ## Avvik mellom malen og PRD-en
 
