@@ -55,7 +55,7 @@ Radene som «kommer frem» er laget med betinget formatering og datavalidering, 
 | 300-007 Skruesett | Planlagt mottak som kommer i tide og trengs (verken Mottak forsinket eller Kanseller mottak) |
 | 300-008 Trekk | Sikkerhetslager 0 og frigivelse nøyaktig i uke 1 |
 
-**Status:** kontrollert. Fasiten følger PRD-reglene fra 2026-11-02 (FR-6/FR-12 fremskynding, FR-9 ledetid fra ferdigproduktet, FR-29 Kanseller mottak). Den har nå også en tabell for ferdigproduktet 100-001. Fasiten er beregnet med skriptet og kontrollert for hånd (2026-10-19, endringene for 300-005, 300-006 og 100-001 2026-11-02). Forfalte frigivelser legges i uke 1, og eksepsjonsmeldingen oppgir hvor mye av uke 1 som er forfalt. Forfalte ordremottak vises i uken behovet er, selv om de fysisk kommer senere.
+**Status:** kontrollert. Fasiten følger PRD-reglene fra 2026-11-02 (FR-6/FR-12 fremskynding, FR-9 ledetid fra ferdigproduktet, FR-29 Kanseller mottak). Den har nå også en tabell for ferdigproduktet 100-002. Fasiten er beregnet med skriptet og kontrollert for hånd (2026-10-19, endringene for 300-005, 300-006 og 100-001 2026-11-02). Forfalte frigivelser legges i uke 1, og eksepsjonsmeldingen oppgir hvor mye av uke 1 som er forfalt. Forfalte ordremottak vises i uken behovet er, selv om de fysisk kommer senere.
 
 `beregn()` i skriptet regner flernivå (nivå for nivå, felles deler én gang på lavnivåkoden). Testeksempel 01 har bare to nivåer. Testeksempel 02 har tre.
 

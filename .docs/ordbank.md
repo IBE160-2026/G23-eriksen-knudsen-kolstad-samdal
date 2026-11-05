@@ -42,7 +42,8 @@ Forslaget bygger på Excel-malen for flernivå stykkliste (Sebastian, 2026-10-23
 | Beskrivelse | Navnet på delen, f.eks. «Skruesett M6». | navn |
 | Nivå | Hvor i stykklisten delen står: 0 = ferdigproduktet, .1 = hovedkomponent, ..2 = del under en hovedkomponent. | – |
 | Delen over (overordnet del) | Nærmeste del på nivået over. En del på ..2 tilhører nærmeste .1 over seg. | forelder, parent |
-| Underkomponent | En del som står rett under en annen del i stykklisten. | barn, child |
+| Underdel | En del som står rett under en annen del i stykklisten. | underkomponent, barn, child |
+| Felles del | En del som står flere steder i stykklisten, f.eks. skruer i både sete og rygg. Samme varenummer, beskrivelse og type hver gang. Lager, sikkerhetslager og ledetid står bare første gang, og delen beregnes én gang (PRD FR-28). | – |
 | Antall (*quantity per*) | Hvor mange av delen som trengs per enhet av delen over. Heltall ≥ 1. Fylles ikke ut for nivå 0. | antall per ferdigprodukt, antall per A, antall per produkt |
 | Type | Ferdigvare, Komponent (Kjøpes inn) eller Komponent (Produseres selv). Ferdigvare brukes bare på nivå 0. En del som kjøpes inn, kan ikke ha underkomponenter. «Komponent» brukes bare om typen (besluttet 2026-11-05, se merknad 1 og 5). | Delmontering, Råvare (som typer) |
 | Prognostiserte behov | Antall ferdigprodukter per uke. Fylles ut i arket MPS i malen (arket beholder navnet, besluttet 2026-11-05). Brukes i malen og appen. I dokumenter skrives «Prognostiserte behov (MPS)» første gang (besluttet 2026-11-05, se merknad 2). | MPS (alene), prognose, produksjonsplan |
@@ -66,7 +67,7 @@ Forslaget bygger på Excel-malen for flernivå stykkliste (Sebastian, 2026-10-23
 |---|---|---|
 | Nivå-for-nivå-beregning | Beregningen gjøres ovenfra og ned. Planlagte ordrefrigivelser for en del, ganget med antall, blir bruttobehov for underkomponentene. | eksplosjon (alene) |
 | Bruttobehov (*gross requirements*) | Nivå 0: prognostiserte behov(t). Andre nivåer: summen av planlagt ordrefrigivelse(t) × antall for alle stedene delen står i stykklisten. | behov (alene) |
-| Disponibel beholdning | Forventet lagerbeholdning(t−1) + planlagte mottak(t) − bruttobehov(t). | tilgjengelig, disponibel (alene) |
+| Disponibel beholdning | Beholdning(t−1) + planlagte mottak(t) − bruttobehov(t), der beholdningen er forventet lagerbeholdning(t−1) pluss fremskyndede mottak som ennå ikke er kommet (PRD FR-6). | tilgjengelig, disponibel (alene) |
 | Nettobehov (*net requirements*) | maks(0, SS − disponibel beholdning). | – |
 | Planlagt ordremottak (*planned order receipt*) | Mengden en foreslått ordre skal levere i uke t. Beregnet, ikke bestilt. | planlagt mottak (om beregnet mengde) |
 | Planlagt ordrefrigivelse (*planned order release*) | Mengden som må bestilles eller settes i produksjon i uke t − L. | planlagt frigivelse, planlagt bestilling |
@@ -77,12 +78,16 @@ Forslaget bygger på Excel-malen for flernivå stykkliste (Sebastian, 2026-10-23
 | Lavnivåkode (*low-level code*) | Det laveste nivået en del står på i stykklisten. Nettobehovet for delen beregnes først når alle bruttobehov ned til dette nivået er beregnet, så en felles del beregnes én gang. Kilde: ASCM Dictionary, 18. utg., s. 109. | laveste nivå (alene) |
 | Omplanleggingsantakelse (*rescheduling assumption*) | MRP antar at et planlagt mottak kan fremskyndes lettere enn en ny ordre kan frigis og mottas. Planlagt ordremottak lages derfor først når alle planlagte mottak er brukt. Kilde: ASCM Dictionary, 18. utg., s. 164. Se research om MRP-regler (2026-11-02). | – |
 | Omplanleggingshorisont (*rescheduling horizon*) | Grense for hvor langt fram i horisonten et planlagt mottak kan fremskyndes fra. Ikke med i v1, der et mottak kan fremskyndes fra hvilken som helst senere uke (PRD FR-6, §7.2). | – |
-| Forventet lagerbeholdning (*projected on-hand*) | Disponibel beholdning + planlagt ordremottak. | forventet lager, forventet beholdning, beregnet lager |
+| Frysing (*time fence*) | En periode nærmest i tid der planen ikke endres automatisk. Ikke med i v1, fordi appen gjør én kjøring om gangen (PRD addendum). | – |
+| Dempingsterskel (*dampener*) | En grense som hindrer eksepsjoner for små avvik, f.eks. et mottak som kommer bare litt tidlig. Ikke med i v1 (PRD addendum). | – |
+| Nervøsitet i planen (*system nervousness*) | At planen endrer seg mye fra kjøring til kjøring på grunn av små endringer i inndataene. | – |
+| Fremskyndet mottak | Et planlagt mottak som beregningen regner med fra en tidligere uke enn det er lagt inn i, fordi det trengs da. Regnes med én gang, fra uken det er fremskyndet til (PRD FR-6). | – |
+| Forventet lagerbeholdning (*projected on-hand*) | Disponibel beholdning + planlagt ordremottak − fremskyndede mottak som ennå ikke er kommet. Det er lagerbeholdningen resultattabellen viser (PRD FR-7). | forventet lager, forventet beholdning, beregnet lager |
 | Forfalt frigivelse | En planlagt ordrefrigivelse der t − L < 1. Den legges i uke 1 og blir bruttobehov i uke 1 for underkomponentene. | bestilling før planstart, uke 0 |
 | Bestillingsforslag | Det brukeren handler på: del, frigivelsesuke og mengde. | – |
 | Bestillingsregel (*lot sizing rule*) | Regelen som gjør nettobehov om til planlagt ordremottak. | – |
 | Lot-for-lot (L4L) | Planlagt ordremottak = nettobehov. | – |
-| Fast partistørrelse (*fixed order quantity*) | Planlagt ordremottak rundes opp til et helt antall partier. Planlagt utvidelse. | partistørrelse (alene) |
+| Fast partistørrelse (*fixed order quantity*) | Planlagt ordremottak rundes opp til et helt antall partier. Planlagt utvidelse. Kolonnen i malen og verdien Q heter «Partistørrelse». | partistørrelse (alene, om regelen) |
 
 ## Eksepsjoner
 
@@ -140,13 +145,10 @@ Besluttet av Sebastian 2026-11-05 (se `prds/prd-COSI - MRP-2026-10-19/beslutning
 
 ## Avvik mellom malen og PRD-en
 
-PRD-en (Sebastian, 2026-10-19) ble skrevet før malen ble bygd om for flernivå, og må oppdateres:
+Avvikene fra 2026-10-19 (enkeltnivå, Komponent-ID, innkjøpstid, antall per ferdigprodukt, 1–500 deler) ble rettet i PRD-en 2026-10-26. Disse gjelder per 2026-11-05 og rettes neste gang malen endres:
 
-| Tema | PRD | Mal og testdata |
+| Tema | PRD og ordbank | Malen |
 |---|---|---|
-| Stykkliste | Enkeltnivå, ark Produkt og Komponenter | Flernivå, ett ark Stykkliste |
-| ID | Komponent-ID (K01 …) | Varenummer (300-001 …) |
-| Tid | Innkjøpstid | Ledetid (innkjøps- eller produksjonstid) |
-| Eksepsjon | Innkjøpstid overskrider horisont | Ledetid overskrider horisont |
-| Antall | Antall per ferdigprodukt | Antall per enhet av delen over |
-| Antall deler | 1–500, oppgitt i Produkt-arket | Inntil 1000 rader i Stykkliste, ikke oppgitt |
+| Arknavn | «Prognostiserte behov (MPS)» i teksten | Arket heter MPS. Besluttet å beholde (2026-11-05) |
+| Arket Veien videre | «Eksepsjon», «del», fem eksepsjonstyper, ledetid fra ferdigproduktet (FR-9) | Bruker «varsel» og «komponent», lister fire eksepsjonstyper og den gamle regelen for Ledetid overskrider horisont |
+| Eksempel i Veiledning | Testeksempel 01 er 100-002 Kontorstol Basic | Eksempelet er 100-001 Kontorstol Basic |
