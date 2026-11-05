@@ -7,7 +7,9 @@ updated: 2026-11-05
 
 # Beslutninger 2026-11-05
 
-Sebastian gikk gjennom alle åpne spørsmål i PRD §9, antagelsene i §10, merknadene i ordbanken og de åpne punktene i `.logs/sebas/issues.md`, ett om gangen. Svarene står under. De skal føres inn i `prd.md` ved Finalize i `bmad-prd`. Ordbanken, `issues.md` og briefen er allerede oppdatert.
+Sebastian gikk gjennom alle åpne spørsmål i PRD §9, antagelsene i §10, merknadene i ordbanken og de åpne punktene i `.logs/sebas/issues.md`, ett om gangen. Svarene står under. Ordbanken, `issues.md` og briefen er allerede oppdatert.
+
+**Ført inn i `prd.md` 2026-11-05** (Update i `bmad-prd`, ikke Finalize). Arket i malen heter fortsatt MPS. «Prognostiserte behov» brukes i teksten (Sebastian, 2026-11-05).
 
 ## A. Begreper
 

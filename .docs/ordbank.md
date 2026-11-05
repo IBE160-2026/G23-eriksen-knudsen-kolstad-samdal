@@ -34,7 +34,7 @@ Forslaget bygger på Excel-malen for flernivå stykkliste (Sebastian, 2026-10-23
 
 | Begrep | Definisjon | Ikke bruk |
 |---|---|---|
-| Excel-mal | Den faste filen `COSI-MRP-mal.xlsx` som brukeren fyller ut og laster opp. Arkene er Stykkliste, Prognostiserte behov og Planlagte mottak. | fil, regneark (om malen) |
+| Excel-mal | Den faste filen `COSI-MRP-mal.xlsx` som brukeren fyller ut og laster opp. Arkene som leses inn, er Stykkliste, MPS og Planlagte mottak. | fil, regneark (om malen) |
 | Stykkliste (BOM, *multi-level BOM*) | Ferdigproduktet og alle delene det består av, én rad per del, ovenfra og ned. Flernivå (deler kan selv bestå av andre deler), med nivå 0, .1 og ..2 i v1. | – |
 | Del | Én rad i stykklisten, uansett nivå og type. Samlebegrepet i dokumenter, kode og app (besluttet 2026-11-05, se merknad 1). | komponent (som samlebegrep), vare |
 | Ferdigprodukt (*end item*) | Delen på nivå 0, med type Ferdigvare. Ett per fil. | produkt, Produkt A |
@@ -45,7 +45,7 @@ Forslaget bygger på Excel-malen for flernivå stykkliste (Sebastian, 2026-10-23
 | Underkomponent | En del som står rett under en annen del i stykklisten. | barn, child |
 | Antall (*quantity per*) | Hvor mange av delen som trengs per enhet av delen over. Heltall ≥ 1. Fylles ikke ut for nivå 0. | antall per ferdigprodukt, antall per A, antall per produkt |
 | Type | Ferdigvare, Komponent (Kjøpes inn) eller Komponent (Produseres selv). Ferdigvare brukes bare på nivå 0. En del som kjøpes inn, kan ikke ha underkomponenter. «Komponent» brukes bare om typen (besluttet 2026-11-05, se merknad 1 og 5). | Delmontering, Råvare (som typer) |
-| Prognostiserte behov | Antall ferdigprodukter per uke (arket i malen). Brukes i malen og appen. I dokumenter skrives «Prognostiserte behov (MPS)» første gang (besluttet 2026-11-05, se merknad 2). | MPS (alene), prognose, produksjonsplan |
+| Prognostiserte behov | Antall ferdigprodukter per uke. Fylles ut i arket MPS i malen (arket beholder navnet, besluttet 2026-11-05). Brukes i malen og appen. I dokumenter skrives «Prognostiserte behov (MPS)» første gang (besluttet 2026-11-05, se merknad 2). | MPS (alene), prognose, produksjonsplan |
 | Lagerbeholdning (*on-hand inventory*) | Antall på lager ved starten av uke 1. Fylles ut første gang varenummeret står. | startlager, lagerstatus |
 | Sikkerhetslager (SS, *safety stock*) | Laveste forventede lagerbeholdning planen skal holde. Fylles ut første gang varenummeret står. | buffer |
 | Ledetid (L, *lead time*) | Hele uker fra en ordre frigis til den mottas: innkjøpstid for deler som kjøpes inn, produksjonstid for deler som produseres selv. Heltall ≥ 1, 0 er lov for ferdigproduktet. | innkjøpstid (alene), leveringstid |
@@ -76,6 +76,7 @@ Forslaget bygger på Excel-malen for flernivå stykkliste (Sebastian, 2026-10-23
 | Kumulativ ledetid (*cumulative lead time*) | Den lengste summen av ledetider langs en sti fra delen ned gjennom stykklisten: delens egen L pluss den største kumulative ledetiden blant underkomponentene. For en del uten underkomponenter er den lik L. Kilde: ASCM Dictionary, 18. utg., s. 47. | samlet ledetid, stablet ledetid, kritisk sti |
 | Lavnivåkode (*low-level code*) | Det laveste nivået en del står på i stykklisten. Nettobehovet for delen beregnes først når alle bruttobehov ned til dette nivået er beregnet, så en felles del beregnes én gang. Kilde: ASCM Dictionary, 18. utg., s. 109. | laveste nivå (alene) |
 | Omplanleggingsantakelse (*rescheduling assumption*) | MRP antar at et planlagt mottak kan fremskyndes lettere enn en ny ordre kan frigis og mottas. Planlagt ordremottak lages derfor først når alle planlagte mottak er brukt. Kilde: ASCM Dictionary, 18. utg., s. 164. Se research om MRP-regler (2026-11-02). | – |
+| Omplanleggingshorisont (*rescheduling horizon*) | Grense for hvor langt fram i horisonten et planlagt mottak kan fremskyndes fra. Ikke med i v1, der et mottak kan fremskyndes fra hvilken som helst senere uke (PRD FR-6, §7.2). | – |
 | Forventet lagerbeholdning (*projected on-hand*) | Disponibel beholdning + planlagt ordremottak. | forventet lager, forventet beholdning, beregnet lager |
 | Forfalt frigivelse | En planlagt ordrefrigivelse der t − L < 1. Den legges i uke 1 og blir bruttobehov i uke 1 for underkomponentene. | bestilling før planstart, uke 0 |
 | Bestillingsforslag | Det brukeren handler på: del, frigivelsesuke og mengde. | – |

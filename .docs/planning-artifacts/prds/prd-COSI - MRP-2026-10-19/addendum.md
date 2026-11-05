@@ -2,7 +2,7 @@
 title: COSI - MRP PRD – Addendum
 status: draft
 created: 2026-10-19
-updated: 2026-11-02
+updated: 2026-11-05
 ---
 
 # Addendum til PRD
@@ -11,7 +11,10 @@ Bakgrunn og tekniske innspill fra PRD-arbeidet som hører hjemme i arkitekturen 
 
 ## Innspill til arkitekturen
 
-- **Lokal lagring av siste kjøring (FR-19):** Uten innlogging og serverlagring er nettleserens lokale lagring (for eksempel `localStorage` eller IndexedDB) det naturlige stedet. Arkitekturen bør velge og begrunne. En kjøring med 1000 rader i stykklisten og 12 uker er liten nok for begge.
+- **Publisering og data (NFR-4, besluttet 2026-11-05):** Appen publiseres på Vercel, som bare leverer appens kode. Innlesing, validering, beregning og lagring skjer i nettleseren, og opplastede filer og kjøringer sendes ikke til serveren eller til tredjepartstjenester. Arkitekturen velger rammeverk og må sikre at ingen del av løsningen (for eksempel serverfunksjoner eller analyseverktøy) sender data ut.
+- **Lagring av siste kjøring i nettleseren (FR-19):** Uten innlogging og serverlagring er nettleserens lokale lagring (for eksempel `localStorage` eller IndexedDB) det naturlige stedet. Arkitekturen bør velge og begrunne. En kjøring med 1000 rader i stykklisten og 12 uker er liten nok for begge. Kjøringen finnes bare i nettleseren der den ble laget.
+- **Ytelse (NFR-5):** Mål ytelsen tidlig med en testfil på 1000 rader laget med `testdata/lag_testdata.py`. Holder ikke målet på 3 sekunder, endres kravet med begrunnelse.
+- **Forklaringspanel og tabell (FR-18, NFR-8):** Forklaringen åpnes ved klikk i et panel ved siden av tabellen og må virke med tastatur og berøring. Kolonnene med varenummer, beskrivelse og radnavn står fast ved sidescroll. Hører hjemme i UX-spesifikasjonen.
 - **Beregning skilt fra resten (NFR-1):** Beregningen bør være en ren funksjon med inndata (stykkliste, MPS, planlagte mottak) og utdata (resultattabell, eksepsjoner). Excel-lesing, lagring og visning kaller den. Da kan testene bruke fasiten direkte.
 - **Samme beregning for fasit og app:** `testdata/lag_testdata.py` inneholder en referanseberegning (`beregn`). Appen bør ikke importere skriptet. Testene skal sammenligne med fasitfilene, som er kontrollert for hånd, ikke med skriptet.
 - **Valideringsreglene (FR-3)** er de samme som datavalideringen og Kontroll-formlene i `lag_testdata.py` (`lag_mal` og `kontroll`). Endres malen, må begge oppdateres.
@@ -24,6 +27,7 @@ Bakgrunn og tekniske innspill fra PRD-arbeidet som hører hjemme i arkitekturen 
 
 - **Rask vei:** PRD-en er skrevet på rask vei 2026-10-19 med alt tilgjengelig materiale som bestemt. Gruppen går gjennom den på et møte og kan bruke coaching-veien senere ved store endringer.
 - **Eksport i v1:** Sebastian ønsket at brukeren skal kunne lagre resultatet selv. Det dekker også behovet for å ta vare på flere kjøringer uten brukerkontoer.
+- **Beslutninger 2026-11-05:** Alle åpne spørsmål og antagelser ble besluttet av Sebastian (`beslutninger-2026-11-05.md`). Briefen er frosset, og PRD-en gjelder ved avvik. Arket med prognostiserte behov heter fortsatt MPS i malen, selv om teksten bruker «Prognostiserte behov».
 - **Forfalte frigivelser:** Bestemt 2026-10-19. De legges i uke 1 sammen med vanlige frigivelser, og meldingen oppgir hvor mye som er forfalt. Forfalte ordremottak vises i uken behovet er (regel 6 og 7 i fasiten).
 
 ## Begrunnelse fra research om MRP-reglene (2026-11-02)
