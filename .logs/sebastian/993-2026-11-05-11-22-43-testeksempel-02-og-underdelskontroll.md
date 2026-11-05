@@ -34,11 +34,25 @@ Sebastian ba meg lese testeksempel 02 (flernivå, laget av Carmen 2026-10-29, co
   - Feil når antallet er ulikt, en underdel mangler eller det er en ekstra underdel.
   - Ingen feil i tom mal eller i testeksempel 01. Omregningen tar under 0,1 sekund, som før.
 - `COSI-MRP-mal.xlsx` og `testeksempel-01.xlsx` er laget på nytt. `testdata/README.md` beskriver kontrollen og AC/AD.
-- Ikke committet ennå.
+- **Testeksempel 02 laget på nytt** (etter Sebastians beskjed):
+  - `lag_testdata.py` har fått `STYKKLISTE_02`, `MPS_02`, `MOTTAK_02`, `HENSIKT_02` og `STATUS_02`, og `TESTEKSEMPLER` lager begge eksemplene med `--alle`.
+  - Typene er erstattet: Delmontering → Komponent (Produseres selv), Råvare (Kjøpes inn) → Komponent (Kjøpes inn).
+  - 300-003 har lager 20 (før 40), slik at «Bruk av sikkerhetslager» kommer i uke 1.
+  - Nytt mottak: 300-005, uke 5, 50 stk., som gir «Kanseller mottak».
+  - Resultat: seks eksepsjoner. Kritiske deler er 100-001, 200-001, 200-002, 300-003 og 300-005.
+- **Fasitene** har fått arkene Utregning (steg for steg, som i Carmens fasit) og Materiell (lavnivåkode).
+  - `mrp_del()` gir nå et spor per uke, og `beregn(..., detaljer)` samler det.
+  - Regler, Fasittabell og Eksepsjoner i fasit 01 er uendret.
+- `testeksempel-02-fasit-med-materiell.xlsx` er erstattet av `testeksempel-02-fasit.xlsx`.
+- Kontroll-kolonnen viser ingen feil i testeksempel 02 (testet i Excel).
+- **Dokumenter:**
+  - `testdata/README.md` har fått en egen seksjon for testeksempel 02.
+  - PRD §9 spm. 7 er løst. Før/etter-sammenligningen trenger nå et eget testeksempel 03.
+  - PRD §9 spm. 11 er delvis løst (FR-29 er dekket, FR-9 mangler).
+  - Addendumet sier ikke lenger at `beregn` bare er enkeltnivå.
+- Committet i f0b739d og pushet til `Sebastian/Branch`.
 
 ### Åpne punkter
-- Testeksempel 02 må lages på nytt med gjeldende mal og regler. Det må avklares med Carmen:
-  - Typene må mappes (Delmontering → Komponent (Produseres selv), Råvare (Kjøpes inn) → Komponent (Kjøpes inn)).
-  - Fasiten må oppdateres etter FR-6, FR-9 og 200-001-meldingen.
-  - Data for 300-003 kan justeres for å beholde tilfellet «Bruk av sikkerhetslager».
-- Testeksempel 02 mangler tilfeller for Kanseller mottak, for FR-9 der ingen enkelt ledetid er ≥ H, og for en del med underdeler som står flere steder.
+- Kontroller for hånd endringene i testeksempel-02-fasit.xlsx mot Carmens kontrollerte fasit: 200-002 (fremskyndet mottak), 300-002 og 300-003 (nytt behov fra 200-002, lager 20), 300-005 (ledetid 13, Kanseller mottak) og meldingen for 200-001. Gi Carmen beskjed om at fila har nytt navn.
+- Testeksempel 02 mangler et tilfelle for FR-9 der ingen enkelt ledetid er ≥ H (PRD §9 spm. 11), og en del med underdeler som står flere steder.
+- Før/etter-sammenligningen (FR-20, SM-5) trenger testeksempel 03 med endret MPS (PRD §9 spm. 2).
