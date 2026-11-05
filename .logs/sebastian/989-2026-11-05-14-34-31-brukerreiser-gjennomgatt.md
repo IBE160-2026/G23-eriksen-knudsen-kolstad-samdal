@@ -21,8 +21,11 @@ Sebastian spurte om noe i PRD-stegene mangler ut over Finalize, særlig brukerre
   - UJ-4 (var UJ-3): feil etter kopiering (V-P02, V-M02, antall som tekst).
   - Henvisningene i §4.1, FR-1, §4.4 og §4.8 er oppdatert.
 - Addendum (lagring per ferdigprodukt, grensen for `localStorage`), ordbank (Før/etter-sammenligning) og beslutningsfila er oppdatert. `.memlog.md` har 9 nye linjer, med oversikt over gamle og nye UJ-numre.
-- Ikke committet ved loggføring.
+- PRD-endringene er committet og pushet som 5860337.
+- **Testdata:** Testeksempel 01 (Kontorstol Basic) har fått varenummer 100-002 og testeksempel 04 (Kontorstol Ergo) 100-003 på nivå 0 i `lag_testdata.py`. 02 og 03 beholder 100-001. `lag_testdata.py . --alle` ga helt like filer før endringen, og etter endringen er tall og eksepsjoner uendret. Bare varenummer og hensiktstekster er nye. Malen, 02, 03 og valideringsfilene er uendret. `testdata/README.md` er oppdatert, med ny linje for FR-19/FR-20 i dekningstabellen. Committet og pushet som d131c51.
+- Merk: Eksempelet på arket Veiledning i malen (alle filer) bruker fortsatt «100-001 Kontorstol Basic». Det er bare et eksempel, og det er ikke endret, så malen fortsatt er identisk med `COSI-MRP-mal.xlsx` (FR-27).
 
 ### Åpne punkter
-- Testeksempel 01 og 04 bruker samme varenummer på nivå 0 (100-001) som 02 og 03, men er andre produkter. De må få egne varenumre (f.eks. 100-002 og 100-003) i `lag_testdata.py`, og fasitene må lages på nytt. Da kan lagring per ferdigprodukt (FR-19) testes.
+- ~~Testeksempel 01 og 04 må få egne varenumre på nivå 0.~~ Løst samme dag (d131c51).
+- Eksempelet «100-001 Kontorstol Basic» på arket Veiledning i malen har samme navn som testeksempel 01 (100-002). Vurder å gi eksempelet et annet navn når malen likevel endres.
 - Gi gruppa beskjed om endringene fra gjennomgangen av brukerreisene: lagring per ferdigprodukt, bestillingsforslag først, nye numre på brukerreisene.
