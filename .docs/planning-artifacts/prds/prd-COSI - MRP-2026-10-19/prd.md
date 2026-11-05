@@ -45,14 +45,22 @@ Første versjon dekker ett ferdigprodukt med flernivå BOM (stykkliste) på innt
 
 ### 2.3 Viktige brukerreiser
 
-- **UJ-1. Kari lager ukens bestillingsplan.**
-  Kari er innkjøper i en liten møbelprodusent og har overtatt planleggingen etter en kollega som har sluttet. Mandag morgen fyller hun ut Excel-malen med ukens prognostiserte behov, lagerbeholdning og planlagte mottak. Stykklisten for stolen ligger allerede i filen fra forrige uke. Hun åpner COSI - MRP i nettleseren og laster opp filen. Appen sjekker filen og viser resultattabellen. Øverst ser hun at to deler er merket kritiske. Hun klikker på den markerte cellen for hjul i uke 1 og leser i panelet ved siden av tabellen: «Lager blir -20 i uke 1. Bestillingen på 50 måtte vært frigitt i uke 0 …». Hun bestiller hjul samme dag, ringer leverandøren av gassfjær for å få mottaket fremskyndet, og eksporterer resultatet til Excel for å ha det lagret. **Unntak:** Hvis hun lurer på hvorfor nettobehovet er 50, klikker hun på raden og ser hvordan det er regnet.
+- **UJ-1. Kari tar i bruk COSI - MRP første gang.**
+  Kari er innkjøper i en liten møbelprodusent og har nettopp overtatt planleggingen etter en kollega som har sluttet. Kollegaen brukte sitt eget regneark, som Kari ikke forstår. Hun åpner COSI - MRP i nettleseren og leser den korte veiledningen på startsiden: fyll ut malen, last opp, les tabellen. For å se hvordan et resultat ser ut, laster hun ned testeksempel 01 og laster det opp uten endringer. Hun klikker på noen celler og leser forklaringene i panelet. Deretter laster hun ned den tomme malen og fyller ut stykklisten for stolen med tall fra kollegaens regneark. Underveis viser Kontroll-kolonnen at ledetiden mangler på én rad, og hun retter det før hun laster opp. Så fyller hun ut prognostiserte behov og planlagte mottak og laster opp filen. Appen har ingen tidligere kjøring for stolen, så den viser ingen sammenligning, bare bestillingsforslagene, de kritiske delene og tabellen. Fra nå av kopierer hun denne filen når hun planlegger (UJ-2).
 
-- **UJ-2. Kari ser hva endrede prognostiserte behov betyr.**
-  Onsdag får Kari beskjed om at salget venter 15 flere stoler i uke 5. Hun endrer prognostiserte behov i Excel-filen og laster den opp på nytt. Appen husker mandagens kjøring og viser en før/etter-sammenligning. Hun ser hvilke bestillingsforslag som er nye, endret eller fjernet, og at det er kommet en ny eksepsjon for armlene. Hun justerer bestillingen uten å regne noe selv. **Unntak:** Hvis hun vil starte helt på nytt med et annet datasett, velger hun å se bort fra forrige kjøring, og da vises ingen sammenligning.
+- **UJ-2. Kari oppdaterer planen og ser hva hun må bestille.**
+  Kundene sender bestillinger og endrede behov alle dager i uka, også i helgene, så Kari oppdaterer planen hver arbeidsdag. Hun selger få forskjellige produkter, så hun kopierer forrige ukes fil i stedet for å lage planen på nytt. Hun endrer prognostiserte behov, lagerbeholdning og planlagte mottak, og stykklisten for stolen står som før. Hun laster opp filen i COSI - MRP. Først ser hun på bestillingsforslagene. Hun filtrerer på uke 1 og ser at hun må bestille 175 hjul denne uka, og at 50 av dem er forfalte. Deretter går hun til sammendraget av kritiske deler, som viser fire deler. Hun velger gassfjær og ser at mottaket på 100 i uke 4 må fremskyndes til uke 3. Hun bestiller hjulene, ringer leverandøren av gassfjær og eksporterer resultatet til Excel. **Unntak:** Lurer hun på hvorfor nettobehovet for hjul er 50 i uke 1, klikker hun på cellen, og forklaringen åpnes i panelet ved siden av tabellen.
 
-- **UJ-3. Kari retter feil i filen.**
-  Kari laster opp en fil der hun har glemt sikkerhetslageret for én del og skrevet «ca. 40» i et antall. Appen gjør ingen beregning. Den viser en samlet liste: «Stykkliste, rad 5, Sikkerhetslager: mangler verdi» og «Planlagte mottak, rad 3, Antall: må være et heltall». Hun retter begge feilene i Excel, laster opp filen igjen og kommer videre til resultattabellen (UJ-1).
+- **UJ-3. Kari ser hva en ny kundeordre betyr.**
+  Tirsdag ettermiddag bestiller en kunde 15 flere Kontorstol Pro i uke 2. Kari endrer prognostiserte behov i uke 2 fra 30 til 45 i filen fra morgenens kjøring og laster den opp på nytt. Appen husker morgenens kjøring for Kontorstol Pro og viser en før/etter-sammenligning. Kari bruker den til to ting: å kontrollere at endringen ga det hun ventet, og å se om det er kommet nye problemer. Hun ser at flere bestillingsforslag i uke 1 har økt, blant annet hjul fra 130 til 205, at det er kommet et nytt forslag på 30 skruesett M6 i uke 1, og at hjul har fått eksepsjonen «Bruk av sikkerhetslager». Mottaket på 40 rygger må nå fremskyndes til uke 2 i stedet for uke 3. Hun justerer bestillingene uten å regne noe selv. **Unntak:** Laster hun deretter opp filen for et annet produkt, sammenlignes den med forrige kjøring for det produktet. Vil hun starte på nytt for et produkt, sletter hun den lagrede kjøringen for det, og da vises ingen sammenligning neste gang.
+
+- **UJ-4. Kari retter feil etter å ha kopiert filen.**
+  Mandag morgen rykker planen én uke fram. Kari kopierer forrige ukes fil og flytter ukene i prognostiserte behov og planlagte mottak ett hakk. I tillegg legger hun inn et nytt mottak som leverandøren har lovet. Stykklisten er uendret, så Kontroll-kolonnen viser ingen feil. Hun laster opp filen. Appen gjør ingen beregning, men viser alle feilene samlet:
+  - «Planlagte mottak, rad 4, Uke: uke 0 er før horisonten.» Mottaket av hjul kom forrige uke, og etter flyttingen står det i uke 0.
+  - «MPS, uke 11, Antall per uke: uke 10 er tom, så uke 11 kan ikke fylles ut.» Hun la den nye uka én kolonne for langt ut.
+  - «Planlagte mottak, rad 5, Antall: må være et heltall.» Hun skrev «ca. 40» fordi mengden ikke er bekreftet.
+
+  Forrige kjøring for stolen er fortsatt lagret. Hun sletter raden for mottaket som er kommet, legger det inn på lagerbeholdningen, flytter den nye uka og skriver 40. Hun laster opp filen igjen og kommer videre til bestillingsforslagene og sammenligningen (UJ-2, UJ-3).
 
 ## 3. Ordliste
 
@@ -91,7 +99,7 @@ Første versjon dekker ett ferdigprodukt med flernivå BOM (stykkliste) på innt
 - **Kjøring** – Én beregning fra én opplastet Excel-mal. Gir én resultattabell.
 - **Resultattabell** – Visningen av en kjøring: radene bruttobehov, planlagte mottak, forventet lagerbeholdning, nettobehov, planlagte ordremottak og planlagte ordrefrigivelser, per uke og del, med eksepsjonene markert.
 - **Kontroll-kolonnen** – Hjelpekolonnen til høyre i arket Stykkliste i Excel-malen. Den viser hva som mangler eller ikke stemmer i hver rad, mens brukeren fyller ut. Appen leser den ikke inn.
-- **Før/etter-sammenligning** – Visningen av forskjellene i bestillingsforslag og eksepsjoner mellom forrige kjøring og den nye.
+- **Før/etter-sammenligning** – Visningen av forskjellene i bestillingsforslag og eksepsjoner mellom forrige kjøring for samme ferdigprodukt og den nye.
 - **Valideringsfeil** – En feil i den opplastede filen som hindrer beregningen. Har ark, rad eller celle og årsak.
 - **Fasit** – Den manuelt kontrollerte forventede resultattabellen og eksepsjonslisten for et testeksempel (for eksempel `testdata/testeksempel-01-fasit.xlsx`).
 
@@ -99,11 +107,11 @@ Første versjon dekker ett ferdigprodukt med flernivå BOM (stykkliste) på innt
 
 ### 4.1 Opplasting og validering av Excel-malen
 
-**Beskrivelse:** Brukeren laster opp en utfylt Excel-mal. Før noe beregnes, sjekker appen at filen følger malen og at alle verdier er gyldige. Finnes det valideringsfeil, gjøres ingen beregning, og alle feilene vises samlet, så brukeren kan rette alt på én gang. Reglene er de samme som datavalideringen og Kontroll-kolonnen i Excel-malen. Appen sjekker dem likevel selv. Malen ber brukeren om ikke å lime inn i celler med nedtrekksliste (Nivå, Type og Varenummer i Planlagte mottak), men Excel kan ikke hindre det uten makroer, og innliming fjerner både listen og valideringen i cellen. Brukeren kan også ha brukt et annet regneark som ikke håndhever valideringen. Gjelder UJ-1 og UJ-3.
+**Beskrivelse:** Brukeren laster opp en utfylt Excel-mal. Før noe beregnes, sjekker appen at filen følger malen og at alle verdier er gyldige. Finnes det valideringsfeil, gjøres ingen beregning, og alle feilene vises samlet, så brukeren kan rette alt på én gang. Reglene er de samme som datavalideringen og Kontroll-kolonnen i Excel-malen. Appen sjekker dem likevel selv. Malen ber brukeren om ikke å lime inn i celler med nedtrekksliste (Nivå, Type og Varenummer i Planlagte mottak), men Excel kan ikke hindre det uten makroer, og innliming fjerner både listen og valideringen i cellen. Brukeren kan også ha brukt et annet regneark som ikke håndhever valideringen. Gjelder UJ-1, UJ-2 og UJ-4.
 
 #### FR-1: Last opp Excel-mal
 
-Brukeren kan velge og laste opp én `.xlsx`-fil fra sin egen maskin. Gjelder UJ-1.
+Brukeren kan velge og laste opp én `.xlsx`-fil fra sin egen maskin. Gjelder UJ-1 og UJ-2.
 
 **Konsekvenser (testbare):**
 - `testdata/testeksempel-01.xlsx` lastes opp uten endringer og går videre til beregning.
@@ -111,7 +119,7 @@ Brukeren kan velge og laste opp én `.xlsx`-fil fra sin egen maskin. Gjelder UJ-
 
 #### FR-2: Kontroller malens struktur
 
-Appen kontrollerer at filen har arkene Stykkliste, MPS og Planlagte mottak, med kolonneoverskriftene fra Excel-malen. Gjelder UJ-3.
+Appen kontrollerer at filen har arkene Stykkliste, MPS og Planlagte mottak, med kolonneoverskriftene fra Excel-malen. Gjelder UJ-4.
 
 **Konsekvenser (testbare):**
 - Mangler et ark eller en overskrift, blir det en valideringsfeil som nevner arket og hva som mangler.
@@ -122,7 +130,7 @@ Appen kontrollerer at filen har arkene Stykkliste, MPS og Planlagte mottak, med 
 
 #### FR-3: Kontroller verdiene
 
-Appen kontrollerer hver verdi etter disse reglene. Gjelder UJ-3.
+Appen kontrollerer hver verdi etter disse reglene. Gjelder UJ-4.
 
 | Ark | Felt | Regel |
 |---|---|---|
@@ -152,7 +160,7 @@ Appen kontrollerer hver verdi etter disse reglene. Gjelder UJ-3.
 
 #### FR-4: Vis alle valideringsfeil samlet
 
-Er det minst én valideringsfeil, vises alle feilene i én liste og ingen beregning gjøres. Hver feil oppgir ark, rad eller celle, felt og årsak på norsk. Gjelder UJ-3.
+Er det minst én valideringsfeil, vises alle feilene i én liste og ingen beregning gjøres. Hver feil oppgir ark, rad eller celle, felt og årsak på norsk. Gjelder UJ-4.
 
 **Konsekvenser (testbare):**
 - En fil med tre feil på tre forskjellige ark gir én liste med tre feil.
@@ -160,7 +168,7 @@ Er det minst én valideringsfeil, vises alle feilene i én liste og ingen beregn
 
 ### 4.2 MRP-beregning
 
-**Beskrivelse:** Appen beregner én MRP-tabell for hvert varenummer over hele horisonten, også for ferdigproduktet. Beregningen er standard MRP for flernivå BOM med lot-for-lot. Den gjøres nivå for nivå ovenfra og ned: planlagte ordrefrigivelser for en del, ganget med antall per enhet, blir bruttobehov for delene rett under. Reglene per del (FR-6–FR-8) er de som er bekreftet i fasiten (`testdata/testeksempel-01-fasit.xlsx`, arket Regler), med én endring fra 2026-11-02: planlagte mottak som kommer for sent, regnes som fremskyndet før nye ordrer lages (FR-6). Reglene er sjekket mot litteraturen og ERP-systemer i `.docs/planning-artifacts/research/academic-lit-mrp-regler-forfalte-ordrer-eksepsjoner-h-2026-11-02/research.md`. Gjelder UJ-1.
+**Beskrivelse:** Appen beregner én MRP-tabell for hvert varenummer over hele horisonten, også for ferdigproduktet. Beregningen er standard MRP for flernivå BOM med lot-for-lot. Den gjøres nivå for nivå ovenfra og ned: planlagte ordrefrigivelser for en del, ganget med antall per enhet, blir bruttobehov for delene rett under. Reglene per del (FR-6–FR-8) er de som er bekreftet i fasiten (`testdata/testeksempel-01-fasit.xlsx`, arket Regler), med én endring fra 2026-11-02: planlagte mottak som kommer for sent, regnes som fremskyndet før nye ordrer lages (FR-6). Reglene er sjekket mot litteraturen og ERP-systemer i `.docs/planning-artifacts/research/academic-lit-mrp-regler-forfalte-ordrer-eksepsjoner-h-2026-11-02/research.md`. Gjelder UJ-2.
 
 #### FR-5: Beregn bruttobehov
 
@@ -217,7 +225,7 @@ Hvert planlagt ordremottak i uke t gir en planlagt ordrefrigivelse i uke t − L
 
 ### 4.3 Eksepsjoner
 
-**Beskrivelse:** Appen finner fem eksepsjonstyper under beregningen, for deler på alle nivåer. Hver eksepsjon har varenummer, uke (eller «–» for hele delen), type og en kort melding på norsk som forklarer hva som er galt og hva brukeren kan gjøre. En uke kan ha flere eksepsjoner. En del med minst én eksepsjon er kritisk. Definisjonene følger briefen og fasiten, med endringene fra 2026-11-02 (FR-9, FR-12, FR-29). Gjelder UJ-1.
+**Beskrivelse:** Appen finner fem eksepsjonstyper under beregningen, for deler på alle nivåer. Hver eksepsjon har varenummer, uke (eller «–» for hele delen), type og en kort melding på norsk som forklarer hva som er galt og hva brukeren kan gjøre. En uke kan ha flere eksepsjoner. En del med minst én eksepsjon er kritisk. Definisjonene følger briefen og fasiten, med endringene fra 2026-11-02 (FR-9, FR-12, FR-29). Gjelder UJ-2.
 
 #### FR-9: Ledetid overskrider horisont
 
@@ -276,7 +284,7 @@ En del med minst én eksepsjon markeres som kritisk, på alle nivåer.
 
 ### 4.4 Resultattabell
 
-**Beskrivelse:** Etter en vellykket kjøring vises resultattabellen. Den skal være forståelig for en planlegger uten MRP-bakgrunn etter en kort introduksjon (SM-3). Det betyr tre ting: brukeren ser først hvor det må handles, kan lese bestillingsforslagene direkte, og kan få forklart ethvert tall. Appen kaller avvikene eksepsjoner, og forklaringene (FR-18) gjør begrepet forståelig. Gjelder UJ-1.
+**Beskrivelse:** Etter en vellykket kjøring vises resultattabellen. Den skal være forståelig for en planlegger uten MRP-bakgrunn etter en kort introduksjon (SM-3). Det betyr tre ting: brukeren ser først hvor det må handles, kan lese bestillingsforslagene direkte, og kan få forklart ethvert tall. Etter en kjøring ser brukeren først bestillingsforslagene (FR-17), deretter sammendraget av kritiske deler (FR-16) og så resultattabellen. Appen kaller avvikene eksepsjoner, og forklaringene (FR-18) gjør begrepet forståelig. Gjelder UJ-1 og UJ-2.
 
 #### FR-14: Vis MRP-tabell per del
 
@@ -330,25 +338,26 @@ Forklaringen åpnes når brukeren klikker på raden eller cellen, og vises i et 
 
 ### 4.5 Endringer og før/etter-sammenligning
 
-**Beskrivelse:** Når noe endres midt i planen, for eksempel prognostiserte behov, endrer brukeren Excel-filen og laster den opp på nytt. Appen husker siste vellykkede kjøring i brukerens nettleser, uten innlogging, og sammenligner den nye kjøringen med den. Brukeren kan også starte på nytt uten sammenligning. Gjelder UJ-2.
+**Beskrivelse:** Når noe endres midt i planen, for eksempel prognostiserte behov, endrer brukeren Excel-filen og laster den opp på nytt. Brukeren planlegger fortløpende, ofte flere ganger i uka og for flere produkter (UJ-2). Appen husker derfor siste vellykkede kjøring for hvert ferdigprodukt i brukerens nettleser, uten innlogging, og sammenligner en ny kjøring med forrige kjøring for samme ferdigprodukt. Brukeren kan også starte på nytt uten sammenligning. Når en ny uke blir uke 1, sammenlignes det likevel med forrige kjøring. Det gjøres ingen egen håndtering av ukeskiftet (bestemt av Sebastian 2026-11-05). Gjelder UJ-3.
 
-#### FR-19: Husk siste kjøring i nettleseren
+#### FR-19: Husk siste kjøring per ferdigprodukt i nettleseren
 
-Etter en vellykket kjøring lagrer appen kjøringen i brukerens nettleser, slik at den finnes ved neste opplasting, også etter at nettleseren er lukket. Bare siste vellykkede kjøring lagres. Kjøringen finnes bare i nettleseren der den ble laget (NFR-4).
+Etter en vellykket kjøring lagrer appen kjøringen i brukerens nettleser, slik at den finnes ved neste opplasting, også etter at nettleseren er lukket. For hvert ferdigprodukt lagres bare siste vellykkede kjøring. Ferdigproduktet kjennes igjen på varenummeret på nivå 0. Kjøringene finnes bare i nettleseren der de ble laget (NFR-4). Endret 2026-11-05 (UJ-3).
 
 **Konsekvenser (testbare):**
-- Når appen lukkes og åpnes igjen i samme nettleser, kan den siste kjøringen sammenlignes med en ny opplasting.
-- En opplasting med valideringsfeil erstatter ikke den lagrede kjøringen.
+- Når appen lukkes og åpnes igjen i samme nettleser, kan den siste kjøringen for et ferdigprodukt sammenlignes med en ny opplasting for det samme ferdigproduktet.
+- En ny vellykket kjøring for et ferdigprodukt erstatter den lagrede kjøringen for det ferdigproduktet og endrer ikke de lagrede kjøringene for andre ferdigprodukter.
+- En opplasting med valideringsfeil erstatter ingen lagret kjøring.
 - Åpnes appen i en annen nettleser eller på en annen maskin, finnes ingen lagret kjøring.
 
 #### FR-20: Vis før/etter-sammenligning
 
-Finnes en tidligere kjøring når en ny kjøring er ferdig, viser appen en før/etter-sammenligning. Den viser:
+Finnes en tidligere kjøring for samme ferdigprodukt når en ny kjøring er ferdig, viser appen en før/etter-sammenligning. Den viser:
 - bestillingsforslag som er nye, endret i mengde eller uke, eller fjernet
 - eksepsjoner som er nye eller borte
 - deler som er nye eller fjernet
 
-Endringer i resultattabellen som ikke påvirker bestillingsforslag eller eksepsjoner, vises ikke. Har den nye filen et annet ferdigprodukt enn forrige kjøring, vises ingen sammenligning, bare en melding om at kjøringene gjelder ulike produkter. Gjelder UJ-2.
+Endringer i resultattabellen som ikke påvirker bestillingsforslag eller eksepsjoner, vises ikke. Finnes ingen tidligere kjøring for ferdigproduktet, vises ingen sammenligning. Gjelder UJ-3.
 
 **Konsekvenser (testbare):**
 - Lastes samme fil opp to ganger, vises «ingen endringer».
@@ -356,18 +365,19 @@ Endringer i resultattabellen som ikke påvirker bestillingsforslag eller eksepsj
 - Et bestillingsforslag er identifisert av varenummer og frigivelsesuke. Samme varenummer og uke med ny mengde er «endret mengde». Flytter et forslag uke, vises det som fjernet i den gamle uken og nytt i den nye. En eksepsjon er identifisert av varenummer, uke og type, og en endret melding alene er ingen endring. Bestemt av Sebastian 2026-11-05.
 - En endring i forventet lagerbeholdning som ikke endrer noe bestillingsforslag eller noen eksepsjon, vises ikke.
 - Er en del lagt til i eller fjernet fra stykklisten, vises den som en egen linje i sammenligningen.
-- Har ferdigproduktet et annet varenummer enn i forrige kjøring, vises meldingen om ulike produkter og ingen sammenligning.
+- Lastes en fil for ferdigprodukt X opp, så en for ferdigprodukt Y og så en ny for X, sammenlignes den siste kjøringen med den første. Kjøringen for Y vises uten sammenligning.
 
 #### FR-21: Start på nytt uten sammenligning
 
-Brukeren kan slette den lagrede kjøringen. Neste opplasting vises da uten sammenligning. Gjelder UJ-2.
+Brukeren kan slette den lagrede kjøringen for et ferdigprodukt. Neste opplasting for det ferdigproduktet vises da uten sammenligning. Gjelder UJ-3.
 
 **Konsekvenser (testbare):**
-- Etter sletting vises ingen før/etter-sammenligning ved neste opplasting.
+- Etter sletting vises ingen før/etter-sammenligning ved neste opplasting for det ferdigproduktet.
+- Sletting for ett ferdigprodukt endrer ikke de lagrede kjøringene for andre ferdigprodukter.
 
 ### 4.6 Eksport av resultater
 
-**Beskrivelse:** Brukeren kan lagre resultatet av en kjøring som en fil, slik at hun kan ta vare på planen selv, dele den eller bruke den senere uten appen. Dette dekker også behovet for å ta vare på flere kjøringer, siden appen bare husker den siste. Gjelder UJ-1.
+**Beskrivelse:** Brukeren kan lagre resultatet av en kjøring som en fil, slik at hun kan ta vare på planen selv, dele den eller bruke den senere uten appen. Dette dekker også behovet for å ta vare på flere kjøringer, siden appen bare husker den siste for hvert ferdigprodukt. Gjelder UJ-2.
 
 #### FR-22: Eksporter kjøring til fil
 
@@ -452,7 +462,7 @@ Fra appens startside kan brukeren laste ned den tomme Excel-malen og testeksempe
 - MRP-beregning for flernivå BOM (inntil tre nivåer, med felles deler) og ett ferdigprodukt med lot-for-lot (FR-5–FR-8, FR-28)
 - Fem eksepsjonstyper og kritiske deler (FR-9–FR-13, FR-29)
 - Resultattabell med fremheving, sammendrag, bestillingsforslag med ukefilter og forklaringer (FR-14–FR-18)
-- Lagring av siste kjøring i nettleseren og før/etter-sammenligning (FR-19–FR-21)
+- Lagring av siste kjøring per ferdigprodukt i nettleseren og før/etter-sammenligning (FR-19–FR-21)
 - Eksport til Excel (FR-22–FR-23)
 - Veiledning og nedlasting av mal (FR-27)
 - **Planlagt utvidelse når kjernen er testet:** fast partistørrelse (FR-24–FR-26)
@@ -464,7 +474,7 @@ Fra appens startside kan brukeren laste ned den tomme Excel-malen og testeksempe
 - **Andre bestillingsregler** (f.eks. beregnet optimal bestillingsmengde) – videreutvikling.
 - **Omplanleggingshorisont** (grense for hvor langt fram et planlagt mottak kan fremskyndes fra, FR-6) – mulig utvidelse.
 - **Inntasting i appen** som alternativ til Excel – videreutvikling.
-- **Innlogging, brukerkontoer og lagring av flere kjøringer** – videreutvikling. Eksport dekker behovet i v1.
+- **Innlogging, brukerkontoer og lagring av flere kjøringer per ferdigprodukt** – videreutvikling. Eksport dekker behovet i v1.
 - **Flere bedrifter med adskilte data** – videreutvikling.
 - **Engelsk** – neste språk. Deretter flere språk på lengre sikt.
 - **Mobiltilpasning** – ikke planlagt.
@@ -518,7 +528,7 @@ Ingen antagelser er igjen. Alle antagelsene fra utkastet ble besluttet 2026-11-0
 | FR-16 Kritiske deler øverst | Endret. Tabellen følger stykklisten, og sammendraget leder til de kritiske delene. |
 | FR-18 Forklaring ved peking eller klikk | Endret. Klikk, panel ved siden av tabellen, mus, tastatur og berøring, ikke peking. |
 | FR-20 Endringer uten betydning vises ikke | Bekreftet. |
-| FR-20 Nye og fjernede deler | Bekreftet, med tillegg: annet ferdigprodukt gir bare en melding. |
+| FR-20 Nye og fjernede deler | Bekreftet. Tillegget om at et annet ferdigprodukt bare gir en melding, ble erstattet samme dag av lagring per ferdigprodukt (FR-19) ved gjennomgangen av UJ-3. |
 | FR-22 Eksportformat | Bekreftet: `.xlsx`. |
 | FR-23 Sammenligning i eksporten | Bekreftet: eget ark «Sammenligning». |
 | NFR-4 Data sendes ikke ut | Endret. Vercel, alt skjer i nettleseren. |

@@ -11,6 +11,8 @@ Sebastian gikk gjennom alle åpne spørsmål i PRD §9, antagelsene i §10, merk
 
 **Ført inn i `prd.md` 2026-11-05** (Update i `bmad-prd`, ikke Finalize). Arket i malen heter fortsatt MPS. «Prognostiserte behov» brukes i teksten (Sebastian, 2026-11-05).
 
+**Endret senere samme dag (gjennomgang av UJ-2, nå UJ-3):** Tillegget i #15 om at et annet ferdigprodukt bare gir en melding, er erstattet. Appen husker siste kjøring per ferdigprodukt (varenummer på nivå 0), og hvert produkt sammenlignes med sin egen forrige kjøring (PRD FR-19–FR-21).
+
 ## A. Begreper
 
 | # | Spørsmål | Beslutning | Endres i PRD |
