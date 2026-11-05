@@ -34,7 +34,7 @@ Sebastian har kontrollert fasit 02. Han ba om at testdataene skal dekke alle til
   - to mottak fremskyndet til samme uke (300-028)
   - mottak på ferdigproduktet
 - **Alle fasitene** har fått arket **Bestillingsforslag** (FR-17): varenummer, uke, mengde, innkjøp eller produksjonsordre, og forfalt mengde.
-- **`testdata/validering/`:** 48 filer og en README med forventet resultat:
+- **`testdata/validering/`:** 47 filer (48 med V-F06, se under) og en README med forventet resultat:
   - V-S01–S29 (Stykkliste), V-M01–M05 (MPS), V-P01–P04 (Planlagte mottak)
   - V-F01–F03 (struktur), V-F04 (CSV), V-F05 (tre feil på tre ark)
   - V-G01–G04 (gyldige grenseverdier)
@@ -55,12 +55,15 @@ Sebastian har kontrollert fasit 02. Han ba om at testdataene skal dekke alle til
   - §9 spm. 2 og 11 er løst.
 - **Ordbank:** ny «Valideringstilfelle», `updated` 2026-11-05.
 - **README:** `testdata/README.md` har nye seksjoner for 03 og 04 og en dekningstabell (krav → tilfelle → hvor).
-- Ikke committet.
+- **Etter Sebastians svar:**
+  - Fasit 03 og 04 er kontrollert for hånd. Status er satt i `STATUS_03`, `STATUS_04` og README.
+  - Regelen for sammenligningen er bestemt (FR-20, ikke lenger `[ASSUMPTION]`).
+  - Ingen egen feil for manglende Ferdigvare er godkjent.
+  - **Valg B for strukturfeil:** verdier som ikke avhenger av arket eller kolonnen som mangler, kontrolleres likevel, og kontroller som avhenger av det, hoppes over. Regelen er skrevet inn i PRD FR-2 og i `validering/README.md`.
+  - Ny V-F06: overskriften «Ledetid (uker)» mangler, og et mottak har antall 0. Skal gi 2 feil.
+- Committet i 15126fa og pushet til `Sebastian/Branch`. Commit-meldingen sier «49 valideringstilfeller», men det riktige tallet er 48 filer pluss README.
 
 ### Åpne punkter
-- Kontroller for hånd fasit 03 (med arket Sammenligning) og fasit 04.
-- Bekreft regelen for før/etter-sammenligningen (PRD FR-20 `[ASSUMPTION]`): forslag identifiseres av varenummer og uke, et forslag som flytter uke vises som fjernet og nytt, og en endret melding alene er ingen endring.
-- Bekreft antagelsene i `testdata/validering/README.md`: ingen verdikontroll når strukturen er feil, og ingen egen feil for manglende Ferdigvare i V-S05 og V-S19.
-- Gi Carmen beskjed om at fasitfila for 02 har nytt navn og at testdataene nå lages av skriptet.
+- Gi Carmen beskjed om at fasitfila for 02 har nytt navn og at testdataene nå lages av `lag_testdata.py`.
 - Valgfritt: Kontroll-kolonnen kan også sjekke heltall, felt fylt ut andre gang og «del under seg selv», som i dag bare appen fanger.
 - Fast partistørrelse (FR-24–26) har ingen testdata ennå (planlagt utvidelse).
