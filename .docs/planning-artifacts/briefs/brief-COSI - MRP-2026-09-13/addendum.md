@@ -7,6 +7,8 @@ updated: 2026-10-22
 
 # Addendum
 
+> **Merk (2026-11-05):** Briefen er frosset. PRD-en (`.docs/planning-artifacts/prds/prd-COSI - MRP-2026-10-19/prd.md`) gjelder foran briefen og dette addendumet der de er ulike, blant annet for eksepsjonsreglene (FR-6, FR-12, «Kanseller mottak» i FR-29), begrepene (se `.docs/ordbank.md`) og typelisten. Se `beslutninger-2026-11-05.md` i PRD-mappa.
+
 Supporting depth captured during the brief conversation that belongs in downstream documents (architecture / implementation plan / sprint planning) rather than the brief itself.
 
 > **Merk (2026-10-06):** Ved avvik gjelder `brief.md`. Faseplanen under er justert etter tilbakemeldingen fra faglærer: testdata følger briefens omfang (5–10 komponenter, 8–12 uker), lot-for-lot er bestillingsregelen i kjernen med fast partistørrelse som planlagt utvidelse, og flernivå BOM er flyttet ut av første versjon.
