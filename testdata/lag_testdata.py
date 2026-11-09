@@ -1475,6 +1475,12 @@ VALIDERING = [
     ("F03", "Fil etter den gamle malen (arkene Produkt og Komponenter)", "Stykkliste", "–", "Ark",
      "FR-2: gammel mal gir feil om at Stykkliste mangler", (S02, M02, R02), "gammel_mal"),
     ("F04", "Fil som ikke er .xlsx (CSV)", "–", "–", "Fil", "FR-1: bare .xlsx tas imot", None, "csv"),
+    ("F07", "Skadet .xlsx-fil: testeksempel 02 kuttet på midten", "–", "–", "Fil",
+     "NFR-9: forståelig melding, ingen beregning, ny fil kan lastes opp", (S02, MPS_02, MOTTAK_02), "skadet"),
+    ("F08", "Tom fil (0 byte) med endelsen .xlsx", "–", "–", "Fil",
+     "NFR-9: forståelig melding, ingen beregning, ny fil kan lastes opp", None, "tom"),
+    ("F09", "Tekstfil med endelsen .xlsx", "–", "–", "Fil",
+     "NFR-9: forståelig melding, ingen beregning, ny fil kan lastes opp", None, "tekst"),
     ("F05", "Tre feil på tre ark", "Stykkliste, MPS, Planlagte mottak", "D9, uke 3, B2", "Antall, Antall per uke, Uke",
      "FR-4: alle feilene vises samlet (3 feil)", (_rad(S02, 9, antall=0), _mps(u3=-5), [("200-002", 0, 40)]), None),
     ("F06", "Strukturfeil og verdifeil i samme fil: overskriften «Ledetid (uker)» mangler, og et mottak har antall 0",
@@ -1496,7 +1502,8 @@ VALIDERING = [
 
 
 def _antall_feil(vid):
-    return {"F04": None, "F05": 3, "F06": 2}.get(vid, 0 if vid.startswith("G") else 1)
+    return {"F04": None, "F05": 3, "F06": 2, "F07": None, "F08": None, "F09": None}.get(
+        vid, 0 if vid.startswith("G") else 1)
 
 
 def lag_valideringsfiler(mappe):
@@ -1511,6 +1518,16 @@ def lag_valideringsfiler(mappe):
         navn = f"V-{vid}.csv" if etter == "csv" else f"V-{vid}.xlsx"
         if etter == "csv":
             (mappe / navn).write_text("Nivå;Varenummer;Beskrivelse\n0;100-001;Kontorstol Pro\n", encoding="utf-8")
+        elif etter == "tom":
+            (mappe / navn).write_bytes(b"")
+        elif etter == "tekst":
+            (mappe / navn).write_text("Dette er en tekstfil, ikke en Excel-fil.\nNivå;Varenummer\n0;100-001\n",
+                                      encoding="utf-8")
+        elif etter == "skadet":
+            stykk, mps, mottak = data
+            lagre(lag_mal(mps, stykk, mottak), mappe / navn)
+            hel = (mappe / navn).read_bytes()
+            (mappe / navn).write_bytes(hel[: len(hel) // 2])  # zip-fila mangler slutten og kan ikke åpnes
         else:
             stykk, mps, mottak = data
             wb = lag_mal(mps, stykk[:STYKK_RADER], mottak)
@@ -1535,6 +1552,11 @@ def lag_valideringsfiler(mappe):
         "Filene her tester valideringen før beregningen (PRD FR-1–FR-4). De lages av `lag_testdata.py` "
         "(`--alle`) og bygger på testeksempel 02. Hver fil har nøyaktig én feil, unntatt V-F05 (tre feil på tre ark, "
         "FR-4), V-F06 (en strukturfeil og en verdifeil) og G-filene (gyldige grenseverdier, ingen feil). V-F04 er ikke en Excel-fil og skal avvises (FR-1).",
+        "",
+        "V-F07–F09 tester robust feilhåndtering (PRD NFR-9): en skadet `.xlsx`-fil, en tom fil på 0 byte og en tekstfil, "
+        "alle med endelsen `.xlsx`. Hver av dem skal gi en forståelig melding på norsk, ikke en liste over "
+        "valideringsfeil. Appen skal ikke stoppe eller henge, ingen beregning gjøres, og den lagrede kjøringen endres "
+        "ikke. Etterpå skal testeksempel 01 kunne lastes opp og gi riktig resultat uten at siden lastes på nytt.",
         "",
         "Kolonnen «Feil» er antall valideringsfeil appen skal vise. Sted er cellen eller raden feilen gjelder. "
         "Ordlyden i feilmeldingen bestemmer appen, men den skal oppgi ark, rad eller celle, felt og årsak (FR-4).",

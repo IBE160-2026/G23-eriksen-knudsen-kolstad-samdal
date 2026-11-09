@@ -38,7 +38,7 @@ Bakgrunn, begrunnelser og tekniske innspill fra PRD-arbeidet som ikke hører hje
 
 - **Lesing og skriving av Excel (FR-1–FR-4, FR-22):** Nivå er lagret som tekst (`0`, `.1`, `..2`), og Excel kan ha lagret `0` som tall. Varenummer kan også være lagret som tall hvis brukeren har skrevet bare sifre. Les begge som tekst. Malen har formler i hjelpekolonnene og ferdige, tomme rader med formatering helt ned til rad 1001, så stykklisten slutter ved første rad der både Nivå og Varenummer er tomme. Arket med prognostiserte behov heter MPS, og kolonnen heter «Antall ferdigprodukter». Eksporten trenger et bibliotek for å skrive Excel, og det kan være det samme som brukes til lesing.
 - **Excel for Windows og macOS (NFR-11):** Kontrollen krever at testeksempel 01 og 02 åpnes og lagres på nytt i både Excel for Windows og Excel for macOS. Gruppen må finne noen med Mac og Excel. Eksportfilen (FR-22, FR-23) bør åpnes i Excel som en del av testen.
-- **Testfiler for feilhåndtering (NFR-9):** En skadet `.xlsx`-fil, en fil på 0 byte med endelsen `.xlsx` og en tekstfil med endelsen `.xlsx` finnes ikke ennå i `testdata/validering/`. De bør lages med `lag_testdata.py`, som de andre valideringsfilene.
+- **Testfiler for feilhåndtering (NFR-9):** En skadet `.xlsx`-fil, en fil på 0 byte med endelsen `.xlsx` og en tekstfil med endelsen `.xlsx` ligger i `testdata/validering/` som V-F07–F09 og lages med `lag_testdata.py`, som de andre valideringsfilene.
 - **Valideringsreglene (FR-3):** Reglene er de samme som i datavalideringen og Kontroll-formlene, som lages av `lag_mal` og `kontroll` i `lag_testdata.py`. Endres malen, må både appens validering og skriptet oppdateres.
 
 ### Tekster

@@ -22,7 +22,7 @@ Sensor kan bruke filene her for å prøve appen direkte etter README i roten av 
 | `testeksempel-04-fasit.xlsx` | Fasit for testeksempel 04, med de samme arkene som fasit 01. |
 | `testeksempel-05.xlsx` | Produksjonskapasitet: Kontorstol Kompakt, 7 deler på tre nivåer, 8 uker. |
 | `testeksempel-05-fasit.xlsx` | Fasit for testeksempel 05, med de samme arkene som fasit 01 og i tillegg arket Kapasitet: kapasitet per uke fra lager og med planlagte mottak, begrensende deler med årsak, grunnlaget per del og håndregningen (PRD FR-31–FR-34, SM-7). |
-| `validering/` | Valideringstilfeller: én fil per regel i FR-1–FR-4, med forventet resultat i `validering/README.md`. |
+| `validering/` | Valideringstilfeller: én fil per regel i FR-1–FR-4, og V-F07–F09 for feilhåndtering (NFR-9), med forventet resultat i `validering/README.md`. |
 | `lag_testdata.py` | Skriptet som lager filene. `uv run --with openpyxl python lag_testdata.py testdata` lager bare malen. Legg til `--alle` for også å lage testeksemplene, fasitene og valideringstilfellene. Med `--alle` kontrollerer skriptet først at hvert testeksempel gir nøyaktig de eksepsjonene det skal teste, og at kapasiteten i testeksempel 05 er lik håndregningen, og stopper ellers. Referanseberegningen for kapasiteten er `kapasitet()`. Filene lagres med fast tid, så en ny kjøring gir like filer når innholdet er likt. |
 
 ## Malens struktur
@@ -138,6 +138,7 @@ Hvor hvert tilfelle i PRD-en testes. «Validering» betyr `validering/` (se READ
 |---|---|---|
 | FR-1 | `.xlsx` godtas, annen fil avvises | 01–04, validering V-F04 |
 | FR-2 | Ark eller overskrift mangler, gammel mal | validering V-F01–F03 |
+| NFR-9 | Skadet `.xlsx`-fil, tom fil (0 byte) og tekstfil med endelsen `.xlsx` gir en melding, ikke stopp | validering V-F07–F09 |
 | FR-2 / FR-4 | Strukturfeil og verdifeil i samme fil gir begge feilene | validering V-F06 |
 | FR-3 | Hver regel i tabellen gir nøyaktig én feil | validering V-S01–S29, V-M01–M05, V-P01–P04 |
 | FR-3 | Gyldige grenseverdier: horisont 8 og 12, tomt mottaksark, like underdeler | validering V-G01–G04, 01 (lager og SS 0), 04 (H = 12) |
