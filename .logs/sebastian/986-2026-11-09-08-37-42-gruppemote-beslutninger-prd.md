@@ -49,8 +49,8 @@ Sebastian rettet punkt 1: produksjonskapasiteten (F3) skal være med i v1, ikke 
   - Endret: ledig beholdning av ferdigproduktet telles med, og ledetiden er med.
 - **§4.9 skrevet om:** FR-31 regner kapasiteten i uke t med nettingen (ledig beholdning, SS 0, mottak fra mottaksuken uten fremskynding, ingen nye ordrer for deler uten underdeler og ingen forfalt frigivelse). FR-32 viser to rader per uke, fra lager og med planlagte mottak. FR-33 viser begrensende deler med årsak (lager eller ledetid). FR-34 er panelet.
 - **Resten av PRD-en:** ny SM-7, nytt punkt i §1 og JTBD, §3 og §7.1/§7.2 oppdatert, §9 nr. 12 lukket, og §10 er tom. Eksemplene i FR-31–FR-33 er regnet gjennom for hånd.
-- Addendum, , ordbanken og memlog er oppdatert.  og  har . Commit 4e1e872.
-- **Main flettet inn (feb8dfe):** det var konflikt i  mot df10324 (ordbanken per 30.10). Versjonen på grenen er beholdt. Den inneholder alle begrepene fra main, utenom gamle navn som er byttet ut bevisst (Underkomponent, Delmontering, gamle avviksrader).
+- Addendum, `beslutninger-2026-11-09.md`, ordbanken og memlog er oppdatert. `prd.md` og `addendum.md` har `status: final`. Commit 4e1e872.
+- **Main flettet inn (feb8dfe):** det var konflikt i `.docs/ordbank.md` mot df10324 (ordbanken per 30.10). Versjonen på grenen er beholdt. Den inneholder alle begrepene fra main, utenom gamle navn som er byttet ut bevisst (Underkomponent, Delmontering, gamle avviksrader).
 - **PR #3** har fått ny tittel og beskrivelse og er markert klar for gjennomgang. Den kan merges: https://github.com/IBE160-2026/G23-eriksen-knudsen-kolstad-samdal/pull/3
 - Lukket i `issues.md`: gjennomgangen av valgene, status final og når kapasiteten bygges.
 
