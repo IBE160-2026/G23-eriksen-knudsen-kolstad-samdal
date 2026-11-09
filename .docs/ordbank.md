@@ -2,7 +2,7 @@
 title: COSI - MRP Ordbank
 status: forslag
 created: 2026-10-21
-updated: 2026-11-05
+updated: 2026-11-09
 ---
 
 # Ordbank: COSI - MRP
@@ -103,6 +103,14 @@ Forslaget bygger på Excel-malen for flernivå stykkliste (Sebastian, 2026-10-23
 | Avvik | At planen ikke går opp for en del, f.eks. at lageret går under sikkerhetslager eller at en bestilling kommer for sent. Avvik gir eksepsjoner. | – |
 | Falsk positiv / falsk negativ | Feil i eksepsjonene: en eksepsjon uten avvik (falsk positiv), eller et avvik uten eksepsjon (falsk negativ). | – |
 
+## Produksjonskapasitet (utvidelse etter v1)
+
+| Begrep | Definisjon | Ikke bruk |
+|---|---|---|
+| Produksjonskapasitet | Hvor mange hele ferdigprodukter delene på lager kan dekke, uavhengig av prognostiserte behov. Vises nå og per uke med planlagte mottak (PRD §4.9, FR-31–FR-32, tatt inn fra Iduns utkast 2026-11-09). | lagerkapasitet, lagerbasert produksjonskapasitet |
+| Ledig beholdning | Lagerbeholdning minus sikkerhetslager, men aldri under 0. Brukes bare i produksjonskapasiteten (PRD FR-31). | disponibel beholdning (om lager minus SS), tilgjengelig beholdning |
+| Begrensende del | En del uten underdeler som ikke har nok ledig beholdning til ett ferdigprodukt mer enn produksjonskapasiteten (PRD FR-33). | begrensende materiale, knappeste materiale, flaskehals |
+
 ## App og test
 
 | Begrep | Definisjon | Ikke bruk |
@@ -121,6 +129,10 @@ Forslaget bygger på Excel-malen for flernivå stykkliste (Sebastian, 2026-10-23
 | Fasit | Manuelt kontrollert forventet resultattabell og eksepsjonsliste for et testeksempel. | – |
 | Valideringstilfelle | En fil i `testdata/validering/` med nøyaktig én kjent valideringsfeil, eller ingen feil for gyldige grenseverdier. | feilfil |
 | Vercel | Tjenesten appen publiseres på, med en lenke som kan åpnes uten installasjon. Vercel leverer bare appens kode. Innlesing, validering, beregning og lagring av kjøringer skjer i brukerens nettleser (PRD NFR-4, besluttet 2026-11-05). | – |
+| Lokal lagring | Nettleserens lagring på brukerens maskin, der appen husker siste kjøring per ferdigprodukt. Den opplastede Excel-filen lagres ikke (PRD FR-19, NFR-10). | – |
+| Brukertest | Test der testpersoner løser de samme oppgavene i appen etter en kort introduksjon, hver for seg og uten veiledning (PRD SM-3, §8.1). | brukstest, brukstesting, brukertesting |
+| Testperson | En person som deltar i brukertesten. Trenger ikke ha brukt appen før. 4–8 i alt, 1–2 per gruppemedlem (PRD §8.1). | testbruker |
+| Testleder | Gruppemedlemmet som gjennomfører brukertesten med en testperson. Kan hjelpe med tekniske problemer, men ikke med oppgavene (PRD §8.1). | – |
 | Grensetilfelle (*edge case*) | Testtilfelle i ytterkanten av det normale, f.eks. behov i uke 1, eller ledetid lik eller lengre enn horisonten. | – |
 
 ## Prosjekt og omfang

@@ -2,7 +2,7 @@
 title: COSI - MRP PRD
 status: draft
 created: 2026-10-19
-updated: 2026-11-05
+updated: 2026-11-09
 ---
 
 # PRD: COSI - MRP
@@ -11,9 +11,9 @@ updated: 2026-11-05
 
 Denne PRD-en beskriver hva første versjon av COSI - MRP skal gjøre. Den er skrevet for gruppen G23 i IBE160, for sensor og for de neste stegene i BMAD (UX, arkitektur, epics og stories). Den bygger på product brief (`.docs/planning-artifacts/briefs/brief-COSI - MRP-2026-09-13/brief.md`), faglærers tilbakemelding (`tilbakemelding-product-brief.md` i samme mappe) og testdataene i `testdata/`, og gjentar ikke innholdet i dem. Innhold i briefen som PRD-en verken gjentar eller endrer, for eksempel problemet, posisjoneringen og visjonen, gjelder fortsatt. Briefen er frosset. Ved avvik gjelder PRD-en.
 
-Begrepene i §3 Ordliste brukes likt i hele dokumentet og følger ordbanken (`.docs/ordbank.md`). Funksjonene står i §4, med funksjonskrav (FR-1 til FR-29) under hver funksjon. Kravene har faste nummer, så epics, stories og tester kan vise til dem. Begrunnelser, tekniske innspill, endringshistorikk og lukkede spørsmål står i `addendum.md` i denne mappen. Beslutningene fra 2026-11-05 står i `beslutninger-2026-11-05.md`.
+Begrepene i §3 Ordliste brukes likt i hele dokumentet og følger ordbanken (`.docs/ordbank.md`). Funksjonene står i §4, med funksjonskrav (FR-1 til FR-34) under hver funksjon. Kravene har faste nummer, så epics, stories og tester kan vise til dem. Begrunnelser, tekniske innspill, endringshistorikk og lukkede spørsmål står i `addendum.md` i denne mappen. Beslutningene fra 2026-11-05 står i `beslutninger-2026-11-05.md`, og beslutningene fra gruppemøtet står i `beslutninger-2026-11-09.md`.
 
-**Status:** Utkast til gjennomgang i gruppen 2026-11-05. Alle spørsmål er besluttet, unntatt §9 nr. 4.
+**Status:** Gjennomgått av gruppen, og beslutningene fra gruppemøtet er ført inn. Åpne spørsmål: §9 nr. 4 (delvis) og nr. 12. Ingen av dem hindrer arkitektur eller epics.
 
 ## 1. Visjon
 
@@ -101,6 +101,9 @@ Ordlisten definerer begrepene. Reglene for dem står i kravene det vises til.
 - **Kontroll-kolonnen** – Hjelpekolonnen i arket Stykkliste som viser hva som mangler eller ikke stemmer i hver rad, mens brukeren fyller ut. Appen leser den ikke inn.
 - **Før/etter-sammenligning** – Forskjellene i bestillingsforslag og eksepsjoner mellom forrige kjøring for samme ferdigprodukt og den nye (FR-20).
 - **Valideringsfeil** – En feil i den opplastede filen som hindrer beregningen (FR-4).
+- **Produksjonskapasitet** – Hvor mange hele ferdigprodukter delene på lager kan dekke, uavhengig av prognostiserte behov. Utvidelse etter v1 (FR-31).
+- **Ledig beholdning** – Lagerbeholdning minus sikkerhetslager, men aldri under 0. Brukes bare i produksjonskapasiteten (FR-31). Ikke det samme som disponibel beholdning.
+- **Begrensende del** – En del som ikke strekker til for ett ferdigprodukt mer enn produksjonskapasiteten (FR-33).
 - **Fasit** – Den manuelt kontrollerte forventede resultattabellen og eksepsjonslisten for et testeksempel (for eksempel `testdata/testeksempel-01-fasit.xlsx`).
 
 ## 4. Funksjoner
@@ -437,16 +440,66 @@ Fra appens startside kan brukeren laste ned den tomme Excel-malen og testeksempe
 - Malen som lastes ned, er identisk med `testdata/COSI-MRP-mal.xlsx`.
 - Veiledningen nevner at hver fil gjelder ett ferdigprodukt, og hvordan deler som brukes i flere ferdigprodukter, håndteres.
 
+### 4.9 Produksjonskapasitet fra lager (utvidelse etter v1)
+
+**Beskrivelse:** Brukeren kan få beregnet hvor mange hele ferdigprodukter delene på lager kan dekke, uavhengig av prognostiserte behov. Beregningen bruker den samme opplastede Excel-malen som bestillingsplanen og kan vises alene eller sammen med den. Den viser hva som kan produseres nå, hvordan kapasiteten øker når planlagte mottak kommer, og hvilke deler som begrenser. Funksjonen er ikke med i v1 (§7.2). Antagelsene som må bekreftes når utvidelsen planlegges, står i §10. Testeksempel og fasit lages når utvidelsen starter.
+
+#### FR-30: Velg beregning
+
+Brukeren velger om kjøringen skal vise bestillingsplanen (§4.2–4.6), produksjonskapasiteten eller begge. Valideringen er den samme uansett valg (FR-1–FR-4).
+
+**Konsekvenser (testbare):**
+- Velger brukeren bare produksjonskapasiteten, vises ingen resultattabell, bestillingsforslag eller eksepsjoner.
+- Velger brukeren bare bestillingsplanen, er resultatet det samme som i v1.
+
+#### FR-31: Beregn produksjonskapasitet fra lager
+
+Ledig beholdning for en del er maks(0, lagerbeholdning − SS), så sikkerhetslageret holdes av. Produksjonskapasiteten er det største antallet hele ferdigprodukter N der behovet for N ferdigprodukter, brutt ned nivå for nivå gjennom stykklisten med antallene på radene (som FR-5 og FR-28, men uten prognostiserte behov og uten ledetid), kan dekkes av ledig beholdning. Ledig beholdning av en del som produseres selv, brukes før behovet går videre til underdelene. En del uten underdeler må dekkes helt av sin ledige beholdning. Ferdigproduktets egen lagerbeholdning er ikke med.
+
+**Konsekvenser (testbare):**
+- Kapasiteten er et heltall ≥ 0.
+- Uten lager av deler som produseres selv er kapasiteten den minste verdien av ⌊ledig beholdning / antall per ferdigprodukt⌋ blant delene uten underdeler. Antall per ferdigprodukt er produktet av antallene langs stien fra ferdigproduktet, summert over alle stedene delen står (FR-28).
+- En del med lagerbeholdning 50 og SS 20 regnes med 30. En del med lagerbeholdning under SS regnes med 0.
+- To filer som bare er ulike i arket MPS, gir samme kapasitet.
+
+#### FR-32: Vis kapasiteten med planlagte mottak
+
+Appen viser kapasiteten nå, beregnet med ledig beholdning alene, og kapasiteten for hver uke t i horisonten, der planlagte mottak til og med uke t er lagt til den ledige beholdningen. Et mottak regnes ikke med før mottaksuken.
+
+**Konsekvenser (testbare):**
+- Et mottak i uke 4 for den begrensende delen øker kapasiteten fra uke 4, ikke i uke 1–3.
+- Uten planlagte mottak er kapasiteten den samme i alle uker som kapasiteten nå.
+- Kapasiteten blir aldri lavere fra én uke til den neste.
+
+#### FR-33: Vis begrensende deler
+
+For kapasiteten nå og for hver uke viser appen de begrensende delene: delene uten underdeler som ikke har nok ledig beholdning (med mottakene til og med uken) for N + 1 ferdigprodukter.
+
+**Konsekvenser (testbare):**
+- Har to deler den samme laveste verdien i FR-31, vises begge som begrensende.
+- Får den begrensende delen et mottak som er stort nok, vises en annen del som begrensende fra mottaksuken.
+
+#### FR-34: Vis kapasitetspanelet
+
+Produksjonskapasiteten vises i et eget panel med egen overskrift, adskilt fra bestillingsplanen, så brukeren ikke forveksler kapasitet med planlagt produksjon. Panelet har en tabell med én rad per del: lagerbeholdning, sikkerhetslager, ledig beholdning og planlagte mottak per uke. Over tabellen står kapasiteten nå og per uke. Begrensende deler markeres, ikke med farge alene (NFR-8).
+
+**Konsekvenser (testbare):**
+- Er begge beregningene valgt, vises bestillingsplanen og kapasitetspanelet på samme side, i hvert sitt panel.
+- Et planlagt mottak står i tabellen i mottaksuken.
+
 ## 5. Tverrgående ikke-funksjonelle krav
 
-- **NFR-1 Beregning skilt fra resten:** Beregningen (§4.2–4.3) kan kjøres og testes alene, uten Excel-lesing, lagring eller brukergrensesnitt. Det gjør automatiske tester mot fasiten mulig og følger faglærers råd.
-- **NFR-2 Automatiske tester mot fasit:** Hvert testeksempel i `testdata/` har automatiske tester som sammenligner resultattabell og eksepsjoner med fasiten. Testene kjøres med én kommando som er beskrevet i README.
+- **NFR-1 Beregning skilt fra resten:** Beregningen (§4.2–4.3) kan kjøres og testes alene, uten Excel-lesing, lagring eller brukergrensesnitt. En test kan kalle den med stykkliste, prognostiserte behov og planlagte mottak som inndata. Det gjør automatiske tester mot fasiten mulig og følger faglærers råd.
+- **NFR-2 Automatiske tester mot fasit:** Hvert testeksempel i `testdata/` har automatiske tester som sammenligner resultattabell og eksepsjoner med fasiten, og hver regel i FR-2 og FR-3 har en automatisk test (`testdata/validering/`). Testene kjøres med én kommando som er beskrevet i README, uten nøkler, betalte kontoer eller eksterne tjenester, og en person utenfor gruppen kan kjøre dem uten hjelp. Fasitene er kontrollert for hånd og lages ikke med appens egen beregningskode, så testene sammenligner med et uavhengig resultat. En endring som gir ett avvik fra en fasit, får minst én test til å feile.
 - **NFR-3 Kjørbar for sensor:** Appen kan startes lokalt etter README, uten API-nøkler, betalte kontoer eller tjenester som gruppen driver. Excel-malen og testeksemplene ligger i repoet. I tillegg er appen publisert på Vercel (NFR-4).
 - **NFR-4 Data blir i brukerens nettleser:** Appen publiseres på Vercel, som bare leverer appens kode. Innlesing, validering, beregning og lagring av kjøringer skjer i brukerens nettleser. Opplastede filer og kjøringer sendes ikke til serveren eller til tredjepartstjenester. Derfor finnes lagrede kjøringer bare i nettleseren der de ble laget (FR-19). Valg av rammeverk avgjøres i arkitekturen.
 - **NFR-5 Ytelse:** Målet er at en kjøring med 1000 rader i stykklisten, tre nivåer og 12 uker tar under 3 sekunder fra opplasting til resultattabell på en vanlig bærbar PC (måling: se addendum).
 - **NFR-6 Plattform:** Webapp for PC i nyere versjoner av Chrome, Edge og Firefox. Ikke tilpasset mobil i v1.
 - **NFR-7 Språk:** All tekst i appen, også valideringsfeil og eksepsjoner, er på norsk i v1. Tekstene samles slik at engelsk kan legges til senere uten å endre beregningen.
 - **NFR-8 Lesbarhet:** Eksepsjoner og kritiske deler markeres ikke med farge alene (se FR-15). Når tabellen er bredere enn skjermen, står kolonnene med varenummer, beskrivelse og radnavn fast mens brukeren blar sideveis.
+- **NFR-9 Robust feilhåndtering:** Ingen fil kan få appen til å stoppe, henge eller vise et delvis resultat. En skadet fil, en tom fil, en fil som ikke er en Excel-fil selv om den heter `.xlsx`, og en uventet feil under beregningen gir hver en forståelig melding på norsk. Brukeren kan da laste opp en ny fil uten å laste siden på nytt, og den lagrede kjøringen endres ikke (FR-4, FR-19). Testbart: en skadet `.xlsx`-fil, en fil på 0 byte med endelsen `.xlsx` og en tekstfil med endelsen `.xlsx` gir hver sin melding, og etterpå gir testeksempel 01 riktig resultat uten at siden lastes på nytt.
+- **NFR-10 Lagring i nettleseren:** Bare siste vellykkede kjøring per ferdigprodukt lagres (FR-19), og bare i nettleserens lokale lagring på brukerens maskin. Den opplastede Excel-filen lagres ikke. Etter sletting (FR-21) finnes ingen data om det ferdigproduktet igjen i nettleseren. Er lokal lagring blokkert eller ikke tilgjengelig, for eksempel i et privat vindu, virker appen som vanlig uten lagring og sier fra at kjøringen ikke blir lagret. Testbart: etter to kjøringer for samme ferdigprodukt inneholder den lokale lagringen bare den siste og ingen Excel-fil. Med lagring blokkert gir testeksempel 01 riktig resultat og en melding om at kjøringen ikke lagres.
+- **NFR-11 Kompatibilitet med Excel:** Appen leser `.xlsx`-filer laget fra Excel-malen og lagret i Microsoft Excel for Windows og macOS. Den leser verdiene i cellene, ikke formlene, og leser nivå og varenummer likt enten Excel har lagret dem som tall eller tekst. Malen er en vanlig `.xlsx` uten makroer. Eksporterte filer (FR-22, FR-23) kan åpnes i Excel uten feilmeldinger. Testbart: testeksempel 01 og 02, åpnet og lagret på nytt i Excel for Windows og i Excel for macOS, gir samme resultat som de opprinnelige filene. Et varenummer lagret som tallet 300001 leses som samme varenummer som teksten «300001».
 
 ## 6. Ikke-mål
 
@@ -473,6 +526,7 @@ Funksjonene bygges i denne rekkefølgen. Strekker ikke tiden til, kuttes det som
 
 - **Mer enn tre nivåer i stykklisten** – videreutvikling.
 - **Samlet planlegging av flere ferdigprodukter** – første utvidelse etter v1. Deler som brukes i flere ferdigprodukter, beregnes da én gang med felles lagerbeholdning. Det krever endringer i malen (flere rader med nivå 0 og prognostiserte behov per ferdigprodukt), i FR-3, FR-5 og FR-19–FR-21, og et nytt testeksempel.
+- **Produksjonskapasitet fra lager** (§4.9, FR-30–FR-34) – utvidelse etter v1. Når den bygges, er ikke bestemt (§9 nr. 12).
 - **Hva-om-scenarier side om side** – utvidelse etter samlet planlegging. Briefen nevnte dette som første utvidelse. I v1 erstatter et hva-om-forsøk den lagrede kjøringen for ferdigproduktet (FR-19).
 - **Andre bestillingsregler** (f.eks. beregnet optimal bestillingsmengde) – videreutvikling.
 - **Omplanleggingshorisont** (grense for hvor langt fram et planlagt mottak kan fremskyndes fra, FR-6) – mulig utvidelse.
@@ -488,7 +542,7 @@ Funksjonene bygges i denne rekkefølgen. Strekker ikke tiden til, kuttes det som
 **Primære**
 - **SM-1 Korrekt beregning:** 100 % samsvar mellom resultattabellen og fasiten for alle testeksempler i `testdata/`, for hver uke, del og rad. Minst ett testeksempel har 5–10 deler fordelt på 3 nivåer og minst én felles del. Gjelder FR-5–FR-8, FR-14, FR-28.
 - **SM-2 Pålitelige eksepsjoner:** For hver av de fem eksepsjonstypene utløses riktig eksepsjon i hvert kjent avvikstilfelle, uten falske eller manglende eksepsjoner. Gjelder FR-9–FR-13, FR-29.
-- **SM-3 Forståelig uten forkunnskap:** Etter en kort introduksjon finner og forklarer 3 av 3 testpersoner en kritisk del og mengden og frigivelsesuken i et bestillingsforslag uten hjelp fra utviklerne. Gjelder FR-15–FR-18.
+- **SM-3 Forståelig uten forkunnskap:** Etter en kort introduksjon finner og forklarer alle testpersonene en kritisk del og mengden og frigivelsesuken i et bestillingsforslag uten hjelp fra utviklerne. Brukertesten gjennomføres som beskrevet i §8.1. Gjelder FR-15–FR-18.
 
 **Sekundære**
 - **SM-4 Inndata kontrolleres:** Hver valideringsregel i FR-3 har en test der en fil med nøyaktig den feilen gir nøyaktig én valideringsfeil med riktig ark, rad og årsak. Gjelder FR-2–FR-4.
@@ -500,12 +554,30 @@ Funksjonene bygges i denne rekkefølgen. Strekker ikke tiden til, kuttes det som
 - **SM-C2 Antall eksepsjoner:** Flere eksepsjoner gir ikke bedre planlegging. Hver eksepsjon skal kreve handling, ellers lærer brukeren seg å overse dem. Balanserer SM-2.
 - **SM-C3 Visuell fremheving:** Tabellen skal ikke fylles med farger og symboler for å se informativ ut. Det skal være raskt å finne det som krever handling. Balanserer SM-3.
 
+### 8.1 Brukertest (SM-3)
+
+Hvert gruppemedlem rekrutterer 1–2 testpersoner, til sammen 4–8. Testpersonene skal ha ulik bakgrunn, blant annet i erfaring med innkjøp og produksjonsplanlegging, Excel-ferdigheter og fagkompetanse, så testen viser hvordan appen fungerer for brukere med ulik erfaring. Ingen trenger å ha brukt appen før, fordi SM-3 nettopp krever at brukeren finner en kritisk del, mengden og frigivelsesuken etter en kort introduksjon.
+
+Testene gjennomføres hver for seg og etter samme prosedyre, så resultatene kan sammenlignes. Alle testpersonene får den samme introduksjonen og de samme oppgavene, og ingen veiledning mens de løser oppgavene. Testlederen kan hjelpe med tekniske problemer, men ikke med hvordan oppgavene løses.
+
 ## 9. Åpne spørsmål
 
 Spørsmålene beholder nummeret sitt, så andre dokumenter kan vise til dem. De lukkede spørsmålene (1–3 og 5–11) står i addendum med samme nummer.
 
-4. Hvem er testpersonene til brukertesten (SM-3), hvordan ser den korte introduksjonen ut, og hvor dokumenteres resultatet? **Ansvarlig:** gruppen. **Tas opp:** på gruppemøtet 2026-11-05, og må være avgjort før brukertesten planlegges i UX-steget. Hindrer ikke arkitektur eller epics.
+4. Hva inneholder den korte introduksjonen og oppgavene i brukertesten (SM-3), og hvor dokumenteres resultatet? Testpersonene og prosedyren er besluttet (§8.1). **Ansvarlig:** gruppen. **Tas opp:** før brukertesten planlegges i UX-steget. Hindrer ikke arkitektur eller epics.
+
+12. Når skal produksjonskapasitet fra lager (§4.9) bygges, og skal den komme før eller etter samlet planlegging av flere ferdigprodukter (§7.2)? **Ansvarlig:** gruppen. **Tas opp:** etter leveringen 15.12. Hindrer ikke v1.
 
 ## 10. Antagelser
 
-Ingen antagelser er igjen. Alle ble besluttet 2026-11-05 og står nå i kravene. Oversikten over hva som ble bekreftet og endret, står i addendum.
+Antagelsene fra de første utkastene ble besluttet 2026-11-05 og står nå i kravene. Oversikten over hva som ble bekreftet og endret, står i addendum.
+
+Disse antagelsene gjelder utvidelsen i §4.9 og bekreftes når den planlegges:
+
+| Krav | Antagelse |
+|---|---|
+| FR-30 | Valideringen er den samme uansett valg, så arket MPS må være utfylt også når bare kapasiteten vises. Horisonten trengs for ukene i Planlagte mottak. |
+| FR-30 | En kjøring med bare kapasiteten lagres ikke og påvirker ikke før/etter-sammenligningen (FR-19, FR-20). Kapasiteten er ikke med i eksporten (FR-22). |
+| FR-31 | Ferdigproduktets egen lagerbeholdning er ikke med, fordi kapasiteten gjelder nye ferdigprodukter. |
+| FR-31 | Ledig beholdning av deler som produseres selv, brukes før underdelene. |
+| FR-31, FR-32 | Ledetid er ikke med. Deler på lager og mottak regnes som tilgjengelige i uken de finnes, og produksjonstiden for deler som produseres selv, er ikke med. |
