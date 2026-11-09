@@ -53,3 +53,5 @@
 - [x] 2026-11-09 [gruppemote-beslutninger-prd](986-2026-11-09-08-37-42-gruppemote-beslutninger-prd.md) — lag referanseberegning for produksjonskapasiteten i `lag_testdata.py` og et testeksempel med fasit kontrollert for hånd (PRD SM-7, FR-31–FR-33) (løst 2026-11-09: kapasitet() og testeksempel 05, 66e34e5; håndkontroll av gruppa videreført)
 - [ ] 2026-11-09 [gruppemote-beslutninger-prd](986-2026-11-09-08-37-42-gruppemote-beslutninger-prd.md) — vurder å ta produksjonskapasiteten inn i en brukerreise (UJ-2) i UX-steget
 - [ ] 2026-11-09 [testeksempel-05-kapasitet](985-2026-11-09-09-02-18-testeksempel-05-kapasitet.md) — gruppa kontrollerer fasit 05 for hånd (MRP-tabellene, eksepsjonen for 300-033 og arket Kapasitet)
+- [ ] 2026-11-09 [rydding-og-readme](982-2026-11-09-09-48-14-rydding-og-readme.md) — fyll ut «Kom i gang» i README (forutsetninger, installasjon, kjøring, Vercel-lenke, testkommando) og mappene for koden når appen og arkitekturen finnes
+- [ ] 2026-11-09 [rydding-og-readme](982-2026-11-09-09-48-14-rydding-og-readme.md) — lag PR til `main` med README-utkastet og flyttingen av avstemmingsrapportene
