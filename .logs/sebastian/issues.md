@@ -57,3 +57,4 @@
 - [x] 2026-11-09 [rydding-og-readme](982-2026-11-09-09-48-14-rydding-og-readme.md) — lag PR til `main` med README-utkastet og flyttingen av avstemmingsrapportene (løst 2026-11-09: PR #8 merget, 009974a)
 - [ ] 2026-11-09 [slette-grener-for-levering](981-2026-11-09-09-55-06-slette-grener-for-levering.md) — slett grenene `Oda/ordbank` og `Carmen/product-brief-forbedringer` (på `origin` og lokalt) før oppgaven leveres
 - [ ] 2026-11-09 [impeccable-skill](980-2026-11-09-10-22-27-impeccable-skill.md) — sjekke at Impeccable henter binæren selv på en maskin uten `scripts/bin/`, for eksempel en Mac i gruppen
+- [ ] 2026-11-09 [research-brukergrensesnitt](979-2026-11-09-13-41-25-research-brukergrensesnitt.md) — vurder UI-rapportens valgfrie innspill i UX-steget (terskler for eksepsjoner, «flyttet» som endringstype, kritiske deler øverst, faner for kapasitetspanelet)
