@@ -7,6 +7,8 @@ updated: 2026-10-22
 
 # Product Brief: COSI - MRP
 
+> **Merk (2026-11-05):** Briefen er frosset. PRD-en (`.docs/planning-artifacts/prds/prd-COSI - MRP-2026-10-19/prd.md`) gjelder foran briefen og addendumet der de er ulike, blant annet for eksepsjonsreglene (FR-6, FR-12, «Kanseller mottak» i FR-29), begrepene (se `.docs/ordbank.md`) og typelisten. Se `beslutninger-2026-11-05.md` i PRD-mappa.
+
 ## Executive Summary
 
 I små produksjonsbedrifter kan MRP-planlegging være basert på et Excel-ark som bare én person kjenner godt. Det gjør planleggingen sårbar, tidkrevende og feilutsatt. COSI - MRP er en nettbasert løsning som gjør nettobehovsberegning, bestillingsforslag og eksepsjonsmeldinger (varsler om mangler, forsinkelser eller feil i dataene) til en fast, innebygd prosess i verktøyet selv.

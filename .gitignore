@@ -59,3 +59,6 @@ Thumbs.db
 *.swp
 *.swo
 *~
+
+# Impeccable: plattformbinæren lastes ned automatisk av starteren (scripts/impeccable[.cmd])
+.claude/skills/impeccable/scripts/bin/
