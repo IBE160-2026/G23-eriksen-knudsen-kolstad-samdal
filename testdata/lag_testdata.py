@@ -2,7 +2,7 @@
 
 Bruk: uv run --with openpyxl python lag_testdata.py <testdata-mappe> [--alle]
 
-Uten --alle lages bare malen. Med --alle lages også testeksempel 01 og fasit.
+Uten --alle lages bare malen. Med --alle lages også testeksempel 01–05 med fasit og valideringsfilene.
 """
 import datetime
 import io
@@ -254,6 +254,87 @@ STATUS_04 = ("Status: beregnet med skript og kontrollert for hånd 2026-11-05. T
              "grensetilfellene som ikke er dekket av testeksempel 01–03.")
 
 
+# ---------- Testeksempel 05: produksjonskapasitet fra lager (PRD §4.9, FR-31–FR-33, SM-7) ----------
+
+PRODUKT_05 = "Kontorstol Kompakt"
+MPS_05 = [5, 5, 6, 6, 8, 8, 6, 6]  # 8 ukers horisont (minste). MPS påvirker ikke kapasiteten
+
+# Små tall, så kapasiteten kan regnes for hånd. Dekker SM-7: sikkerhetslager, planlagte mottak, lager av
+# ferdigproduktet og av en del som produseres selv (Sete), en felles del (Skruesett M6) og ledetid som begrenser.
+STYKKLISTE_05 = [
+    ("0", "100-004", PRODUKT_05, None, "Ferdigvare", 12, 2, 1),
+    (".1", "200-020", "Sete", 1, PROD, 8, 0, 2),
+    ("..2", "300-031", "Seteplate", 1, KJOPT, 40, 10, 2),
+    ("..2", "300-032", "Skruesett M6", 4, KJOPT, 140, 20, 1),
+    (".1", "200-021", "Rygg", 1, PROD, 0, 0, 1),
+    ("..2", "300-033", "Ryggplate", 1, KJOPT, 25, 5, 3),
+    ("..2", "300-032", "Skruesett M6", 2, KJOPT, None, None, None),
+    (".1", "300-034", "Hjul", 5, KJOPT, 150, 30, 1),
+]
+
+MOTTAK_05 = [("300-034", 3, 100), ("300-033", 5, 30)]
+
+HENSIKT_05 = {
+    "100-004": "Ferdigprodukt med lager 12 og SS 2: ledig beholdning 10 telles med i kapasiteten. Ledetid 1, så "
+               "produksjon rekker tidligst uke 2. Begrenser i uke 1 (ledetid)",
+    "200-020": "Produseres selv, med lager 8 (mellomlager) som brukes før underdelene. Ledetid 2, så nye seter "
+               "rekker tidligst uke 4. Begrenser i uke 3 (ledetid)",
+    "300-031": "Seteplate med SS 10: ledig beholdning 30. Begrenser ikke",
+    "300-032": "Felles del: 4 per sete og 2 per rygg. Ledig 120. Begrenser i uke 7–8 med planlagte mottak (lager). "
+               "En enkel regel uten mellomlager ville gitt 120 / 6 = 20 stoler, men riktig svar er 25",
+    "200-021": "Produseres selv, uten lager, ledetid 1: rygger rekker tidligst uke 3. Begrenser i uke 2 (ledetid)",
+    "300-033": "Ryggplate med SS 5: ledig 20. Begrenser fra uke 4. Mottaket på 30 i uke 5 hjelper først fra uke 7, "
+               "fordi ryggplaten trengs to uker før stolen er ferdig. I MRP-beregningen fremskyndes mottaket til uke 4: "
+               "Mottak forsinket",
+    "300-034": "Hjul med SS 30: ledig 120 (24 stoler). Mottaket på 100 i uke 3 gir 44 stoler. Begrenser ikke",
+}
+
+FORVENTET_05 = {"300-033": [(4, "Mottak forsinket")]}
+STATUS_05 = ("Status: beregnet med skript 2026-11-09 (MRP og kapasitet). Kapasiteten er også regnet for hånd i arket "
+             "Kapasitet, og skriptet stopper hvis tallene avviker. Må kontrolleres for hånd av gruppen.")
+
+# Forventet kapasitet per uke og forventede begrensende deler for N + 1, som (rad, uke): [(varenummer, årsak)].
+# Regnet for hånd (se KAPASITET_UTREGNING_05). Skriptet stopper hvis kapasitet() gir noe annet.
+FORVENTET_KAP_05 = {
+    "Fra lager": [10, 10, 18, 30, 30, 30, 30, 30],
+    "Med planlagte mottak": [10, 10, 18, 30, 30, 30, 35, 35],
+}
+FORVENTET_BEGR_05 = {
+    **{(rad, 1): [("100-004", "ledetid")] for rad in FORVENTET_KAP_05},
+    **{(rad, 2): [("200-021", "ledetid")] for rad in FORVENTET_KAP_05},
+    **{(rad, 3): [("200-020", "ledetid")] for rad in FORVENTET_KAP_05},
+    **{("Fra lager", u): [("300-033", "lager")] for u in range(4, 9)},
+    **{("Med planlagte mottak", u): [("300-033", "lager")] for u in range(4, 7)},
+    **{("Med planlagte mottak", u): [("300-032", "lager")] for u in range(7, 9)},
+}
+
+KAPASITET_UTREGNING_05 = [
+    "Ledig beholdning = maks(0, lagerbeholdning − SS): 100-004 12 − 2 = 10, 200-020 8, 200-021 0, "
+    "300-031 40 − 10 = 30, 300-032 140 − 20 = 120, 300-033 25 − 5 = 20, 300-034 150 − 30 = 120.",
+    "Behov på N stoler i uke t. Ferdigproduktet dekker 10 fra lager. Resten, P = N − 10, må produseres (L = 1) og "
+    "frigis i uke t − 1, så det krever t ≥ 2. Produksjonen trenger P seter, P rygger og 5P hjul i uke t − 1.",
+    "Sete (lager 8, L = 2): 8 fra lager i uke t − 1. Resten, P − 8, frigis i uke t − 3, så det krever t ≥ 4. "
+    "Det trenger P − 8 seteplater og 4(P − 8) skruesett i uke t − 3.",
+    "Rygg (lager 0, L = 1): P rygger frigis i uke t − 2, så det krever t ≥ 3. Det trenger P ryggplater og "
+    "2P skruesett i uke t − 2.",
+    "Uke 1: ingen produksjon rekker, fordi ferdigproduktet måtte vært frigitt i uke 0. Kapasitet 10. Stol nr. 11 "
+    "stopper på 100-004 (ledetid).",
+    "Uke 2: produksjonen frigis i uke 1, men rygger måtte vært frigitt i uke 0. P = 0, kapasitet 10. Stol nr. 11 "
+    "stopper på 200-021 Rygg (ledetid).",
+    "Uke 3: rygger frigis i uke 1 (ryggplate 20 ≥ P). Seter bare fra lager: P ≤ 8. Hjul 5 × 8 = 40 ≤ 120. "
+    "Kapasitet 10 + 8 = 18. Stol nr. 19 trenger et sete som måtte vært frigitt i uke 0: 200-020 Sete (ledetid).",
+    "Uke 4–8, fra lager: ryggplate P ≤ 20, hjul 5P ≤ 120 gir P ≤ 24, seteplate P − 8 ≤ 30 gir P ≤ 38, skruesett "
+    "4(P − 8) + 2P ≤ 120 gir P ≤ 25. P = 20, kapasitet 30. Stol nr. 31 stopper på 300-033 Ryggplate (lager). "
+    "Skruesett for P = 21: 4 × 13 + 2 × 21 = 94 ≤ 120, så skruesettet begrenser ikke.",
+    "Med planlagte mottak: hjul +100 fra uke 3 (hjul trengs i uke t − 1, så det hjelper fra uke 4) og ryggplate +30 "
+    "fra uke 5 (ryggplate trengs i uke t − 2, så det hjelper fra uke 7). Uke 1–3 er som fra lager.",
+    "Uke 4–6 med mottak: ryggplaten er fortsatt 20, så kapasiteten er 30, og 300-033 begrenser.",
+    "Uke 7–8 med mottak: ryggplate P ≤ 50, hjul 5P ≤ 220 gir P ≤ 44, seteplate P ≤ 38, skruesett P ≤ 25. P = 25, "
+    "kapasitet 35. For P = 25 trengs 4 × 17 + 2 × 25 = 118 ≤ 120 skruesett. Stol nr. 36 stopper på 300-032 "
+    "Skruesett M6 (lager): 4 × 18 + 2 × 26 = 124 > 120.",
+]
+
+
 
 # ---------- Beregning (PRD §4.2–4.3) ----------
 
@@ -439,6 +520,71 @@ def beregn(mps, stykkliste, mottak, detaljer=None):
     rang = {vn: i for i, vn in enumerate(rekkefolge)}
     eksepsjoner.sort(key=lambda e: rang[e[0]])  # stabil sortering: ukeordenen per del beholdes
     return {vn: tabeller[vn] for vn in rekkefolge}, eksepsjoner
+
+
+# ---------- Produksjonskapasitet (PRD §4.9, FR-31–FR-33) ----------
+
+KAP_RADER = ("Fra lager", "Med planlagte mottak")
+KAP_AARSAK = {"lager": "For lite på lager og i planlagte mottak", "ledetid": "Ledetid: ordren måtte vært frigitt før uke 1"}
+
+
+def kapasitet_mangler(n, uke, strukt, mottak, h):
+    """Delene som ikke kan dekkes når behovet er n ferdigprodukter i uken (FR-31). Tom liste: behovet kan dekkes.
+
+    Nettingen er MRP-beregningen (mrp_del) med ledig beholdning som lager, SS 0 og uten fremskynding. Deler uten
+    underdeler kan ikke få planlagte ordremottak (årsak «lager»). Ferdigproduktet og deler som produseres selv kan
+    det, men ikke med forfalt frigivelse (årsak «ledetid»). Den forfalte delen sendes ikke videre til underdelene,
+    så bare delene som selv mangler, regnes som begrensende (FR-33).
+    """
+    deler, rekkefolge, kanter, llk, _kum, rot = strukt
+    har_underdeler = {f for f, _b, _a in kanter}
+    frig, mangler = {}, []
+    for vn in sorted(deler, key=lambda v: (llk[v], rekkefolge.index(v))):
+        d = deler[vn]
+        if vn == rot:
+            brutto = [n if t == uke - 1 else 0 for t in range(h)]
+        else:
+            brutto = [sum(a * frig[f][t] for f, b, a in kanter if b == vn) for t in range(h)]
+        planlagt = [0] * h
+        for mvn, mu, antall in mottak:
+            if mvn == vn and 1 <= mu <= h:
+                planlagt[mu - 1] += antall
+        ledig = max(0, d["lager"] - d["ss"])
+        rader, _fr, forfalte, _sp = mrp_del(brutto, planlagt, ledig, 0, d["ledetid"], fremskynd=False)
+        frigivelse = list(rader["Planlagte ordrefrigivelser"])
+        if vn not in har_underdeler:
+            if any(rader["Planlagte ordremottak"]):
+                mangler.append((vn, "lager"))
+        elif forfalte:
+            mangler.append((vn, "ledetid"))
+            frigivelse[0] -= sum(f["antall"] for f in forfalte)
+        frig[vn] = frigivelse
+    rang = {vn: i for i, vn in enumerate(rekkefolge)}
+    return sorted(mangler, key=lambda m: rang[m[0]])
+
+
+def kapasitet(stykkliste, mottak, h):
+    """Kapasitet per uke på to rader (FR-32), med begrensende deler for N + 1 (FR-33).
+
+    Gir {rad: (kapasitet per uke, begrensende deler per uke)}. Svaret er monotont i N, så dobling og binærsøk virker.
+    """
+    strukt = struktur(stykkliste)
+    ut = {}
+    for rad, mot in zip(KAP_RADER, ([], mottak)):
+        verdier, begrensende = [], []
+        for uke in range(1, h + 1):
+            kan = lambda n: not kapasitet_mangler(n, uke, strukt, mot, h)
+            lav, hoy = 0, 1
+            while kan(hoy):
+                lav, hoy = hoy, hoy * 2
+                assert hoy < 10 ** 9, "Kapasiteten er ubegrenset (ingen del begrenser)"
+            while hoy - lav > 1:
+                midt = (lav + hoy) // 2
+                lav, hoy = (midt, hoy) if kan(midt) else (lav, midt)
+            verdier.append(lav)
+            begrensende.append(kapasitet_mangler(lav + 1, uke, strukt, mot, h))
+        ut[rad] = (verdier, begrensende)
+    return ut
 
 
 # ---------- Hjelpefunksjoner for formatering ----------
@@ -1018,8 +1164,79 @@ def kjoring(mps, stykkliste, mottak):
     return tabeller, eks, detaljer
 
 
-def lag_fasit(nr, produkt, mps, stykkliste, mottak, hensikt, status, sammenlign=()):
-    """Fasit for ett testeksempel. sammenlign er en liste med (overskrift, kjøring før, kjøring etter)."""
+def kapasitet_ark(wb, nr, produkt, mps, stykkliste, mottak, utregning):
+    """Arket Kapasitet (FR-31–FR-34): kapasitet per uke på to rader, begrensende deler, grunnlag per del og håndregning."""
+    h = len(mps)
+    kap = kapasitet(stykkliste, mottak, h)
+    deler, rekkefolge, kanter, _llk, _kum, _rot = struktur(stykkliste)
+    ws = wb.create_sheet("Kapasitet")
+    ws["A1"] = f"Produksjonskapasitet fra lager: testeksempel {nr} – {produkt}"
+    ws["A1"].font = FONT_TITTEL
+    r = tekstblokk(ws, 2, [
+        "Kapasiteten i uke t er det største antallet hele ferdigprodukter N som kan være ferdige innen uke t (FR-31). "
+        "Behovet på N i uke t brytes ned gjennom stykklisten som i MRP-beregningen, med ledig beholdning "
+        "(maks(0, lager − SS)) som lager og SS 0. Planlagte mottak regnes fra mottaksuken og fremskyndes ikke.",
+        "Deler uten underdeler kan ikke få nye ordrer. Ferdigproduktet og deler som produseres selv kan det, men ingen "
+        "frigivelse kan være før uke 1. Prognostiserte behov (MPS) påvirker ikke kapasiteten.",
+        "Begrensende deler er delene som ikke kan dekkes når behovet er N + 1 (FR-33).",
+    ])
+    for rr in range(2, r):
+        ws.merge_cells(start_row=rr, start_column=1, end_row=rr, end_column=2 + h)
+        ws.row_dimensions[rr].height = 30
+    r += 1
+    ws.cell(r, 1, "Kapasitet per uke (FR-32)").font = FONT_FET
+    hode(ws, r + 1, ["Rad", ""] + [f"Uke {u}" for u in range(1, h + 1)])
+    r += 2
+    for rad in KAP_RADER:
+        celle(ws, r, 1, rad, fet=True)
+        ws.merge_cells(start_row=r, start_column=1, end_row=r, end_column=2)
+        for t, v in enumerate(kap[rad][0]):
+            celle(ws, r, 3 + t, v).alignment = Alignment(horizontal="right")
+        r += 1
+    r += 1
+    ws.cell(r, 1, "Begrensende deler for N + 1 (FR-33)").font = FONT_FET
+    hode(ws, r + 1, ["Rad", "Uke", "Kapasitet", "Varenummer", "Beskrivelse", "Årsak"])
+    r += 2
+    for rad in KAP_RADER:
+        verdier, begr = kap[rad]
+        for t in range(h):
+            for vn, aarsak in begr[t]:
+                for k, v in enumerate([rad, t + 1, verdier[t], vn, deler[vn]["beskrivelse"], KAP_AARSAK[aarsak]], 1):
+                    celle(ws, r, k, v)
+                r += 1
+    r += 1
+    ws.cell(r, 1, "Grunnlag per del (FR-34)").font = FONT_FET
+    hode(ws, r + 1, ["Varenummer", "Beskrivelse", "Type", "Lager", "SS", "Ledig", "Ledetid"]
+         + [f"Mottak uke {u}" for u in range(1, h + 1)])
+    r += 2
+    for vn in rekkefolge:
+        d = deler[vn]
+        planlagt = [0] * h
+        for mvn, mu, antall in mottak:
+            if mvn == vn and 1 <= mu <= h:
+                planlagt[mu - 1] += antall
+        rad = [vn, d["beskrivelse"], d["type"], d["lager"], d["ss"], max(0, d["lager"] - d["ss"]), d["ledetid"]]
+        for k, v in enumerate(rad + [p or None for p in planlagt], 1):
+            celle(ws, r, k, v)
+        r += 1
+    r += 1
+    ws.cell(r, 1, "Håndregning").font = FONT_FET
+    r += 1
+    for linje in utregning:
+        c = ws.cell(r, 1, linje)
+        c.font = FONT
+        c.alignment = Alignment(wrap_text=True, vertical="top")
+        ws.merge_cells(start_row=r, start_column=1, end_row=r, end_column=7 + h)
+        ws.row_dimensions[r].height = 15 * (1 + len(linje) // 140)
+        r += 1
+    bredder(ws, {"A": 22, "B": 10, "C": 26, "D": 12, "E": 18, "F": 40, "G": 9})
+    for u in range(h):
+        ws.column_dimensions[chr(ord("H") + u)].width = 12
+
+
+def lag_fasit(nr, produkt, mps, stykkliste, mottak, hensikt, status, sammenlign=(), kap_utregning=None):
+    """Fasit for ett testeksempel. sammenlign er en liste med (overskrift, kjøring før, kjøring etter).
+    kap_utregning (liste med linjer) gir i tillegg arket Kapasitet."""
     wb = Workbook()
     h = len(mps)
     tabeller, eks, detaljer = kjoring(mps, stykkliste, mottak)
@@ -1134,6 +1351,8 @@ def lag_fasit(nr, produkt, mps, stykkliste, mottak, hensikt, status, sammenlign=
                 r += 1
             r += 1
         bredder(ws_s, {"A": 18, "B": 16, "C": 12, "D": 6, "E": 26, "F": 26, "G": 80})
+    if kap_utregning:
+        kapasitet_ark(wb, nr, produkt, mps, stykkliste, mottak, kap_utregning)
     return wb
 
 
@@ -1356,6 +1575,14 @@ def kontroller():
     assert t["300-027"]["Planlagte mottak"][3] == 50
     a = kjoring(MPS_02, STYKKLISTE_02, MOTTAK_02)
     assert sammenligning(a, a) == [], "Samme kjøring to ganger skal gi ingen endringer"
+    # Produksjonskapasitet (FR-31–FR-33): skriptet skal gi det som er regnet for hånd for testeksempel 05
+    kap = kapasitet(STYKKLISTE_05, MOTTAK_05, len(MPS_05))
+    for rad, (verdier, begr) in kap.items():
+        assert verdier == FORVENTET_KAP_05[rad], f"Kapasitet 05, {rad}: forventet {FORVENTET_KAP_05[rad]}, fikk {verdier}"
+        assert verdier == sorted(verdier), f"Kapasitet 05, {rad}: blir lavere fra en uke til den neste"
+        for uke, b in enumerate(begr, start=1):
+            assert b == FORVENTET_BEGR_05[(rad, uke)], f"Begrensende 05, {rad}, uke {uke}: fikk {b}"
+    assert all(m >= f for m, f in zip(kap["Med planlagte mottak"][0], kap["Fra lager"][0]))
 
 
 TESTEKSEMPLER = [
@@ -1363,7 +1590,9 @@ TESTEKSEMPLER = [
     ("02", PRODUKT_02, MPS_02, STYKKLISTE_02, MOTTAK_02, HENSIKT_02, STATUS_02, FORVENTET_02),
     ("03", PRODUKT_02, MPS_03, STYKKLISTE_02, MOTTAK_02, HENSIKT_03, STATUS_03, FORVENTET_03),
     ("04", PRODUKT_04, MPS_04, STYKKLISTE_04, MOTTAK_04, HENSIKT_04, STATUS_04, FORVENTET_04),
+    ("05", PRODUKT_05, MPS_05, STYKKLISTE_05, MOTTAK_05, HENSIKT_05, STATUS_05, FORVENTET_05),
 ]
+KAPASITET_UTREGNING = {"05": KAPASITET_UTREGNING_05}  # testeksempler med arket Kapasitet i fasiten
 
 if __name__ == "__main__":
     lagre(lag_mal(), UT / "COSI-MRP-mal.xlsx")
@@ -1384,6 +1613,7 @@ if __name__ == "__main__":
                     if e[0] == vn:
                         print("  !", e[1], e[2])
             lagre(lag_mal(mps, stykk, mottak), UT / f"testeksempel-{nr}.xlsx")
-            lagre(lag_fasit(nr, produkt, mps, stykk, mottak, hensikt, status, sammen.get(nr, ())),
+            lagre(lag_fasit(nr, produkt, mps, stykk, mottak, hensikt, status, sammen.get(nr, ()),
+                            KAPASITET_UTREGNING.get(nr)),
                   UT / f"testeksempel-{nr}-fasit.xlsx")
         lag_valideringsfiler(UT / "validering")

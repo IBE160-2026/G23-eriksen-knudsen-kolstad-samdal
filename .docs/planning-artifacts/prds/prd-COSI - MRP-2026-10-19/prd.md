@@ -561,7 +561,7 @@ Funksjonene bygges i denne rekkefølgen. Strekker ikke tiden til, kuttes det som
 - **SM-4 Inndata kontrolleres:** Hver valideringsregel i FR-3 har en test der en fil med nøyaktig den feilen gir nøyaktig én valideringsfeil med riktig ark, rad og årsak. Gjelder FR-2–FR-4.
 - **SM-5 Endringer håndteres:** En komplett kjøring over 8–12 uker med 5–10 deler fordelt på 3 nivåer og minst én endring midtveis (f.eks. endrede prognostiserte behov) gir en før/etter-sammenligning som viser nøyaktig de endrede bestillingsforslagene og eksepsjonene. Gjelder FR-19–FR-21.
 - **SM-6 Kjørbar for sensor:** En person utenfor gruppen kan starte appen etter README og kjøre testeksempel 01 uten hjelp. Gjelder NFR-3.
-- **SM-7 Riktig kapasitet:** 100 % samsvar med en manuelt kontrollert fasit for kapasiteten per uke på begge radene og for de begrensende delene med årsak. Testeksempelet har sikkerhetslager, planlagte mottak, lager av ferdigproduktet og av en del som produseres selv, en felles del og et tilfelle der ledetiden begrenser. Gjelder FR-31–FR-33.
+- **SM-7 Riktig kapasitet:** 100 % samsvar med en manuelt kontrollert fasit for kapasiteten per uke på begge radene og for de begrensende delene med årsak. Testeksempelet har sikkerhetslager, planlagte mottak, lager av ferdigproduktet og av en del som produseres selv, en felles del og et tilfelle der ledetiden begrenser (testeksempel 05). Gjelder FR-31–FR-33.
 
 **Mot-mål (skal ikke optimaliseres)**
 - **SM-C1 Antall funksjoner:** Flere funksjoner er ikke et mål i seg selv. Fast partistørrelse startes først når SM-1 og SM-2 er nådd. Balanserer SM-1.

@@ -20,8 +20,10 @@ Sensor kan bruke filene her for å prøve appen direkte etter README i roten av 
 | `testeksempel-03-fasit.xlsx` | Fasit for testeksempel 03, med et ekstra ark Sammenligning: forskjellene mellom 02 og 03 begge veier. |
 | `testeksempel-04.xlsx` | Grensetilfeller: Kontorstol Ergo, 14 deler på tre nivåer, 12 uker. |
 | `testeksempel-04-fasit.xlsx` | Fasit for testeksempel 04, med de samme arkene som fasit 01. |
+| `testeksempel-05.xlsx` | Produksjonskapasitet: Kontorstol Kompakt, 7 deler på tre nivåer, 8 uker. |
+| `testeksempel-05-fasit.xlsx` | Fasit for testeksempel 05, med de samme arkene som fasit 01 og i tillegg arket Kapasitet: kapasitet per uke fra lager og med planlagte mottak, begrensende deler med årsak, grunnlaget per del og håndregningen (PRD FR-31–FR-34, SM-7). |
 | `validering/` | Valideringstilfeller: én fil per regel i FR-1–FR-4, med forventet resultat i `validering/README.md`. |
-| `lag_testdata.py` | Skriptet som lager filene. `uv run --with openpyxl python lag_testdata.py testdata` lager bare malen. Legg til `--alle` for også å lage testeksemplene, fasitene og valideringstilfellene. Med `--alle` kontrollerer skriptet først at hvert testeksempel gir nøyaktig de eksepsjonene det skal teste, og stopper ellers. Filene lagres med fast tid, så en ny kjøring gir like filer når innholdet er likt. |
+| `lag_testdata.py` | Skriptet som lager filene. `uv run --with openpyxl python lag_testdata.py testdata` lager bare malen. Legg til `--alle` for også å lage testeksemplene, fasitene og valideringstilfellene. Med `--alle` kontrollerer skriptet først at hvert testeksempel gir nøyaktig de eksepsjonene det skal teste, og at kapasiteten i testeksempel 05 er lik håndregningen, og stopper ellers. Referanseberegningen for kapasiteten er `kapasitet()`. Filene lagres med fast tid, så en ny kjøring gir like filer når innholdet er likt. |
 
 ## Malens struktur
 
@@ -107,6 +109,27 @@ Testeksempel 04 samler tilfellene som ikke er dekket av 01–03. Horisonten er 1
 
 **Status:** kontrollert. Beregnet med skriptet og kontrollert for hånd 2026-11-05.
 
+## Testeksempel 05 – produksjonskapasitet
+
+Testeksempel 05 tester produksjonskapasiteten fra lager (PRD §4.9). Kapasiteten i uke t er hvor mange hele stoler som kan være ferdige innen uke t, ut fra ledig beholdning (lager minus SS), planlagte mottak og ledetid. MPS påvirker ikke kapasiteten. MPS er valgt slik at MRP-beregningen bare gir én eksepsjon (300-033 Mottak forsinket i uke 4).
+
+| Uke | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 |
+|---|---|---|---|---|---|---|---|---|
+| Fra lager | 10 | 10 | 18 | 30 | 30 | 30 | 30 | 30 |
+| Med planlagte mottak | 10 | 10 | 18 | 30 | 30 | 30 | 35 | 35 |
+
+| Del | Tilfelle |
+|---|---|
+| 100-004 Kontorstol Kompakt | Ledig lager av ferdigproduktet (12 − SS 2 = 10) telles med. Ledetid 1: begrenser i uke 1 (ledetid) |
+| 200-021 Rygg | Produseres selv uten lager, ledetid 1: begrenser i uke 2 (ledetid) |
+| 200-020 Sete | Produseres selv med lager 8 (mellomlager), som brukes før underdelene. Ledetid 2: begrenser i uke 3 (ledetid) |
+| 300-033 Ryggplate | Begrenser fra uke 4 (lager). Mottaket i uke 5 hjelper først fra uke 7, fordi ryggplaten trengs to uker før stolen er ferdig |
+| 300-032 Skruesett M6 | Felles del (4 per sete, 2 per rygg). Begrenser i uke 7–8 med mottak. Riktig svar er 25 nye stoler, ikke 120 / 6 = 20, fordi setene på lager ikke trenger skruer |
+| 300-034 Hjul | Sikkerhetslager holdes av. Mottaket i uke 3 øker kapasiteten for hjul, men hjul begrenser aldri |
+| 300-031 Seteplate | Sikkerhetslager holdes av, begrenser ikke |
+
+**Status:** beregnet med skriptet og regnet for hånd i arket Kapasitet 2026-11-09. Skriptet stopper hvis `kapasitet()` gir andre tall eller andre begrensende deler. Må kontrolleres for hånd av gruppen.
+
 ## Dekning
 
 Hvor hvert tilfelle i PRD-en testes. «Validering» betyr `validering/` (se README der).
@@ -144,4 +167,10 @@ Hvor hvert tilfelle i PRD-en testes. «Validering» betyr `validering/` (se READ
 | FR-17 | Bestillingsforslag med innkjøp, produksjonsordre og forfalt mengde | arket Bestillingsforslag i alle fasitene |
 | FR-19 / FR-20 | Siste kjøring per ferdigprodukt: hvert testeksempel har eget varenummer på nivå 0, så 02 → 01 → 03 skal sammenligne 03 med 02 | 01 (100-002), 02 og 03 (100-001), 04 (100-003) |
 | FR-20 | Nye, endrede og fjernede forslag, nye og borte eksepsjoner, ingen endringer | 03 (arket Sammenligning) |
+| FR-31 | Ledig lager av ferdigproduktet og av en del som produseres selv brukes først | 05 (100-004, 200-020) |
+| FR-31 | Sikkerhetslager holdes av | 05 (alle delene med SS) |
+| FR-31 | Felles del, der en enkel minimumsregel gir feil svar | 05 (300-032) |
+| FR-31 / FR-33 | Ledetid begrenser (ferdigprodukt, produsert del uten og med lager) | 05 (uke 1–3) |
+| FR-32 | Mottak øker kapasiteten først når det kan brukes (med ledetid), raden fra lager endres ikke | 05 (300-033, 300-034) |
+| FR-33 | Begrensende del skifter etter et mottak | 05 (300-033 → 300-032 i uke 7) |
 | FR-24–FR-26 | Fast partistørrelse | ikke laget ennå (planlagt utvidelse) |
