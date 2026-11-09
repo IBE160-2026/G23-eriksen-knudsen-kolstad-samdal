@@ -1,6 +1,6 @@
 ---
 title: COSI - MRP PRD – Addendum
-status: draft
+status: final
 created: 2026-10-19
 updated: 2026-11-09
 ---
@@ -31,7 +31,7 @@ Bakgrunn, begrunnelser og tekniske innspill fra PRD-arbeidet som ikke hører hje
 - **Testene bruker fasitfilene, ikke skriptet:** `testdata/lag_testdata.py` inneholder en referanseberegning (`beregn`). Appen bør ikke importere skriptet. Testene skal sammenligne med fasitfilene, som er kontrollert for hånd.
 - **Flernivå beregning (FR-5, FR-28):** Stykklisten leses som en liste av rader der overordnet del er nærmeste rad over med ett nivå høyere. Bygg en graf fra varenummer til overordnede varenumre med antall, regn ut lavnivåkoden per varenummer og beregn delene sortert etter lavnivåkode. Ledetiden fra ferdigproduktet (FR-9) kan regnes i samme gjennomløp ovenfra: delens egen L pluss den største ledetiden fra ferdigproduktet blant de overordnede delene. Fremskynding av mottak (FR-6) gjøres i nettobehovsberegningen per del før planlagte ordremottak lages. Nettobehovsberegningen bruker beholdning(t−1) fra FR-6, der fremskyndede mottak er tatt med, mens den viste forventede lagerbeholdningen er uten dem (FR-7). FR-29 krever at delen beregnes én gang til for hvert planlagte mottak, uten det mottaket. `beregn` i `lag_testdata.py` gjør alt dette og har laget fasitene for testeksempel 01–04.
 - **Feil under lesing og beregning (NFR-9):** Lesing, validering og beregning bør kjøres slik at en uventet feil fanges samlet og gir en melding på norsk. Den forrige visningen og den lagrede kjøringen skal stå urørt, og brukeren skal kunne laste opp en ny fil uten å laste siden på nytt.
-- **Produksjonskapasitet (FR-31–FR-33, etter v1):** Kapasiteten kan finnes ved å prøve et antall ferdigprodukter N: bryt ned behovet for N nivå for nivå på lavnivåkode, trekk fra ledig beholdning for hver del, og sjekk om noen del uten underdeler mangler. Svaret er monotont i N, så binærsøk virker. Fordi behovet for en felles del summeres før den ledige beholdningen trekkes fra (som FR-28), blir lageret ikke telt to ganger, slik det ville blitt med en enkel minimumsregel per sti. Kapasiteten per uke (FR-32) er den samme beregningen med mottakene til og med uken lagt til, og de begrensende delene (FR-33) er delene uten underdeler som mangler for N + 1. Beregningen kan bo i den samme motoren som MRP-beregningen og testes alene (NFR-1).
+- **Produksjonskapasitet (FR-31–FR-33):** For hver uke t og hver av de to radene kan kapasiteten finnes ved å prøve et antall ferdigprodukter N: kjør nettingen per del (som `mrp_del` i `lag_testdata.py`) med et behov på N i uke t, ledig beholdning som lager, SS 0 og uten fremskynding. Behovet kan ikke dekkes hvis en del uten underdeler trenger et planlagt ordremottak, eller hvis en frigivelse blir forfalt. Svaret er monotont i N, så dobling og deretter binærsøk virker. Fordi behovet for en felles del summeres før den ledige beholdningen trekkes fra (FR-28), blir lageret ikke telt to ganger. De begrensende delene (FR-33) er delene som feiler for N + 1, med årsak. Det blir 2 × H søk med mange nettinger hver, så ytelsen bør måles sammen med NFR-5 når begge beregningene er valgt. `lag_testdata.py` har ingen referanseberegning for kapasiteten ennå.
 - **Slutten av horisonten:** Behov etter uke H er ikke med i beregningen. Deler med lang ledetid fra ferdigproduktet kan derfor se ut til ikke å trenge bestilling, og det rammer delene nederst i stykklisten først. FR-9 dekker tilfellet der ledetiden fra ferdigproduktet er ≥ H, men ikke en del med kortere ledetid fra ferdigproduktet som har behov rett etter H. Av samme grunn kan FR-29 foreslå å kansellere et mottak som trengs rett etter horisonten.
 
 ### Excel inn og ut
@@ -50,7 +50,7 @@ Bakgrunn, begrunnelser og tekniske innspill fra PRD-arbeidet som ikke hører hje
 - **Forklaringspanel og tabell (FR-18, NFR-8):** Forklaringen åpnes ved klikk og vises i et panel ved siden av tabellen. Den må virke med tastatur og berøring. Kolonnene med varenummer, beskrivelse og radnavn står fast ved sidescroll.
 - **Slutten av horisonten (FR-9, FR-29):** Vurder å skrive i meldingene for FR-9 og FR-29 og i forklaringen at de bare gjelder innenfor horisonten (se «Beregningsmotoren»).
 - **Brukertest (SM-3, §8.1):** Introduksjonen og oppgavene lages i UX-steget og skal være like for alle testpersonene. Hvor resultatet dokumenteres, er ikke bestemt (PRD §9 nr. 4).
-- **Kapasitetspanelet (FR-34, etter v1):** Panelet trenger egen overskrift og et tydelig skille fra bestillingsplanen, så kapasitet ikke forveksles med planlagt produksjon. Iduns utkast hadde også en graf over prognostiserte behov per uke i bestillingsplanen. Den er ikke tatt inn, fordi bare F3 ble besluttet.
+- **Kapasitetspanelet (FR-34):** Panelet trenger egen overskrift og et tydelig skille fra bestillingsplanen, så kapasitet ikke forveksles med planlagt produksjon. Iduns utkast hadde også en graf over prognostiserte behov per uke i bestillingsplanen. Den er ikke tatt inn, fordi bare F3 ble besluttet. Ingen brukerreise dekker kapasiteten ennå. Vurder å ta den inn i UJ-2 i UX-steget.
 - **Ordlyden i meldingene (FR-13):** Ordlyden er ikke et krav, bare opplysningene i meldingen. Tekstene i fasitene kan derfor forbedres i UX-steget.
 
 ## Innspill til epics: faseplan
@@ -65,8 +65,8 @@ Faseplanen i briefens addendum (`briefs/brief-COSI - MRP-2026-09-13/addendum.md`
 | 4 Eksepsjoner | Fem typer (briefen hadde fire; Kanseller mottak kom til 2026-11-02) | FR-9–FR-13, FR-29 |
 | 5 Brukergrensesnitt | Resultattabell, fremheving, forklaringer, brukertest | FR-14–FR-16, FR-18, FR-27, SM-3 |
 | 6 Realistisk scenario | Endring midtveis, før/etter-sammenligning, eksport | FR-19–FR-23, SM-5 |
+| – (ny 2026-11-09) | Produksjonskapasitet fra lager, med ledetid (trinn 4 i PRD §7.1) | FR-30–FR-34, SM-7 |
 | 7 Fast partistørrelse | Planlagt utvidelse | FR-24–FR-26 |
-| – (ny 2026-11-09) | Produksjonskapasitet fra lager, utvidelse etter v1 | FR-30–FR-34 |
 
 Prinsippet fra briefen gjelder fortsatt: hver fase leverer kode, testdata og dokumentert testresultat (samsvar eller avvik), så fremgangen kan vises til emneansvarlig underveis.
 
@@ -79,7 +79,7 @@ Prinsippet fra briefen gjelder fortsatt: hver fase leverer kode, testdata og dok
 - **Flernivå BOM i v1 (2026-10-26):** Briefen flyttet 2026-10-22 flernivå BOM inn i v1. Malen har tre nivåer (0, .1, ..2), slik testeksempelet i briefen krever. Ferdigproduktet beregnes med full MRP, slik at lager, sikkerhetslager og ledetid på nivå 0 får betydning. Med 0 i alle tre blir resultatet det samme som når prognostiserte behov ganges rett inn i nivå .1.
 - **Typer:** Ferdigvare, Komponent (Kjøpes inn) og Komponent (Produseres selv). Delmontering og råvaretypene ble fjernet 2026-10-26, fordi de ikke endrer beregningen og gjorde listen lengre enn nødvendig.
 - **Ingen innliming (FR-3):** Malen ber brukeren om ikke å lime inn i celler med nedtrekksliste (Nivå og Type i Stykkliste, og Varenummer i Planlagte mottak). Excel kan ikke hindre det uten makroer, og malen skal være en vanlig `.xlsx`. Innliming fjerner både listen og valideringen i cellen, og brukeren kan også ha brukt et annet regnearkprogram som ikke håndhever valideringen. Derfor står regelen i arket Veiledning, Kontroll-kolonnen fanger ugyldige nivåer og typer, og appen validerer alt på nytt.
-- **Produksjonskapasitet fra lager (2026-11-09):** Ideen kommer fra Iduns PRD-utkast (04.11, F3). Gruppen besluttet å vente med den i v1, men å ta F3 inn i PRD-en. Den står derfor som utvidelse etter v1 (PRD §4.9, §7.2), og når den bygges, er åpent (PRD §9 nr. 12). Ordene er byttet etter ordbanken: «materiale» er «del», «fysisk beholdning» er «lagerbeholdning» og «åpne bestillinger» er «planlagte mottak». Idun brukte «disponibel beholdning» om lager minus sikkerhetslager, men det begrepet er allerede definert i FR-6, så her heter det «ledig beholdning». Regelen for flernivå stykkliste (FR-31) er skrevet slik at felles deler og lager av deler som produseres selv, gir riktig svar. Iduns enkle regel (den knappeste delen bestemmer) er beholdt som testbar konsekvens for stykklister uten slikt lager.
+- **Produksjonskapasitet fra lager (2026-11-09):** Ideen kommer fra Iduns PRD-utkast (04.11, F3). Gruppen besluttet å ta F3 inn i v1. Først ble det formidlet at den skulle vente, men Sebastian rettet det samme dag. Den bygges som trinn 4 i PRD §7.1, etter lagring, sammenligning og eksport og før fast partistørrelse. Ordene er byttet etter ordbanken: «materiale» er «del», «fysisk beholdning» er «lagerbeholdning» og «åpne bestillinger» er «planlagte mottak». Idun brukte «disponibel beholdning» om lager minus sikkerhetslager, men det begrepet er allerede definert i FR-6, så her heter det «ledig beholdning». Regelen for flernivå stykkliste (FR-31) er skrevet slik at felles deler og lager av deler som produseres selv, gir riktig svar. Iduns enkle regel (den knappeste delen bestemmer) er beholdt som testbar konsekvens for stykklister uten slikt lager. Sebastian valgte at ledetiden skal være med, slik at kapasiteten viser når produktene kan være ferdige, og at ledig beholdning av ferdigproduktet telles med. Iduns utkast hadde ingen av delene.
 - **NFR-er fra Carmens utkast (2026-11-09):** Gruppen tok inn fire NFR-er fra `prd-carmen-utkast.md` (27.10). Numrene er nye i denne PRD-en:
 
   | Carmen | Her | Merknad |
@@ -114,7 +114,7 @@ Reglene i FR-6–FR-13, FR-28 og FR-29 er sjekket mot ASCM Supply Chain Dictiona
 - **2026-10-26:** Flernivå BOM med i v1, slik briefen sier fra 2026-10-22. Excel-malen bygd om: arkene Produkt og Komponenter er erstattet av Stykkliste, arket med prognostiserte behov heter MPS, og «innkjøpstid» heter nå «ledetid». Ny FR-28 (felles deler).
 - **2026-11-02:** Reglene avstemt mot research (FR-6–FR-13, FR-28). Ny FR-29 (Kanseller mottak).
 - **2026-11-05:** Alle åpne spørsmål og antagelser besluttet (`beslutninger-2026-11-05.md`). «Del» er samlebegrepet, og «komponent» brukes bare i typenavnene. «Prognostiserte behov» erstatter «MPS» i teksten, men arket heter fortsatt MPS. «Eksepsjon» brukes overalt. Brukerreisene gjennomgått med Sebastian og nummerert om (UJ-1, der Kari tar i bruk COSI - MRP første gang, er ny). Lagring per ferdigprodukt, byggerekkefølge og begrensningen for deler som brukes i flere ferdigprodukter, lagt inn. Gjennomgått mot kildene og kvalitetssjekklisten, og strammet inn. Gruppen går gjennom PRD-en før den settes til `final`.
-- **2026-11-09:** Beslutningene fra gruppemøtet ført inn (`beslutninger-2026-11-09.md`). Nye NFR-9–NFR-11 og utvidede NFR-1 og NFR-2 fra Carmens utkast. Ny §4.9 med FR-30–FR-34 (produksjonskapasitet fra lager, fra Iduns utkast) som utvidelse etter v1, med antagelser i §10 og nytt åpent spørsmål §9 nr. 12. Ny §8.1 om brukertesten, SM-3 endret til alle testpersonene, og §9 nr. 4 snevret inn. Byggerekkefølgen bekreftet. Nye begreper i §3: produksjonskapasitet, ledig beholdning og begrensende del.
+- **2026-11-09:** Beslutningene fra gruppemøtet ført inn (`beslutninger-2026-11-09.md`). Nye NFR-9–NFR-11 og utvidede NFR-1 og NFR-2 fra Carmens utkast. Ny §4.9 med FR-30–FR-34 (produksjonskapasitet fra lager, fra Iduns utkast), først som utvidelse etter v1. Samme dag rettet til v1 (trinn 4 i §7.1), med ledetid og ferdigproduktets lager, ny SM-7, og antagelsene besluttet. PRD-en satt til `final`. Ny §8.1 om brukertesten, SM-3 endret til alle testpersonene, og §9 nr. 4 snevret inn. Byggerekkefølgen bekreftet. Nye begreper i §3: produksjonskapasitet, ledig beholdning og begrensende del.
 
 ## Lukkede spørsmål (fra PRD §9)
 
@@ -130,10 +130,11 @@ Numrene er de samme som i PRD §9.
 - **9.** Fasit for 300-005 Gassfjær etter FR-6/FR-12. **Løst 2026-11-02:** `beregn()` og fasiten er oppdatert.
 - **10.** Oppdatere briefen med de nye eksepsjonsreglene. **Løst 2026-11-05:** briefen er frosset, og en merknad øverst sier at PRD-en gjelder ved avvik.
 - **11.** Testtilfeller for FR-9 (ledetid fra ferdigproduktet) og FR-29. **Løst 2026-11-05:** testeksempel 02 har et mottak som ikke trengs (300-005 i uke 5), og testeksempel 04 har tilfellet for FR-9 (300-022, 1 + 4 + 7 = 12 = H).
+- **12.** Når bygges produksjonskapasitet fra lager? **Løst 2026-11-09:** i v1, som trinn 4 i PRD §7.1.
 
 ## Antagelser som ble besluttet (fra PRD §10)
 
-| Krav | Beslutning 2026-11-05 |
+| Krav | Beslutning |
 |---|---|
 | FR-6 Fremskynding fra hvilken som helst senere uke | Bekreftet. Omplanleggingshorisont er en mulig utvidelse (PRD §7.2). |
 | FR-16 Kritiske deler øverst | Endret. Tabellen følger stykklisten, og sammendraget leder til de kritiske delene. |
@@ -145,3 +146,8 @@ Numrene er de samme som i PRD §9.
 | NFR-4 Data sendes ikke ut | Endret. Appen publiseres på Vercel, og alt skjer i nettleseren. |
 | NFR-5 Under 3 sekunder | Bekreftet som mål, måles tidlig. |
 | NFR-8 Ingen sidescroll på 1366 px | Første ledd bekreftet. Andre ledd endret til faste kolonner ved sidescroll. |
+| FR-30 MPS må fylles ut også når bare kapasiteten vises | Bekreftet 2026-11-09. |
+| FR-30 Kapasiteten lagres og eksporteres ikke | Bekreftet 2026-11-09. |
+| FR-31 Ferdigproduktets lager telles ikke med | Endret 2026-11-09: ledig beholdning av ferdigproduktet telles med. |
+| FR-31 Lager av deler som produseres selv brukes først | Bekreftet 2026-11-09. |
+| FR-31, FR-32 Ledetid er ikke med | Endret 2026-11-09: ledetiden er med, og kapasiteten i en uke er det som kan være ferdig innen uken. |

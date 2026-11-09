@@ -103,13 +103,13 @@ Forslaget bygger på Excel-malen for flernivå stykkliste (Sebastian, 2026-10-23
 | Avvik | At planen ikke går opp for en del, f.eks. at lageret går under sikkerhetslager eller at en bestilling kommer for sent. Avvik gir eksepsjoner. | – |
 | Falsk positiv / falsk negativ | Feil i eksepsjonene: en eksepsjon uten avvik (falsk positiv), eller et avvik uten eksepsjon (falsk negativ). | – |
 
-## Produksjonskapasitet (utvidelse etter v1)
+## Produksjonskapasitet
 
 | Begrep | Definisjon | Ikke bruk |
 |---|---|---|
-| Produksjonskapasitet | Hvor mange hele ferdigprodukter delene på lager kan dekke, uavhengig av prognostiserte behov. Vises nå og per uke med planlagte mottak (PRD §4.9, FR-31–FR-32, tatt inn fra Iduns utkast 2026-11-09). | lagerkapasitet, lagerbasert produksjonskapasitet |
+| Produksjonskapasitet | Hvor mange hele ferdigprodukter som kan være ferdige innen en uke, ut fra ledig beholdning, planlagte mottak og ledetid, uavhengig av prognostiserte behov. Vises per uke fra lager og med planlagte mottak (PRD §4.9, FR-31–FR-32, fra Iduns utkast, med i v1 fra 2026-11-09). | lagerkapasitet, lagerbasert produksjonskapasitet |
 | Ledig beholdning | Lagerbeholdning minus sikkerhetslager, men aldri under 0. Brukes bare i produksjonskapasiteten (PRD FR-31). | disponibel beholdning (om lager minus SS), tilgjengelig beholdning |
-| Begrensende del | En del uten underdeler som ikke har nok ledig beholdning til ett ferdigprodukt mer enn produksjonskapasiteten (PRD FR-33). | begrensende materiale, knappeste materiale, flaskehals |
+| Begrensende del | En del som ikke kan dekkes når behovet er ett ferdigprodukt mer enn produksjonskapasiteten i en uke, fordi lageret ikke strekker til eller på grunn av ledetiden (PRD FR-33). | begrensende materiale, knappeste materiale, flaskehals |
 
 ## App og test
 
