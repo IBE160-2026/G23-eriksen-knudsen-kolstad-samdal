@@ -50,5 +50,6 @@
 - [ ] 2026-11-09 [gruppemote-beslutninger-prd](986-2026-11-09-08-37-42-gruppemote-beslutninger-prd.md) — finn noen med Mac og Excel til testen av NFR-11
 - [x] 2026-11-09 [gruppemote-beslutninger-prd](986-2026-11-09-08-37-42-gruppemote-beslutninger-prd.md) — gruppa avgjør når produksjonskapasitet fra lager bygges (PRD §9 nr. 12, etter 15.12) (løst 2026-11-09: i v1, trinn 4)
 - [ ] 2026-11-09 [gruppemote-beslutninger-prd](986-2026-11-09-08-37-42-gruppemote-beslutninger-prd.md) — merge PR #3 (PRD final) til `main` når gruppa har sett på den
-- [ ] 2026-11-09 [gruppemote-beslutninger-prd](986-2026-11-09-08-37-42-gruppemote-beslutninger-prd.md) — lag referanseberegning for produksjonskapasiteten i `lag_testdata.py` og et testeksempel med fasit kontrollert for hånd (PRD SM-7, FR-31–FR-33)
+- [x] 2026-11-09 [gruppemote-beslutninger-prd](986-2026-11-09-08-37-42-gruppemote-beslutninger-prd.md) — lag referanseberegning for produksjonskapasiteten i `lag_testdata.py` og et testeksempel med fasit kontrollert for hånd (PRD SM-7, FR-31–FR-33) (løst 2026-11-09: kapasitet() og testeksempel 05, 66e34e5; håndkontroll av gruppa videreført)
 - [ ] 2026-11-09 [gruppemote-beslutninger-prd](986-2026-11-09-08-37-42-gruppemote-beslutninger-prd.md) — vurder å ta produksjonskapasiteten inn i en brukerreise (UJ-2) i UX-steget
+- [ ] 2026-11-09 [testeksempel-05-kapasitet](985-2026-11-09-09-02-18-testeksempel-05-kapasitet.md) — gruppa kontrollerer fasit 05 for hånd (MRP-tabellene, eksepsjonen for 300-033 og arket Kapasitet)
