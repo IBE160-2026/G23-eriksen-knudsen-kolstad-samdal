@@ -55,3 +55,4 @@
 - [ ] 2026-11-09 [testeksempel-05-kapasitet](985-2026-11-09-09-02-18-testeksempel-05-kapasitet.md) — gruppa kontrollerer fasit 05 for hånd (MRP-tabellene, eksepsjonen for 300-033 og arket Kapasitet)
 - [ ] 2026-11-09 [rydding-og-readme](982-2026-11-09-09-48-14-rydding-og-readme.md) — fyll ut «Kom i gang» i README (forutsetninger, installasjon, kjøring, Vercel-lenke, testkommando) og mappene for koden når appen og arkitekturen finnes
 - [x] 2026-11-09 [rydding-og-readme](982-2026-11-09-09-48-14-rydding-og-readme.md) — lag PR til `main` med README-utkastet og flyttingen av avstemmingsrapportene (løst 2026-11-09: PR #8 merget, 009974a)
+- [ ] 2026-11-09 [slette-grener-for-levering](981-2026-11-09-09-55-06-slette-grener-for-levering.md) — slett grenene `Oda/ordbank` og `Carmen/product-brief-forbedringer` (på `origin` og lokalt) før oppgaven leveres
