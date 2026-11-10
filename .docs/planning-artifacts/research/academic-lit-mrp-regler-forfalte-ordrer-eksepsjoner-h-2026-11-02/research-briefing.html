@@ -1,0 +1,377 @@
+<!doctype html>
+<html lang="nb"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MRP-regler research</title>
+<style>
+:root{--bg:#fbfaf8;--fg:#1f2328;--muted:#5d6670;--card:#fff;--line:#e3e0da;--accent:#2f5d8a;
+--high:#1f6f43;--high-bg:#e3f3e9;--mh:#3d6b1f;--mh-bg:#eaf3dc;--med:#7a5a00;--med-bg:#fbf1d3;--low:#9b2c1f;--low-bg:#fbe3df;
+--unv:#8a1c4a;--unv-bg:#fde6f0;--inf:#4b3a8a;--inf-bg:#ebe7fa}
+@media (prefers-color-scheme:dark){:root{--bg:#16181b;--fg:#e6e6e3;--muted:#a0a6ad;--card:#1e2125;--line:#33373c;--accent:#8db7e0;
+--high:#8fd9ae;--high-bg:#183626;--mh:#b8dc8a;--mh-bg:#26331a;--med:#f0cf6b;--med-bg:#3a3014;--low:#f3a094;--low-bg:#3e1d18;
+--unv:#f5a3c7;--unv-bg:#401a2b;--inf:#c3b6f5;--inf-bg:#2a2445}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header{padding:32px 16px 20px;max-width:1080px;margin:0 auto}
+header h1{font-size:1.7rem;line-height:1.25;margin:0 0 8px}
+.meta{color:var(--muted);font-size:.9rem;display:flex;flex-wrap:wrap;gap:6px 18px}
+.layout{max-width:1080px;margin:0 auto;padding:0 16px 64px;display:grid;grid-template-columns:220px 1fr;gap:32px}
+nav{position:sticky;top:16px;align-self:start;font-size:.88rem;display:flex;flex-direction:column;gap:6px;border-left:2px solid var(--line);padding-left:12px}
+nav a{color:var(--muted);text-decoration:none} nav a:hover{color:var(--accent)}
+main{min-width:0}
+main h2{margin:40px 0 12px;padding-top:8px;border-top:1px solid var(--line);font-size:1.3rem}
+main h2:first-of-type{margin-top:0;border:0;background:var(--card);padding:16px 18px 0;border-radius:10px 10px 0 0}
+.summary{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:0 18px 12px;margin-bottom:8px}
+.summary h2{border:0 !important;padding:16px 0 0 !important;background:none !important}
+table{border-collapse:collapse;width:100%;font-size:.9rem;margin:12px 0;display:block;overflow-x:auto}
+th,td{border:1px solid var(--line);padding:6px 8px;vertical-align:top;text-align:left}
+th{background:var(--card)}
+a{color:var(--accent)} a.cite{text-decoration:none;font-size:.85em;white-space:nowrap}
+code{background:var(--card);border:1px solid var(--line);border-radius:4px;padding:0 4px;font-size:.88em}
+.badge{display:inline-block;font-size:.78rem;font-weight:600;padding:1px 8px;border-radius:999px;border:1px solid currentColor;white-space:nowrap}
+.b-high{color:var(--high);background:var(--high-bg)} .b-medhigh{color:var(--mh);background:var(--mh-bg)}
+.b-med{color:var(--med);background:var(--med-bg)} .b-low{color:var(--low);background:var(--low-bg)}
+.b-unv{color:var(--unv);background:var(--unv-bg);border-width:2px} .b-inf{color:var(--inf);background:var(--inf-bg);border-style:dashed}
+.verdict{font-weight:700} .v-change{color:var(--low)} .v-new{color:var(--inf)} .v-ok2{color:var(--med)} .v-ok{color:var(--high)}
+details{margin-top:8px} summary{cursor:pointer;font-weight:600}
+.legend{font-size:.85rem;color:var(--muted);margin:12px 0 0;display:flex;flex-wrap:wrap;gap:6px}
+@media (max-width:760px){.layout{grid-template-columns:1fr} nav{position:static;border:0;padding:0;flex-direction:row;flex-wrap:wrap;gap:4px 12px}}
+</style></head><body>
+<header>
+<h1>MRP-regler: forfalte ordrer, eksepsjoner og horisont</h1>
+<div class="meta"><span>Type: academic-lit</span><span>Dato: 2026-11-02</span><span>Dybde: deep, 3 runder</span><span>Verifisering: normal + brukerkrav: to uavhengige kilder per regel en anbefaling bygger på</span><span>Påstander: 9 verifisert, 5 ikke verifisert</span></div>
+<p><strong>Beslutning:</strong> Stemmer reglene i FR-5, FR-7 til FR-13 og FR-28 med praksis i lærebøker og ERP-systemer, eller må PRD, testdata/ og beregn() endres før arkitekturen lages?</p>
+<div class="legend"><span class="badge b-high">høy</span><span class="badge b-medhigh">middels–høy</span><span class="badge b-med">middels</span><span class="badge b-low">lav</span><span class="badge b-unv">ikke verifisert: søkeutdrag</span><span class="badge b-inf">Vår slutning, ikke fra kilde</span></div>
+</header>
+<div class="layout"><nav aria-label="Innhold"><a href="#sammendrag">Sammendrag</a><a href="#a-forfalte-ordrer-og-forventet-lagerbeholdning">A. Forfalte ordrer og forventet lagerbeholdning</a><a href="#b-eksepsjonstyper">B. Eksepsjonstyper</a><a href="#c-horisont-og-kumulativ-ledetid-gjennom-flere-nivåer">C. Horisont og kumulativ ledetid gjennom flere nivåer</a><a href="#funn-på-tvers-av-dimensjonene">Funn på tvers av dimensjonene</a><a href="#motstridende-evidens">Motstridende evidens</a><a href="#anbefalinger">Anbefalinger</a><a href="#åpne-spørsmål">Åpne spørsmål</a><a href="#kildevedlegg">Kildevedlegg</a><a href="#staleness">Når funnene bør sjekkes på nytt</a></nav>
+<main>
+<p><strong>Beslutningen researchen skal støtte:</strong> Stemmer reglene i PRD-utkastet med vanlig MRP-praksis, eller må PRD-en, fasitene i <code>testdata/</code> og <code>beregn()</code> endres før arkitekturen lages? Resultatet skal stå som begrunnelse i PRD-ens <code>addendum.md</code>.</p>
+<h2 id="sammendrag">Sammendrag</h2>
+<p><strong>Svaret:</strong> De fleste reglene kan stå. <strong>Tre regler bør endres før arkitekturen lages</strong> (FR-12, FR-9/FR-28 og FR-10/FR-11). <strong>To eksepsjonstyper mangler</strong> (utsett og kanseller), og vi anbefaler <strong>én ny regel</strong> mot for mange eksepsjoner.</p>
+<p><strong>Bør endres:</strong></p>
+<ol>
+<li><strong>«Mottak forsinket» (FR-12) gjør at samme behov dekkes to ganger.</strong> Et planlagt mottak som kommer for sent, gir i dag både et nettobehov (en ny planlagt ordre) og et forslag om å fremskynde mottaket. Standardlogikken er en annen: MRP antar at et planlagt mottak kan fremskyndes, og lager planlagt ordremottak først når alle planlagte mottak er brukt (ASCM: <em>rescheduling assumption</em>) <a class="cite" href="#src-1">[1]</a>. SAP lager nytt bestillingsforslag bare hvis mengden i det planlagte mottaket ikke strekker til <a class="cite" href="#src-14">[14]</a>, og Hopp &amp; Spearmans eksempel viser det samme <a class="cite" href="#src-4">[4]</a>. <strong>Endring:</strong> regn et senere planlagt mottak som om det fremskyndes, og lag planlagt ordre bare for et eventuelt restbehov. <span class="badge b-high">Sikkerhet: høy</span>, to uavhengige primærkilder.</li>
+<li><strong>«Ledetid overskrider horisont» (FR-9/FR-28) tester feil størrelse.</strong> ASCM sier at horisonten minst skal dekke <em>kumulativ ledetid</em>, altså den lengste summen av ledetider langs en sti i stykklisten <a class="cite" href="#src-1">[1]</a>. Dynamics 365 krever en horisont som er lengre enn «total lead time» <a class="cite" href="#src-20">[20]</a>, og JD Edwards definerer kumulativ ledetid som ASCM <a class="cite" href="#src-26">[26]</a>. En kjede på tre nivåer kan bryte regelen uten at noen enkeltdel har L ≥ H. <strong>Endring:</strong> kontroller H mot kumulativ ledetid per del. <span class="badge b-medhigh">Sikkerhet: middels–høy</span>. Regelen står eksplisitt bare hos ASCM, og Dynamics 365 støtter den hvis «total lead time» betyr ledetiden gjennom hele stykklisten.</li>
+<li><strong>Eksepsjonen for brudd på sikkerhetslager er bundet til forfalt frigivelse (FR-10/FR-11).</strong> I ERP-systemene og i Gardners undervisningsmodell er den en egen eksepsjon: SAP 096 <a class="cite" href="#src-16">[16]</a>, Oracle «Items below safety stock» <a class="cite" href="#src-9">[9]</a><a class="cite" href="#src-11">[11]</a> og en egen rad for sikkerhetslagermeldinger hos Gardner <a class="cite" href="#src-5">[5]</a>. Ingen av kildene knytter den til forfalte frigivelser. <strong>Endring:</strong> utløs eksepsjonen når disponibel beholdning går under 0 eller under SS, uansett årsak. <span class="badge b-med">Sikkerhet: middels</span>.<blockquote>
+<p><strong>Rettelse 2026-11-02 (PRD-oppdatering):</strong> Anbefalingen holder ikke mot PRD-ens definisjoner. Nettobehov = maks(0, SS − disponibel), så disponibel &lt; SS gjelder <em>hver</em> uke med nettobehov, og regelen ville slått til for hver vanlig ordre. Kildene <a class="cite" href="#src-9">[9]</a><a class="cite" href="#src-11">[11]</a><a class="cite" href="#src-16">[16]</a> gjelder forventet beholdning <em>etter</em> planlagte ordremottak. Når mottak antas i tide (FR-7), oppstår et reelt brudd der bare ved forfalt frigivelse (FR-10/FR-11) eller forsinket mottak (FR-12). FR-10/FR-11 er derfor beholdt uendret.</p>
+</blockquote>
+</li>
+</ol>
+<p><strong>Mangler:</strong></p>
+<ol>
+<li><strong>Utsett og kanseller planlagt mottak.</strong> ASCM nevner frigi ordre, fremskynd, utsett og kanseller som eksempler på <em>action messages</em> <a class="cite" href="#src-1">[1]</a>. SAP har fremskynd, utsett og kanseller <a class="cite" href="#src-14">[14]</a><a class="cite" href="#src-16">[16]</a>, og Oracle har alle fire <a class="cite" href="#src-9">[9]</a>. Dynamics 365 har fremskynd og utsett, men ikke kanseller <a class="cite" href="#src-19">[19]</a>. <strong>Endring:</strong> legg til «Utsett mottak» og «Kanseller mottak», eller begrunn i addendumet hvorfor de er utelatt. <span class="badge b-high">Sikkerhet: høy</span>.</li>
+</ol>
+<p><strong>Ny regel:</strong></p>
+<ol>
+<li><strong>Én eksepsjon per del og uke</strong> (den alvorligste), mot for mange eksepsjoner (støy). Regelen er tilpasset fra SAP, som bare lagrer den viktigste meldingen per MRP-element <a class="cite" href="#src-15">[15]</a>. Dempingsterskler trengs ikke i en enkeltkjøring. <span class="badge b-med">Sikkerhet: middels</span>.</li>
+</ol>
+<p><strong>Kan stå:</strong></p>
+<ul>
+<li><strong>FR-8 (uke 1):</strong> at en forfalt frigivelse legges i uke 1, er forsvarbart. Oracle viser forfalt forsyning og behov i første periode (<em>bucket</em>) <a class="cite" href="#src-8">[8]</a>, og alle kildene flagger forfalte frigivelser <a class="cite" href="#src-5">[5]</a><a class="cite" href="#src-9">[9]</a><a class="cite" href="#src-16">[16]</a>.</li>
+<li><strong>FR-7:</strong> at planlagt ordremottak vises i behovsuken, avviker fra de fleste moderne ERP-systemene. De legger planlagt ordremottak i <em>i dag + L</em> <a class="cite" href="#src-12">[12]</a><a class="cite" href="#src-18">[18]</a><a class="cite" href="#src-23">[23]</a><a class="cite" href="#src-24">[24]</a><a class="cite" href="#src-25">[25]</a>. FR-7 kan forsvares som en forenkling hvis addendumet kaller forventet lagerbeholdning en <em>målplan som krever fremskynding</em>, og eksepsjonen viser hvor mange uker planlagt ordremottak blir forsinket (se A2).</li>
+<li><strong>FR-8 (horisont):</strong> at frigivelser for behov etter horisonten ikke tas med, tilsvarer standardoppførselen i Dynamics 365 <a class="cite" href="#src-20">[20]</a>.</li>
+<li><strong>Felles deler på lavnivåkode</strong> stemmer (se C9).</li>
+</ul>
+<p><strong>Største forbehold:</strong> Vi fikk ikke lest de to hovedlærebøkene (Jacobs m.fl., <em>MPC</em>, og Ptak &amp; Smith, <em>Orlicky's MRP</em>). Lærebokstandpunktene bygger derfor på ASCM-ordboken (18. utg., primærkilde) <a class="cite" href="#src-1">[1]</a>, Krajewski m.fl. <a class="cite" href="#src-2">[2]</a>, Nahmias <a class="cite" href="#src-3">[3]</a> og kursmateriale. Hvordan selve lærebøkene behandler forfalte frigivelser, er ikke verifisert (se Åpne spørsmål 1).</p>
+<h2 id="a-forfalte-ordrer-og-forventet-lagerbeholdning">A. Forfalte ordrer og forventet lagerbeholdning</h2>
+<p><strong>A1: Hvor legges en forfalt frigivelse?</strong> Kildene er enige om at en forfalt frigivelse <strong>alltid skal vises som avvik</strong> <a class="cite" href="#src-5">[5]</a><a class="cite" href="#src-9">[9]</a><a class="cite" href="#src-16">[16]</a>. De er bare uenige om hvor tallet skal stå. Ingen lærebok vi fikk lest, behandler tilfellet eksplisitt. Nahmias bygger eksemplene sine slik at alle frigivelser havner innenfor tabellen <a class="cite" href="#src-3">[3]</a>, og Krajewski omtaler ikke tilfellet i MRP-kapitlet <a class="cite" href="#src-2">[2]</a>. Kildene peker i tre retninger:</p>
+<ul>
+<li><strong>Legges i første periode:</strong> Oracle sier at planleggingen «considers past due supply and demand as if it were due today», og at rapporter i ukebøtter «show past due demand in the first bucket» <a class="cite" href="#src-8">[8]</a>. Oracle ASCP setter avhengig behov til første dag i horisonten i planer uten kapasitetsbegrensning <span class="badge b-unv">ikke verifisert: søkeutdrag</span> <a class="cite" href="#src-11">[11]</a>. Begge kildene er fra samme leverandør (Oracle).</li>
+<li><strong>Egen PD-kolonne</strong> (PD = <em>past due</em>, forfalt)<strong>:</strong> UNCW-kursmaterialet har en PD-kolonne i MRP-tabellen, men i eksemplet står lagerbeholdningen før uke 1 der, ikke frigivelser <a class="cite" href="#src-6">[6]</a>. En PD-bøtte i programvare har vi ellers bare sett i søkeutdrag (lav sikkerhet).</li>
+<li><strong>Feilmelding:</strong> Gardners undervisningsmodell lar frigivelsen falle ut av tabellen og skriver «Not enough leadtime to meet net rq. in week N». Løsningen er å endre hovedplanen «or find some other way to avoid the leadtime problem» <a class="cite" href="#src-5">[5]</a>. SAP lager den planlagte ordren og flagger den med 003 «New, and the start date is in the past» eller 006 «The start date is in the past» <a class="cite" href="#src-16">[16]</a>.</li>
+</ul>
+<p>ASCM definerer «past-due order» bare for kundeordrer <a class="cite" href="#src-1">[1]</a>. Når vi bruker «forfalt frigivelse» om forsyning, er det vår egen utvidelse av begrepet.</p>
+<p><strong>A2: I hvilken uke vises planlagt ordremottak?</strong> Systemene deler seg i to leirer:</p>
+<table>
+<thead>
+<tr>
+<th>Prinsipp</th>
+<th>Systemer</th>
+<th>Forventet lagerbeholdning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Behold forfallsdato, komprimer ledetiden, flagg</strong> (= FR-7)</td>
+<td>Oracle ASCP: eksepsjonen «Orders with compression days» <a class="cite" href="#src-9">[9]</a>. At forfallsdatoen beholdes i planer uten kapasitetsbegrensning, vet vi bare fra søkeutdrag <a class="cite" href="#src-11">[11]</a>. SAP <em>innenfor</em> tillatte dager i fortiden: startdatoen blir liggende i fortiden og flagges <span class="badge b-unv">ikke verifisert: søkeutdrag</span> <a class="cite" href="#src-13">[13]</a><a class="cite" href="#src-16">[16]</a>. Gardner, underforstått <a class="cite" href="#src-5">[5]</a></td>
+<td>Viser behovet som dekket i tide. Avviket står bare i eksepsjonen</td>
+</tr>
+<tr>
+<td><strong>Planlegg fremover fra i dag: planlagt ordremottak = i dag + L</strong></td>
+<td>SAP S/4HANA: «automatically switches to forward scheduling, using the current date as the order start date» <a class="cite" href="#src-12">[12]</a>, med melding 30 <a class="cite" href="#src-13">[13]</a>. Dynamics 365: «forward-plans the order from the current date», med «delayed date» og antall forsinkelsesdager. Ønsket dato beholdes ved siden av <a class="cite" href="#src-18">[18]</a>. Infor CSI foreslår aldri mottak tidligere enn i dag + L <a class="cite" href="#src-25">[25]</a>. Odoo <a class="cite" href="#src-23">[23]</a> og ERPNext <a class="cite" href="#src-24">[24]</a> daterer fremover fra i dag, men viser ikke forsinkelsen</td>
+<td>Viser den reelle mangelen i ukene før mottaket</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Vurdering:</strong> FR-7 tilsvarer Oracle-varianten og er en gyldig forenkling, men den gir en optimistisk forventet lagerbeholdning. <span class="badge b-med">Sikkerhet: middels</span>. To uavhengige leverandører bekrefter at begge prinsippene finnes.</p>
+<p>Ingen kilde kaller komprimering av ledetiden «læreboknormen». ASCM nevner «compressing lead time» som noe <em>planleggeren</em> gjør ved omplanlegging nedenfra og opp (<em>bottom-up replanning</em>), ikke systemet <a class="cite" href="#src-1">[1]</a>. McGraw-Hills lysbilder til Vollmann m.fl. sier at ledetider «must be compressed to meet the end-item schedule». Kopien vi fant er uautorisert og ikke verifisert, så vi regner den ikke som kilde.</p>
+<p><strong>A3: Hva ser planleggeren?</strong></p>
+<ul>
+<li><strong>SAP:</strong> et meldingsnummer per MRP-element. Bare den viktigste meldingen lagres per element <a class="cite" href="#src-15">[15]</a>.</li>
+<li><strong>Dynamics 365:</strong> forsinket dato og antall forsinkelsesdager ved siden av ønsket dato <a class="cite" href="#src-18">[18]</a>.</li>
+<li><strong>Oracle:</strong> en egen eksepsjonsliste med blant annet «Past due orders» og «Orders with compression days» <a class="cite" href="#src-9">[9]</a>.</li>
+<li><strong>Odoo:</strong> merker bare innkjøpsordren som «late» på dashbordet. Ingen eksepsjonskode <a class="cite" href="#src-23">[23]</a>.</li>
+<li><strong>ERPNext:</strong> ingen tidsfasing og ingen eksepsjoner <a class="cite" href="#src-24">[24]</a>, så det egner seg dårlig som referanse.</li>
+</ul>
+<h2 id="b-eksepsjonstyper">B. Eksepsjonstyper</h2>
+<p><strong>B4: Hvilke typer finnes, og hva er minimum?</strong> ASCM definerer <em>action message</em> (synonym <em>exception message</em>, i ordbanken «eksepsjon») som utdata som viser hva som må gjøres. Eksemplene er «release order, reschedule in, reschedule out, and cancel» <a class="cite" href="#src-1">[1]</a>. Kildene nedenfor har den samme kjernen, uavhengig av hverandre:</p>
+<ul>
+<li><strong>SAP:</strong> 010 fremskynd, 015 utsett, 002–007 datoer i fortiden og 096 under sikkerhetslager <a class="cite" href="#src-16">[16]</a>, i tillegg til «Cancel process» <a class="cite" href="#src-14">[14]</a>. Nummeret 020 for kansellering finnes bare i forumtråder.</li>
+<li><strong>Oracle:</strong> «Orders to be rescheduled in/out», «Orders to be cancelled», «Past due orders», «Items below safety stock», «Items with a shortage» og «Orders with compression days» <a class="cite" href="#src-9">[9]</a>.</li>
+<li><strong>Dynamics 365:</strong> Advance, Postpone, Increase, Decrease og Derived, men ikke kanseller <a class="cite" href="#src-19">[19]</a>.</li>
+<li><strong>Deltek:</strong> Planned Order, Reschedule, Decrease Quantity og Cancel <a class="cite" href="#src-36">[36]</a>.</li>
+<li><strong>Krajewski:</strong> frigi nye ordrer og juster forfallsdatoen på planlagte mottak, mens kansellering behandles som en egen transaksjon <a class="cite" href="#src-2">[2]</a>.</li>
+</ul>
+<p>Ingen kilde oppgir et formelt minimumssett. Frigi, fremskynd og utsett går igjen overalt, og kanseller finnes overalt unntatt i Dynamics 365. <strong>«Ledetid overskrider horisont» er ikke en standard eksepsjonstype</strong> i noen av kildene. Dynamics 365 gir bare et oppsettsråd: «you must ensure that the coverage time fence is longer than the total lead time» <a class="cite" href="#src-20">[20]</a>. Eksepsjonen kan likevel forsvares som en kontroll av grunnlagsdataene, men den bør bygge på kumulativ ledetid (se C7).</p>
+<p><strong>B4 (forts.): Når utløses eksepsjonen for sikkerhetslager?</strong> <strong>Vurdering:</strong> Appens skille mellom «Bestilling forsinket» (under 0) og «Bruk av sikkerhetslager» (under SS) er forsvarbart. Det som avviker, er at appen bare utløser eksepsjonen når frigivelsen er forfalt. Evidensen:</p>
+<ul>
+<li><strong>Oracle:</strong> «Items below safety stock» utløses når forventet lagerbeholdning per periode går under sikkerhetslageret <span class="badge b-unv">ikke verifisert: søkeutdrag</span> <a class="cite" href="#src-11">[11]</a>, eller «to a negative level or below safety stock» <a class="cite" href="#src-9">[9]</a>. Oracle har i tillegg en egen eksepsjon, «Items with a shortage» <a class="cite" href="#src-9">[9]</a>.</li>
+<li><strong>SAP:</strong> 096 «Stock is lower than the safety stock» <a class="cite" href="#src-16">[16]</a>. Vi fant ikke hva som utløser den.</li>
+<li><strong>Dynamics 365:</strong> sikkerhetslager er en grense for beholdningen til enhver tid, ikke et datert behov <a class="cite" href="#src-22">[22]</a>.</li>
+<li>Ingen av kildene knytter eksepsjonen til forfalte frigivelser. Grensene 0 og SS er appens egne.</li>
+</ul>
+<p><span class="badge b-inf">Vår slutning, ikke fra kilde</span> Med lot-for-lot og sikkerhetslager i nettoberegningen er forfalt frigivelse den vanligste årsaken til brudd. Brudd kan likevel oppstå på andre måter, for eksempel når et planlagt mottak er forsinket eller lagerbeholdningen før uke 1 er lavere enn sikkerhetslageret. <span class="badge b-med">Sikkerhet: middels</span>.</p>
+<p><strong>B5: Når et planlagt mottak er forsinket, lages det både ny ordre og eksepsjon om å fremskynde?</strong> Nei. Dette er det best dokumenterte funnet i researchen:</p>
+<ul>
+<li><strong>ASCM:</strong> «existing open orders can be rescheduled in nearer time periods far more easily than new orders can be released and received. As a result, planned order receipts are not created until all scheduled receipts have been applied to cover gross requirements.» <a class="cite" href="#src-1">[1, s. 164]</a></li>
+<li><strong>SAP:</strong> omplanleggingskontrollen «is used to change the dates of already existing firmed receipts», og systemet «will only create another procurement proposal if the receipt quantity is not sufficient» <a class="cite" href="#src-14">[14]</a>.</li>
+<li><strong>Oracle:</strong> «always generates a reschedule in message if an order is scheduled to arrive later than it is required» <a class="cite" href="#src-10">[10]</a>. Kilden sier ikke om Oracle i tillegg lager en ny ordre.</li>
+<li><strong>Hopp &amp; Spearman</strong>, gjengitt i MIT-forelesninger: planlagte mottak utsettes eller fremskyndes <em>før</em> nye ordrer planlegges <a class="cite" href="#src-4">[4]</a>. Det vises i et eksempel, ikke som en regel.</li>
+</ul>
+<p>Ifølge ordbanken inngår et planlagt mottak bare i disponibel beholdning for uken det står i. Da gir beregningen nettobehov i behovsuken, altså en ny planlagt ordre, <em>og</em> FR-12 gir en eksepsjon om å fremskynde det planlagte mottaket. Behovet dekkes to ganger. <strong>Vurdering:</strong> bør endres. <span class="badge b-high">Sikkerhet: høy</span>. ASCM og SAP er to uavhengige primærkilder, og Hopp &amp; Spearman (sekundært) støtter dem.</p>
+<p>Systemet kan ikke endre fastsatte planlagte ordrer (<em>firm planned orders</em>) automatisk. Det må planleggeren gjøre <a class="cite" href="#src-1">[1]</a>. Appen har ingen slike ordrer, så dette gjelder ikke nå.</p>
+<p><strong>B6: Hvordan unngår man for mange eksepsjoner (støy)?</strong> <strong>For appen:</strong> overfør SAP-regelen om bare den viktigste meldingen per MRP-element <a class="cite" href="#src-15">[15]</a> til <strong>én eksepsjon per del og uke</strong> (den alvorligste). Den overføringen er vår egen tilpasning. Dempingsterskler trengs ikke: nervøsitet oppstår ved gjentatte kjøringer med rullerende horisont <a class="cite" href="#src-27">[27]</a><a class="cite" href="#src-30">[30]</a>, og en enkeltkjøring i et studentprosjekt har lite av det. <span class="badge b-med">Sikkerhet: middels</span>.</p>
+<p>Systemene bruker fire mekanismer:</p>
+<ul>
+<li>toleranser der «no exception message is to be created» (SAP) <a class="cite" href="#src-14">[14]</a></li>
+<li>bare den viktigste meldingen per element (SAP) <a class="cite" href="#src-15">[15]</a></li>
+<li>Oracles «acceptable early days», som bare demper utsettelser, aldri fremskyndinger <a class="cite" href="#src-10">[10]</a></li>
+<li>marginer for fremskynding og utsettelse, pluss frosset periode (Dynamics 365) <a class="cite" href="#src-19">[19]</a></li>
+</ul>
+<p>Forskningen definerer nervøsitet som at små endringer høyt i stykklisten gir store endringer lenger ned <a class="cite" href="#src-1">[1]</a>. Blackburn m.fl. finner at det å fryse planen og legge inn en kostnad for endringer er «dominant» <a class="cite" href="#src-27">[27]</a>. Kadipasaoglu &amp; Sridharan finner at frysing virker best når den dekker kumulativ ledetid <a class="cite" href="#src-28">[28]</a>, og å fryse opptil 50 % av horisonten har bare marginal kostnadseffekt <a class="cite" href="#src-29">[29]</a>. Dempingsregler beskrives som filtre som «screen out excessive rescheduling messages» <a class="cite" href="#src-31">[31]</a>, og de er delt inn i typer <a class="cite" href="#src-32">[32]</a>. Nesten all evidensen om dempingsregler kommer fra én forsker (C.-J. Ho), så den bør leses som en sterk ledetråd. Ingen artikkel vi fant, måler antall eksepsjoner som arbeidsbelastning for planleggeren.</p>
+<h2 id="c-horisont-og-kumulativ-ledetid-gjennom-flere-nivåer">C. Horisont og kumulativ ledetid gjennom flere nivåer</h2>
+<p><strong>C7: Hvilken regel gjelder?</strong> <strong>Regel:</strong> med lot-for-lot blir regelen <strong>H ≥ kumulativ ledetid</strong>. Evidensen:</p>
+<ul>
+<li><strong>ASCM:</strong> horisonten for en hovedplan «is normally set to cover a minimum of cumulative lead time plus time for lot sizing low-level components and time for capacity changes» <a class="cite" href="#src-1">[1, s. 141]</a>. Kumulativ ledetid er «the longest planned length of time … found by reviewing the lead time for each bill of material path below the item» <a class="cite" href="#src-1">[1, s. 47]</a>. Synonymer er <em>critical path lead time</em> og <em>stacked lead time</em>. Med lot-for-lot er tillegget for partistørrelse null.</li>
+<li><strong>JD Edwards:</strong> definerer det samme rekursivt: delens egen ledetid pluss den lengste kumulative ledetiden blant underkomponentene <a class="cite" href="#src-26">[26]</a>.</li>
+<li><strong>Dynamics 365:</strong> dekningshorisonten (<em>coverage time fence</em>) skal være «longer than the total lead time» <a class="cite" href="#src-20">[20]</a>.</li>
+<li><strong>Universitetet i Napoli</strong> (kurs basert på Vollmann): horisonten skal minst dekke gjennomløpstiden <a class="cite" href="#src-7">[7]</a>.</li>
+<li><strong>Nahmias:</strong> et annet kriterium. Horisonten skal være så lang at beslutningen i første periode ikke endrer seg <a class="cite" href="#src-3">[3]</a>. Kriteriet handler om partistørrelse og er ikke i strid med ASCM.</li>
+<li><strong>Kadipasaoglu &amp; Sridharan:</strong> frysing virker best når den dekker kumulativ ledetid <a class="cite" href="#src-28">[28]</a>. Det støtter at kumulativ ledetid er den relevante størrelsen.</li>
+</ul>
+<p><span class="badge b-medhigh">Sikkerhet: middels–høy</span>. Regelen står eksplisitt bare hos ASCM. Dynamics 365 sier «total lead time», og JD Edwards gir bare definisjonen.</p>
+<p><strong>C7 (forts.): Hva skjer når horisonten er for kort?</strong> <strong>Vurdering:</strong> FR-8 (horisont), at frigivelser for behov etter horisonten ikke tas med, tilsvarer standardoppførselen i Dynamics 365 og er forsvarbar <a class="cite" href="#src-20">[20]</a>. Dynamics 365 tar ikke med forsyning og behov utenfor dekningshorisonten, og beregner heller ingen forsinkelser der <a class="cite" href="#src-20">[20]</a>. Avhengig behov fra en overordnet del innenfor horisonten planlegges likevel som standard. Fra versjon 10.0.49 kan det filtreres bort <a class="cite" href="#src-20">[20]</a>. Ingen kilde beskriver hva som skjer med delene på nederste nivå i flernivå-MRP. <span class="badge b-inf">Vår slutning, ikke fra kilde</span> planen fanger da ikke opp frigivelser som skulle vært gjort nå for behov rett etter horisonten, og det rammer de nederste delene først. <span class="badge b-med">Sikkerhet: middels</span>.</p>
+<p><strong>C8: Effekter ved slutten av horisonten.</strong> Forskningen på slutteffekter handler om partistørrelse på ett nivå. Hvis sluttbeholdningen ikke verdsettes, får den verdien null, og det gir flere omstillinger (<em>setups</em>) <a class="cite" href="#src-33">[33]</a>. Andre tiltak er å se forbi horisonten <a class="cite" href="#src-34">[34]</a> eller å forlenge den <a class="cite" href="#src-35">[35]</a>. Med lot-for-lot er det ingen partistørrelse, så denne effekten forsvinner i stor grad. Vi fant <strong>ingen kilde</strong> om slutteffekter på lavere nivåer i flernivå-MRP. Det er ikke grunnlag for egne regler her, bare for å nevne effekten i addendumet.</p>
+<p><strong>C9: Lavnivåkode og felles deler.</strong> Dette er bekreftet:</p>
+<ul>
+<li><strong>ASCM:</strong> en lavnivåkode er det laveste nivået delen står på, og «net requirements for a given component are not calculated until all the gross requirements have been calculated down to that level» <a class="cite" href="#src-1">[1, s. 109]</a>.</li>
+<li><strong>Krajewski:</strong> bruttobehov er summen over alle overordnede deler. Det er de overordnede delenes <em>planlagte ordrefrigivelser</em>, «not the gross requirements, scheduled receipts, or planned receipts», som gir underkomponentenes bruttobehov <a class="cite" href="#src-2">[2]</a>.</li>
+<li><strong>Nahmias:</strong> underkomponentens behov havner i samme uke som frigivelsen til den overordnede delen <a class="cite" href="#src-3">[3]</a>.</li>
+<li><strong>SAP:</strong> planlegger lavnivåkode 0 først, så 1 og så videre <span class="badge b-unv">ikke verifisert: søkeutdrag</span> <a class="cite" href="#src-17">[17]</a>.</li>
+</ul>
+<p><strong>Gir en forfalt frigivelse på nivå .1 bruttobehov i uke 1 for nivå ..2?</strong> Oracle sier at «dependent demand is set due on the horizon start date» i planer uten kapasitetsbegrensning <span class="badge b-unv">ikke verifisert: søkeutdrag</span> <a class="cite" href="#src-11">[11]</a>. Det samme følger av at SAP planlegger fremover fra i dag (vår slutning) <a class="cite" href="#src-12">[12]</a>. Dynamics 365 «always processes requirements that occur before the current date» <a class="cite" href="#src-21">[21]</a>. <span class="badge b-med">Sikkerhet: middels</span>, ingen lærebokkilde.</p>
+<h2 id="funn-på-tvers-av-dimensjonene">Funn på tvers av dimensjonene</h2>
+<ul>
+<li><strong>FR-7 og FR-12 bygger på samme forutsetning:</strong> at forsinkelser løses ved å fremskynde, enten den nye ordren (FR-7) eller det planlagte mottaket (FR-12). ASCM og SAP gjør denne forutsetningen eksplisitt for planlagte mottak <a class="cite" href="#src-1">[1]</a><a class="cite" href="#src-14">[14]</a>. Er appen konsekvent, bør den derfor også <em>regne</em> som om det planlagte mottaket fremskyndes. Det er nettopp endringen i B5. Da følger FR-7 og den nye FR-12 samme logikk: planen viser målet, og eksepsjonen viser hva som må gjøres for å nå det.</li>
+<li><strong>Kumulativ ledetid binder sammen A og C.</strong> En frigivelse på nederste nivå forfaller når behovsuken t på nivå 0 er slik at t − kumulativ ledetid &lt; 1. Kontrollen i C7 viser dermed på forhånd hvor mange av de første ukene som vil gi forfalte frigivelser lenger ned. Det gir et naturlig grensetilfelle for testdata.</li>
+</ul>
+<h2 id="motstridende-evidens">Motstridende evidens</h2>
+<p>Vi kjørte ikke en egen runde med motargumenter (<em>red team</em>). Materialet har likevel to motforestillinger:</p>
+<ul>
+<li><strong>Flertallet av ERP-systemene gjør ikke som FR-7</strong> <a class="cite" href="#src-12">[12]</a><a class="cite" href="#src-18">[18]</a><a class="cite" href="#src-23">[23]</a><a class="cite" href="#src-25">[25]</a>. Dynamics 365 og SAP viser den reelle mangelen. FR-7 må derfor begrunnes i addendumet som en forenkling, ikke presenteres som standard.</li>
+<li><strong>Studiene av nervøsitet er delvis uenige.</strong> Sridharan m.fl. finner at frysing koster lite <a class="cite" href="#src-29">[29]</a>, mens Blackburn m.fl. finner at frysing dominerer <a class="cite" href="#src-27">[27]</a>. Ingen av funnene påvirker beslutningen her.</li>
+</ul>
+<h2 id="anbefalinger">Anbefalinger</h2>
+<p>Sortert etter hva som må gjøres først.</p>
+<table>
+<thead>
+<tr>
+<th>Regel</th>
+<th>Vurdering</th>
+<th>Hva må gjøres</th>
+<th>Kilder</th>
+<th>Sikkerhet</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FR-12: mottak forsinket</td>
+<td><span class="verdict v-change">Bør endres</span></td>
+<td>Regn et senere planlagt mottak som om det fremskyndes til behovsuken. Lag planlagt ordre bare for restbehovet. Eksepsjon: «Fremskynd mottak». Oppdater fasiter som har dette tilfellet</td>
+<td>ASCM <a class="cite" href="#src-1">[1]</a>, SAP <a class="cite" href="#src-14">[14]</a>; Hopp &amp; Spearman <a class="cite" href="#src-4">[4]</a> (sekundært)</td>
+<td><span class="badge b-high">Høy</span></td>
+</tr>
+<tr>
+<td>FR-9/FR-28: ledetid overskrider horisont</td>
+<td><span class="verdict v-change">Bør endres</span></td>
+<td>Beregn kumulativ ledetid per del (lengste sti ned i stykklisten), og gi eksepsjon når den er ≥ H. Kan beholdes som kontroll av grunnlagsdata. Ikke kall den en standard MRP-eksepsjon</td>
+<td>ASCM <a class="cite" href="#src-1">[1]</a>; Dynamics 365 <a class="cite" href="#src-20">[20]</a> («total lead time»); definisjon fra JDE <a class="cite" href="#src-26">[26]</a></td>
+<td><span class="badge b-medhigh">Middels–høy</span></td>
+</tr>
+<tr>
+<td>FR-10/FR-11: bestilling forsinket / bruk av sikkerhetslager</td>
+<td><span class="verdict v-change">Forsvarbar todeling, men vilkåret bør utvides</span> (<strong>rettet 2026-11-02: beholdes uendret</strong>, se rettelsen i Sammendrag punkt 3)</td>
+<td>Utløs eksepsjonen når disponibel beholdning går under 0 eller under SS, uansett årsak. En forfalt frigivelse nevnes da som årsak i eksepsjonsteksten, men er ikke lenger vilkåret. Dekker også SS-brudd når frigivelsen ikke er forfalt</td>
+<td>Oracle <a class="cite" href="#src-9">[9]</a><a class="cite" href="#src-11">[11]</a>, Gardner <a class="cite" href="#src-5">[5]</a>; SAP 096 finnes <a class="cite" href="#src-16">[16]</a>, men vi vet ikke hva som utløser den</td>
+<td><span class="badge b-med">Middels</span></td>
+</tr>
+<tr>
+<td>Mangler: utsett planlagt mottak og kanseller planlagt mottak</td>
+<td><span class="verdict v-change">Bør legges til</span> (eller begrunnes som utelatt)</td>
+<td>Utsett: et planlagt mottak kommer før uken det trengs. Kanseller: det planlagte mottaket trengs ikke innenfor horisonten</td>
+<td>ASCM <a class="cite" href="#src-1">[1]</a>, SAP <a class="cite" href="#src-14">[14]</a><a class="cite" href="#src-16">[16]</a>, Oracle <a class="cite" href="#src-9">[9]</a>; Dynamics 365 bare utsett <a class="cite" href="#src-19">[19]</a></td>
+<td><span class="badge b-high">Høy</span></td>
+</tr>
+<tr>
+<td>Støy (for mange eksepsjoner)</td>
+<td><span class="verdict v-new">Ny regel, enkel</span></td>
+<td>Én eksepsjon per del og uke (den alvorligste). Ingen dempingsterskler i en enkeltkjøring</td>
+<td>Tilpasset fra SAP <a class="cite" href="#src-15">[15]</a> (én melding per MRP-element)</td>
+<td><span class="badge b-med">Middels</span></td>
+</tr>
+<tr>
+<td>FR-7: planlagt ordremottak vist i behovsuken</td>
+<td><span class="verdict v-ok2">Avviker, men forsvarbar forenkling</span></td>
+<td>Behold, men skriv i addendumet at forventet lagerbeholdning er en målplan. La «Bestilling forsinket» vise tidligste uke for planlagt ordremottak (1 + L) eller antall uker forsinkelse, slik Dynamics 365 viser forsinkelsesdager</td>
+<td>Oracle mot SAP, Dynamics 365 og Infor <a class="cite" href="#src-11">[11]</a><a class="cite" href="#src-12">[12]</a><a class="cite" href="#src-18">[18]</a><a class="cite" href="#src-25">[25]</a></td>
+<td><span class="badge b-med">Middels</span></td>
+</tr>
+<tr>
+<td>FR-8 (uke 1): forfalt frigivelse i uke 1</td>
+<td><span class="verdict v-ok">Stemmer / forsvarbar</span></td>
+<td>Behold. Merk den forfalte delen av uke 1, så den ikke forsvinner i summen med vanlige frigivelser, og gi den alltid en eksepsjon</td>
+<td>Oracle <a class="cite" href="#src-8">[8]</a>; flagging: Gardner, SAP og Oracle <a class="cite" href="#src-5">[5]</a><a class="cite" href="#src-16">[16]</a><a class="cite" href="#src-9">[9]</a></td>
+<td><span class="badge b-medhigh">Middels–høy</span></td>
+</tr>
+<tr>
+<td>Forfalt frigivelse blir bruttobehov i uke 1 på nivået under (fasitregel 6/7)</td>
+<td><span class="verdict v-ok">Forsvarbar</span></td>
+<td>Behold</td>
+<td>Oracle <a class="cite" href="#src-11">[11]</a>, logikken i SAP <a class="cite" href="#src-12">[12]</a></td>
+<td><span class="badge b-med">Middels</span></td>
+</tr>
+<tr>
+<td>FR-8 (horisont): behov etter horisonten tas ikke med</td>
+<td><span class="verdict v-ok">Stemmer / forsvarbar</span></td>
+<td>Behold. Nevn slutteffekten for nederste nivå i addendumet</td>
+<td>Dynamics 365 <a class="cite" href="#src-20">[20]</a></td>
+<td><span class="badge b-med">Middels</span></td>
+</tr>
+<tr>
+<td>Felles deler på lavnivåkode</td>
+<td><span class="verdict v-ok">Stemmer</span></td>
+<td>Behold</td>
+<td>ASCM <a class="cite" href="#src-1">[1]</a>, Krajewski <a class="cite" href="#src-2">[2]</a>, SAP <a class="cite" href="#src-17">[17]</a></td>
+<td><span class="badge b-high">Høy</span></td>
+</tr>
+</tbody>
+</table>
+<p>Resultatet skal brukes tre steder:</p>
+<ul>
+<li><strong><code>addendum.md</code>:</strong> begrunnelsen for hver regel i tabellen, inkludert forbeholdet om FR-7.</li>
+<li><strong><code>testdata/</code>:</strong> nye eller oppdaterte fasiter for FR-12 og FR-28, og grensetilfeller for kumulativ ledetid.</li>
+<li><strong><code>beregn()</code>:</strong> et steg som regner ut kumulativ ledetid før eksplosjonen, og nettoberegning mot senere planlagte mottak.</li>
+</ul>
+<h2 id="åpne-spørsmål">Åpne spørsmål</h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Spørsmål</th>
+<th>Påvirker</th>
+<th>Rute</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Hva sier hovedlærebøkene (Jacobs m.fl. <em>MPC</em>, kapitlene om MRP og bruk av MRP-systemet; Ptak &amp; Smith <em>Orlicky's MRP</em>) om forfalte frigivelser og i hvilken uke planlagt ordremottak vises? Fulltekst var stengt: utlån på archive.org krever innlogging, og Google Books ga CAPTCHA og var over kvoten</td>
+<td>FR-7, FR-8 (uke 1)</td>
+<td>Lån bøkene på biblioteket i Molde, eller lån skannet utgave på archive.org med gratis konto (<code>materialrequirem00orli</code>, <code>orlickysmaterial00orli</code>, <code>manufacturingpla00voll</code>, <code>manufacturingpla0005unse</code>). Søk etter «past due», «action bucket», «reschedul» og «cumulative lead time». Kjør så Deepen-steget i bmad-deep-recon</td>
+</tr>
+<tr>
+<td>2</td>
+<td>SAP-primærtekst for «Start in the past» (OPU3/OPPR), for melding 096 og for omplanleggingskontrollen i S/4HANA <a class="cite" href="#src-14">[14]</a>. help.sap.com ga bare sidetittelen</td>
+<td>FR-7, FR-10/FR-11, FR-12</td>
+<td>Åpne sidene i nettleser</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Slutteffekter på lavere nivåer i flernivå-MRP. Vi fant ingen kilde. Simpson (1999, EJOR) kan dekke det, men vi fant bare referansen, ikke sammendraget</td>
+<td>FR-8 (horisont)</td>
+<td>Hent artikkelen gjennom biblioteket</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Oracle ASCP, fullstendig definisjon av «compression days». Den delen av siden vi fikk lest, sluttet før definisjonen</td>
+<td>FR-7</td>
+<td>Les resten av siden <a class="cite" href="#src-11">[11]</a></td>
+</tr>
+</tbody>
+</table>
+<h2 id="kildevedlegg">Kildevedlegg</h2>
+<details open><summary>Vis/skjul 36 kilder</summary><table class="sources"><thead><tr><th>#</th><th>Påstand/funn</th><th>Utgiver</th><th>Publisert</th><th>Lest</th><th>Sikkerhet</th></tr></thead><tbody><tr id="src-1"><td>[1]</td><td>Definisjoner: action message s. 7, rescheduling assumption s. 164, planning horizon s. 141, cumulative lead time s. 47, low-level code s. 109, firm planned order, past-due order, nervousness s. 122, bottom-up replanning s. 23</td><td><a href="https://learn.ascm.org/sfc/servlet.shepherd/document/download/069R3000006PlDHIA0?operationContext=S1" target="_blank" rel="noopener">ASCM, <em>ASCM Supply Chain Dictionary</em>, 18. utg.</a></td><td>2024</td><td>2026-11-02</td><td>høy</td></tr><tr id="src-2"><td>[2]</td><td>Bruttobehov = summen av de overordnede delenes planlagte frigivelser; action notices; ca. s. 465–473</td><td>Pearson: Krajewski, Malhotra &amp; Ritzman, <em>Operations Management</em>, 11. utg. (siteres fra trykt bok; nettkopien er uautorisert og lenkes ikke)</td><td>2016</td><td>2026-11-02</td><td>høy</td></tr><tr id="src-3"><td>[3]</td><td>Eksplosjon i samme uke (s. 372–374); kriterium for horisont (s. 391)</td><td>McGraw-Hill/Irwin: Nahmias, <em>Production and Operations Analysis</em>, 6. utg.</td><td>2009</td><td>2026-11-02</td><td>høy</td></tr><tr id="src-4"><td>[4]</td><td>Planlagte mottak justeres før nye ordrer; lavnivåkode (basert på Hopp &amp; Spearman)</td><td><a href="https://ocw.mit.edu/courses/2-854-introduction-to-manufacturing-systems-fall-2016/4eec617bb52d64f4ea1bed6d9905bc00_MIT2_854F16_MatrialRequire.pdf" target="_blank" rel="noopener">MIT OCW, Gershwin, 2.854 MRP-slides</a></td><td>2006/2016</td><td>2026-11-02</td><td>middels–høy (sekundær)</td></tr><tr id="src-5"><td>[5]</td><td>«Not enough leadtime»-melding; egen rad for sikkerhetslagermeldinger</td><td><a href="https://www.bauer.uh.edu/egardner/3301H%20Operations%20Management/OM%20Text/4MRP-1.pdf" target="_blank" rel="noopener">Univ. of Houston, Gardner, OM-tekst kap. 4</a></td><td>u.å.</td><td>2026-11-02</td><td>middels</td></tr><tr id="src-6"><td>[6]</td><td>MRP-tabell med PD-kolonne; unntaksrapporter for forsinkede ordrer</td><td><a href="https://csbapp.uncw.edu/janickit/ops370/modules/Module11.pdf" target="_blank" rel="noopener">UNCW, Janicki, OPS 370 Module 11</a></td><td>2014</td><td>2026-11-02</td><td>middels (sekundær)</td></tr><tr id="src-7"><td>[7]</td><td>Horisont ≥ gjennomløpstid (basert på Vollmann)</td><td><a href="https://www.docenti.unina.it/webdocenti-be/allegati/materiale-didattico/34433111" target="_blank" rel="noopener">Univ. di Napoli Federico II, Grassi, MRP-slides</a></td><td>2021</td><td>2026-11-02</td><td>middels (sekundær)</td></tr><tr id="src-8"><td>[8]</td><td>Forfalt forsyning/behov «as if it were due today», vist i første periode</td><td><a href="https://docs.oracle.com/cd/A60725_05/html/comnls/us/mrp/timphreq.htm" target="_blank" rel="noopener">Oracle, MRP: Time-Phasing Requirements (R11)</a></td><td>ca. 2000</td><td>2026-11-02</td><td>høy (for Oracle)</td></tr><tr id="src-9"><td>[9]</td><td>Oracles eksepsjonsliste (forfalte ordrer, fremskynd, utsett, kanseller, under SS, mangel, komprimering)</td><td><a href="https://docs.oracle.com/cd/A60725_05/html/comnls/us/mrp/planin09.htm" target="_blank" rel="noopener">Oracle, Reviewing Planning Exceptions (R11)</a></td><td>ca. 2000</td><td>2026-11-02</td><td>høy</td></tr><tr id="src-10"><td>[10]</td><td>Fremskyndingsmelding gis alltid; acceptable early days demper bare utsettelser</td><td><a href="https://docs.oracle.com/cd/A60725_05/html/comnls/us/mrp/planco01.htm" target="_blank" rel="noopener">Oracle, Acceptable Early Days Delivery (R11)</a></td><td>ca. 2000</td><td>2026-11-02</td><td>høy</td></tr><tr id="src-11"><td>[11]</td><td>Komprimeringsdager; avhengig behov i første uke av horisonten; under SS per bøtte</td><td><a href="https://docs.oracle.com/cd/E18727_01/doc.121/e13358/T309464T309475.htm" target="_blank" rel="noopener">Oracle, ASCP Implementation and User&#x27;s Guide 12.1, exception messages</a></td><td>12.1</td><td>2026-11-02</td><td>middels (delvis søkeutdrag)</td></tr><tr id="src-12"><td>[12]</td><td>Planlegging fremover fra dagens dato når starten havner i fortiden</td><td><a href="https://learning.sap.com/courses/exploring-production-planning-in-sap-s-4hana/understanding-mrp-in-sap-s-4hana" target="_blank" rel="noopener">SAP Learning, Understanding MRP in SAP S/4HANA</a></td><td>S42220_26</td><td>2026-11-02</td><td>høy</td></tr><tr id="src-13"><td>[13]</td><td>Melding 30 og innstillingen «Start in past» (OPPR)</td><td><a href="https://help.sap.com/docs/SUPPORT_CONTENT/mrp/3138697939.html" target="_blank" rel="noopener">SAP Support Content, exception message 30</a></td><td>u.å.</td><td>2026-11-02</td><td>lav–middels (søkeutdrag)</td></tr><tr id="src-14"><td>[14]</td><td>Omplanleggingskontroll: fremskynd/utsett/kanseller; ny ordre bare ved for lite mengde; toleranser</td><td><a href="https://help.sap.com/SAPHelp_46c/helpdata/EN/f4/7d2c9744af11d182b40000e829fbfe/content.htm" target="_blank" rel="noopener">SAP Help 4.6C, Rescheduling Check</a></td><td>ca. 2000</td><td>2026-11-02</td><td>høy (gammel versjon)</td></tr><tr id="src-15"><td>[15]</td><td>Bare den viktigste meldingen lagres per element</td><td><a href="https://help.sap.com/SAPHelp_46c/helpdata/EN/f4/7d2c8a44af11d182b40000e829fbfe/content.htm" target="_blank" rel="noopener">SAP Help 4.6C, Creation of Exception Messages</a></td><td>ca. 2000</td><td>2026-11-02</td><td>høy</td></tr><tr id="src-16"><td>[16]</td><td>SAPs meldingsliste 001–007, 010, 015, 030, 096</td><td><a href="https://help.sap.com/saphelp_afs60/helpdata/en/6e/d09066145211d4b2b70050da4c2924/content.htm" target="_blank" rel="noopener">SAP Help AFS 6.0, Description of the Exception Messages</a></td><td>AFS 6.0</td><td>2026-11-02</td><td>middels–høy</td></tr><tr id="src-17"><td>[17]</td><td>Lavnivåkode bestemmer planleggingsrekkefølgen</td><td><a href="https://help.sap.com/docs/SAP_ERP/85d3fce10e264972a0155c8b46ecf93b/a797b6535fe6b74ce10000000a174cb4.html" target="_blank" rel="noopener">SAP Help, Calculating Low-Level Codes</a></td><td>u.å.</td><td>2026-11-02</td><td>middels (søkeutdrag)</td></tr><tr id="src-18"><td>[18]</td><td>Forsinkelser: planlegging fremover fra i dag, forsinket dato, ønsket dato beholdes</td><td><a href="https://learn.microsoft.com/en-us/dynamics365/supply-chain/master-planning/delays" target="_blank" rel="noopener">Microsoft Learn, D365 Delays</a></td><td>2025-08-22</td><td>2026-11-02</td><td>høy</td></tr><tr id="src-19"><td>[19]</td><td>Action messages (fremskynd/utsett/øk/reduser); marginer; frosset periode</td><td><a href="https://learn.microsoft.com/en-us/dynamics365/supply-chain/master-planning/action-messages" target="_blank" rel="noopener">Microsoft Learn, D365 Action messages</a></td><td>2026-03-26</td><td>2026-11-02</td><td>høy</td></tr><tr id="src-20"><td>[20]</td><td>Dekningshorisont må være lengre enn «total lead time»; behov utenfor horisonten tas ikke med; avledet behov (10.0.49)</td><td><a href="https://learn.microsoft.com/en-us/dynamics365/supply-chain/master-planning/planning-optimization/coverage-time-fence" target="_blank" rel="noopener">Microsoft Learn, D365 Coverage time fences</a></td><td>2026-07-27</td><td>2026-11-02</td><td>høy</td></tr><tr id="src-21"><td>[21]</td><td>Behov før dagens dato behandles alltid; tidsgrenser i hovedplaner</td><td><a href="https://learn.microsoft.com/en-us/dynamics365/supply-chain/master-planning/master-plans" target="_blank" rel="noopener">Microsoft Learn, D365 Master plans overview</a></td><td>2026-03-23</td><td>2026-11-02</td><td>høy</td></tr><tr id="src-22"><td>[22]</td><td>Sikkerhetslager er en grense, ikke et datert behov</td><td><a href="https://learn.microsoft.com/en-us/dynamics365/supply-chain/master-planning/safety-stock-replenishment" target="_blank" rel="noopener">Microsoft Learn, D365 Safety stock fulfillment</a></td><td>2026-03-26</td><td>2026-11-02</td><td>høy</td></tr><tr id="src-23"><td>[23]</td><td>Datering fremover (Order Deadline + Vendor Lead Time); «late»-merking</td><td><a href="https://www.odoo.com/documentation/18.0/applications/inventory_and_mrp/inventory/warehouses_storage/replenishment/lead_times.html" target="_blank" rel="noopener">Odoo 18, Lead times</a></td><td>18.0</td><td>2026-11-02</td><td>middels</td></tr><tr id="src-24"><td>[24]</td><td>ERPNext: dato = i dag + L, ingen tidsfasing, ingen eksepsjoner, ingen horisont</td><td><a href="https://raw.githubusercontent.com/frappe/erpnext/develop/erpnext/manufacturing/doctype/production_plan/services/material_request.py" target="_blank" rel="noopener">Frappe/ERPNext, kildekode material_request.py</a></td><td>2026-10-17</td><td>2026-11-02</td><td>høy</td></tr><tr id="src-25"><td>[25]</td><td>Mottak aldri tidligere enn i dag + L; «Rcpt Projected Late»</td><td><a href="https://docs.infor.com/csi/10.x/en-us/csbiolh/inventory_user_cl_sl/lsm1454144400736.html" target="_blank" rel="noopener">Infor CSI 10.x, About Exception Messages</a></td><td>10.x</td><td>2026-11-02</td><td>middels–høy</td></tr><tr id="src-26"><td>[26]</td><td>Kumulativ ledetid = egen ledetid + lengste kumulative ledetid blant komponentene</td><td><a href="https://docs.oracle.com/en/applications/jd-edwards/supply-chain-manufacturing/9.2/eoapd/cumulative-lead-time.html" target="_blank" rel="noopener">Oracle, JD Edwards 9.2, Cumulative Lead Time</a></td><td>9.2</td><td>2026-11-02</td><td>høy</td></tr><tr id="src-27"><td>[27]</td><td>Kostnad for endring og frysing dominerer; sikkerhetslager og lot-for-lot er ikke kostnadseffektive (fagfellevurdert, sammendrag)</td><td><a href="https://doi.org/10.1287/mnsc.32.4.413" target="_blank" rel="noopener">Management Science 32(4), Blackburn, Kropp &amp; Millen</a></td><td>1986</td><td>2026-11-02</td><td>høy</td></tr><tr id="src-28"><td>[28]</td><td>Frysing er mest effektiv når den dekker kumulativ ledetid, i flernivåsystemer (fagfellevurdert, sammendrag)</td><td><a href="https://doi.org/10.1016/0272-6963(95" target="_blank" rel="noopener">JOM 13(3), Kadipasaoglu &amp; Sridharan</a>00023-L)</td><td>1995</td><td>2026-11-02</td><td>høy</td></tr><tr id="src-29"><td>[29]</td><td>Frysing av opptil 50 % av horisonten har marginal kostnadseffekt (fagfellevurdert, sammendrag)</td><td><a href="https://doi.org/10.1287/mnsc.33.9.1137" target="_blank" rel="noopener">Management Science 33(9), Sridharan, Berry &amp; Udayabhanu</a></td><td>1987</td><td>2026-11-02</td><td>høy</td></tr><tr id="src-30"><td>[30]</td><td>Endringskostnad i partistørrelsesmodellen reduserer nervøsitet (fagfellevurdert, sammendrag)</td><td><a href="https://doi.org/10.1287/mnsc.25.8.754" target="_blank" rel="noopener">Management Science 25(8), Carlson, Jucker &amp; Kropp</a></td><td>1979</td><td>2026-11-02</td><td>høy</td></tr><tr id="src-31"><td>[31]</td><td>Dempingsprosedyrer filtrerer bort overdrevne omplanleggingsmeldinger (fagfellevurdert, sammendrag)</td><td><a href="https://doi.org/10.1080/00207540701338887" target="_blank" rel="noopener">IJPR 46(18), Ho</a></td><td>2008</td><td>2026-11-02</td><td>høy (samme forsker som [32])</td></tr><tr id="src-32"><td>[32]</td><td>Inndeling av dempingsmetoder (fagfellevurdert, sammendrag)</td><td><a href="https://doi.org/10.1080/00207549508930161" target="_blank" rel="noopener">IJPR 33(2), Ho, Law &amp; Rampal</a></td><td>1995</td><td>2026-11-02</td><td>høy (samme forsker som [31])</td></tr><tr id="src-33"><td>[33]</td><td>Slutteffekter; verdsetting av sluttbeholdning (fagfellevurdert, sammendrag)</td><td><a href="https://doi.org/10.1287/mnsc.47.5.679.10485" target="_blank" rel="noopener">Management Science 47(5), Fisher, Ramdas &amp; Zheng</a></td><td>2001</td><td>2026-11-02</td><td>høy</td></tr><tr id="src-34"><td>[34]</td><td>Å se forbi horisonten demper slutteffekter (fagfellevurdert, sammendrag)</td><td><a href="https://doi.org/10.1287/mnsc.46.2.318.11924" target="_blank" rel="noopener">Management Science 46(2), Stadtler</a></td><td>2000</td><td>2026-11-02</td><td>høy</td></tr><tr id="src-35"><td>[35]</td><td>Lengre horisont og sluttbetingelser forbedrer rullerende planer (fagfellevurdert, sammendrag)</td><td><a href="https://ideas.repec.org/a/inm/ormnsc/v25y1979i4p341-351.html" target="_blank" rel="noopener">Management Science 25(4), Baker &amp; Peterson</a></td><td>1979</td><td>2026-11-02</td><td>høy</td></tr><tr id="src-36"><td>[36]</td><td>Meldingssett: Planned Order, Reschedule, Decrease Quantity, Cancel; filtre i dager</td><td><a href="https://help.deltek.com/PRODUCT/COSTPOINT/8.1/GA/mrx_Creating_MRP_Messages.html" target="_blank" rel="noopener">Deltek Costpoint 8.1, Creating MRP Messages</a></td><td>8.1</td><td>2026-11-02</td><td>høy (for Deltek)</td></tr></tbody></table></details>
+<h2 id="staleness">Når funnene bør sjekkes på nytt</h2>
+<p>Datoene er regnet ut av <code>recon_kit.py staleness</code>. Gyldighetstiden er: ERP-oppførsel 24 mnd., definisjoner 60 mnd., lærebokregler 120 mnd. og empiri 240 mnd.</p>
+<table>
+<thead>
+<tr>
+<th>Påstand</th>
+<th>Ny sjekk</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a class="cite" href="#src-23">[23]</a> Odoo 18, ledetider</td>
+<td>2027-01-01</td>
+<td>ok</td>
+</tr>
+<tr>
+<td><a class="cite" href="#src-18">[18]</a> D365, forsinkelser</td>
+<td>2027-08-01</td>
+<td>ok</td>
+</tr>
+<tr>
+<td><a class="cite" href="#src-12">[12]</a> SAP S/4HANA, planlegging fremover</td>
+<td>2028-01-01</td>
+<td>ok</td>
+</tr>
+<tr>
+<td><a class="cite" href="#src-19">[19]</a> D365, action messages</td>
+<td>2028-03-01</td>
+<td>ok</td>
+</tr>
+<tr>
+<td><a class="cite" href="#src-20">[20]</a> D365, dekningshorisont / avledet behov (10.0.49)</td>
+<td>2028-07-01</td>
+<td>ok</td>
+</tr>
+<tr>
+<td><a class="cite" href="#src-24">[24]</a> ERPNext, kildekode</td>
+<td>2028-10-01</td>
+<td>ok</td>
+</tr>
+<tr>
+<td><a class="cite" href="#src-1">[1]</a> ASCM Dictionary, 18. utg.</td>
+<td>2029-09-01</td>
+<td>ok</td>
+</tr>
+<tr>
+<td><a class="cite" href="#src-14">[14]</a> SAP 4.6C, omplanleggingskontroll</td>
+<td>2002-01-01</td>
+<td><strong>gammel</strong>: prinsippet støttes av ASCM <a class="cite" href="#src-1">[1]</a>, men bør bekreftes mot S/4HANA (Åpent spørsmål 2)</td>
+</tr>
+<tr>
+<td><a class="cite" href="#src-2">[2]</a> Krajewski, 11. utg.</td>
+<td>2026-01-01</td>
+<td>gammel etter vinduet, men lærebokstoff har ingen krav til hvor nytt det er. Sjekk 12./13. utg. ved Deepen</td>
+</tr>
+<tr>
+<td><a class="cite" href="#src-27">[27]</a> Blackburn m.fl. 1986</td>
+<td>2006-04-01</td>
+<td>sentral studie, ingen krav til hvor ny den er. Ingen nyere studie motsier funnet</td>
+</tr>
+</tbody>
+</table>
+<p>Neste reelle sjekk er <strong>Odoo, 2027-01-01</strong>. Kjør Refresh i bmad-deep-recon på denne mappen.</p>
+<p style="color:var(--muted);font-size:.85rem">Generert fra research.md. Markdown-filen er kilden; denne siden kan lages på nytt.</p>
+</main></div></body></html>
