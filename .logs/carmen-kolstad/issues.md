@@ -35,3 +35,4 @@
 - [ ] 2026-11-12 [ux-designkonsepter](992-2026-11-12-17-30-07-ux-designkonsepter.md) — gruppen velger designretning blant de tre konseptene i ux/konsepter-2026-11-12/ og oppdaterer DESIGN.md og EXPERIENCE.md etter valget
 - [ ] 2026-11-12 [ux-designkonsepter](992-2026-11-12-17-30-07-ux-designkonsepter.md) — risiko mot PRD i konsept 1 (FR-18) og konsept 2 (FR-14, FR-34) må vurderes hvis de velges
 - [ ] 2026-11-12 [ux-designkonsepter](992-2026-11-12-17-30-07-ux-designkonsepter.md) — kapasitetstallene for testeksempel 01 i konseptene er fra referanseberegningen og ikke manuelt kontrollert
+- [ ] 2026-11-12 [ux-designkonsepter](992-2026-11-12-17-30-07-ux-designkonsepter.md) — konseptsidene har ingen lenke tilbake til galleriet (index.html). Vurder å legge til en
