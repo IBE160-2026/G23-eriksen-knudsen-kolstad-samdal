@@ -1,0 +1,691 @@
+<!doctype html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Retning 3 Teknisk og stram</title>
+<style>
+/* =====================================================================
+   COSI - MRP · Designretning 3 «Teknisk og stram»
+   Fargetema A «Salvie i to lag» (låst). Kun lys modus i v1.
+
+   PERSONLIGHET
+   Presist ingeniørverktøy med en eksklusiv kant, som instrumentpanelet i en
+   premium bil eller skiven på et kvalitetsur. Kondensert DIN-aktig skrift på
+   overskrifter, etiketter og navigasjon. Små etiketter i versaler med sperring.
+   Hårfine linjer, 4 px hjørner, flate kort med strek (ingen skygge). Messing
+   brukes bare som tynne aksentlinjer (2 px under aktiv navigasjon, 2 px
+   kortmerke, 1 px under panelhodet). Seksjoner nummereres 01–04 som på en skive.
+   Bevegelse (ikke tegnet): rask og presis, 120 ms ease-out, ingen sprett;
+   forklaringspanelet glir inn 160 ms og skyver innholdet, ingen overlay.
+
+   SKRIFT (systemskrift i skissen, Windows 11)
+   --f-tech : Bahnschrift (variabel, kondensert via font-stretch 87.5 %)
+              → overskrifter, etiketter, navigasjon, knapper, tall i tabeller.
+   --f-body : Segoe UI Variable Text / Segoe UI → brødtekst.
+   Alle tall: font-variant-numeric: tabular-nums lining-nums.
+   SELVHOSTET SKRIFT I APPEN (NFR-4, ingen Google Fonts):
+   IBM Plex Sans Condensed (overskrifter, etiketter, navigasjon, tabelltall)
+   + IBM Plex Sans (brødtekst). SIL OFL 1.1. Begrunnelse: Plex er tegnet som
+   en ingeniørskrift (grotesk med DIN-aktige, rette avslutninger), har ekte
+   kondensert snitt i samme familie, tabulære tall som standard-funksjon,
+   tydelig skille mellom 1/l/I og 0/O, og full støtte for æ, ø, å og «−».
+   Alternativ: Public Sans (OFL) hvis gruppa vil ha én familie, men den
+   mangler kondensert snitt, så etikettene blir bredere.
+
+   FARGER (tema A, uendret)
+   --bg #EFEDE4  --surface #FBFAF5  --band #E4E2D6
+   --topbar #2C3A31 --topbar-fg #EEF0E8 --topbar-muted #B4C0B5
+   --tb-btn #C9A862 --tb-btn-fg #1F2620
+   --nav-bg #3A4A3F --nav-fg #D2DBD1 --nav-active #FFFFFF --nav-ind #C9A862
+   --text #1D2420 --muted #535E57 --divider #DAD8CC --border #86887C
+   --primary #2F5A43 --on-primary #FFFFFF --focus #7D5B1E
+   --sel-bg #E3ECE0 --sel-ring #2F5A43
+   --crit #A0302A --crit-soft #F6E2DE --warn #8A4F0B --warn-soft #F7E8D6
+   --info #45586A --info-soft #E3EAEE --over #7E2F55 --over-soft #F2E2EA
+   --brass-line #8A6726 (mørk messing som strek på lys flate; som tekst bare på
+   --surface, 4.96:1). Messingfarget tekst på --bg bruker --focus #7D5B1E (5.29:1).
+   Kontroll (skript): --muted på --band 5.20:1, --crit på --crit-soft 5.71:1,
+   --warn på --warn-soft 5.45:1, --topbar-muted på --nav-bg 5.00:1.
+   Hjelpenyanser kun til pynt/ramme (ingen tekst): #56665A skillestrek i toppfeltet,
+   #7F8F83 kant på sekundærknapp i toppfeltet (3.51:1 mot --topbar),
+   #D6D4C8 / #F3F2EC / #A9AA9E / #C9C7BB presentasjonsramme og nettleserkrom.
+   Fordeling i denne retningen: mye --surface, lite tonet flate. --band
+   brukes bare på tabellhoder og panelets utregningsboks. Ingen nye nyanser.
+
+   TYPOGRAFI (px / linjehøyde)
+   Etikett (versaler, +0.08em)  11 / 16  Bahnschrift 600
+   Navigasjon (versaler, +0.07em) 12.5 / 40  Bahnschrift 600
+   Tabell og liste               13 / 32 (radhøyde)  tall i Bahnschrift 400
+   Brødtekst                     14 / 20  Segoe UI 400
+   Korttittel                    16 / 20  Bahnschrift 600
+   Panelsvar                     16 / 24  Segoe UI 600
+   Toppfelt produkt              17 / 24  Bahnschrift 600
+   H1 startside                  30 / 36  Bahnschrift 600, -0.005em
+
+   MÅL
+   Radhøyde 32 px (tabeller, lister, kritiske deler). Toppfelt 52 px.
+   Navigasjonsrad 40 px. Knapper 32 px (små 28 px).
+   Avstand: 4 · 8 · 12 · 16 · 24 · 32. Kortpolstring 16/20 px.
+   Hjørneradius 4 px overalt (2 px på tagger). Strek 1 px.
+   Kortkant 1 px --divider; skille mellom delblokker 1 px --border;
+   inne i en blokk: ingen streker. Valgt celle: 3 px innvendig ring --sel-ring.
+   Fokusring: 2 px --focus, 2 px avstand.
+   Forklaringspanel: 432 px bredt, skyver innholdet (grid-kolonne).
+   ===================================================================== */
+
+:root{
+  --bg:#EFEDE4; --surface:#FBFAF5; --band:#E4E2D6;
+  --topbar:#2C3A31; --topbar-fg:#EEF0E8; --topbar-muted:#B4C0B5;
+  --tb-btn:#C9A862; --tb-btn-fg:#1F2620;
+  --nav-bg:#3A4A3F; --nav-fg:#D2DBD1; --nav-active:#FFFFFF; --nav-ind:#C9A862;
+  --text:#1D2420; --muted:#535E57; --divider:#DAD8CC; --border:#86887C;
+  --primary:#2F5A43; --on-primary:#FFFFFF; --focus:#7D5B1E;
+  --sel-bg:#E3ECE0; --sel-ring:#2F5A43;
+  --crit:#A0302A; --crit-soft:#F6E2DE; --warn:#8A4F0B; --warn-soft:#F7E8D6;
+  --info:#45586A; --info-soft:#E3EAEE; --over:#7E2F55; --over-soft:#F2E2EA;
+  --brass-line:#8A6726;
+  --f-tech:"Bahnschrift","DIN Alternate","DIN 2014","Roboto Condensed","Arial Narrow",sans-serif;
+  --f-body:"Segoe UI Variable Text","Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;
+  --r:4px;
+  --row:32px;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:#D6D4C8;color:var(--text);font:400 14px/20px var(--f-body)}
+a{color:var(--primary);text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px}
+.num,.tnum{font-variant-numeric:tabular-nums lining-nums}
+.tech{font-family:var(--f-tech);font-stretch:87.5%}
+.lbl{font-family:var(--f-tech);font-stretch:87.5%;font-weight:600;font-size:11px;line-height:16px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.ic{width:16px;height:16px;flex:0 0 16px;display:inline-block;vertical-align:-3px}
+.ic-s{width:14px;height:14px;flex:0 0 14px;vertical-align:-2px}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+
+/* ---------- presentasjonsramme ---------- */
+.deck-h{width:1440px;margin:0 auto;padding:28px 40px 20px;background:var(--bg);border-bottom:1px solid var(--divider)}
+.deck-h .lbl{color:var(--focus)}
+.deck-h h1{font-family:var(--f-tech);font-stretch:87.5%;font-weight:600;font-size:26px;line-height:32px;margin:4px 0 6px}
+.deck-h p{margin:0;color:var(--muted);max-width:980px}
+.screen-cap{width:1440px;margin:0 auto;padding:28px 40px 12px;display:flex;align-items:baseline;gap:12px}
+.screen-cap .no{font-family:var(--f-tech);font-stretch:87.5%;font-weight:600;font-size:13px;letter-spacing:.08em;color:var(--text);border:1px solid var(--border);border-radius:2px;padding:0 6px;line-height:20px}
+.screen-cap h2{margin:0;font-family:var(--f-tech);font-stretch:87.5%;font-weight:600;font-size:16px;letter-spacing:.02em}
+.screen-cap span.d{color:var(--muted);font-size:13px}
+.browser{width:1440px;margin:0 auto;background:var(--bg);border-top:1px solid #A9AA9E;border-bottom:1px solid #A9AA9E}
+.chrome{height:36px;background:#F3F2EC;border-bottom:1px solid var(--divider);display:flex;align-items:center;gap:12px;padding:0 14px}
+.chrome .dots{display:flex;gap:6px}
+.chrome .dots i{width:10px;height:10px;border-radius:50%;background:#C9C7BB;display:block}
+.chrome .url{flex:0 0 520px;height:24px;border:1px solid var(--divider);background:#FFFFFF;border-radius:var(--r);font:12px/22px var(--f-body);color:var(--muted);padding:0 10px}
+
+/* ---------- toppfelt ---------- */
+.topbar{height:52px;background:var(--topbar);color:var(--topbar-fg);display:flex;align-items:center;justify-content:space-between;padding:0 24px;gap:24px}
+.tb-l{display:flex;align-items:center;gap:20px;min-width:0}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--f-tech);font-stretch:87.5%;font-weight:700;font-size:13px;letter-spacing:.14em;color:var(--topbar-fg);white-space:nowrap}
+.brand-mark{width:18px;height:18px;display:block;color:var(--nav-ind)}
+.tb-div{width:1px;height:24px;background:#56665A}
+.prod{font-family:var(--f-tech);font-stretch:87.5%;font-weight:600;font-size:17px;line-height:24px;white-space:nowrap}
+.prod .vn{color:var(--topbar-muted);font-weight:400}
+.meta{display:flex;gap:16px;color:var(--topbar-muted);font-size:13px;white-space:nowrap}
+.meta b{font-weight:600;color:var(--topbar-fg)}
+.meta .k{font-family:var(--f-tech);font-stretch:87.5%;font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;font-weight:600;margin-right:6px;color:var(--topbar-muted)}
+.tb-r{display:flex;align-items:center;gap:8px}
+.btn{display:inline-flex;align-items:center;gap:8px;height:32px;padding:0 14px;border-radius:var(--r);font-family:var(--f-tech);font-stretch:87.5%;font-weight:600;font-size:13px;letter-spacing:.04em;border:1px solid transparent;cursor:pointer;white-space:nowrap;text-decoration:none}
+.btn-brass{background:var(--tb-btn);color:var(--tb-btn-fg);border-color:var(--tb-btn)}
+.btn-ghost-dk{background:transparent;color:var(--topbar-fg);border-color:#7F8F83}
+.btn-link-dk{background:transparent;color:var(--topbar-muted);border:0;padding:0 10px;font-family:var(--f-body);font-stretch:normal;font-weight:400;font-size:12.5px;letter-spacing:0;text-decoration:underline;text-underline-offset:3px}
+.btn-primary{background:var(--primary);color:var(--on-primary);border-color:var(--primary)}
+.btn-line{background:var(--surface);color:var(--primary);border-color:var(--border)}
+.btn-sm{height:28px;padding:0 10px;font-size:12.5px}
+
+/* ---------- navigasjonsrad ---------- */
+.navrow{height:40px;background:var(--nav-bg);display:flex;align-items:stretch;justify-content:space-between;padding:0 24px}
+.nav{display:flex;align-items:stretch;gap:0;margin:0;padding:0;list-style:none}
+.nav li{display:flex}
+.nav a{display:flex;align-items:center;gap:8px;padding:0 16px;color:var(--nav-fg);text-decoration:none;font-family:var(--f-tech);font-stretch:87.5%;font-weight:600;font-size:12.5px;letter-spacing:.07em;text-transform:uppercase;position:relative}
+.nav a .ix{font-weight:400;font-size:11px;color:var(--topbar-muted);letter-spacing:.04em}
+.nav a[aria-current="location"]{color:var(--nav-active)}
+.nav a[aria-current="location"] .ix{color:var(--nav-ind)}
+.nav a[aria-current="location"]::after{content:"";position:absolute;left:16px;right:16px;bottom:0;height:2px;background:var(--nav-ind)}
+.nav li+li a::before{content:"";position:absolute;left:0;top:14px;bottom:14px;width:1px;background:#56665A}
+.nav-meta{display:flex;align-items:center;color:var(--nav-fg);font-size:12px;gap:8px}
+
+/* ---------- resultatside ---------- */
+.workspace{display:grid;grid-template-columns:minmax(0,1fr) 432px;align-items:stretch}
+.content{padding:16px 24px 32px;display:flex;flex-direction:column;gap:16px;min-width:0}
+.status{display:flex;align-items:center;gap:14px;height:40px;padding:0 16px;background:var(--surface);border:1px solid var(--divider);border-radius:var(--r);font-size:13.5px}
+.status .lbl{color:var(--brass-line)}
+.status .sep{width:1px;height:16px;background:var(--divider)}
+.status a{font-weight:600}
+.status a.crit{color:var(--crit)}
+.status .dot{color:var(--muted)}
+
+.card{background:var(--surface);border:1px solid var(--divider);border-radius:var(--r)}
+.card-h{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 16px 10px;border-bottom:1px solid var(--divider)}
+.card-t{display:flex;align-items:baseline;gap:10px;margin:0}
+.card-t .ix{font-family:var(--f-tech);font-stretch:87.5%;font-weight:400;font-size:12px;color:var(--brass-line);letter-spacing:.06em;position:relative;padding-top:6px}
+.card-t .ix::before{content:"";position:absolute;left:0;top:0;width:16px;height:2px;background:var(--brass-line)}
+.card-t h3{margin:0;font-family:var(--f-tech);font-stretch:87.5%;font-weight:600;font-size:16px;line-height:20px;letter-spacing:.01em}
+.card-t .sub{font-size:12.5px;color:var(--muted)}
+.card-b{padding:4px 16px 12px}
+.card-f{padding:8px 16px 12px;font-size:13px}
+
+/* filter */
+.filter{display:flex;align-items:center;gap:8px}
+.select{display:inline-flex;align-items:center;justify-content:space-between;gap:16px;height:28px;min-width:132px;padding:0 8px 0 10px;border:1px solid var(--border);border-radius:var(--r);background:var(--surface);font-size:13px;color:var(--text)}
+.select svg{width:12px;height:12px}
+
+/* datatabeller */
+table{border-collapse:separate;border-spacing:0}
+.dt{width:100%;font-size:13px}
+.dt th{height:32px;text-align:left;font-family:var(--f-tech);font-stretch:87.5%;font-weight:600;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border);padding:0 12px 0 0;white-space:nowrap}
+.dt td{height:32px;padding:0 12px 0 0;border-bottom:1px solid var(--divider);white-space:nowrap}
+.dt tr:last-child td{border-bottom:0}
+.dt .r{text-align:right}
+.dt .vn{font-family:var(--f-tech);font-stretch:87.5%;font-variant-numeric:tabular-nums;font-size:13.5px;letter-spacing:.02em}
+.dt .n{font-family:var(--f-tech);font-stretch:87.5%;font-variant-numeric:tabular-nums lining-nums;font-size:14px}
+.forfalt{display:inline-flex;align-items:center;gap:4px;color:var(--crit);font-size:12.5px;margin-left:8px;font-family:var(--f-body);font-stretch:normal}
+.tag{display:inline-block;height:20px;line-height:18px;padding:0 6px;border:1px solid var(--divider);border-radius:2px;font-family:var(--f-tech);font-stretch:87.5%;font-weight:600;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);background:var(--surface)}
+.more{display:inline-flex;align-items:center;gap:6px;font-weight:600}
+
+/* endringer */
+.chg{display:grid;grid-template-columns:1fr 1fr;gap:0}
+.chg-g{padding:8px 0 4px}
+.chg-g+.chg-g{border-left:1px solid var(--divider);padding-left:20px}
+.chg-g h4{margin:0 0 4px;font-size:13px;font-weight:600}
+.chg-g h4 .c{font-weight:400;color:var(--muted)}
+.chg-l{list-style:none;margin:0;padding:0}
+.chg-l li{display:flex;align-items:center;gap:10px;min-height:32px;font-size:13.5px}
+.chg-l .tag{min-width:58px;text-align:center}
+.chg-l .vn{font-family:var(--f-tech);font-stretch:87.5%;font-variant-numeric:tabular-nums}
+.chg-l .delta{font-family:var(--f-tech);font-stretch:87.5%;font-variant-numeric:tabular-nums;color:var(--muted)}
+
+/* kritiske deler */
+.crit-list .typ{display:inline-flex;align-items:center;gap:6px;font-weight:600}
+.typ.crit{color:var(--crit)} .typ.warn{color:var(--warn)} .typ.over{color:var(--over)} .typ.info{color:var(--info)}
+
+/* resultattabell */
+.rt-context{display:flex;align-items:center;gap:10px;padding:10px 16px 0;font-size:13px;color:var(--muted)}
+.rt-context b{color:var(--text);font-weight:600}
+.rt-legend{margin-left:auto;display:flex;gap:16px;font-size:12px}
+.rt-legend span{display:inline-flex;align-items:center;gap:6px}
+.rt-legend .sw-sel{width:14px;height:14px;border:3px solid var(--sel-ring);border-radius:2px;background:var(--sel-bg)}
+.rt-wrap{position:relative;margin:10px 16px 0;border:1px solid var(--divider);border-radius:var(--r);overflow:hidden}
+.rt-scroll{overflow-x:auto}
+.rt{font-size:13px;min-width:100%}
+.rt th,.rt td{height:32px;padding:0 10px;white-space:nowrap;background:var(--surface)}
+.rt thead th{position:sticky;top:0;background:var(--band);font-family:var(--f-tech);font-stretch:87.5%;font-weight:600;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border);text-align:left;z-index:2}
+.rt thead th.wk{text-align:right;font-size:12px;letter-spacing:.06em;color:var(--text);font-weight:400}
+.rt thead th.wk.sel{font-weight:700;color:var(--text);box-shadow:inset 0 -2px 0 var(--sel-ring)}
+.rt .c-vn{position:sticky;left:0;width:84px;min-width:84px;z-index:1}
+.rt .c-ds{position:sticky;left:84px;width:144px;min-width:144px;z-index:1}
+.rt .c-rn{position:sticky;left:228px;width:192px;min-width:192px;z-index:1;border-right:1px solid var(--border)}
+.rt thead .c-vn,.rt thead .c-ds,.rt thead .c-rn{z-index:3}
+.rt td.w{width:84px;min-width:84px;text-align:right;font-family:var(--f-tech);font-stretch:87.5%;font-variant-numeric:tabular-nums lining-nums;font-size:14px}
+.rt td.z{color:var(--muted)}
+.rt td.neg{color:var(--crit)}
+.rt tbody.blk tr:first-child td{border-top:1px solid var(--border)}
+.rt tbody.blk:first-of-type tr:first-child td{border-top:0}
+.rt td.c-vn,.rt td.c-ds{vertical-align:top;padding-top:8px;white-space:normal}
+.rt td.c-vn{font-family:var(--f-tech);font-stretch:87.5%;font-weight:600;font-size:14px;letter-spacing:.02em}
+.rt td.c-ds .nm{font-weight:600;display:block;line-height:18px}
+.rt td.c-ds .lv{display:block;margin-top:6px;font-size:12px;line-height:16px;color:var(--muted)}
+.rt td.c-ds .lv b{font-family:var(--f-tech);font-stretch:87.5%;font-weight:600;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.rt td.c-rn{color:var(--text)}
+.rt td.c-rn.sel{font-weight:700}
+.rt td.c-rn.sel::before{content:"";display:inline-block;width:3px;height:14px;background:var(--sel-ring);margin:0 8px -2px -10px}
+/* eksepsjonsmarkør: ikon + antall + svak tone */
+.rt td.x{position:relative}
+.rt td.x .mk{position:absolute;left:6px;top:8px;display:inline-flex;align-items:center;gap:2px;font-family:var(--f-tech);font-stretch:87.5%;font-weight:600;font-size:10.5px;line-height:16px}
+.rt td.x-crit{background:var(--crit-soft)} .rt td.x-crit .mk{color:var(--crit)}
+.rt td.x-warn{background:var(--warn-soft)} .rt td.x-warn .mk{color:var(--warn)}
+.rt td.cell-sel{box-shadow:inset 0 0 0 3px var(--sel-ring);font-weight:700}
+.rt-fade{position:absolute;top:0;right:0;bottom:0;width:28px;background:linear-gradient(90deg,rgba(251,250,245,0),var(--surface));pointer-events:none}
+.rt-foot{display:flex;justify-content:space-between;align-items:center;padding:8px 16px 12px;font-size:12.5px;color:var(--muted)}
+.scrollbar{height:8px;margin:0 16px;border-radius:2px;background:var(--band);position:relative}
+.scrollbar i{position:absolute;left:0;top:0;bottom:0;width:72%;background:#A9AA9E;border-radius:2px}
+
+.illus{font-size:12px;color:var(--muted);padding:4px 2px 0}
+
+/* forklaringspanel (ikke-modal aside, skyver innholdet) */
+.explain{background:var(--surface);border-left:1px solid var(--border);position:relative}
+.explain-in{position:sticky;top:0;padding:0 0 24px}
+.ex-h{padding:16px 20px 14px;border-bottom:1px solid var(--brass-line);display:flex;gap:12px;align-items:flex-start;justify-content:space-between}
+.ex-h .lbl{color:var(--brass-line);display:block;margin-bottom:4px}
+.ex-h h2{margin:0;font-family:var(--f-tech);font-stretch:87.5%;font-weight:600;font-size:17px;line-height:22px}
+.ex-h h2 .vn{font-variant-numeric:tabular-nums}
+.kbd{display:inline-block;font-family:var(--f-tech);font-stretch:87.5%;font-size:10.5px;letter-spacing:.06em;border:1px solid var(--border);border-bottom-width:2px;border-radius:3px;padding:0 4px;line-height:14px;color:var(--muted);font-weight:600}
+.layer{padding:14px 20px;border-bottom:1px solid var(--divider);display:grid;grid-template-columns:28px 1fr;gap:0 10px}
+.layer .li{font-family:var(--f-tech);font-stretch:87.5%;font-size:12px;color:var(--brass-line);border-top:2px solid var(--brass-line);padding-top:2px;height:20px;width:20px;text-align:left;font-variant-numeric:tabular-nums}
+.layer .lbl{margin-bottom:6px;display:block}
+.answer{font-size:16px;line-height:24px;font-weight:600;margin:0}
+.calc{background:var(--band);border-radius:var(--r);padding:8px 12px;font-size:13px}
+.calc .eq{display:grid;grid-template-columns:1fr auto;align-items:center;min-height:28px;gap:12px}
+.calc .eq+.eq{border-top:1px solid var(--divider)}
+.calc .v{font-family:var(--f-tech);font-stretch:87.5%;font-variant-numeric:tabular-nums lining-nums;font-size:15px;text-align:right}
+.calc .eq.res{border-top:1px solid var(--text)}
+.calc .eq.res .v{font-weight:700}
+.calc .f{color:var(--muted);font-size:12px}
+.links{list-style:none;margin:0;padding:0}
+.links li{display:flex;align-items:center;justify-content:space-between;min-height:32px;border-bottom:1px solid var(--divider);font-size:13.5px}
+.links li:last-child{border-bottom:0}
+.links a{display:inline-flex;align-items:center;gap:10px}
+.links .v{font-family:var(--f-tech);font-stretch:87.5%;font-variant-numeric:tabular-nums;font-size:15px;min-width:36px;text-align:right;color:var(--text);text-decoration:none}
+.links .w{color:var(--muted);font-size:12px}
+.rule{margin:0;font-size:13.5px;line-height:20px}
+.exc{margin:16px 20px 0;border:1px solid var(--crit);border-left-width:3px;border-radius:var(--r);background:var(--crit-soft);padding:10px 12px;display:grid;grid-template-columns:18px 1fr;gap:4px 10px;font-size:13.5px;line-height:20px}
+.exc .ic{color:var(--crit);margin-top:2px}
+.exc .t{display:block;font-family:var(--f-tech);font-stretch:87.5%;font-weight:700;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--crit)}
+.exc p{margin:0}
+.exc b{color:var(--crit)}
+.ex-nav{display:flex;justify-content:space-between;padding:14px 20px 0;font-size:12.5px;color:var(--muted)}
+
+/* ---------- startside ---------- */
+.start{display:grid;grid-template-columns:1fr 1fr;gap:24px;width:1120px;margin:0 auto;padding:40px 0 48px}
+.start-h{grid-column:1 / -1;border-bottom:1px solid var(--divider);padding-bottom:20px;display:flex;justify-content:space-between;align-items:flex-end;gap:24px}
+.start-h .lbl{color:var(--focus);display:block;margin-bottom:6px}
+.start-h h1{margin:0;font-family:var(--f-tech);font-stretch:87.5%;font-weight:600;font-size:30px;line-height:36px;letter-spacing:-.005em}
+.start-h p{margin:8px 0 0;color:var(--muted);font-size:14px;max-width:620px}
+.steps{list-style:none;margin:0;padding:0;counter-reset:s}
+.steps li{display:grid;grid-template-columns:40px 1fr;gap:12px;padding:14px 0;border-bottom:1px solid var(--divider)}
+.steps li:first-child{padding-top:4px}
+.steps li:last-child{border-bottom:0}
+.steps .sn{font-family:var(--f-tech);font-stretch:87.5%;font-weight:600;font-size:20px;line-height:24px;color:var(--text);border-top:2px solid var(--brass-line);padding-top:4px;font-variant-numeric:tabular-nums;width:28px}
+.steps .st{font-weight:600;font-size:15px;line-height:22px;margin:4px 0 0}
+.steps .sl{display:flex;gap:16px;margin-top:8px;font-size:13.5px}
+.steps .sl a{display:inline-flex;align-items:center;gap:6px}
+.help{display:grid;grid-template-columns:18px 1fr;gap:10px;margin-top:16px;padding:12px 14px;border:1px solid var(--divider);border-left:3px solid var(--info);border-radius:var(--r);background:var(--info-soft);font-size:13.5px;line-height:20px}
+.help .ic{color:var(--info);margin-top:2px}
+.help .t{display:block;font-family:var(--f-tech);font-stretch:87.5%;font-weight:700;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--info)}
+.drop{border:1px dashed var(--border);border-radius:var(--r);background:var(--surface);padding:28px 24px 24px;text-align:center;position:relative}
+.drop::before,.drop::after{content:"";position:absolute;width:14px;height:14px;border-color:var(--brass-line);border-style:solid}
+.drop::before{left:-1px;top:-1px;border-width:2px 0 0 2px;border-top-left-radius:var(--r)}
+.drop::after{right:-1px;bottom:-1px;border-width:0 2px 2px 0;border-bottom-right-radius:var(--r)}
+.drop .di{width:40px;height:40px;margin:0 auto 10px;color:var(--primary)}
+.drop .dt1{font-family:var(--f-tech);font-stretch:87.5%;font-weight:600;font-size:17px;line-height:24px;margin:0}
+.drop .dt2{margin:4px 0 16px;color:var(--muted);font-size:13.5px}
+.drop .dt3{margin:14px 0 0;font-size:13px;color:var(--muted);display:flex;justify-content:center;gap:6px;align-items:center}
+.drop .dt3 .ic{color:var(--primary)}
+fieldset{border:0;margin:20px 0 0;padding:0}
+legend{padding:0;margin-bottom:8px;font-family:var(--f-tech);font-stretch:87.5%;font-weight:600;font-size:16px;line-height:20px}
+.opt{display:grid;grid-template-columns:20px 1fr;gap:2px 10px;padding:10px 12px;border:1px solid var(--divider);border-radius:var(--r);background:var(--surface);margin-top:-1px}
+.opt+.opt{border-top-left-radius:0;border-top-right-radius:0}
+.opt:not(:last-of-type){border-bottom-left-radius:0;border-bottom-right-radius:0}
+.opt.on{border-color:var(--sel-ring);background:var(--sel-bg);position:relative;z-index:1}
+.radio{width:16px;height:16px;border:1.5px solid var(--border);border-radius:50%;margin-top:2px;background:#FFFFFF;position:relative}
+.opt.on .radio{border-color:var(--primary)}
+.opt.on .radio::after{content:"";position:absolute;inset:3px;border-radius:50%;background:var(--primary)}
+.opt .on-t{font-weight:600;font-size:14px}
+.opt .on-h{grid-column:2;font-size:12.5px;color:var(--muted);line-height:18px}
+.go{display:flex;align-items:center;gap:16px;margin-top:16px}
+.go .btn{height:36px;padding:0 22px;font-size:14px}
+.go span{font-size:12.5px;color:var(--muted)}
+
+/* ---------- valideringsfeil ---------- */
+.val{width:880px;margin:0 auto;padding:32px 0 40px}
+.err{border:1px solid var(--crit);border-left-width:3px;border-radius:var(--r);background:var(--surface)}
+.err-h{display:grid;grid-template-columns:22px 1fr;gap:4px 12px;padding:14px 16px;background:var(--crit-soft);border-bottom:1px solid var(--divider)}
+.err-h .ic{width:20px;height:20px;color:var(--crit);margin-top:4px}
+.err-h .lbl{color:var(--crit)}
+.err-h h1{margin:0;font-family:var(--f-tech);font-stretch:87.5%;font-weight:600;font-size:22px;line-height:28px;grid-column:2}
+.err-h p{margin:0;grid-column:2;font-size:14px}
+.err-g{padding:10px 16px 6px 50px}
+.err-g+.err-g{border-top:1px solid var(--divider)}
+.err-g h2{margin:0 0 2px;display:flex;align-items:center;gap:8px;font-family:var(--f-tech);font-stretch:87.5%;font-weight:600;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.err-g h2 b{color:var(--text);font-size:14px;letter-spacing:.02em;text-transform:none}
+.err-g h2 .cnt{font-variant-numeric:tabular-nums;border:1px solid var(--crit);color:var(--crit);border-radius:2px;padding:0 5px;line-height:16px;font-size:11px;letter-spacing:.04em}
+.err-g ul{list-style:none;margin:0;padding:0}
+.err-g li{display:grid;grid-template-columns:96px 1fr;align-items:center;min-height:32px;font-size:13.5px;border-bottom:1px solid var(--divider)}
+.err-g li:last-child{border-bottom:0}
+.err-g .loc{font-family:var(--f-tech);font-stretch:87.5%;font-variant-numeric:tabular-nums;font-size:13.5px;color:var(--crit);font-weight:600;display:inline-flex;align-items:center;gap:6px}
+.val .drop{margin-top:20px;display:grid;grid-template-columns:auto 1fr auto;text-align:left;align-items:center;gap:16px;padding:18px 20px}
+.val .drop .di{margin:0;width:32px;height:32px}
+.val .drop .dt2{margin:2px 0 0}
+
+.footnote{width:1440px;margin:0 auto;padding:20px 40px 40px;color:var(--muted);font-size:12px;background:var(--bg);border-top:1px solid var(--divider)}
+</style>
+</head>
+<body>
+
+<!-- Ikonsett (inline SVG, 16 px rutenett, 1.5 px strek) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-crit" viewBox="0 0 16 16"><path d="M5.2 1.5h5.6l3.7 3.7v5.6l-3.7 3.7H5.2l-3.7-3.7V5.2z" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M8 4.5v4.2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="8" cy="11.2" r="1" fill="currentColor"/></symbol>
+  <symbol id="i-warn" viewBox="0 0 16 16"><path d="M8 1.8l6.6 11.7H1.4z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M8 6v3.6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="8" cy="11.6" r=".95" fill="currentColor"/></symbol>
+  <symbol id="i-info" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M8 7.2v4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="8" cy="4.9" r="1" fill="currentColor"/></symbol>
+  <symbol id="i-over" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M5 5l6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
+  <symbol id="i-down" viewBox="0 0 16 16"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-right" viewBox="0 0 16 16"><path d="M6 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-close" viewBox="0 0 16 16"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></symbol>
+  <symbol id="i-dl" viewBox="0 0 16 16"><path d="M8 2v8M4.8 7L8 10.2 11.2 7M3 13.5h10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-up" viewBox="0 0 16 16"><path d="M8 11V3M4.8 6L8 2.8 11.2 6M3 13.5h10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-xls" viewBox="0 0 40 40"><path d="M10 3.5h14l8 8v25H10z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M24 3.5v8h8" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M14.5 18h13M14.5 23h13M14.5 28h13M20 15v16" stroke="currentColor" stroke-width="1.2"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 16 16"><rect x="3" y="7" width="10" height="7" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M5.5 7V5a2.5 2.5 0 015 0v2" fill="none" stroke="currentColor" stroke-width="1.5"/></symbol>
+</svg>
+
+<header class="deck-h">
+  <span class="lbl">Designretning 3 av 5 · fargetema A «Salvie i to lag»</span>
+  <h1>Teknisk og stram</h1>
+  <p>Et presist ingeniørverktøy med en eksklusiv kant. Kondensert DIN-aktig skrift på overskrifter, etiketter og navigasjon, Segoe UI i brødteksten, tabulære tall overalt. Kompakt med 32 px radhøyde, hårfine linjer, 4 px hjørner og flate kort med strek. Messing bare som tynne aksentlinjer. Seksjonene er nummerert 01–04 som på en urskive.</p>
+</header>
+
+<!-- ================================================================
+     SKJERM 1 · Resultatsiden med forklaringspanelet åpent
+     ================================================================ -->
+<div class="screen-cap"><span class="no">01</span><h2>Resultatsiden etter beregning</h2><span class="d">Brukeren har klikket seg ned til Resultattabell og valgt cellen Nettobehov, uke 1, for 300-003 Hjul.</span></div>
+<div class="browser">
+  <div class="chrome"><span class="dots"><i></i><i></i><i></i></span><span class="url">cosi-mrp.local/#resultattabell</span></div>
+
+  <header class="topbar">
+    <div class="tb-l">
+      <span class="brand"><svg class="brand-mark" viewBox="0 0 18 18" aria-hidden="true"><path d="M2 15h14" stroke="currentColor" stroke-width="1.5"/><path d="M4 12.5v-4M7.3 12.5v-7M10.7 12.5V3M14 12.5v-5" stroke="currentColor" stroke-width="1.5"/></svg>COSI MRP</span>
+      <span class="tb-div" aria-hidden="true"></span>
+      <span class="prod">Kontorstol Pro <span class="vn tnum">(100-001)</span></span>
+      <span class="meta">
+        <span><span class="k">Horisont</span><b class="tnum">8 uker</b></span>
+        <span><span class="k">Beregnet</span><span class="tnum">13.11.2026 kl. 08:04</span></span>
+      </span>
+    </div>
+    <div class="tb-r">
+      <button class="btn btn-link-dk" type="button">Slett lagret kjøring</button>
+      <button class="btn btn-ghost-dk" type="button"><svg class="ic" aria-hidden="true"><use href="#i-up"/></svg>Last opp ny fil</button>
+      <button class="btn btn-brass" type="button"><svg class="ic" aria-hidden="true"><use href="#i-dl"/></svg>Eksporter til Excel</button>
+    </div>
+  </header>
+
+  <nav class="navrow" aria-label="Seksjoner på resultatsiden">
+    <ul class="nav">
+      <li><a href="#bf"><span class="ix tnum">01</span>Bestillingsforslag</a></li>
+      <li><a href="#en"><span class="ix tnum">02</span>Endringer</a></li>
+      <li><a href="#kd"><span class="ix tnum">03</span>Kritiske deler</a></li>
+      <li><a href="#rt" aria-current="location"><span class="ix tnum">04</span>Resultattabell</a></li>
+    </ul>
+    <span class="nav-meta">Ett ferdigprodukt per fil</span>
+  </nav>
+
+  <div class="workspace">
+    <main class="content">
+
+      <div class="status" role="status">
+        <span class="lbl">Status</span>
+        <span class="sep" aria-hidden="true"></span>
+        <a href="#bf" class="tnum">12 bestillingsforslag</a>
+        <span class="dot" aria-hidden="true">·</span>
+        <a href="#kd" class="crit tnum" style="display:inline-flex;align-items:center;gap:6px"><svg class="ic" aria-hidden="true"><use href="#i-crit"/></svg>4 kritiske deler trenger handling</a>
+        <span class="dot" aria-hidden="true">·</span>
+        <a href="#en" class="tnum">3 endringer siden forrige kjøring</a>
+      </div>
+
+      <!-- 01 Bestillingsforslag -->
+      <section class="card" id="bf" aria-labelledby="bf-h">
+        <div class="card-h">
+          <div class="card-t"><span class="ix">01</span><h3 id="bf-h">Bestillingsforslag</h3><span class="sub tnum">12 forslag i horisonten</span></div>
+          <div class="filter"><span class="lbl">Uke</span><span class="select" role="button" aria-haspopup="listbox">Alle uker <svg aria-hidden="true"><use href="#i-down"/></svg></span></div>
+        </div>
+        <div class="card-b">
+          <table class="dt">
+            <thead><tr><th style="width:120px">Varenummer</th><th>Beskrivelse</th><th class="r" style="width:140px">Frigivelsesuke</th><th class="r" style="width:220px">Mengde</th><th style="width:200px;padding-left:32px">Ordretype</th></tr></thead>
+            <tbody>
+              <tr><td class="vn">300-003</td><td>Hjul</td><td class="r n">1</td><td class="r"><span class="n">175</span><span class="forfalt"><svg class="ic ic-s" aria-hidden="true"><use href="#i-crit"/></svg>50 forfalt</span></td><td style="padding-left:32px"><span class="tag">Innkjøp</span></td></tr>
+              <tr><td class="vn">300-006</td><td>Skruesett M6</td><td class="r n">2</td><td class="r n">30</td><td style="padding-left:32px"><span class="tag">Innkjøp</span></td></tr>
+              <tr><td class="vn">200-002</td><td>Seteenhet</td><td class="r n">2</td><td class="r n">45</td><td style="padding-left:32px"><span class="tag">Produksjonsordre</span></td></tr>
+              <tr><td class="vn">300-005</td><td>Gassfjær</td><td class="r n">3</td><td class="r n">100</td><td style="padding-left:32px"><span class="tag">Innkjøp</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="card-f"><a href="#bf-alle" class="more tnum">… 8 til<svg class="ic ic-s" aria-hidden="true"><use href="#i-down"/></svg></a></div>
+      </section>
+
+      <!-- 02 Endringer -->
+      <section class="card" id="en" aria-labelledby="en-h">
+        <div class="card-h">
+          <div class="card-t"><span class="ix">02</span><h3 id="en-h">Endringer siden forrige kjøring</h3><span class="sub tnum">13.11 kl. 07:31 → 08:04</span></div>
+        </div>
+        <div class="card-b chg">
+          <div class="chg-g">
+            <h4>Bestillingsforslag: <span class="c">1 ny, 1 endret</span></h4>
+            <ul class="chg-l">
+              <li><span class="tag">Ny</span><span><span class="vn">300-006</span> Skruesett M6, uke 2: <span class="vn">30</span></span></li>
+              <li><span class="tag">Endret</span><span><span class="vn">300-003</span> Hjul, uke 1: <span class="vn">130 → 205</span> <span class="delta">(+75)</span></span></li>
+            </ul>
+          </div>
+          <div class="chg-g">
+            <h4>Eksepsjoner: <span class="c">1 ny</span></h4>
+            <ul class="chg-l">
+              <li><span class="tag">Ny</span><span><span class="vn">300-002</span> Rygg: Bruk av sikkerhetslager (uke 2)</span></li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- 03 Kritiske deler -->
+      <section class="card" id="kd" aria-labelledby="kd-h">
+        <div class="card-h">
+          <div class="card-t"><span class="ix">03</span><h3 id="kd-h">Kritiske deler <span class="tnum" style="font-weight:400;color:var(--muted)">(4)</span></h3><span class="sub">Sortert etter uke. Klikk en rad for å se forklaringen.</span></div>
+        </div>
+        <div class="card-b">
+          <table class="dt crit-list">
+            <thead><tr><th style="width:120px">Varenummer</th><th style="width:200px">Beskrivelse</th><th>Eksepsjon</th><th class="r" style="width:80px">Uke</th><th style="width:180px;padding-left:32px">Handling</th></tr></thead>
+            <tbody>
+              <tr><td class="vn">300-003</td><td>Hjul</td><td><span class="typ crit"><svg class="ic" aria-hidden="true"><use href="#i-crit"/></svg>Bestilling forsinket</span></td><td class="r n">1</td><td style="padding-left:32px"><a href="#rt">Vis i resultattabellen</a></td></tr>
+              <tr><td class="vn">300-002</td><td>Rygg</td><td><span class="typ warn"><svg class="ic" aria-hidden="true"><use href="#i-warn"/></svg>Bruk av sikkerhetslager</span></td><td class="r n">2</td><td style="padding-left:32px"><a href="#rt">Vis i resultattabellen</a></td></tr>
+              <tr><td class="vn">300-005</td><td>Gassfjær</td><td><span class="typ warn"><svg class="ic" aria-hidden="true"><use href="#i-warn"/></svg>Mottak forsinket</span></td><td class="r n">3</td><td style="padding-left:32px"><a href="#rt">Vis i resultattabellen</a></td></tr>
+              <tr><td class="vn">300-007</td><td>Armlene</td><td><span class="typ over"><svg class="ic" aria-hidden="true"><use href="#i-over"/></svg>Kanseller mottak</span></td><td class="r n">6</td><td style="padding-left:32px"><a href="#rt">Vis i resultattabellen</a></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- 04 Resultattabell -->
+      <section class="card" id="rt" aria-labelledby="rt-h">
+        <div class="card-h">
+          <div class="card-t"><span class="ix">04</span><h3 id="rt-h">Resultattabell</h3><span class="sub">Seks rader per del. Klikk en celle for å se forklaringen.</span></div>
+          <div class="filter"><span class="lbl">Vis</span><span class="select" role="button" aria-haspopup="listbox" style="min-width:150px">Alle deler (9) <svg aria-hidden="true"><use href="#i-down"/></svg></span></div>
+        </div>
+        <div class="rt-context">
+          <span><b>Kontorstol Pro (100-001)</b> · Horisont 8 uker</span>
+          <span class="rt-legend">
+            <span><i class="sw-sel" aria-hidden="true"></i>Valgt celle</span>
+            <span style="color:var(--crit)"><svg class="ic ic-s" aria-hidden="true"><use href="#i-crit"/></svg><span style="color:var(--muted)">Eksepsjon, kritisk</span></span>
+            <span style="color:var(--warn)"><svg class="ic ic-s" aria-hidden="true"><use href="#i-warn"/></svg><span style="color:var(--muted)">Eksepsjon, advarsel</span></span>
+          </span>
+        </div>
+        <div class="rt-wrap">
+          <div class="rt-scroll">
+            <table class="rt" aria-label="Resultattabell for Kontorstol Pro">
+              <thead>
+                <tr>
+                  <th class="c-vn" scope="col">Varenr.</th>
+                  <th class="c-ds" scope="col">Beskrivelse</th>
+                  <th class="c-rn" scope="col">Rad</th>
+                  <th class="wk sel" scope="col">Uke 1</th><th class="wk" scope="col">Uke 2</th><th class="wk" scope="col">Uke 3</th><th class="wk" scope="col">Uke 4</th><th class="wk" scope="col">Uke 5</th><th class="wk" scope="col">Uke 6</th><th class="wk" scope="col">Uke 7</th><th class="wk" scope="col">Uke 8</th>
+                </tr>
+              </thead>
+              <!-- Blokk: 300-003 Hjul -->
+              <tbody class="blk">
+                <tr><td class="c-vn" rowspan="6">300-003</td><td class="c-ds" rowspan="6"><span class="nm">Hjul</span><span class="lv"><b>Nivå</b> ..2<br>Komponent (Kjøpes inn)</span></td>
+                    <td class="c-rn">Bruttobehov</td><td class="w">205</td><td class="w">90</td><td class="w">90</td><td class="w">120</td><td class="w">90</td><td class="w">90</td><td class="w">120</td><td class="w">90</td></tr>
+                <tr><td class="c-rn">Planlagte mottak</td><td class="w z">0</td><td class="w z">0</td><td class="w z">0</td><td class="w z">0</td><td class="w z">0</td><td class="w z">0</td><td class="w z">0</td><td class="w z">0</td></tr>
+                <tr><td class="c-rn">Forventet lagerbeholdning</td><td class="w z">0</td><td class="w z">0</td><td class="w z">0</td><td class="w z">0</td><td class="w z">0</td><td class="w z">0</td><td class="w z">0</td><td class="w z">0</td></tr>
+                <tr><td class="c-rn sel">Nettobehov</td><td class="w x x-crit cell-sel" aria-selected="true"><span class="mk"><svg class="ic ic-s" aria-hidden="true"><use href="#i-crit"/></svg>1</span>175</td><td class="w">90</td><td class="w">90</td><td class="w">120</td><td class="w">90</td><td class="w">90</td><td class="w">120</td><td class="w">90</td></tr>
+                <tr><td class="c-rn">Planlagte ordremottak</td><td class="w">175</td><td class="w">90</td><td class="w">90</td><td class="w">120</td><td class="w">90</td><td class="w">90</td><td class="w">120</td><td class="w">90</td></tr>
+                <tr><td class="c-rn">Planlagte ordrefrigivelser</td><td class="w">175</td><td class="w">90</td><td class="w">90</td><td class="w">120</td><td class="w">90</td><td class="w">90</td><td class="w">120</td><td class="w">90</td></tr>
+              </tbody>
+              <!-- Blokk: 300-005 Gassfjær -->
+              <tbody class="blk">
+                <tr><td class="c-vn" rowspan="6">300-005</td><td class="c-ds" rowspan="6"><span class="nm">Gassfjær</span><span class="lv"><b>Nivå</b> ..2<br>Komponent (Kjøpes inn)</span></td>
+                    <td class="c-rn">Bruttobehov</td><td class="w">45</td><td class="w">45</td><td class="w">60</td><td class="w">45</td><td class="w">45</td><td class="w">60</td><td class="w">45</td><td class="w">45</td></tr>
+                <tr><td class="c-rn">Planlagte mottak</td><td class="w z">0</td><td class="w z">0</td><td class="w z">0</td><td class="w">100</td><td class="w z">0</td><td class="w z">0</td><td class="w z">0</td><td class="w z">0</td></tr>
+                <tr><td class="c-rn">Forventet lagerbeholdning</td><td class="w">75</td><td class="w">30</td><td class="w neg">−30</td><td class="w">25</td><td class="w">80</td><td class="w">20</td><td class="w">75</td><td class="w">30</td></tr>
+                <tr><td class="c-rn">Nettobehov</td><td class="w z">0</td><td class="w z">0</td><td class="w x x-warn"><span class="mk"><svg class="ic ic-s" aria-hidden="true"><use href="#i-warn"/></svg>1</span>30</td><td class="w z">0</td><td class="w">20</td><td class="w z">0</td><td class="w">25</td><td class="w z">0</td></tr>
+                <tr><td class="c-rn">Planlagte ordremottak</td><td class="w z">0</td><td class="w z">0</td><td class="w z">0</td><td class="w z">0</td><td class="w">100</td><td class="w z">0</td><td class="w">100</td><td class="w z">0</td></tr>
+                <tr><td class="c-rn">Planlagte ordrefrigivelser</td><td class="w z">0</td><td class="w z">0</td><td class="w">100</td><td class="w z">0</td><td class="w">100</td><td class="w z">0</td><td class="w z">0</td><td class="w z">0</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <span class="rt-fade" aria-hidden="true"></span>
+        </div>
+        <div class="scrollbar" aria-hidden="true" style="margin-top:6px"><i></i></div>
+        <div class="rt-foot"><span>Viser 2 av 9 deler · Rull sideveis for uke 7–8</span><a href="#rt-alle">Vis neste del: 300-002 Rygg</a></div>
+      </section>
+
+      <p class="illus">Tallene er illustrative og er ikke kontrollert mot testeksemplene.</p>
+    </main>
+
+    <!-- Forklaringspanel: ikke-modal aside, skyver innholdet -->
+    <aside class="explain" aria-labelledby="ex-h">
+      <div class="explain-in">
+        <div class="ex-h">
+          <div>
+            <span class="lbl">Valgt celle · resultattabell</span>
+            <h2 id="ex-h">Forklaring: <span class="vn">300-003</span> Hjul – Nettobehov, uke 1</h2>
+          </div>
+          <button class="btn btn-line btn-sm" type="button"><svg class="ic ic-s" aria-hidden="true"><use href="#i-close"/></svg>Lukk <span class="kbd">Esc</span></button>
+        </div>
+
+        <div class="layer">
+          <span class="li">1</span>
+          <div><span class="lbl">Svar</span>
+            <p class="answer">Du mangler 175 hjul i uke 1, og 50 av dem er forfalte fra før horisonten.</p></div>
+        </div>
+
+        <div class="layer">
+          <span class="li">2</span>
+          <div><span class="lbl">Utregning</span>
+            <div class="calc">
+              <div class="eq"><span>Forventet lagerbeholdning før uke 1</span><span class="v">30</span></div>
+              <div class="eq"><span>+ Planlagte mottak, uke 1</span><span class="v">0</span></div>
+              <div class="eq"><span>− Bruttobehov, uke 1</span><span class="v">205</span></div>
+              <div class="eq"><span>= Disponibel beholdning</span><span class="v">−175</span></div>
+              <div class="eq res"><span><b>Nettobehov</b> <span class="f">= maks(0, sikkerhetslager 0 − (−175))</span></span><span class="v">175</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="layer">
+          <span class="li">3</span>
+          <div><span class="lbl">Tallene</span>
+            <ul class="links">
+              <li><a href="#x-brutto"><span class="v">205</span>Bruttobehov, uke 1</a><span class="w">fra 200-002 Seteenhet</span></li>
+              <li><a href="#x-lager"><span class="v">30</span>Lagerbeholdning ved start</a><span class="w">fra Excel-fila</span></li>
+              <li><a href="#x-forfalt"><span class="v">50</span>Forfalt frigivelse</a><span class="w">lagt i uke 1</span></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="layer">
+          <span class="li">4</span>
+          <div><span class="lbl">Regelen</span>
+            <p class="rule">Nettobehovet er det som mangler for å holde sikkerhetslageret når bruttobehovet er trukket fra det du har på lager og får inn. <a href="#ordliste">Ordliste</a></p></div>
+        </div>
+
+        <div class="exc" role="note">
+          <svg class="ic" aria-hidden="true"><use href="#i-crit"/></svg>
+          <div><span class="t">Eksepsjon · kritisk</span>
+            <p><b>Bestilling forsinket.</b> Bestill nå, eller avtal raskere levering med leverandøren. Produksjonen av 200-002 Seteenhet blir forsinket.</p></div>
+        </div>
+
+        <div class="ex-nav"><span>Panelet følger med når du ruller.</span><a href="#kd">Neste kritiske del</a></div>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<!-- ================================================================
+     SKJERM 2 · Startsiden før opplasting (FR-27)
+     ================================================================ -->
+<div class="screen-cap"><span class="no">02</span><h2>Startsiden før opplasting</h2><span class="d">FR-27. Ingen kjøring lagret ennå, derfor ingen navigasjon.</span></div>
+<div class="browser">
+  <div class="chrome"><span class="dots"><i></i><i></i><i></i></span><span class="url">cosi-mrp.local/</span></div>
+  <header class="topbar">
+    <div class="tb-l"><span class="brand"><svg class="brand-mark" viewBox="0 0 18 18" aria-hidden="true"><path d="M2 15h14" stroke="currentColor" stroke-width="1.5"/><path d="M4 12.5v-4M7.3 12.5v-7M10.7 12.5V3M14 12.5v-5" stroke="currentColor" stroke-width="1.5"/></svg>COSI MRP</span><span class="tb-div" aria-hidden="true"></span><span class="meta">Ingen fil lastet opp</span></div>
+    <div class="tb-r"></div>
+  </header>
+  <div class="navrow" aria-hidden="true"></div>
+
+  <main class="start">
+    <div class="start-h">
+      <div>
+        <span class="lbl">Ny beregning</span>
+        <h1>Lag bestillingsplanen fra Excel-fila di</h1>
+        <p>Appen leser stykklisten, lageret og de prognostiserte behovene, og viser hva du må bestille, hvor mye og når.</p>
+      </div>
+    </div>
+
+    <section aria-labelledby="steps-h">
+      <h2 id="steps-h" class="lbl" style="margin:0 0 8px">Slik gjør du det</h2>
+      <ol class="steps">
+        <li><span class="sn">1</span><div><p class="st">Last ned malen og fyll den ut.</p>
+          <div class="sl"><a href="#mal"><svg class="ic" aria-hidden="true"><use href="#i-dl"/></svg>Last ned tom mal</a><a href="#test01"><svg class="ic" aria-hidden="true"><use href="#i-dl"/></svg>Last ned testeksempel 01</a></div></div></li>
+        <li><span class="sn">2</span><div><p class="st">Last opp fila.</p></div></li>
+        <li><span class="sn">3</span><div><p class="st">Les bestillingsforslagene og resultattabellen.</p></div></li>
+      </ol>
+      <div class="help">
+        <svg class="ic" aria-hidden="true"><use href="#i-info"/></svg>
+        <div><span class="t">Godt å vite</span>Hver fil gjelder ett ferdigprodukt. Lageret for deler som brukes i flere produkter, må du fordele mellom filene.</div>
+      </div>
+    </section>
+
+    <section aria-label="Last opp og beregn">
+      <div class="drop">
+        <svg class="di" aria-hidden="true"><use href="#i-xls"/></svg>
+        <p class="dt1">Slipp Excel-fila her</p>
+        <p class="dt2">Du kan laste opp én Excel-fil (.xlsx).</p>
+        <button class="btn btn-line" type="button"><svg class="ic" aria-hidden="true"><use href="#i-up"/></svg>Velg fil</button>
+        <p class="dt3"><svg class="ic ic-s" aria-hidden="true"><use href="#i-lock"/></svg>Filen sendes ikke noe sted. Den leses bare i nettleseren din.</p>
+      </div>
+
+      <fieldset>
+        <legend>Hva vil du beregne?</legend>
+        <label class="opt on"><span class="radio" aria-hidden="true"></span><span class="on-t">Bestillingsplan</span><span class="on-h">Bestillingsforslag, kritiske deler og resultattabellen for hver del.</span></label>
+        <label class="opt"><span class="radio" aria-hidden="true"></span><span class="on-t">Produksjonskapasitet</span><span class="on-h">Hvor mange ferdigprodukter du kan lage per uke med lageret og mottakene du har.</span></label>
+        <label class="opt"><span class="radio" aria-hidden="true"></span><span class="on-t">Begge</span><span class="on-h">Bestillingsplanen først, deretter produksjonskapasiteten i et eget panel.</span></label>
+      </fieldset>
+      <div class="go"><button class="btn btn-primary" type="button">Beregn</button><span>Velg en fil først. Du får beskjed her hvis noe mangler.</span></div>
+    </section>
+  </main>
+</div>
+
+<!-- ================================================================
+     SKJERM 3 · Valideringsfeil (UJ-4), utsnitt
+     ================================================================ -->
+<div class="screen-cap"><span class="no">03</span><h2>Tilstand: valideringsfeil</h2><span class="d">UJ-4. Utsnitt under toppfeltet etter opplasting med feil.</span></div>
+<div class="browser">
+  <div class="chrome"><span class="dots"><i></i><i></i><i></i></span><span class="url">cosi-mrp.local/</span></div>
+  <header class="topbar">
+    <div class="tb-l"><span class="brand"><svg class="brand-mark" viewBox="0 0 18 18" aria-hidden="true"><path d="M2 15h14" stroke="currentColor" stroke-width="1.5"/><path d="M4 12.5v-4M7.3 12.5v-7M10.7 12.5V3M14 12.5v-5" stroke="currentColor" stroke-width="1.5"/></svg>COSI MRP</span><span class="tb-div" aria-hidden="true"></span><span class="meta">kontorstol-pro.xlsx</span></div>
+    <div class="tb-r"></div>
+  </header>
+  <div class="navrow" aria-hidden="true"></div>
+
+  <main class="val">
+    <section class="err" role="alert" aria-labelledby="err-h">
+      <div class="err-h">
+        <svg class="ic" aria-hidden="true"><use href="#i-crit"/></svg>
+        <span class="lbl">Validering · kontorstol-pro.xlsx</span>
+        <h1 id="err-h">Filen har 3 feil. Ingenting er beregnet.</h1>
+        <p>Rett feilene i Excel, lagre filen og last den opp på nytt.</p>
+      </div>
+      <div class="err-g">
+        <h2>Ark <b>Planlagte mottak</b><span class="cnt">2</span></h2>
+        <ul>
+          <li><span class="loc"><svg class="ic ic-s" aria-hidden="true"><use href="#i-crit"/></svg>rad 4</span><span>Uke: uke 0 er før horisonten.</span></li>
+          <li><span class="loc"><svg class="ic ic-s" aria-hidden="true"><use href="#i-crit"/></svg>rad 5</span><span>Antall: må være et heltall.</span></li>
+        </ul>
+      </div>
+      <div class="err-g">
+        <h2>Ark <b>MPS</b><span class="cnt">1</span></h2>
+        <ul>
+          <li><span class="loc"><svg class="ic ic-s" aria-hidden="true"><use href="#i-crit"/></svg>uke 11</span><span>Antall ferdigprodukter: uke 10 er tom, så uke 11 kan ikke fylles ut.</span></li>
+        </ul>
+      </div>
+    </section>
+
+    <div class="drop">
+      <svg class="di" aria-hidden="true"><use href="#i-xls"/></svg>
+      <div><p class="dt1">Last opp den rettede fila</p><p class="dt2">Du kan laste opp én Excel-fil (.xlsx). Filen sendes ikke noe sted. Den leses bare i nettleseren din.</p></div>
+      <button class="btn btn-primary" type="button"><svg class="ic" aria-hidden="true"><use href="#i-up"/></svg>Velg fil</button>
+    </div>
+  </main>
+</div>
+
+<p class="footnote">Retning 3 «Teknisk og stram» · skisse for bmad-ux, 13.11.2026 · tallene er illustrative · systemskrift i skissen (Bahnschrift + Segoe UI), i appen selvhostet IBM Plex Sans Condensed + IBM Plex Sans.</p>
+</body>
+</html>
