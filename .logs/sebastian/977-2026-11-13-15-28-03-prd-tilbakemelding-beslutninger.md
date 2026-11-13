@@ -47,3 +47,23 @@ Lese faglærers tilbakemelding på PRD-en (`tilbakemelding-prd.md`) og finne ut 
 - Lag introduksjonen til brukertesten i UX-steget før prøvetesten rundt 27.11.
 - Prøvetest rundt 27.11, og opprett `.docs/brukertest/brukertest-resultat.md`.
 - Rett UJ-5 hvis håndkontrollen av fasit 05 endrer tallene.
+
+## 2026-11-13 kl. 15:33 — Sebastian
+
+### Oppgave
+Sebastian meldte at gruppa har godkjent gruppemeldingen om beslutningene 2026-11-13. Punktet skal lukkes, og neste steg i BMad skal avklares.
+
+### Plan
+- Kjøre `bmad-help` for å finne ut hvor prosjektet står.
+- Lukke punktet om gruppas bekreftelse i `issues.md`.
+
+### Resultat
+- Gruppa har bekreftet beslutningene 2026-11-13: minstekrav trinn 1–3, kuttmøte 30.11, UJ-5, brukertest 2.–7.12 og at Carmen tester Mac. Punktet er lukket i `issues.md`.
+- Ifølge `bmad-help` er status:
+  - PRD-en er `final` og merget til `main`.
+  - UX (DESIGN.md og EXPERIENCE.md), arkitektur, epics og sprintplan er ikke startet.
+  - `architecture/technology.md` er et referanseoppsett fra et annet prosjekt (Pytagoras), ikke arkitekturen for COSI - MRP.
+- Neste steg er `bmad-ux` i et nytt kontekstvindu, deretter `bmad-architecture`.
+
+### Åpne punkter
+- Kjør `bmad-ux`. Ta med introduksjonen til brukertesten, de valgfrie innspillene fra UI-rapporten, og merk tallene i UJ-5 som foreløpige til fasit 05 er kontrollert for hånd (punktene står allerede i `issues.md`).
