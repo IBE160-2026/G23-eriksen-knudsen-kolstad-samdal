@@ -14,7 +14,7 @@ Hente siste endringer (`git pull`) og deretter merge `main` inn i `Sebastian/Bra
 - Nye filer:
   - `.docs/planning-artifacts/architecture/technology.md`
   - `.docs/planning-artifacts/prds/prd-COSI - MRP-2026-10-19/tilbakemelding-prd.md`
-- Ikke pushet.
+- Pushet til `origin/Sebastian/Branch` (0d2557e..393c638).
 
 ### Åpne punkter
 Ingen.
