@@ -2,12 +2,12 @@
 title: COSI - MRP PRD – Addendum
 status: final
 created: 2026-10-19
-updated: 2026-11-09
+updated: 2026-11-13
 ---
 
 # Addendum til PRD
 
-Bakgrunn, begrunnelser og tekniske innspill fra PRD-arbeidet som ikke hører hjemme i selve PRD-en. Ved avvik gjelder `prd.md`. Briefen er frosset, og PRD-en gjelder foran briefen. Beslutningene fra 2026-11-05 står i `beslutninger-2026-11-05.md`, beslutningene fra gruppemøtet i `beslutninger-2026-11-09.md`, og hele sporet av beslutninger i `.memlog.md`.
+Bakgrunn, begrunnelser og tekniske innspill fra PRD-arbeidet som ikke hører hjemme i selve PRD-en. Ved avvik gjelder `prd.md`. Briefen er frosset, og PRD-en gjelder foran briefen. Beslutningene fra 2026-11-05 står i `beslutninger-2026-11-05.md`, beslutningene fra gruppemøtet i `beslutninger-2026-11-09.md`, beslutningene etter faglærers tilbakemelding i `beslutninger-2026-11-13.md`, og hele sporet av beslutninger i `.memlog.md`.
 
 **Hvor du begynner:**
 - **Arkitektur:** «Innspill til arkitekturen».
@@ -19,8 +19,8 @@ Bakgrunn, begrunnelser og tekniske innspill fra PRD-arbeidet som ikke hører hje
 
 ### Publisering, data og lagring
 
-- **Publisering og data (NFR-4):** Appen publiseres på Vercel, som bare leverer appens kode. Innlesing, validering, beregning og lagring skjer i nettleseren, og opplastede filer og kjøringer sendes ikke til serveren eller til tredjepartstjenester. Arkitekturen velger rammeverk og må sikre at ingen del av løsningen, for eksempel serverfunksjoner eller analyseverktøy, sender data ut.
-- **Lagring av siste kjøring per ferdigprodukt (FR-19):** Uten innlogging og serverlagring er nettleserens lokale lagring (for eksempel `localStorage` eller IndexedDB) det naturlige stedet. Det lagres én kjøring per ferdigprodukt, med varenummeret på nivå 0 som nøkkel, fordi brukeren planlegger flere produkter hver dag. En kjøring med 1000 rader og 12 uker er liten, men med flere produkter bør arkitekturen sjekke grensen for `localStorage` (ca. 5 MB) eller velge IndexedDB. Arkitekturen velger og begrunner.
+- **Publisering og data (NFR-3, NFR-4):** Appen publiseres på Vercel (besluttet 2026-11-05), som bare leverer appens kode. Valget sto tidligere i NFR-3 og NFR-4, men ble flyttet hit 2026-11-13, slik at kravene beskriver atferd og ikke teknologi. Innlesing, validering, beregning og lagring skjer i nettleseren, og opplastede filer og kjøringer sendes ikke til serveren eller til tredjepartstjenester. Arkitekturen velger rammeverk og må sikre at ingen del av løsningen, for eksempel serverfunksjoner eller analyseverktøy, sender data ut.
+- **Lagring av siste kjøring per ferdigprodukt (FR-19, NFR-10):** Uten innlogging og serverlagring er nettleserens lokale lagring (for eksempel `localStorage` eller IndexedDB) det naturlige stedet. Det lagres én kjøring per ferdigprodukt, med varenummeret på nivå 0 som nøkkel, fordi brukeren planlegger flere produkter hver dag. En kjøring med 1000 rader og 12 uker er liten, men med flere produkter bør arkitekturen sjekke grensen for `localStorage` (ca. 5 MB) eller velge IndexedDB. Arkitekturen velger og begrunner.
 - **Lagring som kan svikte (NFR-10):** Lesing og skriving til nettleserens lagring må tåle at lagringen er blokkert, for eksempel i et privat vindu, eller full. Da vises kjøringen som vanlig, uten lagring, med en melding om at den ikke er lagret. Den opplastede Excel-filen lagres ikke, bare kjøringen.
 - **Ny opplasting gir alltid sammenligning (FR-19, FR-20):** Når planen flyttes én uke fram, slik at en ny uke blir uke 1, sammenlignes den nye kjøringen likevel med forrige, og sammenligningen viser da mange endringer. Arkitekturen trenger ikke å kjenne igjen ukeskiftet.
 - **Ytelse (NFR-5):** Mål ytelsen tidlig i utviklingen med en testfil på 1000 rader. Den må lages med `testdata/lag_testdata.py`, som ikke lager en slik fil ennå. Nås ikke målet på 3 sekunder, endres kravet med begrunnelse.
@@ -37,7 +37,7 @@ Bakgrunn, begrunnelser og tekniske innspill fra PRD-arbeidet som ikke hører hje
 ### Excel inn og ut
 
 - **Lesing og skriving av Excel (FR-1–FR-4, FR-22):** Nivå er lagret som tekst (`0`, `.1`, `..2`), og Excel kan ha lagret `0` som tall. Varenummer kan også være lagret som tall hvis brukeren har skrevet bare sifre. Les begge som tekst. Malen har formler i hjelpekolonnene og ferdige, tomme rader med formatering helt ned til rad 1001, så stykklisten slutter ved første rad der både Nivå og Varenummer er tomme. Arket med prognostiserte behov heter MPS, og kolonnen heter «Antall ferdigprodukter». Eksporten trenger et bibliotek for å skrive Excel, og det kan være det samme som brukes til lesing.
-- **Excel for Windows og macOS (NFR-11):** Kontrollen krever at testeksempel 01 og 02 åpnes og lagres på nytt i både Excel for Windows og Excel for macOS. Gruppen må finne noen med Mac og Excel. Eksportfilen (FR-22, FR-23) bør åpnes i Excel som en del av testen.
+- **Excel for Windows og macOS (NFR-11):** Kontrollen krever at testeksempel 01 og 02 åpnes og lagres på nytt i både Excel for Windows og Excel for macOS. Carmen tester med sin Mac og Excel (besluttet 2026-11-13). Eksportfilen (FR-22, FR-23) bør åpnes i Excel som en del av testen.
 - **Testfiler for feilhåndtering (NFR-9):** En skadet `.xlsx`-fil, en fil på 0 byte med endelsen `.xlsx` og en tekstfil med endelsen `.xlsx` ligger i `testdata/validering/` som V-F07–F09 og lages med `lag_testdata.py`, som de andre valideringsfilene.
 - **Valideringsreglene (FR-3):** Reglene er de samme som i datavalideringen og Kontroll-formlene, som lages av `lag_mal` og `kontroll` i `lag_testdata.py`. Endres malen, må både appens validering og skriptet oppdateres.
 
@@ -49,8 +49,8 @@ Bakgrunn, begrunnelser og tekniske innspill fra PRD-arbeidet som ikke hører hje
 
 - **Forklaringspanel og tabell (FR-18, NFR-8):** Forklaringen åpnes ved klikk og vises i et panel ved siden av tabellen. Den må virke med tastatur og berøring. Kolonnene med varenummer, beskrivelse og radnavn står fast ved sidescroll.
 - **Slutten av horisonten (FR-9, FR-29):** Vurder å skrive i meldingene for FR-9 og FR-29 og i forklaringen at de bare gjelder innenfor horisonten (se «Beregningsmotoren»).
-- **Brukertest (SM-3, §8.1):** Introduksjonen og oppgavene lages i UX-steget og skal være like for alle testpersonene. Hvor resultatet dokumenteres, er ikke bestemt (PRD §9 nr. 4).
-- **Kapasitetspanelet (FR-34):** Panelet trenger egen overskrift og et tydelig skille fra bestillingsplanen, så kapasitet ikke forveksles med planlagt produksjon. Iduns utkast hadde også en graf over prognostiserte behov per uke i bestillingsplanen. Den er ikke tatt inn, fordi bare F3 ble besluttet. Ingen brukerreise dekker kapasiteten ennå. Vurder å ta den inn i UJ-2 i UX-steget.
+- **Brukertest (SM-3, §8.1):** De tre oppgavene og grensen på 3 minutter står i SM-3. Testen holdes 2.–7. desember og bruker bare trinn 1–2 i PRD §7.1, så skjermene for resultattabellen, eksepsjonene, bestillingsforslagene og forklaringene bør designes først. Introduksjonen lages i UX-steget før prøvetesten rundt 27. november (PRD §9 nr. 4).
+- **Kapasitetspanelet (FR-34, UJ-5):** Panelet trenger egen overskrift og et tydelig skille fra bestillingsplanen, så kapasitet ikke forveksles med planlagt produksjon. UJ-5 (hasteforespørsel, testeksempel 05) viser når Kari bruker panelet, hva hun leser, og hva hun gjør med svaret. Kapasiteten kuttes først (trinn 4), så navigasjonen bør ha plass til panelet uten at resten av UX-en avhenger av det. Iduns utkast hadde også en graf over prognostiserte behov per uke i bestillingsplanen. Den er ikke tatt inn, fordi bare F3 ble besluttet.
 - **Ordlyden i meldingene (FR-13):** Ordlyden er ikke et krav, bare opplysningene i meldingen. Tekstene i fasitene kan derfor forbedres i UX-steget.
 
 ## Innspill til epics: faseplan
@@ -92,6 +92,12 @@ Prinsippet fra briefen gjelder fortsatt: hver fase leverer kode, testdata og dok
   Carmens andre NFR-er er ikke tatt inn. De fleste er dekket av NFR-3–NFR-8 med andre tall (for eksempel 3 sekunder i NFR-5 mot 5 hos Carmen, og ikke Safari i NFR-6).
 - **Brukertest (2026-11-09):** Gruppen besluttet testpersonene og prosedyren (PRD §8.1). Med 4–8 testpersoner passer ikke «3 av 3» i SM-3 lenger. Kravet er nå at alle testpersonene klarer oppgavene, som er det samme nivået som før.
 - **Byggerekkefølgen (2026-11-09):** Gruppen er enig i rekkefølgen i PRD §7.1.
+- **Faglærers tilbakemelding på PRD-en (2026-11-13):** Tilbakemeldingen (`tilbakemelding-prd.md`, 2026-11-12) ble gått gjennom punkt for punkt med Sebastian, og alle punktene er tatt inn (`beslutninger-2026-11-13.md`). Tre avvik fra forslagene i tilbakemeldingen:
+  - **Minstekravet** er trinn 1–3, som er FR-1–FR-23 og FR-27–FR-29. Tilbakemeldingen skrev FR-1–FR-23, men FR-27–FR-29 hører også til trinn 1.
+  - **Regneeksempelet i FR-6** er forslaget fra tilbakemeldingen, kontrollert mot `mrp_del`. Tilbakemeldingen oppga nettobehov 40 i uke 3. Det er verdien før mottaket fremskyndes. Resultattabellen viser 0, fordi nettobehovet regnes på nytt etter fremskyndingen. Eksempelet viser derfor begge verdiene.
+  - **Brukertesten** holdes 2.–7. desember og ikke 30. november, så den ikke faller på samme dag som kuttbeslutningen. Testen bruker bare trinn 1–2, så den avhenger ikke av at lagring, sammenligning og eksport er ferdige.
+
+  Refleksjonsspørsmålene i tilbakemeldingen besvares i sluttrapporten. Lengden på PRD-en er beholdt. FR-oversikten først i §4 gjør det lettere å finne fram.
 - **Felles deler mellom produkter (2026-11-05):** Sebastian ønsker samlet planlegging av flere ferdigprodukter, men som første utvidelse etter v1 på grunn av fristen. I v1 fordeler brukeren selv lageret for deler som brukes i flere ferdigprodukter, mellom filene (PRD §6, FR-27).
 
 ## Begrunnelse fra research om MRP-reglene (2026-11-02)
@@ -115,6 +121,7 @@ Reglene i FR-6–FR-13, FR-28 og FR-29 er sjekket mot ASCM Supply Chain Dictiona
 - **2026-11-02:** Reglene avstemt mot research (FR-6–FR-13, FR-28). Ny FR-29 (Kanseller mottak).
 - **2026-11-05:** Alle åpne spørsmål og antagelser besluttet (`beslutninger-2026-11-05.md`). «Del» er samlebegrepet, og «komponent» brukes bare i typenavnene. «Prognostiserte behov» erstatter «MPS» i teksten, men arket heter fortsatt MPS. «Eksepsjon» brukes overalt. Brukerreisene gjennomgått med Sebastian og nummerert om (UJ-1, der Kari tar i bruk COSI - MRP første gang, er ny). Lagring per ferdigprodukt, byggerekkefølge og begrensningen for deler som brukes i flere ferdigprodukter, lagt inn. Gjennomgått mot kildene og kvalitetssjekklisten, og strammet inn. Gruppen går gjennom PRD-en før den settes til `final`.
 - **2026-11-09:** Beslutningene fra gruppemøtet ført inn (`beslutninger-2026-11-09.md`). Nye NFR-9–NFR-11 og utvidede NFR-1 og NFR-2 fra Carmens utkast. Ny §4.9 med FR-30–FR-34 (produksjonskapasitet fra lager, fra Iduns utkast), først som utvidelse etter v1. Samme dag rettet til v1 (trinn 4 i §7.1), med ledetid og ferdigproduktets lager, ny SM-7, og antagelsene besluttet. PRD-en satt til `final`. Ny §8.1 om brukertesten, SM-3 endret til alle testpersonene, og §9 nr. 4 snevret inn. Byggerekkefølgen bekreftet. Nye begreper i §3: produksjonskapasitet, ledig beholdning og begrensende del.
+- **2026-11-13:** Faglærers tilbakemelding ført inn (`beslutninger-2026-11-13.md`). Ny UJ-5 for produksjonskapasiteten, med «Gjelder UJ-5» under §4.9 og FR-30–FR-34, og «produksjonskapasitet» brukt første gang i FR-31–FR-34. FR-oversikt først i §4. Regneeksempel i FR-6. Minstekrav for innlevering og kuttbeslutning 30. november i §7.1, og §4.7 og §4.9 merket «kuttes først». SM-3 med tre oppgaver og 3 minutter. §8.1 med tid (2.–7. desember), prøvetest og dokumentasjon, og §9 nr. 4 snevret inn til introduksjonen. NFR-3, NFR-4 og NFR-10 beskriver atferd, og Vercel og lagringsteknologien står bare i addendum.
 
 ## Lukkede spørsmål (fra PRD §9)
 
