@@ -40,7 +40,7 @@ Lese faglærers tilbakemelding på PRD-en (`tilbakemelding-prd.md`) og finne ut 
 - **Memlog:** seks nye linjer.
 - **Reviewer-pass i Finalize** (rubrikk og polering med subagenter) er ikke kjørt, fordi endringene er små og avgrenset. Konsistensen er sjekket med grep: ingen gjenværende Vercel- eller localStorage-henvisninger i PRD-en.
 - **`issues.md`:** Mac-testen og kapasitetens brukerreise er lukket, og brukertest-punktet er delvis løst.
-- PRD-endringene er ikke committet.
+- PRD-endringene er committet (`68c4339`) og pushet til `Sebastian/Branch`. De er merget til `main` via PR #13 (merge-commit `8be2e5e`), sammen med UI-researchen fra 2026-11-09 og sesjonsloggene.
 
 ### Åpne punkter
 - Få gruppas bekreftelse på beslutningene. Gruppemeldingen er skrevet, men ikke sendt.
