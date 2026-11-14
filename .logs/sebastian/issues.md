@@ -70,6 +70,6 @@
 - [ ] 2026-11-14 [ux-kjernen](976-2026-11-13-21-59-35-ux-kjernen.md) — ta med i gruppemeldingen: ukefilteret nullstilles til Uke 1 før hver lapp i brukertesten, og den innstrammede eksepsjonsmeldingen for Hjul (oppgave 2)
 - [ ] 2026-11-14 [ux-kjernen](976-2026-11-13-21-59-35-ux-kjernen.md) — rett `KAP_AARSAK` i `lag_testdata.py` til én årsakstekst per rad når fasit 05 kontrolleres for hånd
 - [ ] 2026-11-14 [ux-kjernen](976-2026-11-13-21-59-35-ux-kjernen.md) — se over Don't-eksempelet «Slettet.» for «Lagret kjøring slettet» i EXPERIENCE.md › Voice and Tone
-- [ ] 2026-11-14 [ux-kjernen](976-2026-11-13-21-59-35-ux-kjernen.md) — valgfritt: oppdater Impeccable til v4.9.0 (`npx impeccable update`)
+- [x] 2026-11-14 [ux-kjernen](976-2026-11-13-21-59-35-ux-kjernen.md) — valgfritt: oppdater Impeccable til v4.9.0 (`npx impeccable update`) (løst 2026-11-14: oppdatert og pushet, 52e822d, [impeccable-skill](980-2026-11-09-10-22-27-impeccable-skill.md))
 - [ ] 2026-11-14 [ux-kjernen](976-2026-11-13-21-59-35-ux-kjernen.md) — kjør `bmad-architecture` i ny kontekst (neste BMAD-steg)
 - [ ] 2026-11-14 [impeccable-skill](980-2026-11-09-10-22-27-impeccable-skill.md) — avgjør om rot-DESIGN.md skal forbli en henvisning eller speile tokens fra BMAD-DESIGN.md, slik at designhooken og live-panelet kan bruke dem
