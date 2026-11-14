@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Konsept A – Handlingsorientert · COSI-MRP</title>
+<!-- KONSEPT A – Handlingsorientert. Forslag – ikke godkjent av gruppen. 2026-11-15.
+     Struktur: en oppgaveliste etter hastegrad. Først «Dette bør du gjøre nå» (uke 1), så «Følg med på», så senere uker sammenfoldet.
+     Data og detaljpanel: felles-resultat.js. Ingen beregning. -->
+<link rel="stylesheet" href="felles-resultat.css">
+<style>
+.a-now{background:var(--raised);border:1px solid var(--line);border-radius:14px;padding:22px 24px;display:flex;flex-direction:column;gap:16px}
+.a-now h2{font-size:24px;line-height:1.2}
+.a-sub{color:var(--ink2)}
+.a-cols{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.4fr);gap:18px;align-items:start}
+.a-grp{display:flex;flex-direction:column;gap:10px}
+.a-grp h3{font-size:15px;display:flex;gap:8px;align-items:center}
+.a-grp h3 svg{width:18px;height:18px}
+.a-grp.prod h3{color:var(--prod)}.a-grp.inn h3{color:var(--inn)}
+.a-grp ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.a-item{width:100%;text-align:left;border:1px solid var(--line);border-left:4px solid var(--prod);background:var(--raised);border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:6px}
+.a-grp.inn .a-item{border-left-color:var(--inn)}
+.a-item:hover{border-color:var(--accent);border-left-color:inherit}
+.a-item .do{font-size:17px;font-weight:700}
+.a-item .do b{font-variant-numeric:tabular-nums}
+.a-item .meta{font-size:13px;color:var(--ink2)}
+.a-item .tags{display:flex;gap:6px;flex-wrap:wrap}
+.a-item.crit{background:#FFFBFA}
+.a-empty{color:var(--ink2);font-size:14px;padding:8px 0}
+.a-watch{display:flex;flex-direction:column;gap:10px}
+.a-watch h2,.a-later h2{font-size:18px}
+.a-watch ul{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:8px}
+.a-w{width:100%;text-align:left;border:1px solid var(--line);background:var(--raised);border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:6px}
+.a-w:hover{border-color:var(--accent)}
+.a-w .t{font-weight:600}
+.a-w .s{font-size:13.5px;color:var(--ink2)}
+.a-later{display:flex;flex-direction:column;gap:8px}
+.a-wk{background:var(--raised);border:1px solid var(--line);border-radius:10px}
+.a-wk summary{list-style:none;padding:10px 14px;display:flex;gap:10px 14px;align-items:center;flex-wrap:wrap;color:var(--ink);font-size:15px}
+.a-wk summary::-webkit-details-marker{display:none}
+.a-wk summary::before{content:"";width:8px;height:8px;border-right:2px solid var(--ink2);border-bottom:2px solid var(--ink2);transform:rotate(-45deg);transition:transform .15s}
+.a-wk[open] summary::before{transform:rotate(45deg)}
+.a-wk summary .w{font-weight:700;min-width:56px}
+.a-wk summary .c{font-size:13px;color:var(--ink2);font-weight:500}
+.a-wk ul{list-style:none;margin:0;padding:0 14px 12px;display:flex;flex-direction:column}
+.a-wk li{border-top:1px solid var(--line)}
+.a-row{width:100%;display:flex;gap:10px;align-items:center;flex-wrap:wrap;border:0;background:none;text-align:left;padding:8px 2px;font-size:14px}
+.a-row:hover .n{text-decoration:underline;color:var(--accent)}
+.a-row .k{font-size:12px;font-weight:600;border-radius:4px;padding:0 7px}
+.a-row .k.prod{background:var(--prod-s);color:var(--prod)}.a-row .k.inn{background:var(--inn-s);color:var(--inn)}
+.a-row b{font-variant-numeric:tabular-nums}
+@media (max-width:900px){.a-cols{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<main class="rk-main" id="main">
+  <section class="a-now" aria-labelledby="a-h">
+    <div><h2 id="a-h">Dette bør du gjøre nå</h2><p class="a-sub">Forslag for uke 1. Velg en linje for å se hvorfor og hvordan det er regnet ut.</p></div>
+    <div class="a-cols">
+      <div class="a-grp prod"><h3 id="a-prod"></h3><ul id="a-prod-l"></ul></div>
+      <div class="a-grp inn"><h3 id="a-inn"></h3><ul id="a-inn-l"></ul></div>
+    </div>
+  </section>
+  <section class="a-watch" aria-labelledby="a-wh" id="a-watch">
+    <h2 id="a-wh">Følg med på</h2>
+    <p class="rk-muted">Forhold senere i planen som kan kreve at du gjør noe.</p>
+    <ul id="a-watch-l"></ul>
+  </section>
+  <section class="a-later" aria-labelledby="a-lh">
+    <h2 id="a-lh">Senere uker</h2>
+    <div id="a-later-l" style="display:flex;flex-direction:column;gap:8px"></div>
+  </section>
+  <p><button type="button" class="rk-link" id="a-all">Vis hele beregningen for alle deler</button></p>
+</main>
+<script src="../konsepter-2026-11-12/felles.js"></script>
+<script src="../konsepter-2026-11-12/data-kontorstol-pro.js"></script>
+<script src="felles-resultat.js"></script>
+<script>
+(function(){
+'use strict';
+const {C,F,fmt,esc,xlabel,handling,ICON}=RK;
+RK.frame('Konsept A · Handlingsorientert');
+const uke1=F.filter(f=>f.uke===1);
+// Kritiske først, ellers stykklisterekkefølge
+const sortKrit=a=>a.slice().sort((x,y)=>(y.eks.length+(y.forfalt?1:0)>0)-(x.eks.length+(x.forfalt?1:0)>0));
+function item(f){
+  const crit=f.eks.length||f.forfalt;
+  const tags=[...f.eks.map(x=>xlabel(x,{week:false})),f.forfalt?`<span class="rk-due">${fmt(f.forfalt)} skulle vært ${f.prod?'startet':'bestilt'} før uke 1</span>`:''].join('');
+  return `<li><button type="button" class="a-item${crit?' crit':''}" data-vn="${f.del.vn}"><span class="do">${f.prod?'Produser':'Bestill'} <b>${fmt(f.mengde)}</b> ${esc(f.del.d)}</span><span class="meta">${f.del.vn} · ${f.prod?'produseres internt':'kjøpes inn fra leverandør'}</span>${tags?`<span class="tags">${tags}</span>`:''}</button></li>`;}
+const pr=sortKrit(uke1.filter(f=>f.prod)),inn=sortKrit(uke1.filter(f=>!f.prod));
+document.getElementById('a-prod').innerHTML=`${ICON.prod}Start produksjon (${pr.length})`;
+document.getElementById('a-inn').innerHTML=`${ICON.inn}Bestill hos leverandør (${inn.length})`;
+document.getElementById('a-prod-l').innerHTML=pr.length?pr.map(item).join(''):'<li class="a-empty">Ingen produksjon foreslått denne uken.</li>';
+document.getElementById('a-inn-l').innerHTML=inn.length?inn.map(item).join(''):'<li class="a-empty">Ingen innkjøp foreslått denne uken.</li>';
+// Følg med på: eksepsjoner som ikke allerede står ved et forslag i uke 1
+const shown=new Set(uke1.flatMap(f=>f.eks.map(x=>x.vn+'|'+x.uke+'|'+x.t)));
+const watch=C.EKSEPSJONER.filter(x=>!shown.has(x.vn+'|'+x.uke+'|'+x.t));
+document.getElementById('a-watch-l').innerHTML=watch.map(x=>{const p=C.byVn[x.vn];return `<li><button type="button" class="a-w" data-vn="${x.vn}"><span class="t">${esc(p.d)} <span class="rk-vn">${p.vn}</span></span>${xlabel(x)}<span class="s">${RK.ENKEL[x.t].tekst}</span></button></li>`;}).join('');
+document.getElementById('a-watch').hidden=!watch.length;
+// Senere uker: lukket, med antall i overskriften
+document.getElementById('a-later-l').innerHTML=C.UKER.filter(w=>w>1&&F.some(f=>f.uke===w)).map(w=>{
+  const fs=F.filter(f=>f.uke===w),p=fs.filter(f=>f.prod).length,i=fs.length-p,k=fs.filter(f=>f.eks.length).length;
+  return `<details class="a-wk"><summary><span class="w">Uke ${w}</span><span class="c">${p} produksjon · ${i} innkjøp</span>${k?`<span class="rk-x BF"><span class="rk-xg" aria-hidden="true">!</span>${k} krever oppfølging</span>`:''}</summary><ul>${fs.map(f=>`<li><button type="button" class="a-row" data-vn="${f.del.vn}"><span class="k ${f.prod?'prod':'inn'}">${f.prod?'Produksjon':'Innkjøp'}</span><span class="n">${esc(f.del.d)}</span><b>${fmt(f.mengde)}</b>${f.eks.map(x=>xlabel(x,{week:false})).join('')}</button></li>`).join('')}</ul></details>`;}).join('');
+document.getElementById('main').addEventListener('click',e=>{const b=e.target.closest('[data-vn]');if(b)RK.openPart(b.dataset.vn);});
+document.getElementById('a-all').addEventListener('click',()=>RK.openAll());
+})();
+</script>
+</body>
+</html>

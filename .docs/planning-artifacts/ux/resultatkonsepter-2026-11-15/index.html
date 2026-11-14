@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Resultatkonsepter A, B og C · COSI-MRP</title>
+<!-- Sammenligning av tre resultatkonsepter (2026-11-15). Forslag – ikke godkjent av gruppen. -->
+<style>
+:root{color-scheme:light;--bg:#EEF1F3;--card:#fff;--ink:#14202B;--ink2:#596775;--line:#D9DFE4;--accent:#0D5C6E;--proto:#FFF7D6;--proto-ink:#5B4A00;--proto-line:#EAD98C}
+*{box-sizing:border-box}[hidden]{display:none!important}
+body{margin:0;font:15px/1.5 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--bg)}
+header{padding:20px 24px 12px;display:flex;flex-direction:column;gap:10px}
+h1{margin:0;font-size:24px}
+p{margin:0;max-width:90ch}
+.note{background:var(--proto);color:var(--proto-ink);border:1px solid var(--proto-line);border-radius:8px;padding:8px 12px;font-size:13.5px}
+.bar{display:flex;gap:8px 14px;flex-wrap:wrap;align-items:center}
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+.tabs button{font:inherit;border:1px solid var(--line);background:var(--card);border-radius:8px;padding:7px 14px;cursor:pointer}
+.tabs button[aria-pressed="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+.tabs button:focus-visible,select:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+select{font:inherit;border:1px solid var(--line);border-radius:6px;padding:5px 8px;background:#fff}
+.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;padding:0 24px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 14px;font-size:14px;display:flex;flex-direction:column;gap:4px}
+.card b{font-size:15px}
+.card a{color:var(--accent);font-weight:600;font-size:13.5px}
+.view{padding:12px 24px 24px}
+.one iframe{width:100%;height:calc(100vh - 260px);min-height:600px;border:1px solid var(--line);border-radius:10px;background:#fff}
+.side{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.side figure{margin:0;display:flex;flex-direction:column;gap:6px;min-width:0}
+.side figcaption{font-weight:600;font-size:14px}
+.side .clip{height:calc(100vh - 290px);min-height:560px;overflow:hidden;border:1px solid var(--line);border-radius:10px;background:#fff;position:relative}
+.side iframe{position:absolute;top:0;left:0;width:1280px;height:2000px;border:0;transform-origin:0 0}
+@media (max-width:1000px){.cards,.side{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+  <h1>Tre konsepter for resultatvisningen</h1>
+  <p>Samme testdata og samme detaljpanel i alle tre. Forskjellen er hvordan resultatet er bygd opp: en oppgaveliste (A), en ukekalender (B) eller to arbeidsområder (C). Velg en linje eller rad i et konsept for å se beregningen.</p>
+  <p class="note"><b>Forslag – ikke godkjent av gruppen.</b> Prototypene leser ingen fil og beregner ingenting. Tallene er fasitene for testeksempel 01–03. Vurdering og konflikter med PRD-en står i <a href="vurdering.md">vurdering.md</a>. Tidligere prototyper (versjon 1–4) er ikke endret.</p>
+  <div class="bar">
+    <div class="tabs" role="group" aria-label="Visning">
+      <button type="button" data-v="a" aria-pressed="true">A · Handlingsorientert</button>
+      <button type="button" data-v="b" aria-pressed="false">B · Visuell ukeplan</button>
+      <button type="button" data-v="c" aria-pressed="false">C · Produksjon og innkjøp</button>
+      <button type="button" data-v="side" aria-pressed="false">Side om side</button>
+    </div>
+    <label>Testdata <select id="ds"><option value="01">01 · Kontorstol Basic</option><option value="02">02 · Kontorstol Pro</option><option value="03">03 · Kontorstol Pro (økt behov)</option></select></label>
+  </div>
+</header>
+<div class="cards">
+  <div class="card"><b>A · Handlingsorientert</b><span>Starter med «Dette bør du gjøre nå»: produksjon og innkjøp for uke 1 som konkrete oppgaver. Senere uker er lukket.</span><a href="konsept-a-handling.html" target="_blank" rel="noopener" data-f="konsept-a-handling.html">Åpne i ny fane</a></div>
+  <div class="card"><b>B · Visuell ukeplan</b><span>En kalender med ti uker og tre spor: produksjon, innkjøp og forhold som krever oppfølging. Velg en uke for å se hva som skjer.</span><a href="konsept-b-ukeplan.html" target="_blank" rel="noopener" data-f="konsept-b-ukeplan.html">Åpne i ny fane</a></div>
+  <div class="card"><b>C · Produksjon og innkjøp</b><span>To arbeidsområder. Hvert viser én rad per vare eller komponent, med neste forslag og mengden for hver uke.</span><a href="konsept-c-produksjon-innkjop.html" target="_blank" rel="noopener" data-f="konsept-c-produksjon-innkjop.html">Åpne i ny fane</a></div>
+</div>
+<section class="view one" id="one"><iframe id="frame" title="Valgt konsept"></iframe></section>
+<section class="view side" id="side" hidden>
+  <figure><figcaption>A · Handlingsorientert</figcaption><div class="clip"><iframe data-f="konsept-a-handling.html" title="Konsept A" tabindex="-1"></iframe></div></figure>
+  <figure><figcaption>B · Visuell ukeplan</figcaption><div class="clip"><iframe data-f="konsept-b-ukeplan.html" title="Konsept B" tabindex="-1"></iframe></div></figure>
+  <figure><figcaption>C · Produksjon og innkjøp</figcaption><div class="clip"><iframe data-f="konsept-c-produksjon-innkjop.html" title="Konsept C" tabindex="-1"></iframe></div></figure>
+</section>
+<script>
+(function(){
+'use strict';
+const F={a:'konsept-a-handling.html',b:'konsept-b-ukeplan.html',c:'konsept-c-produksjon-innkjop.html'};
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+let v='a';
+const ds=()=>$('#ds').value;
+function scale(){$$('.side .clip').forEach(c=>{const f=c.querySelector('iframe');f.style.transform=`scale(${c.clientWidth/1280})`;});}
+function render(){
+  $$('.tabs button').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.v===v)));
+  $('#one').hidden=v==='side';$('#side').hidden=v!=='side';
+  if(v==='side'){$$('.side iframe').forEach(f=>{const u=f.dataset.f+'?data='+ds();if(!f.src.endsWith(u))f.src=u;});requestAnimationFrame(scale);}
+  else{const u=F[v]+'?data='+ds();if(!$('#frame').src.endsWith(u))$('#frame').src=u;}
+  $$('.card a').forEach(a=>a.href=a.dataset.f+'?data='+ds());
+  try{history.replaceState(null,'','#'+v+'-'+ds());}catch(e){}
+}
+$('.tabs').addEventListener('click',e=>{const b=e.target.closest('[data-v]');if(b){v=b.dataset.v;render();}});
+$('#ds').addEventListener('change',render);
+addEventListener('resize',scale);
+const m=location.hash.match(/^#(a|b|c|side)-(0[123])$/);if(m){v=m[1];$('#ds').value=m[2];}
+render();
+})();
+</script>
+</body>
+</html>
