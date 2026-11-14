@@ -30,7 +30,8 @@ Gå gjennom fremdriftsplanen sammen og revidere den etter der prosjektet faktisk
 - **Rettet:** teknologi (nettapp på Vercel i stedet for Python), brukertest (4–8 testpersoner og SM-3), trinnene og FR-numrene fra PRD §7.1, merknaden (51 dager, trinn 4 og 5 kuttes først) og A3 (revisjonsnotat).
 - **Feil i fila rettet:** «Pågår» var lagret som `P�g�r` i nedtrekkslisten og fargeregelen på begge arkene, så statusen fikk aldri farge. Det virker nå.
 - **Arket Tilbakemelding:** punkt 1, 2, 3, 4, 6 og 8 er satt til Ferdig, og punkt 5 (skisse av resultattabell) og 7 (PRD og arkitektur) til Pågår.
-- **Kontroll:** XML er gyldig, betinget formatering og validering er uendret (bortsett fra «Pågår»), og Gantt-cellene er uendret. Excel åpner fila uten reparasjon og viser riktige datoer. Fila er committet på `Oda/Branch` i `4b6a5d0` (ikke pushet).
+- **Kontroll:** XML er gyldig, betinget formatering og validering er uendret (bortsett fra «Pågår»), og Gantt-cellene er uendret. Excel åpner fila uten reparasjon og viser riktige datoer. Fila er committet på `Oda/Branch` i `4b6a5d0`.
+- **Til main:** `Oda/Branch` har 48 commits som ikke er på `main` (øvingseksempelet, testdata gruppen ikke har avgjort, Excel-låsefiler). Oda valgte derfor å sende bare planen: ny gren `Oda/fremdriftsplan` fra `origin/main` med commiten plukket over (`4377c05`), pushet, og [PR #14](https://github.com/IBE160-2026/G23-eriksen-knudsen-kolstad-samdal/pull/14) mot `main`. PR-en er ikke merget.
 - Lukket to punkter i `issues.md` som den godkjente PRD-en løser.
 
 ### Åpne punkter
