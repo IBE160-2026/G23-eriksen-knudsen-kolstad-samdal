@@ -2,7 +2,7 @@
 title: COSI - MRP Ordbank
 status: forslag
 created: 2026-10-21
-updated: 2026-11-05
+updated: 2026-11-13
 ---
 
 # Ordbank: COSI - MRP
@@ -106,6 +106,14 @@ Forslaget bygger på Excel-malen for flernivå stykkliste (Sebastian, 2026-10-23
 | Avvik | At planen ikke går opp for en del, f.eks. at lageret går under sikkerhetslager eller at en bestilling kommer for sent. Avvik gir eksepsjoner. | – |
 | Falsk positiv / falsk negativ | Feil i eksepsjonene: en eksepsjon uten avvik (falsk positiv), eller et avvik uten eksepsjon (falsk negativ). | – |
 
+## Produksjonskapasitet
+
+| Begrep | Definisjon | Ikke bruk |
+|---|---|---|
+| Produksjonskapasitet | Hvor mange hele ferdigprodukter som kan være ferdige innen en uke, ut fra ledig beholdning, planlagte mottak og ledetid, uavhengig av prognostiserte behov. Vises per uke fra lager og med planlagte mottak (PRD §4.9, FR-31–FR-32, fra Iduns utkast, med i v1 fra 2026-11-09). | lagerkapasitet, lagerbasert produksjonskapasitet |
+| Ledig beholdning | Lagerbeholdning minus sikkerhetslager, men aldri under 0. Brukes bare i produksjonskapasiteten (PRD FR-31). | disponibel beholdning (om lager minus SS), tilgjengelig beholdning |
+| Begrensende del | En del som ikke kan dekkes når behovet er ett ferdigprodukt mer enn produksjonskapasiteten i en uke, fordi lageret ikke strekker til eller på grunn av ledetiden (PRD FR-33). | begrensende materiale, knappeste materiale, flaskehals |
+
 ## App og test
 
 | Begrep | Definisjon | Ikke bruk |
@@ -120,11 +128,16 @@ Forslaget bygger på Excel-malen for flernivå stykkliste (Sebastian, 2026-10-23
 | Valideringsfeil | En feil i filen som appen finner, og som stopper beregningen. Oppgir ark, rad og årsak. | feilmelding |
 | Resultattabell | MRP-tabellen per del og uke, med eksepsjonene markert. | MRP-tabell, resultatside, oversikt |
 | Før/etter-sammenligning | Forskjellen i bestillingsforslag og eksepsjoner mellom forrige og ny kjøring for samme ferdigprodukt. Appen husker siste kjøring per ferdigprodukt (PRD FR-19, besluttet 2026-11-05). | – |
-| Testeksempel | Et utfylt datasett med fasit, i `testdata/` (01–04). | øvingseksempel (slettet, se merknad 4) |
+| Testeksempel | Et utfylt datasett med fasit, i `testdata/` (01–05). | øvingseksempel (slettet, se merknad 4) |
 | Fasit | Manuelt kontrollert forventet resultattabell og eksepsjonsliste for et testeksempel. | – |
 | Valideringstilfelle | En fil i `testdata/validering/` med nøyaktig én kjent valideringsfeil, eller ingen feil for gyldige grenseverdier. | feilfil |
 | Dekningstabell | Tabellen i `testdata/README.md` som viser hvilket testeksempel eller valideringstilfelle hvert krav testes i. | dekningsoversikt, testmatrise |
-| Vercel | Tjenesten appen publiseres på, med en lenke som kan åpnes uten installasjon. Vercel leverer bare appens kode. Innlesing, validering, beregning og lagring av kjøringer skjer i brukerens nettleser (PRD NFR-4, besluttet 2026-11-05). | – |
+| Vercel | Tjenesten appen publiseres på, med en lenke som kan åpnes uten installasjon. Vercel leverer bare appens kode. Innlesing, validering, beregning og lagring av kjøringer skjer i brukerens nettleser (besluttet 2026-11-05). Står i PRD-addendumet, ikke i kravene: NFR-3 og NFR-4 beskriver atferden (endret 2026-11-13). | – |
+| Lokal lagring | Nettleserens lagring på brukerens maskin, der appen husker siste kjøring per ferdigprodukt. Den opplastede Excel-filen lagres ikke (PRD FR-19, NFR-10). Hvilken lagring i nettleseren som brukes, velges i arkitekturen. | – |
+| Brukertest | Test der testpersoner løser de samme tre oppgavene i appen etter en kort introduksjon, hver for seg og uten veiledning. En oppgave er løst ved riktig svar innen 3 minutter. Holdes 2.–7. desember 2026 (PRD SM-3, §8.1). | brukstest, brukstesting, brukertesting |
+| Prøvetest | En prøve av brukertesten med et gruppemedlem, for å se at introduksjonen og oppgavene fungerer. Teller ikke med i resultatet (PRD §8.1). | pilottest |
+| Testperson | En person som deltar i brukertesten. Trenger ikke ha brukt appen før. 4–8 i alt, 1–2 per gruppemedlem (PRD §8.1). | testbruker |
+| Testleder | Gruppemedlemmet som gjennomfører brukertesten med en testperson. Kan hjelpe med tekniske problemer, men ikke med oppgavene (PRD §8.1). | – |
 | Grensetilfelle (*edge case*) | Testtilfelle i ytterkanten av det normale, f.eks. behov i uke 1, eller ledetid lik eller lengre enn horisonten. | – |
 | Tomtilstand (*empty state*) | Det appen viser før det finnes data å vise, altså før første opplasting av Excel-malen. Forteller brukeren hva som skal gjøres. | – |
 
@@ -136,6 +149,8 @@ Forslaget bygger på Excel-malen for flernivå stykkliste (Sebastian, 2026-10-23
 | Product brief | Kort dokument som beskriver problemet, brukerne, løsningen og omfanget. Første steg i BMAD-flyten, før PRD og arkitektur. | – |
 | Addendum | Tilleggsdokument til briefen med detaljer som hører hjemme i senere dokumenter (arkitektur, implementeringsplan), f.eks. faseplanen. Ved avvik gjelder briefen. | – |
 | Personavhengighet | At viktig kunnskap eller arbeid bare finnes hos én person, så bedriften blir sårbar når personen er borte. Problemet verktøyet skal løse. | – |
+| Minstekrav for innlevering | Det som skal være ferdig og bestå SM-1, SM-2 og SM-4 ved innlevering: trinn 1–3 i PRD §7.1 (besluttet 2026-11-13). | MVP-grense, minstegrense |
+| Kuttes først | Merking av funksjoner som kuttes først hvis tiden ikke strekker til: trinn 4 (produksjonskapasitet) og trinn 5 (fast partistørrelse) i PRD §7.1. Gruppen avgjør kuttet 30. november 2026. | – |
 | Videreutvikling | Funksjonalitet som bevisst ikke er med i v1, men som verktøyet er designet for å kunne få senere. | – |
 | Hva-om-scenario (*what-if*) | Alternativ versjon av planen der en forutsetning endres for å se konsekvensene. Sammenligning av flere scenarier side om side er videreutvikling. | – |
 

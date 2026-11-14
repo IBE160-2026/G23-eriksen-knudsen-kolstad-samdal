@@ -2,6 +2,8 @@
 
 Filene her tester valideringen før beregningen (PRD FR-1–FR-4). De lages av `lag_testdata.py` (`--alle`) og bygger på testeksempel 02. Hver fil har nøyaktig én feil, unntatt V-F05 (tre feil på tre ark, FR-4), V-F06 (en strukturfeil og en verdifeil) og G-filene (gyldige grenseverdier, ingen feil). V-F04 er ikke en Excel-fil og skal avvises (FR-1).
 
+V-F07–F09 tester robust feilhåndtering (PRD NFR-9): en skadet `.xlsx`-fil, en tom fil på 0 byte og en tekstfil, alle med endelsen `.xlsx`. Hver av dem skal gi en forståelig melding på norsk, ikke en liste over valideringsfeil. Appen skal ikke stoppe eller henge, ingen beregning gjøres, og den lagrede kjøringen endres ikke. Etterpå skal testeksempel 01 kunne lastes opp og gi riktig resultat uten at siden lastes på nytt.
+
 Kolonnen «Feil» er antall valideringsfeil appen skal vise. Sted er cellen eller raden feilen gjelder. Ordlyden i feilmeldingen bestemmer appen, men den skal oppgi ark, rad eller celle, felt og årsak (FR-4).
 
 Antagelser:
@@ -55,6 +57,9 @@ Antagelser:
 | `V-F02.xlsx` | Kolonneoverskriften «Ledetid (uker)» mangler | 1 | Stykkliste | H1 | Overskrift | FR-2: kolonneoverskriftene fra malen |
 | `V-F03.xlsx` | Fil etter den gamle malen (arkene Produkt og Komponenter) | 1 | Stykkliste | – | Ark | FR-2: gammel mal gir feil om at Stykkliste mangler |
 | `V-F04.csv` | Fil som ikke er .xlsx (CSV) | avvist | – | – | Fil | FR-1: bare .xlsx tas imot |
+| `V-F07.xlsx` | Skadet .xlsx-fil: testeksempel 02 kuttet på midten | avvist | – | – | Fil | NFR-9: forståelig melding, ingen beregning, ny fil kan lastes opp |
+| `V-F08.xlsx` | Tom fil (0 byte) med endelsen .xlsx | avvist | – | – | Fil | NFR-9: forståelig melding, ingen beregning, ny fil kan lastes opp |
+| `V-F09.xlsx` | Tekstfil med endelsen .xlsx | avvist | – | – | Fil | NFR-9: forståelig melding, ingen beregning, ny fil kan lastes opp |
 | `V-F05.xlsx` | Tre feil på tre ark | 3 | Stykkliste, MPS, Planlagte mottak | D9, uke 3, B2 | Antall, Antall per uke, Uke | FR-4: alle feilene vises samlet (3 feil) |
 | `V-F06.xlsx` | Strukturfeil og verdifeil i samme fil: overskriften «Ledetid (uker)» mangler, og et mottak har antall 0 | 2 | Stykkliste, Planlagte mottak | H1, C3 | Overskrift, Antall | FR-2 og FR-4: verdier som ikke avhenger av kolonnen som mangler, kontrolleres likevel (2 feil) |
 | `V-G01.xlsx` | Gyldig: horisont 8 uker | 0 | – | – | – | FR-3: grenseverdi, ingen feil |
