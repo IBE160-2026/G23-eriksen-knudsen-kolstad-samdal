@@ -1,8 +1,8 @@
 ---
 name: COSI - MRP
 description: Rolig, lys arbeidsflate for MRP-planlegging i nettleseren. shadcn/ui + Tailwind; denne fila gir merkevarelaget og produktets egne elementer. Bare lys modus i v1.
-status: draft
-updated: 2026-11-13
+status: final
+updated: 2026-11-14
 colors:
   # shadcn-roller (overstyrer shadcn-standardene)
   background: '#EFEDE4'            # stein: gulvet under brettene
@@ -138,7 +138,7 @@ typography:
     note: 'Alle tall: font-variant-numeric: lining-nums tabular-nums. Høyrejustert i tabeller. Tall i lette overskrifter (300) settes i 400, fordi reserveskriften Corbel Light bare har gammeldagse tall.'
 rounded:
   DEFAULT: 10px                    # shadcn --radius: kort, knapper, felt, slippsone
-  lg: 14px                         # brett, forklaringspanel, feiloppsummering
+  lg: 14px                         # brett, forklaringspanel, feiloppsummering, dialog, kapasitetspanel
   full: 9999px                     # merker og piller
 spacing:
   # Tailwind-skalaen arves; dette er trinnene som brukes
@@ -196,11 +196,67 @@ components:
   kort:
     background: '{colors.card}'
     radius: '{rounded.DEFAULT}'
+  knapp-primaer:
+    background: '{colors.primary}'
+    foreground: '{colors.primary-foreground}'
+    radius: '{rounded.DEFAULT}'
+    padding-y: '{spacing.button-pad-y}'
+    padding-x: '{spacing.button-pad-x}'
+    large-typography: '{typography.button-large}'
+    large-padding-y: '{spacing.button-large-pad-y}'
+    large-padding-x: '{spacing.button-large-pad-x}'
+  knapp-toppfelt:
+    background: '{colors.topbar-button}'
+    foreground: '{colors.topbar-button-foreground}'
+    radius: '{rounded.DEFAULT}'
+  knapp-toppfelt-ghost:
+    background: 'transparent'
+    foreground: '{colors.topbar-foreground}'
+    border: '{colors.topbar-ghost-border}'
+    radius: '{rounded.DEFAULT}'
+  lenkeknapp-toppfelt:
+    background: 'transparent'
+    foreground: '{colors.topbar-muted}'
+  knapp-dempet:
+    background: '{colors.card}'
+    foreground: '{colors.foreground}'
+    border: '{colors.edge}'
+    radius: '{rounded.DEFAULT}'
+  knapp-destruktiv:
+    background: '{colors.destructive}'
+    foreground: '{colors.destructive-foreground}'
+    radius: '{rounded.DEFAULT}'
   veiledning:
     background: '{colors.card}'
     step-number-border: '{colors.brass-line}'
     step: '{typography.panel-step}'
     download-link: '{colors.primary}'
+  slippsone:
+    background: '{colors.card}'
+    border: '{colors.edge}'
+    radius: '{rounded.DEFAULT}'
+    hint: '{typography.drop-hint}'
+  radiogruppe:
+    option-background: '{colors.card}'
+    selected-background: '{colors.selected-cell}'
+    selected-ring: '{colors.selected-cell-ring}'
+    dot-border: '{colors.edge}'
+    dot-selected: '{colors.primary}'
+    dot-size: '{spacing.radio-dot}'
+    label: '{typography.option-label}'
+  feiloppsummering:
+    background: '{colors.exception-critical-soft}'
+    radius: '{rounded.lg}'
+    sheet-card: '{colors.card}'
+    sheet-heading: '{typography.sheet-heading}'
+    icon: '{colors.exception-critical}'
+    icon-size: '{spacing.icon-lg}'
+    heading: '{typography.error-heading}'
+  statusmelding:
+    background: '{colors.status-info-soft}'
+    icon: '{colors.status-info}'
+    foreground: '{colors.foreground}'
+    radius: '{rounded.DEFAULT}'
   bestillingsforslag-tabell:
     row-height: '{spacing.row-height}'
     header: '{typography.label}'
@@ -245,87 +301,46 @@ components:
     step-number-border: '{colors.brass-line}'
     motion-duration: 260ms
     motion-easing: 'cubic-bezier(.2,.7,.2,1)'
-  slippsone:
-    background: '{colors.card}'
-    border: '{colors.edge}'
-    radius: '{rounded.DEFAULT}'
-    hint: '{typography.drop-hint}'
-  radiogruppe:
-    option-background: '{colors.card}'
-    selected-background: '{colors.selected-cell}'
-    selected-ring: '{colors.selected-cell-ring}'
-    dot-border: '{colors.edge}'
-    dot-selected: '{colors.primary}'
-    dot-size: '{spacing.radio-dot}'
-    label: '{typography.option-label}'
-  knapp-primaer:
-    background: '{colors.primary}'
-    foreground: '{colors.primary-foreground}'
-    radius: '{rounded.DEFAULT}'
-    padding-y: '{spacing.button-pad-y}'
-    padding-x: '{spacing.button-pad-x}'
-    large-typography: '{typography.button-large}'
-    large-padding-y: '{spacing.button-large-pad-y}'
-    large-padding-x: '{spacing.button-large-pad-x}'
-  knapp-toppfelt:
-    background: '{colors.topbar-button}'
-    foreground: '{colors.topbar-button-foreground}'
-    radius: '{rounded.DEFAULT}'
-  knapp-toppfelt-ghost:
-    background: 'transparent'
-    foreground: '{colors.topbar-foreground}'
-    border: '{colors.topbar-ghost-border}'
-    radius: '{rounded.DEFAULT}'
-  lenkeknapp-toppfelt:
-    background: 'transparent'
-    foreground: '{colors.topbar-muted}'
-  knapp-dempet:
-    background: '{colors.card}'
-    foreground: '{colors.foreground}'
-    border: '{colors.edge}'
-    radius: '{rounded.DEFAULT}'
-  knapp-destruktiv:
-    background: '{colors.destructive}'
-    foreground: '{colors.destructive-foreground}'
-    radius: '{rounded.DEFAULT}'
-  feiloppsummering:
-    background: '{colors.exception-critical-soft}'
-    radius: '{rounded.lg}'
-    sheet-card: '{colors.card}'
-    sheet-heading: '{typography.sheet-heading}'
-    icon: '{colors.exception-critical}'
-    icon-size: '{spacing.icon-lg}'
-    heading: '{typography.error-heading}'
-  statusmelding:
-    background: '{colors.status-info-soft}'
-    icon: '{colors.status-info}'
-    foreground: '{colors.foreground}'
-    radius: '{rounded.DEFAULT}'
-  bekreftelsesdialog:
-    background: '{colors.card}'
-    radius: '{rounded.lg}'
   kapasitetspanel:
-    background: '{colors.band}'
+    background: '{colors.card}'          # invertert brett: korttone utenfor
+    card-background: '{colors.background}'  # steintone i kortene inni
     radius: '{rounded.lg}'
     row-height: '{spacing.row-height}'
     intro: '{typography.body}'
+    row-label: '{typography.option-label}'
+    limiter-label: '{typography.small}'
+    limiter-background: '{colors.card}'
+    limiter-edge: '{colors.edge}'          # 2 px øverst i cellen for begrensende del
+    limiter-radius: '{rounded.DEFAULT}'
+    limiter-weeks: '{typography.label}'
+    limiter-text: '{typography.small}'
+  bekreftelsesdialog:
+    background: '{colors.card}'
+    radius: '{rounded.lg}'
 ---
 
 # COSI - MRP: DESIGN
 
-Visuelle referanser legges til ved Finalize; ved konflikt gjelder spine-dokumentene. Historiske utkast, ikke referanse: `.working/direction-4-objektside.html` (oppsettet på startsiden) og `.working/direction-5-lag-paa-lag.html` (uttrykket på resultatsiden).
+Nøkkelskjermer (2026-11-14), lenket i seksjonene de illustrerer:
+
+- `mockups/key-startside.html`: startsiden i ro og med valideringsfeil (UJ-1, UJ-4).
+- `mockups/key-resultatside.html`: resultatsiden etter første kjøring med forklaringspanelet åpent, og samme kjøring med lagring blokkert (NFR-10) i et vindu på 1366 × 630 px.
+- `mockups/key-endringer.html`: resultatsiden med Endringer og Kritiske deler side om side, og valg av en linje i Endringer (fasit 03, UJ-3).
+- `mockups/key-kapasitet.html`: kapasitetspanelet sist på resultatsiden når Begge er valgt (testeksempel 05, UJ-5).
+
+Nøkkelskjermene illustrerer. Ved konflikt gjelder DESIGN.md og EXPERIENCE.md. Historiske utkast i `.working/` er ikke referanse.
 
 ## Brand & Style
 
-COSI - MRP er et arbeidsverktøy for planleggere som sitter mye ved PC. Det skal være lett å jobbe i, lyst og innbydende, og det skal føles kult uten å være lekent. «Kult» betyr her rolig og eksklusivt: en varm lounge, ikke en hvit og kjedelig skjermside og ikke energisk. Første inntrykk skal ikke overvelde, og det viktige skal skilles fra støyen.
+COSI - MRP er et arbeidsverktøy for planleggere som sitter mye ved PC. Det skal være lett å jobbe i, lyst og innbydende, og det skal føles kult uten å være lekent. «Kult» betyr her rolig og eksklusivt: en varm lounge, verken hvit og kjedelig eller energisk. Første inntrykk skal ikke overvelde, og det viktige skal skilles fra støyen.
 
-Uttrykket heter **Lag på lag**. Siden bygges av tre lyse toner som ligger oppå hverandre, stein, brett og kort, under en ramme i to mørke salvielag. Seksjoner skilles med flater, ikke med streker. Skriften er en humanistisk sans med lette overskrifter, og tallene står rett og like brede. Farge i selve arbeidsflaten betyr alltid noe (eksepsjon, forfalt, valgt), mens rammen rundt får bære temaet.
+Uttrykket heter **Lag på lag**. Siden bygges av tre lyse toner som ligger oppå hverandre (stein, brett og kort), under en ramme i to mørke salvielag. Seksjoner skilles med flater, ikke med streker. Skriften er en humanistisk sans med lette overskrifter, og tallene står rett og like brede. Farge i selve arbeidsflaten betyr alltid noe (eksepsjon, forfalt, valgt), mens rammen rundt får bære temaet.
 
-Merkevaren er helt fri: gruppa har ikke gitt logo, farger eller navn. Ordmerket er «COSI - MRP», som i ordbanken, med «MRP» i lys messing og lett vekt.
+Merkevaren er helt fri: gruppen har ikke gitt logo, farger eller navn. Ordmerket er «COSI - MRP», som i ordbanken, med «MRP» i lys messing og lett vekt.
 
-shadcn/ui + Tailwind er UI-systemet. Tokenene her utvider shadcn-standardene: shadcn-rollene får våre verdier, og produktets egne flater får egne tokener. Resultattabell og forklaringspanel bygges selv. Bare lys modus i v1, og mørk modus er utsatt (se EXPERIENCE.md, «Senere»).
+shadcn/ui + Tailwind er UI-systemet. Tokenene her utvider shadcn-standardene: shadcn-rollene får våre verdier, og produktets egne flater får egne tokener. Bare lys modus i v1, og mørk modus er utsatt (se EXPERIENCE.md, «Senere»).
 
-**Register: Operate på alle flater, også startsiden.** Startsiden er en arbeidsflate, ikke en landingsside som skal overtale (Impeccable-registeret «Operate», ikke «Persuade»).
+**Register:** Impeccable-registeret «Operate», ikke «Persuade», på alle flater. Også startsiden er en arbeidsflate, ikke en landingsside som skal overtale.
 
 ## Colors
 
@@ -333,28 +348,26 @@ Temaet heter **Salvie i to lag**: salvie- og messingpaletten i en ramme av to m�
 
 **Flatene.** `{colors.background}` (stein) er gulvet. `{colors.band}` (brett) er seksjonens flate, der overskriften ligger. `{colors.card}` (kort) er der innholdet hviler. De tre tonene har bevisst lav kontrast seg imellom (1,1–1,2:1) og er bare rytme. Alt som *må* sees, får en kant på minst 3:1.
 
-**Kantene.** `{colors.edge}` er kanten som virker på alle lyse flater, også på brett, og brukes på felt, knapper, slippsone og mellom delblokkene i Resultattabell. `{colors.border-control}` holder 3:1 på kort og stein, men ikke på brett (2,77:1), så den brukes bare der. `{colors.border}` og `{colors.divider-subtle}` er pynt uten kontrastkrav.
+**Kantene.** `{colors.edge}` er kanten som virker på alle lyse flater, også på brett, og brukes på felt, knapper, slippsone og mellom delblokkene i Resultattabell. `{colors.border-control}` holder 3:1 på kort og stein, men ikke på brett (2,77:1), så den brukes bare på kort og stein. `{colors.border}` og `{colors.divider-subtle}` er pynt uten kontrastkrav.
 
 **Rammen.** `{colors.topbar}` er lag 1 og `{colors.navrow}` er lag 2. Lys messing (`{colors.topbar-button}`, `{colors.navrow-indicator}`, `{colors.topbar-ring}`) brukes bare på mørkt. Mørk messing (`{colors.brass-line}`) er streken på lyst: stegnummer, understreking i statuslinja, nummer på lagene i forklaringspanelet.
 
-**Fokus.** `{colors.ring}` er fokusringen på alle lyse flater. På toppfeltet og navigasjonsraden gir den bare 1,9:1 og 1,5:1, så der brukes `{colors.topbar-ring}` (5,3:1 og 4,2:1).
+**Fokus.** `{colors.ring}` er fokusringen på alle lyse flater. På toppfeltet og navigasjonsraden gir den bare henholdsvis 1,9:1 og 1,5:1, så der brukes `{colors.topbar-ring}` (5,3:1 og 4,2:1).
 
 **Primær.** `{colors.primary}` er lenker, primærknapper og ringen rundt valgt celle og valgt radioknapp.
 
-**Alias.** Noen tokener har bevisst samme verdi: `muted` = `band`, `accent` = `selected-cell`, `input` = `edge`, `primary` = `selected-cell-ring`, `destructive` = `exception-critical` og `topbar-ring` = `topbar-button` = `navrow-indicator`. Endres én, endres partneren også.
+**Alias.** Noen tokener har bevisst samme verdi: `muted` = `band`, `accent` = `selected-cell`, `input` = `edge`, `primary` = `selected-cell-ring`, `destructive` = `exception-critical` og `topbar-ring` = `topbar-button` = `navrow-indicator`. Endres én, endres de andre med samme verdi også.
 
-**Semantikk.** Fargene for eksepsjoner og status brukes aldri som pynt, og aldri alene: de står alltid sammen med ikon eller tekst (FR-15, NFR-8, SM-C3). Eksepsjoner har nøyaktig to nivåer, kritisk og advarsel. Alle fem typene krever handling (SM-C2), så ingen eksepsjon får en nøytral tone. Hver farge har én betydning:
+**Semantikk.** Fargene for eksepsjoner og status brukes aldri som pynt, og aldri alene: de står alltid sammen med ikon eller tekst (FR-15, NFR-8, SM-C3). Eksepsjoner har nøyaktig to nivåer, kritisk og advarsel, og de to nivåene har hvert sitt ikon, så nivået ikke leses av fargen alene. Alle fem eksepsjonstypene krever handling (SM-C2), så ingen eksepsjon får en nøytral tone. Hver farge har én betydning:
 
-| Token (tekst / tint) | Nivå | Betyr |
-|---|---|---|
-| `exception-critical` / `-soft` | kritisk | Bestilling forsinket, Mottak forsinket; feiloppsummering |
-| `exception-warning` / `-soft` | advarsel | Bruk av sikkerhetslager, Ledetid overskrider horisont, Kanseller mottak |
-| `status-info` / `-soft` | – | Bare statusmeldinger (lagring blokkert, lagret kjøring slettet, eksport feilet). Aldri eksepsjoner |
-| `overdue` / `-soft` | – | Forfalt mengde i bestillingsforslag |
+| Token (tekst / tint) | Nivå | Ikon | Betyr |
+|---|---|---|---|
+| `exception-critical` / `-soft` | kritisk | trekant | Bestilling forsinket, Mottak forsinket; feiloppsummering |
+| `exception-warning` / `-soft` | advarsel | skjold | Bruk av sikkerhetslager, Ledetid overskrider horisont, Kanseller mottak |
+| `status-info` / `-soft` | – | sirkel (bare her) | Bare statusmeldinger (lagring blokkert, lagret kjøring slettet, eksport feilet). Aldri eksepsjoner |
+| `overdue` / `-soft` | – | timeglass | Forfalt mengde i bestillingsforslag |
 
-Nivånavnene «kritisk» og «advarsel» er interne og brukes bare i tokener og kode. De står aldri i teksten i appen eller i tilgjengelige navn. Der står typenavnet (se EXPERIENCE.md, Voice and Tone, og ordbanken, «Eksepsjonsnivå»).
-
-Endringsliste bruker ingen farge for etikettene, og aldri rødt og grønt.
+Nivånavnene «kritisk» og «advarsel» er interne og står aldri i appen (se EXPERIENCE.md, Voice and Tone, og ordbanken, «Eksepsjonsnivå»).
 
 **Kontrast for de viktigste parene (WCAG 2.1 AA):**
 
@@ -391,7 +404,7 @@ Endringsliste bruker ingen farge for etikettene, og aldri rødt og grønt.
 
 | Rolle | Token | Brukes til |
 |---|---|---|
-| Display | `{typography.display}` | h1 på startsiden |
+| Display | `{typography.display}` | h1 på startsiden og resultatsiden |
 | Feiloverskrift | `{typography.error-heading}` | overskriften i feiloppsummering |
 | Brettoverskrift | `{typography.tray-heading}` | h2 i hvert brett |
 | Svar | `{typography.panel-answer}` | lag 1 i forklaringspanelet |
@@ -407,21 +420,25 @@ Endringsliste bruker ingen farge for etikettene, og aldri rødt og grønt.
 | Liten | `{typography.small}` | hjelpetekst, tabellhint |
 | Etikett | `{typography.label}` | merker, piller, tabellhoder |
 
-Vekter: 300 for store overskrifter og svarsetningen, 400 for brødtekst, 700 bare for valgspeiling (aktiv lenke, valgt celle, valgt radioknapp) og tall som skal fram. Overskrifter skrives i vanlig skrift, ikke versaler. Alle tall bruker `{typography.numerals}`. Tallformat: hardt mellomrom som tusenskille (som `Intl.NumberFormat('nb-NO')` gir), så tall aldri brytes over to linjer, og ekte minus «−» (U+2212). Differanser skrives med fortegn i parentes: «(+75)», «(−75)».
+Vekter: 300 for store overskrifter og svarsetningen, 400 for brødtekst, 700 for valgspeiling (aktiv lenke, valgt celle, valgt radioknapp), tall som skal fram og korte fremhevinger (knapper, gruppeoverskrifter, merker). Overskrifter skrives i vanlig skrift, ikke versaler. Tabellhoder er unntaket: de står i `{typography.label}`, i versaler med 0,04 em sperring og i `{colors.muted-foreground}`. Alle tall bruker `{typography.numerals}`. Tallformat: hardt mellomrom som tusenskille (som `Intl.NumberFormat('nb-NO')` gir), så tall aldri brytes over to linjer, og ekte minus «−» (U+2212). Differanser skrives med fortegn i parentes: «(+75)», «(−75)».
 
 ## Layout & Spacing
 
 Tailwind-skalaen arves. Trinnene som brukes, er 4 · 8 · 12 · 16 · 24 · 32 · 48. Hovedfeltet har `{spacing.page-margin}` marg, brettene står `{spacing.tray-gap}` fra hverandre, og kortet ligger `{spacing.tray-inset}` inne i brettet. Overskriften har `{spacing.tray-head-top}` luft over seg.
 
-**Minste skjerm** er 1366 × 768 (NFR-6). Med nettleserens felt og Windows' oppgavelinje gir det i praksis et vindu (viewport) på cirka 1366 × 630 px ved 100 % zoom, og alle mål på «uten rulling» gjelder det vinduet, ikke skjermen.
+**Minste skjerm** er 1366 × 768 (NFR-6). Med nettleserens faner og adresselinje og Windows' oppgavelinje gir det i praksis et vindu (viewport) på cirka 1366 × 630 px ved 100 % zoom, og alle krav om «uten rulling» gjelder det vinduet, ikke skjermen.
 
-**Resultatsiden** er én kolonne med brett i fast rekkefølge. Bestillingsforslag, Resultattabell og Kapasitetspanel får alltid full bredde. **Endringer og Kritiske deler** står side om side i to like kolonner bare når forklaringspanelet er lukket og vinduet er minst 1366 px bredt. Med panelet åpent, i smalere vinduer og ved zoom over 100 % stables de, Endringer først. Uten Endringer får Kritiske deler full bredde. Forklaringspanelet (`{spacing.panel-width}`) står til høyre og skyver hovedfeltet. Det legger seg ikke over. Panelet står fast under toppfeltet og ruller selv.
+**Resultatsiden** er én kolonne med brett i fast rekkefølge. Øverst i hovedfeltet står h1, så statuslinja og eventuell statusmelding, og så brettene. Bestillingsforslag, Resultattabell og Kapasitetspanel får alltid full bredde. **Endringer og Kritiske deler** står side om side i to like kolonner bare når forklaringspanelet er lukket og vinduet er minst 1366 px bredt. Med panelet åpent, i smalere vinduer og ved zoom over 100 % stables de, Endringer først. Uten Endringer får Kritiske deler full bredde. Forklaringspanelet (`{spacing.panel-width}`) står til høyre og skyver hovedfeltet til side i stedet for å legge seg over det. Panelet står fast under toppfeltet og ruller selv.
 
-**Startsiden** har en smalere kolonne. Veiledningen står øverst. Under den står slippsonen og radiogruppen «Hva vil du beregne?» side om side. Målet er at slippsonen, radiogruppen og Beregn ses uten rulling i et vindu på 1366 × 630 px. Veiledningen kan delvis ligge over dem i rulleposisjon. Det sjekkes i nøkkelskjermene.
+→ Referanse: `mockups/key-resultatside.html` (viser rekkefølgen øverst i hovedfeltet og panelet som skyver) og `mockups/key-endringer.html` (viser Endringer og Kritiske deler side om side med lukket panel, og stablet med åpent panel).
+
+**Startsiden** bruker hele bredden med `{spacing.page-margin}` marg, som resultatsiden. Øverst står h1, så Veiledning som ett lavt brett (se Components › Veiledning). Under står brettet «Last opp» i tre kolonner: slippsonen, radiogruppen «Hva vil du beregne?» med valgkortene stablet loddrett, og Beregn i egen kolonne til høyre, med statuslinja under Beregn. Slippsonen, radiogruppen og Beregn er helt synlige uten rulling i et vindu på 1366 × 630 px. Med valideringsfeil står feiloppsummeringen øverst, så «Last opp den rettede fila», og under den Veiledning.
+
+→ Referanse: `mockups/key-startside.html` (viser begge oppsettene og 630-streken).
 
 **Tabellmål.** Radhøyden er `{spacing.row-height}` i alle tabeller. Faste kolonner i Resultattabell: `{spacing.col-varenummer}`, `{spacing.col-beskrivelse}` og `{spacing.col-rad}`, deretter `{spacing.col-uke}` per uke. Toppfeltet er `{spacing.topbar-height}` høyt og navigasjonsraden `{spacing.navrow-height}`.
 
-**Rulleområdet for Resultattabell.** Tabellen ligger i sitt eget rulleområde i brettets kort, som ruller i begge retninger. Området fyller høyden fra under brettoverskriften til bunnen av vinduet (vinduet minus toppfelt, navigasjonsrad og brettoverskrift). Ukeoverskriften og de faste kolonnene står fast inne i området. Oppførselen står i EXPERIENCE.md, Component Patterns › Resultattabell.
+**Rulleområdet for Resultattabell.** Tabellen ligger i et eget rulleområde i brettets kort, og området ruller i begge retninger. Det fyller høyden fra under brettoverskriften til bunnen av vinduet. Oppførselen, også hva som står fast, står i EXPERIENCE.md, «Resultattabell: rulling og ytelse».
 
 Tettheten er fast for hele appen. Det finnes ingen bryter for tetthet i v1.
 
@@ -429,7 +446,7 @@ Tettheten er fast for hele appen. Det finnes ingen bryter for tetthet i v1.
 
 Dybden kommer fra lagene, ikke fra skygger: stein, så brett, så kort. `box-shadow` brukes bare som innfelt ring for fokus og valg. Toppfeltet og navigasjonsraden er de to mørke lagene over alt det lyse. Bekreftelsesdialogen er det eneste som svever, og den beholder shadcn-standardens skygge og overlegg.
 
-Bevegelse følger lagene. Forklaringspanelet glir inn fra høyre (`components.forklaringspanel.motion-duration` og `motion-easing`) mens hovedfeltet trekker seg sammen like mykt. Brettene tones inn `components.brett.enter-offset` nedenfra første gang de vises. Messingstreken i navigasjonsraden glir mellom lenkene. Med `prefers-reduced-motion` skifter alt uten bevegelse.
+Bevegelse følger lagene. Forklaringspanelet glir inn fra høyre (`{components.forklaringspanel.motion-duration}` og `{components.forklaringspanel.motion-easing}`) mens hovedfeltet trekker seg sammen like mykt. Brettene tones inn og glir `{components.brett.enter-offset}` opp første gang de vises. Messingstreken i navigasjonsraden glir mellom lenkene. Med `prefers-reduced-motion` skifter alt uten bevegelse.
 
 ## Shapes
 
@@ -439,37 +456,20 @@ Store, myke hjørner gir loungepreget. `{rounded.lg}` brukes på brett, forklari
 
 shadcn-elementer som brukes med våre tokener og ellers uendret: Button, RadioGroup, Select, Switch, Collapsible, AlertDialog. Sheet og Drawer brukes ikke (de er modale). Resultattabell og forklaringspanel bygges selv.
 
-**Toppfelt (med navigasjonsrad).** Lag 1 (`{colors.topbar}`): ordmerket, en tynn skillestrek i `{colors.topbar-divider}` og konteksten, det vil si ferdigproduktets beskrivelse og varenummer i `{typography.topbar-context}`, for eksempel «Kontorstol Basic (100-002)», og «Horisont: 10 uker» og «Beregnet 13.11.2026 kl. 08:04» i `{colors.topbar-muted}`. Handlingene står til høyre: «Slett lagret kjøring» som lenkeknapp-toppfelt, «Last opp ny fil» som knapp-toppfelt-ghost og «Eksporter til Excel» som knapp-toppfelt, begge med ikon. Lag 2 er **navigasjonsraden** (`{colors.navrow}`) med ankerlenker i `{colors.navrow-foreground}`. Antallet står etter lenketeksten i `{typography.label}` og `{colors.topbar-muted}`. Aktiv lenke får `{colors.navrow-active}`, vekt 700 og en 3 px messingstrek (`{colors.navrow-indicator}`) med runde topphjørner nederst. Fokus i begge lagene vises med `{colors.topbar-ring}`. På startsiden har lag 1 bare ordmerket.
+Elementene er gruppert etter flate: felles ramme, startside og resultatside. Hvert avsnitt sier hva elementet er, så hva det består av, så farge og skrift, og til slutt tilstandene.
 
-**Statuslinje.** Én linje i `{typography.status-line}` rett under toppfeltet, med lenker skilt av «·» i `{colors.muted-foreground}`. Lenkene står i tekstfarge med 2 px understreking i `{colors.brass-line}`. Lenken til kritiske deler står i `{colors.exception-critical}` med understreking i samme farge. På startsiden er statuslinja en enkel tekstlinje i `{colors.muted-foreground}` ved siden av «Beregn».
+### Felles ramme
 
-**Brett og kort.** Brettet er `{colors.band}` med `{rounded.lg}`. Overskriften i `{typography.tray-heading}` ligger i brettet, med antallet i parentes i `{colors.muted-foreground}` og vekt 400. Til høyre i brettoverskriften står eventuelle filtre. Kortet (`{colors.card}`, `{rounded.DEFAULT}`) ligger `{spacing.tray-inset}` inne i brettet. Brett og kort har ingen kant og ingen skygge.
+**Toppfelt.** Den mørke rammen øverst, i to lag:
 
-**Veiledning.** Øverst på startsiden: et brett med overskriften «Slik gjør du det» og ett kort med tre nummererte steg. Nummeret står i en sirkel med kant i `{colors.brass-line}`, som lagene i forklaringspanelet, og stegteksten i `{typography.panel-step}`. Nedlastingene står i steg 1 som lenker i `{colors.primary}` med nedlastingsikon og filnavnet i `{colors.muted-foreground}`: «Last ned Excel-malen» (`COSI-MRP-mal.xlsx`) og «Last ned testeksempel 01» (`testeksempel-01.xlsx`). Setningen om ett ferdigprodukt per fil står under stegene i `{typography.small}`.
+- **Lag 1** (`{colors.topbar}`, `{spacing.topbar-height}` høyt): ordmerket i `{typography.brand}`, en tynn skillestrek i `{colors.topbar-divider}` og konteksten. Konteksten er ferdigproduktets beskrivelse og varenummer i `{typography.topbar-context}`, for eksempel «Kontorstol Basic (100-002)», og «Horisont: 10 uker» og «Beregnet 13.11.2026 kl. 08:04» i `{colors.topbar-muted}`. Handlingene står til høyre (variantene står i Knapper). På startsiden har lag 1 bare ordmerket.
+- **Lag 2, navigasjonsraden** (`{colors.navrow}`, `{spacing.navrow-height}` høy): ankerlenker i `{colors.navrow-foreground}`. Antallet står etter lenketeksten i `{typography.label}` og `{colors.topbar-muted}` (hvilke lenker som har antall, står i EXPERIENCE.md, Component Patterns › Toppfelt). Aktiv lenke får `{colors.navrow-active}`, vekt 700 og nederst i raden en 3 px messingstrek (`{colors.navrow-indicator}`) med runde topphjørner.
 
-**Bestillingsforslag-tabell (med ukefilter).** En enkel tabell i kortet: Varenummer, Beskrivelse, Frigivelsesuke, Mengde, Ordretype («Innkjøp» eller «Produksjonsordre», i tekst). Øverst i kortet, over tabellen, står hjelpeteksten i `{typography.small}` og `{colors.muted-foreground}` (teksten står i EXPERIENCE.md). Tabellhodet står i `{typography.label}`, versaler med 0,04 em sperring i `{colors.muted-foreground}`, over en linje i `{colors.border}`. Radene skilles med `{colors.divider-subtle}`. Tall er høyrejustert. Forfalt mengde vises som en liten knapp etter mengden: en pille med ikon og teksten «50 forfalt» i `{colors.overdue}` på `{colors.overdue-soft}`, `{rounded.full}`. Den har ingen kant, men har fokusring som alle knapper. **Ukefilteret** er en shadcn Select i brettoverskriften med etiketten «Vis» foran, `{colors.card}`-flate og kant i `{colors.edge}`. Når filteret er aktivt, står «Viser 3 av 12 forslag · Vis alle uker» i `{typography.small}` over tabellen, rett under filteret.
+**h1.** Hver side har én synlig h1 i `{typography.display}` øverst i hovedfeltet (se Layout & Spacing). Varenummeret i h1 står i vekt 400 (`{typography.numerals}`). Tekstene, og når feiloppsummeringen tar over som h1, står i EXPERIENCE.md, Component Patterns › h1.
 
-**Endringsliste.** Kortet har én gruppe per type (Bestillingsforslag, Eksepsjoner, Deler). Gruppeoverskriften står i `{typography.table}`, vekt 700, med antallene i vekt 400 og `{colors.muted-foreground}` («1 nytt, 7 endret mengde»). Hver linje begynner med en etikett: en pille med kant i `{colors.border-control}`, tekst i `{colors.foreground}` og ingen fylling. Etikettene i en gruppe er like brede (bredden til den lengste, «Endret mengde»), så linjene står på linje. Endret mengde skrives «130 → 205 (+75)». Linjer som kan velges (se EXPERIENCE.md), har varenummer og beskrivelse som lenke i `{colors.primary}`. Uketekst står i `{colors.muted-foreground}`. Brettoverskriften sier hvilke kjøringer som sammenlignes («13.11 kl. 07:31 → 08:04»).
+**Statuslinje.** Én linje i `{typography.status-line}` rett under h1. Lenkene skilles av «·», og skilletegnet står i `{colors.muted-foreground}`. Lenkene står i tekstfarge med 2 px understreking i `{colors.brass-line}`. Lenken til kritiske deler står i `{colors.exception-critical}` med understreking i samme farge. På startsiden er statuslinja en enkel tekstlinje i `{colors.muted-foreground}` under Beregn (se Layout & Spacing).
 
-**Kritiske deler-liste.** Over lista står kolonneoverskriftene «Del · Eksepsjon · Uke» i `{typography.label}` og `{colors.muted-foreground}`. Én rad per del (minst 44 px), i to linjer. Første linje: ikon, varenummer og beskrivelse som lenke i `{colors.primary}`, eksepsjonstypene i typens farge, og uka til høyre i `{colors.muted-foreground}`. For uke «–» står teksten «hele delen». Andre linje: klartekstlinja i `{typography.table}` og `{colors.foreground}`, og «Se forklaring →» til høyre i `{colors.primary}`. Radene skilles med `{colors.divider-subtle}`. Ikonene er forskjellige for de to nivåene (trekant for kritisk i `{colors.exception-critical}`, skjold for advarsel i `{colors.exception-warning}`), så nivået ikke leses av fargen alene. Har delen eksepsjoner på begge nivåene, får raden ikonet og fargen til kritisk, som merket i ryggen. Sirkelikonet er forbeholdt statusmeldingen.
-
-**Resultattabell.** En semantisk tabell i `{typography.table}`, radhøyde `{spacing.row-height}`, i sitt eget rulleområde (se Layout & Spacing). Over tabellen står ferdigproduktets beskrivelse og horisonten (også som `<caption>`) og hintet «Velg et tall (klikk eller Enter) for forklaring». Under tabellen står tegnforklaringen i `{typography.small}`: markøren med «1 eksepsjon i cellen», merket «Kritisk del» og en valgt celle, hver med sitt eget tegn. Filteret «Vis bare kritiske deler» står i brettoverskriften.
-
-Hver del er én blokk på seks rader. Varenummer og beskrivelse står i en **rygg** i `{colors.band}` som spenner over alle seks radene. Under beskrivelsen står nivået med ordlistens notasjon («0», «.1», «..2») og typen, i `{typography.label}` og `{colors.muted-foreground}`. **En kritisk del** får merket «Kritisk del» i ryggen: ikon og tekst i `{typography.label}` vekt 700, i fargen til delens mest alvorlige nivå (kritisk foran advarsel). Merket står på delnivå i tillegg til markørene i cellene (FR-16). Radnavnene står i `{colors.card}`. Mellom blokkene er det en 2 px strek i `{colors.edge}` og `{spacing.block-gap}` luft i `{colors.background}`. Inne i blokken er det ingen streker og ingen sebrastriper. Peking endrer bare musepekeren (`cursor: pointer` på celler, radnavn og rygg), ikke bakgrunnen på raden.
-
-Ukeoverskriften står fast øverst i rulleområdet, med 2 px strek i `{colors.edge}` under seg. Varenummer, beskrivelse og radnavn står fast til venstre, og høyre kant av de faste kolonnene har en 2 px strek i `{colors.edge}` (ingen skygge). Faste celler har ugjennomsiktig bakgrunn. **Nuller** vises som «0» i `{colors.muted-foreground}`. Negative tall står i tekstfarge.
-
-**Eksepsjonsmarkøren** er en liten pille til venstre i cellen, med nivåets ikon og antall i `{typography.label}` vekt 700, i nivåets farge på nivåets tint: `{colors.exception-critical}` på `{colors.exception-critical-soft}` eller `{colors.exception-warning}` på `{colors.exception-warning-soft}`. Markøren står i nettobehov-raden for Bestilling forsinket, Bruk av sikkerhetslager og Mottak forsinket, og i raden Planlagte mottak for Kanseller mottak (tabellen står i EXPERIENCE.md). Eksepsjoner for hele delen (uke «–») får markøren i ryggen ved beskrivelsen. Har cellen flere eksepsjoner med ulike nivåer, får markøren fargen til kritisk. **Valgt celle** får `{colors.selected-cell}` og en 3 px innfelt ring i `{colors.selected-cell-ring}`. Tallet står i vekt 700, og ukeoverskriften og radnavnet speiler valget med vekt 700.
-
-**Forklaringspanel.** En `<aside>`, `{spacing.panel-width}` bred, i `{colors.band}` med `{rounded.lg}` mot hovedfeltet. Overskriften står i `{typography.tray-heading}`, og «Lukk» med tasten `Esc` vist som knapp-dempet. Overskriften har ingen liten tekst over seg. Har cellen en eksepsjon, står **eksepsjonskortet først**, rett under overskriften og over lag 1: et eget kort i nivåets tint, med ikon og typenavnet i vekt 700 i nivåets farge, så meldingen i `{typography.body}` og en linje som begynner med «Hvorfor:» i vekt 700. Kortet har ingen farget sidekant. Er cellen uten eksepsjon, men delen er kritisk, står i stedet én linje i nivåets tint øverst: ikon, «Hjul har 1 eksepsjon: Bestilling forsinket, uke 1» i `{colors.foreground}` og lenken «Vis» i `{colors.primary}`.
-
-Så følger fire lag i hvert sitt kort: et nummer i en sirkel med kant i `{colors.brass-line}`, lagets navn i `{typography.label}`, og så innholdet. Lag 1 Svar står i `{typography.panel-answer}`, med nøkkeltallet i vekt 700. Lag 2 Utregning er en nummerert liste med steg i `{typography.panel-step}`, ett steg per linje med tallene satt inn, for eksempel «Disponibel beholdning = 80 + 0 − 100 = −20» og så «Nettobehov = maks(0, 30 − (−20)) = 50». Etiketten står til venstre og resultatet til høyre. Bare steg som faktisk er en sum, får en strek i `{colors.edge}` over summen. `maks(…)` skrives ut som i PRD-formelen, og «regnes på nytt» (fremskyndet mottak) er et eget steg med den nye verdien. Lag 3 Tallene er en liste med lenker og verdier. Lag 4 Regel er én setning og lenken «Ordliste».
-
-**Ordliste** vises i samme panel: lenken «← Tilbake til forklaringen» i `{colors.primary}` øverst, overskriften «Ordliste» i `{typography.tray-heading}`, og én oppføring per begrep i et kort, med begrepet i vekt 700 og forklaringen i `{typography.body}`. Oppføringen som ble valgt, står øverst.
-
-**Slippsone.** Et kort med 2 px stiplet kant i `{colors.edge}` og `{rounded.DEFAULT}`. Innholdet står midtstilt: filikon i `{colors.primary}`, «Slipp Excel-fila her» i `{typography.drop-hint}` (pynt, ikke instruksjon), knapp-primaer «Velg fil», og to linjer synlig hjelpetekst i `{typography.small}` og `{colors.muted-foreground}`. Når en fil dras over, får sonen `{colors.selected-cell}` og hel kant i `{colors.selected-cell-ring}`.
-
-**Radiogruppe «Hva vil du beregne?».** Tre valgkort i rad, hvert i `{colors.card}` med `{rounded.DEFAULT}`. Hvert kort har en sirkel (`{spacing.radio-dot}`, 2 px kant i `{colors.edge}`), en etikett i `{typography.option-label}` og én linje hjelpetekst i `{typography.small}`. Valgt kort får `{colors.selected-cell}`, en 2 px innfelt ring i `{colors.selected-cell-ring}`, fylt prikk i `{colors.primary}` og etikett i vekt 700.
+**Brett og kort.** Brettet er seksjonens flate, og kortet ligger `{spacing.tray-inset}` inne i brettet. Brettet er `{colors.band}` med `{rounded.lg}`. Overskriften i `{typography.tray-heading}` ligger i brettet, med antallet i parentes i `{colors.muted-foreground}` og vekt 400. Til høyre i brettoverskriften står eventuelle filtre. Kortet er `{colors.card}` med `{rounded.DEFAULT}`. Brett og kort har ingen kant og ingen skygge. Kapasitetspanelet er det eneste inverterte brettet (se Kapasitetspanel).
 
 **Knapper.** Alle knapper har `{rounded.DEFAULT}`, `{typography.body}` og innvendig luft `{spacing.button-pad-y}` / `{spacing.button-pad-x}`:
 
@@ -482,23 +482,75 @@ Så følger fire lag i hvert sitt kort: et nummer i en sirkel med kant i `{color
 | knapp-dempet | `{colors.card}`, kant i `{colors.edge}` | Lukk (panel), Avbryt (dialog) |
 | knapp-destruktiv | `{colors.destructive}`, hvit tekst | Slett (dialog) |
 
-Fokus på alle elementer: 2–3 px ring med 2–3 px avstand i flatens egen farge (`ring-offset-color` = flaten under). På lyse flater er ringen `{colors.ring}`. På toppfeltet og navigasjonsraden er den `{colors.topbar-ring}`, og avstanden i `{colors.topbar}` eller `{colors.navrow}` skiller ringen fra den messingfargede knappen Eksporter til Excel. Alt som kan klikkes, har `cursor: pointer`.
+**Fokus.** Alle kontroller viser fokus med `:focus-visible`: knapper, lenker, valgkort, Select, Switch, forfalt-knappen og linjene i listene. Ringen er 2–3 px bred med 2–3 px avstand i flatens egen farge (`ring-offset-color` = flaten under), i `{colors.ring}` eller `{colors.topbar-ring}` (se Colors › Fokus). På toppfeltet og navigasjonsraden skiller avstanden i `{colors.topbar}` eller `{colors.navrow}` ringen fra den messingfargede knappen Eksporter til Excel.
+
+### Startside
+
+**Veiledning.** Et lavt brett under h1 med overskriften «Slik gjør du det» og ett kort med de tre nummererte stegene i én rad. Setningen om ett ferdigprodukt per fil står til høyre i brettoverskriften, i `{typography.small}` og `{colors.muted-foreground}`. Nummeret står i en sirkel med kant i `{colors.brass-line}`, som lagene i forklaringspanelet, og stegteksten i `{typography.panel-step}`. Nedlastingene står i steg 1, til høyre for stegteksten, som lenker i `{colors.primary}` med nedlastingsikon og filnavnet i `{colors.muted-foreground}` (lenketekstene og filnavnene står i EXPERIENCE.md, Component Patterns › Veiledning).
+
+**Slippsone.** Et kort med 2 px stiplet kant i `{colors.edge}` og `{rounded.DEFAULT}`. Innholdet står midtstilt: filikon i `{colors.primary}`, «Slipp Excel-fila her» i `{typography.drop-hint}` (pynt, ikke instruksjon), knapp-primaer «Velg fil», og to linjer synlig hjelpetekst i `{typography.small}` og `{colors.muted-foreground}`. Når en fil dras over, får sonen `{colors.selected-cell}` og hel kant i `{colors.selected-cell-ring}`.
+
+**Radiogruppe «Hva vil du beregne?».** Tre valgkort stablet loddrett ved siden av slippsonen, med `{spacing.tray-inset}` mellom. Hvert kort har en sirkel (`{spacing.radio-dot}`, 2 px kant i `{colors.edge}`), en etikett i `{typography.option-label}` og én linje hjelpetekst i `{typography.small}`. Kortene er `{colors.card}` med `{rounded.DEFAULT}`. `legend` står i `{typography.option-label}` på linje med brettoverskriften «Last opp». Valgt kort får `{colors.selected-cell}`, en 2 px innfelt ring i `{colors.selected-cell-ring}`, fylt prikk i `{colors.primary}` og etikett i vekt 700. Har valgt kort fokus, vises begge ringene, som i Resultattabell.
+
+→ Referanse: `mockups/key-startside.html`, seksjon 1 (viser Veiledning, slippsonen, valgkortene og Beregn i ro).
+
+**Feiloppsummering.** Et brett i `{colors.exception-critical-soft}` med `{rounded.lg}`. Øverst står et feilikon (`{spacing.icon-lg}`) i `{colors.exception-critical}` og overskriften i `{typography.error-heading}` (sidens h1), med antall feil i vekt 700 og `{colors.exception-critical}`. Under står én linje brødtekst. Strukturfeil står først, i et kort med full bredde og overskriften «Fila følger ikke malen». Under det ligger verdifeilene i lyse kort, ett per ark, to i bredden. Hvert kort har arknavnet i `{typography.sheet-heading}` med antallet i `{colors.muted-foreground}`, og så én linje per feil: et lite ikon, stedet i vekt 700 og årsaken. Et kort med mange linjer foldes sammen med shadcn Collapsible, med antallet i knappen.
+
+→ Referanse: `mockups/key-startside.html`, seksjon 2 (viser de tre feilene fra UJ-4, fokus på brettet og Veiledning under opplastingen).
+
+### Resultatside
+
+**Statusmelding.** En rolig linje i et kort i `{colors.status-info-soft}` med sirkelikon i `{colors.status-info}` og tekst i `{colors.foreground}`. Den står rett under statuslinja, eller rett under h1 når siden ikke har statuslinje. Den har ingen skygge og ingen bevegelse.
+
+→ Referanse: `mockups/key-resultatside.html`, seksjon 2 (viser meldingen for lagring blokkert, NFR-10).
+
+**Bestillingsforslag-tabell.** En enkel tabell i kortet: Varenummer, Beskrivelse, Frigivelsesuke, Mengde, Ordretype («Innkjøp» eller «Produksjonsordre», i tekst). Øverst i kortet, over tabellen, står hjelpeteksten i `{typography.small}` og `{colors.muted-foreground}` (teksten står i EXPERIENCE.md). Tabellhodet (se Typography) står over en linje i `{colors.border}`, og radene skilles med `{colors.divider-subtle}`. Tall er høyrejustert. Forfalt mengde vises som en liten knapp etter mengden: en pille med ikon og teksten «50 forfalt» i `{colors.overdue}` på `{colors.overdue-soft}`, `{rounded.full}`. Den har ingen kant, men har fokusring som alle knapper.
+
+**Ukefilter.** En shadcn Select i brettoverskriften til Bestillingsforslag, med etiketten «Vis» foran, `{colors.card}`-flate og kant i `{colors.edge}`. Når filteret er aktivt, står linja «Viser … av …» rett under det (se Små elementer).
+
+→ Referanse: `mockups/key-resultatside.html` (viser tabellen filtrert på Uke 1 med «50 forfalt», og med Alle uker).
+
+**Endringsliste.** Kortet har én gruppe per type (Bestillingsforslag, Eksepsjoner, Deler). Gruppeoverskriften står i `{typography.table}`, vekt 700, med antallene i vekt 400 og `{colors.muted-foreground}` («1 nytt, 7 endret mengde»). Hver linje begynner med en etikett: en pille med kant i `{colors.border-control}`, tekst i `{colors.foreground}` og ingen fylling. Alle etikettene er like brede (bredden til den lengste, «Endret mengde»), så teksten etter etiketten starter likt i alle linjene. Endret mengde skrives «130 → 205 (+75)». Linjer som kan velges, har varenummer og beskrivelse som lenke i `{colors.primary}` (hvilke linjer: se EXPERIENCE.md, «Endringsliste»). Uketekst står i `{colors.muted-foreground}`.
+
+→ Referanse: `mockups/key-endringer.html` (viser de tre gruppene med etiketter, tom gruppe og Kritiske deler-liste ved siden av).
+
+**Kritiske deler-liste.** En liste med én rad per del (minst 44 px), i to linjer, og radene skilles med `{colors.divider-subtle}`. Over lista står kolonneoverskriftene «Del · Eksepsjon · Uke» i `{typography.label}` og `{colors.muted-foreground}`. Første linje: nivåets ikon (se Colors › Semantikk), varenummer og beskrivelse som lenke i `{colors.primary}`, eksepsjonstypene i typens farge, og uka til høyre i `{colors.muted-foreground}`. Andre linje: klartekstlinja i `{typography.table}` og `{colors.foreground}`, og «Se forklaring →» til høyre i `{colors.primary}`. Har delen eksepsjoner på begge nivåene, får raden ikonet og fargen til kritisk, på samme måte som merket «Kritisk del» i ryggen.
+
+**Resultattabell.** En semantisk tabell i `{typography.table}`, radhøyde `{spacing.row-height}`, i sitt eget rulleområde (se Layout & Spacing). Over tabellen står ferdigproduktets beskrivelse og horisonten (også som `<caption>`) og hintet «Velg et tall (klikk eller Enter) for forklaring». Filteret «Vis bare kritiske deler» står i brettoverskriften. Under tabellen står tegnforklaringen i `{typography.small}`: markøren med «1 eksepsjon i cellen», merket «Kritisk del» og en valgt celle, hver vist med et eksempel og en kort forklaring.
+
+Hver del er én blokk på seks rader. Varenummer og beskrivelse står i en **rygg** i `{colors.band}` som spenner over alle seks radene. Under beskrivelsen står nivået med ordbankens notasjon («0», «.1», «..2») og typen, i `{typography.label}` og `{colors.muted-foreground}`. **En kritisk del** får merket «Kritisk del» i ryggen: ikon og tekst i `{typography.label}` vekt 700, i fargen til delens mest alvorlige nivå (kritisk foran advarsel). Merket står på delnivå i tillegg til markørene i cellene (FR-16). Radnavnene står på `{colors.card}`. Mellom blokkene er det en 2 px strek i `{colors.edge}` og `{spacing.block-gap}` luft i `{colors.background}`. Inne i blokken er det ingen streker og ingen sebrastriper.
+
+Ukeoverskriften står fast øverst i rulleområdet, med 2 px strek i `{colors.edge}` under seg. Varenummer, beskrivelse og radnavn står fast til venstre, og høyre kant av de faste kolonnene har en 2 px strek i `{colors.edge}` (ingen skygge). Faste celler har ugjennomsiktig bakgrunn. **Nuller** vises som «0» i `{colors.muted-foreground}`. Negative tall står i tekstfarge.
+
+**Eksepsjonsmarkøren** er en liten pille til venstre i cellen, med nivåets ikon og antall i `{typography.label}` vekt 700, i nivåets farge på nivåets tint: `{colors.exception-critical}` på `{colors.exception-critical-soft}` eller `{colors.exception-warning}` på `{colors.exception-warning-soft}`. Hvilken celle markøren står i, står i EXPERIENCE.md, «Eksepsjonsmarkør: hvilken celle». I ryggen står markøren ved beskrivelsen. Har cellen flere eksepsjoner med ulike nivåer, får markøren fargen til kritisk. **Valgt celle** får `{colors.selected-cell}` og en 3 px innfelt ring i `{colors.selected-cell-ring}`. Tallet står i vekt 700, og ukeoverskriften og radnavnet speiler valget med vekt 700. Har den valgte cellen også fokus, vises begge ringene: den innfelte valgt-ringen og fokusringen i `{colors.ring}` utenfor cellen.
+
+**Tegn for fremskyndet mottak og for planlagt ordremottak med forfalt frigivelse:** et lite tegn i cellen med tilgjengelig navn. Formen prøves i prototypen mot SM-C3 og er ikke låst.
+
+**Sammenslått visning** (bare hvis ytelsen krever det): én rad per del i `{spacing.row-height}`, med ryggen, eksepsjonsmarkøren og første uke med eksepsjon. Knappene «Fold ut alle» og «Fold sammen alle» er knapp-dempet i brettoverskriften.
+
+→ Referanse: `mockups/key-resultatside.html`, seksjon 1 (viser ryggen, merket «Kritisk del», markørene på begge nivåene og valgt celle med fokus for 300-003 Hjul, nettobehov uke 1).
+
+**Forklaringspanel.** En `<aside>`, `{spacing.panel-width}` bred, i `{colors.band}` med `{rounded.lg}` mot hovedfeltet. Overskriften står i `{typography.tray-heading}`, uten liten tekst over seg, og «Lukk» står som knapp-dempet, med tasten `Esc` vist i knappen. Har cellen en eksepsjon, står **eksepsjonskortet først**, rett under overskriften og over lag 1: et eget kort i nivåets tint, med ikon og typenavnet i vekt 700 i nivåets farge, så meldingen i `{typography.body}` og en linje som begynner med «Hvorfor:» (bare «Hvorfor:» i vekt 700). Er cellen uten eksepsjon, men delen er kritisk, står i stedet én linje i nivåets tint øverst: ikon, «Hjul har 1 eksepsjon: Bestilling forsinket, uke 1» i `{colors.foreground}` og lenken «Vis» i `{colors.primary}`.
+
+Så følger fire lag i hvert sitt kort: et nummer i en sirkel med kant i `{colors.brass-line}`, lagets navn i `{typography.label}`, og så innholdet. Lag 1 Svar står i `{typography.panel-answer}`, med nøkkeltallet i vekt 700. Lag 2 Utregning er en nummerert liste med steg i `{typography.panel-step}`, ett steg per linje (eksempel og regler i EXPERIENCE.md, «Forklaringspanel: tekster»). Etiketten står til venstre og resultatet til høyre. Bare steg som faktisk er en sum, får en strek i `{colors.edge}` over summen. Lag 3 Tallene er en liste med lenker og verdier. Lag 4 Regel er én setning og lenken «Ordliste».
+
+→ Referanse: `mockups/key-resultatside.html`, seksjon 1 (viser eksepsjonskortet for Bestilling forsinket og de fire lagene), og `mockups/key-endringer.html`, seksjon 2 (viser eksepsjonskortet på nivå advarsel).
+
+**Ordliste** vises i samme panel: lenken «← Tilbake til forklaringen» i `{colors.primary}` øverst, overskriften «Ordliste» i `{typography.tray-heading}`, og én oppføring per begrep i et kort, med begrepet i vekt 700 og forklaringen i `{typography.body}`. Rekkefølgen står i EXPERIENCE.md, «Forklaringspanel».
+
+**Kapasitetspanel.** Et eget brett for Produksjonskapasitet, med samme farger, skrift og tokener som resten, men det skal ikke kunne forveksles med bestillingsplanen (FR-34). Overskriften er et spørsmål («Hvor mange ferdigprodukter kan være ferdige?»). **Skillet er et invertert brett:** brettet har `{colors.card}`, og kortene inni har `{colors.background}` (steintone), omvendt av alle andre brett. Under overskriften står en innledende tekst i `{typography.body}`, ikke i liten skrift (teksten står i EXPERIENCE.md, «Produksjonskapasitet (trinn 4)»). Første kort viser de to radene «Fra lager» og «Med planlagte mottak», én kolonne per uke, med radhøyde `{spacing.row-height}` og samme tallformat som Resultattabell. Radnavnene står i `{typography.option-label}`, en annen stil enn de seks radene i Resultattabell, og panelet har ingen rygg, så de to radene aldri ser ut som MRP-rader. Andre kort viser tabellen per del, med tabellhode som i Bestillingsforslag-tabell. Hjelpeteksten for Ledig beholdning står synlig ved kolonneoverskriften i `{typography.small}` og `{colors.muted-foreground}`.
+
+**Begrensende deler** står i raden «Begrenset av» under hver av de to radene, med radnavnet i `{typography.small}` og `{colors.muted-foreground}`. Hver celle dekker en sammenhengende rekke uker (reglene står i EXPERIENCE.md, «Produksjonskapasitet (trinn 4)»). Inni cellen ligger et segment i `{colors.card}` med 2 px kant øverst i `{colors.edge}` og runde hjørner nederst (`{rounded.DEFAULT}`). Øverst i segmentet står ukene i `{typography.label}` og `{colors.muted-foreground}` («Uke 4–8:», eller «Uke 1:» for én uke), og under dem delen med årsaken i `{typography.small}` («300-033 Ryggplate (lager)»). Mellom «Fra lager» med sin «Begrenset av»-rad og «Med planlagte mottak» står en linje i `{colors.border}`.
+
+→ Referanse: `mockups/key-kapasitet.html` (viser det inverterte brettet, raden «Begrenset av» med sammenhengende uker for testeksempel 05 og tabellen per del).
 
 **Små elementer.**
-- **«Gå til forklaringen»:** en hopplenke som bare vises ved fokus, som knapp-dempet øverst til venstre i Resultattabell-brettet.
-- **«Vis alle uker» og «Vis alle deler»:** tekstlenker i `{colors.primary}` i linja «Viser … av …», i `{typography.small}`.
-- **Tegn for fremskyndet mottak og forfalt ordremottak:** et lite tegn i cellen med tilgjengelig navn. Formen prøves i prototypen mot SM-C3 og er ikke låst.
-- **Sammenslått visning** (bare hvis ytelsen krever det): én rad per del i `{spacing.row-height}`, med ryggen, eksepsjonsmarkøren og første uke med eksepsjon. Knappene «Fold ut alle» og «Fold sammen alle» er knapp-dempet i brettoverskriften.
-
-**Feiloppsummering.** Et brett i `{colors.exception-critical-soft}` med `{rounded.lg}`. Øverst står et feilikon (`{spacing.icon-lg}`) i `{colors.exception-critical}` og overskriften i `{typography.error-heading}`, med antall feil i vekt 700 og `{colors.exception-critical}`, og en linje brødtekst under. Strukturfeil står først, i et kort med full bredde og overskriften «Fila følger ikke malen». Under det ligger verdifeilene i lyse kort, ett per ark, to i bredden. Kortet har arknavnet i `{typography.sheet-heading}` med antallet i `{colors.muted-foreground}`, og så én linje per feil: et lite ikon, stedet i vekt 700 og årsaken. Et kort med mange linjer foldes som shadcn Collapsible med antallet i knappen. Brettet har ingen farget sidekant.
-
-**Statusmelding.** En rolig linje i et kort i `{colors.status-info-soft}` med sirkelikon i `{colors.status-info}` og tekst i `{colors.foreground}`. Den står rett under statuslinja, eller øverst i hovedfeltet når siden ikke har statuslinje. Den har ingen lukkeknapp, ingen skygge og ingen bevegelse. Statusmeldingen er det eneste som bruker denne tonen.
+- **«Gå til forklaringen»:** en hopplenke øverst til venstre i Resultattabell-brettet, vist som knapp-dempet. Den vises bare ved fokus.
+- **Linja «Viser … av …»** (for eksempel «Viser 3 av 12 forslag · Vis alle uker»): står i `{typography.small}` over tabellen, rett under filteret. Lenkene «Vis alle uker» og «Vis alle deler» er tekstlenker i `{colors.primary}`.
 
 **Bekreftelsesdialog.** shadcn AlertDialog med `{colors.card}`, `{rounded.lg}`, tittelen i `{typography.tray-heading}`, én setning brødtekst og knappene Slett (knapp-destruktiv) og Avbryt (knapp-dempet).
 
 **Eksport.** Ingen visuell spesifikasjon i appen utover knappen Eksporter til Excel. Formateringen av arkene i Excel-fila bestemmes i arkitekturen.
-
-**Kapasitetspanel.** Samme farger, skrift og tokener som resten, men det skal ikke kunne forveksles med bestillingsplanen (FR-34). Et eget brett med overskriften som spørsmål («Hvor mange ferdigprodukter kan være ferdige?»). Under overskriften står en innledende tekst i `{typography.body}`, ikke bare i liten skrift: FR-34-setningen og setningen om at sikkerhetslageret holdes av. Første kort viser de to radene «Fra lager» og «Med planlagte mottak», én kolonne per uke, med radhøyde `{spacing.row-height}` og samme tallformat som Resultattabell. Radnavnene har en annen stil enn de seks radene i Resultattabell, og panelet har ingen rygg, så de to radene aldri ser ut som MRP-rader. Begrensende deler står med årsaken i tekst under hver rad. Andre kort viser tabellen per del. [OPEN: avgjøres i kapasitetsskissen: det visuelle skillet fra bestillingsplanen og hvordan begrensende deler markeres per uke og rad.]
 
 ## Do's and Don'ts
 
@@ -514,7 +566,7 @@ Fokus på alle elementer: 2–3 px ring med 2–3 px avstand i flatens egen farg
 | `cursor: pointer` på alt som kan klikkes | Endret bakgrunn, verktøytips eller noe som åpnes ved peking |
 | Nuller som dempet «0» | Tomme celler eller streker for 0 |
 | Tall med `lining-nums tabular-nums`, høyrejustert | Gammeldagse tall eller proporsjonale tall i tabeller |
-| Lette overskrifter (300), vanlig skrift | Versale brett- og kortoverskrifter, små kickertekster over titler |
+| Lette overskrifter (300), vanlig skrift | Versale brett- og kortoverskrifter, små overtitler over titler |
 | Myk rødtone og lyse kort i feiloppsummeringen | Tykk farget sidekant på meldinger, feil eller eksepsjoner |
 | Nøkkeltall som tekst i statuslinja | Store tallkort, dashbord eller grafer øverst |
 | Én fast radhøyde (`{spacing.row-height}`) i alle tabeller | Sebrastriper eller streker inne i en delblokk |
