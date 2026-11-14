@@ -1,0 +1,566 @@
+<!doctype html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Startside (forslag) · COSI-MRP</title>
+<!--
+  BRUKERREISE – startside, opplasting og resultat. Forslag – ikke godkjent av gruppen.
+  Versjon 2, 2026-11-14. Forrige versjon er tatt vare på i brukerreise-startside-2026-11-13.html.
+  Endringer fra versjon 1:
+  - Kortere startside: kort introduksjon og de tre stegene som tre kort side om side, med handlingene i kortene.
+  - Utfyllingsveiledningen (stykkliste, MPS, planlagte mottak, sjekkliste, hva som skjer ved opplasting) kan åpnes og lukkes.
+    Den er åpen ved første besøk (ingen lagrede kjøringer) og lukket senere, slik EXPERIENCE.md beskriver (Første/Senere besøk).
+  - Tydeligere opplasting: stor «Velg Excel-fil»-knapp med synlig fokus, og teksten om automatisk kontroll.
+  - Sidemenyen har bare Ny kjøring, Lagrede kjøringer og Veiledning, i samme rekkefølge som på resultatsiden. Stegene står bare på siden.
+  Grunnlag: PRD (beslutninger 2026-11-13) UJ-1–UJ-4, FR-1–FR-4, FR-19–FR-21, FR-27, FR-30, og EXPERIENCE.md.
+  Ingen ekte lesing eller beregning. Resultatsiden er konsept-4-hybrid-forbedret.html, vist i en ramme.
+-->
+<style>
+:root{
+  color-scheme:light;
+  --base:#F4F6F7;--raised:#FFFFFF;--sunken:#EDF0F2;
+  --ink:#14202B;--ink2:#596775;--line:#D9DFE4;--line2:#9AA6B1;
+  --accent:#0D5C6E;--accent-ink:#FFFFFF;--accent-soft:#E1EEF1;--accent-hover:#0A4B5A;
+  --bf:#B3261E;--bf-s:#FCEBEA;--ok:#2C6E3F;--ok-s:#E5F2E8;
+  --rail:#0F2A33;--rail-ink:#CFE2E7;--proto:#FFF7D6;--proto-ink:#5B4A00;--proto-line:#EAD98C;
+  --yellow:#FFF3B0;--grey:#E6E9EC;
+  --f:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,"SF Mono",Menlo,monospace;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{margin:0;font:15px/1.55 var(--f);color:var(--ink);background:var(--base)}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.vn{font-family:var(--mono);font-size:.88em}
+.muted{color:var(--ink2)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.skip{position:absolute;left:12px;top:-60px;z-index:50;background:var(--accent);color:#fff;padding:8px 14px;border-radius:6px;text-decoration:none}
+.skip:focus{top:12px}
+
+/* Den eneste gule prototypelinjen, felles for startside og resultat */
+.proto{background:var(--proto);color:var(--proto-ink);border-bottom:1px solid var(--proto-line);padding:8px 24px;display:flex;flex-wrap:wrap;gap:6px 18px;align-items:center;font-size:13px}
+.proto .grow{flex:1 1 340px}
+.proto label{display:inline-flex;gap:7px;align-items:center;font-weight:500;cursor:pointer}
+.proto input[type=checkbox]{width:16px;height:16px;accent-color:var(--proto-ink)}
+.proto select{border:1px solid var(--proto-line);background:#FFFBEA;border-radius:6px;padding:2px 6px}
+.proto button{border:1px solid var(--proto-line);background:#FFFBEA;border-radius:6px;padding:3px 10px;font-weight:600;color:var(--proto-ink)}
+.proto a{color:var(--proto-ink)}
+.proto .demo-grp{display:inline-flex;gap:6px;align-items:center;flex-wrap:wrap}
+.proto :focus-visible{outline-color:var(--proto-ink)}
+
+/* Hybrid-rammen med mørk sidemeny: samme tre lenker som på resultatsiden */
+#view-start{display:grid;grid-template-columns:216px minmax(0,1fr);min-height:100vh}
+.rail{background:var(--rail);color:var(--rail-ink);position:sticky;top:0;height:100vh;padding:20px 12px 16px;display:flex;flex-direction:column;gap:2px;z-index:20}
+.logo{font-weight:700;font-size:17px;color:#fff;padding:0 10px 18px;display:flex;gap:9px;align-items:center;white-space:nowrap;flex:none}
+.logo i{width:20px;height:20px;border-radius:5px;background:#3F9AAE}
+.rail nav{display:flex;flex-direction:column;gap:2px}
+.rail a{color:var(--rail-ink);text-decoration:none;padding:8px 10px;border-radius:6px;display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:14.5px;white-space:nowrap}
+.rail a:hover{background:rgb(255 255 255 / .07);color:#fff}
+.rail a[aria-current="page"],.rail a[aria-current="true"]{background:rgb(255 255 255 / .12);color:#fff;box-shadow:inset 3px 0 0 #6CC3D5}
+.rail a:focus-visible{outline-color:#6CC3D5}
+.rail .ic{display:inline-flex;gap:10px;align-items:center}
+.rail .ic svg{width:16px;height:16px;flex:none;opacity:.85}
+.n{font-size:12px;background:rgb(255 255 255 / .13);border-radius:999px;padding:1px 8px;font-variant-numeric:tabular-nums}
+.rail .foot{margin-top:auto;padding:0 10px;font-size:12.5px}
+.rail .foot .tag{display:block;background:var(--proto);color:var(--proto-ink);border-radius:6px;padding:6px 8px;font-weight:600;line-height:1.35}
+.main{min-width:0}
+.content{padding:28px 32px 80px;display:flex;flex-direction:column;gap:22px;max-width:1180px}
+section{scroll-margin-top:16px}
+h1{margin:0;font-size:28px;line-height:1.2;text-wrap:balance}
+h2{margin:0;font-size:19px;line-height:1.25}
+h3{margin:0;font-size:16px}
+p{margin:0}
+.card{background:var(--raised);border:1px solid var(--line);border-radius:12px;padding:22px 24px;display:flex;flex-direction:column;gap:16px;min-width:0}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid var(--line);background:var(--raised);border-radius:7px;padding:9px 16px;font-weight:600;font-size:14.5px;text-decoration:none;color:var(--ink);cursor:pointer}
+.btn:hover{border-color:var(--line2)}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.pri:hover{background:var(--accent-hover);border-color:var(--accent-hover)}
+.btn svg{width:16px;height:16px;flex:none}
+.btn:focus-visible{outline:3px solid var(--accent);outline-offset:3px;box-shadow:0 0 0 6px var(--accent-soft)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+
+/* Introduksjon: hva COSI-MRP gjør, i to setninger */
+.intro{display:flex;flex-direction:column;gap:8px}
+.intro .lede{font-size:16.5px;color:var(--ink2);max-width:68ch}
+.privacy{display:flex;gap:8px;align-items:center;font-size:13.5px;color:var(--ink2)}
+.privacy svg{flex:none;width:16px;height:16px;color:var(--ok)}
+
+/* De tre stegene: kort side om side, opplastingen i midten er størst */
+.process{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.55fr) minmax(0,1fr);gap:16px;align-items:stretch}
+.step{background:var(--raised);border:1px solid var(--line);border-radius:12px;padding:18px 20px;display:flex;flex-direction:column;gap:12px;min-width:0;position:relative}
+.step.main-step{border:2px solid var(--accent);box-shadow:0 2px 0 var(--accent-soft)}
+.step h2{display:flex;gap:10px;align-items:center;font-size:17px}
+.step p{font-size:14px;color:var(--ink2)}
+.stepno{display:inline-grid;place-items:center;flex:none;width:28px;height:28px;border-radius:50%;background:var(--accent);color:#fff;font-weight:700;font-size:13.5px}
+.step.done-step .stepno{background:var(--raised);color:var(--accent);border:2px solid var(--accent)}
+/* Pil mellom kortene på brede skjermer */
+.process>li+li::before{content:"";position:absolute;left:-13px;top:32px;width:10px;height:10px;border-top:2px solid var(--line2);border-right:2px solid var(--line2);transform:rotate(45deg)}
+.small{font-size:13px;color:var(--ink2)}
+.textlink{color:var(--accent);font-weight:600;text-underline-offset:2px}
+.toggle{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--accent);background:var(--accent-soft);color:var(--accent);border-radius:7px;padding:8px 14px;font-weight:600;font-size:14px;align-self:flex-start}
+.toggle:hover{background:#D3E6EB}
+.toggle svg{width:14px;height:14px;transition:transform .15s}
+.toggle[aria-expanded="true"] svg{transform:rotate(180deg)}
+@media (prefers-reduced-motion:reduce){.toggle svg{transition:none}}
+.toggle:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+.first{font-size:13px;color:var(--ink2);margin-top:auto;border-top:1px solid var(--line);padding-top:10px}
+.reading{margin:0;padding:0 0 0 18px;display:flex;flex-direction:column;gap:3px;font-size:13.5px}
+
+/* Opplasting */
+.drop{border:2px dashed var(--line2);border-radius:10px;background:var(--sunken);padding:22px 18px;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;transition:background .15s,border-color .15s;cursor:pointer}
+.drop:hover{border-color:var(--accent)}
+.drop.over{background:var(--accent-soft);border-color:var(--accent);border-style:solid}
+.drop.busy{opacity:.6;pointer-events:none}
+.drop .ico{width:34px;height:34px;color:var(--accent)}
+.drop b{font-size:15px}
+.btn.xl{font-size:16.5px;padding:12px 26px;border-radius:8px;min-width:220px}
+.btn.xl svg{width:18px;height:18px}
+/* Filvelgeren er skjult. Knappen «Velg Excel-fil» åpner den, så fokus og tastatur virker likt i alle nettlesere. */
+#file{display:none}
+.auto{display:flex;gap:8px;align-items:flex-start;font-size:13.5px;color:var(--ink);background:var(--accent-soft);border-radius:8px;padding:8px 12px}
+.auto svg{flex:none;width:16px;height:16px;margin-top:2px;color:var(--accent)}
+.prog{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px;font-size:14px}
+.prog li{display:flex;gap:10px;align-items:center;color:var(--ink2)}
+.prog li .dot{width:18px;height:18px;border-radius:50%;border:2px solid var(--line2);flex:none}
+.prog li.doing{color:var(--ink);font-weight:600}
+.prog li.doing .dot{border-color:var(--accent);border-top-color:transparent;animation:spin .8s linear infinite}
+.prog li.done{color:var(--ok)}
+.prog li.done .dot{border-color:var(--ok);background:var(--ok);box-shadow:inset 0 0 0 3px #fff}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.prog li.doing .dot{animation:none}}
+.msg{border-radius:8px;padding:12px 14px;font-size:14px}
+.msg.err{background:var(--bf-s);color:#7A1A14;border:1px solid #F3C1BD}
+.choice{border:1px solid var(--line);border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:8px;margin:0}
+.choice legend{font-weight:600;padding:0 4px}
+.choice label{display:grid;grid-template-columns:18px 1fr;gap:4px 8px;align-items:start;font-size:14px}
+.choice label span.muted{grid-column:2;font-size:12.5px}
+.choice input{margin-top:3px;accent-color:var(--accent)}
+
+/* Valideringsfeil: øverst, over stegene */
+.val{border:2px solid var(--bf);border-radius:12px;background:var(--raised);padding:18px 20px;display:flex;flex-direction:column;gap:12px}
+.val:focus-visible{outline:3px solid var(--bf);outline-offset:3px}
+.val h2.t{color:var(--bf);font-size:18px;display:flex;gap:10px;align-items:center}
+.val h3{margin:4px 0 0;font-size:13px;letter-spacing:.05em;text-transform:uppercase;color:var(--ink2)}
+.errt{border-collapse:collapse;width:100%;font-size:14px}
+.errt th,.errt td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.errt th{font-size:12px;color:var(--ink2);background:var(--sunken)}
+
+/* Utfyllingsveiledningen, som kan åpnes og lukkes */
+.guide{background:var(--raised);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:12px;padding:22px 24px;display:flex;flex-direction:column;gap:18px;scroll-margin-top:16px}
+.guide-h{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
+.guide-h h2:focus{outline:none}
+.guide-h h2:focus-visible{outline:2px solid var(--accent);outline-offset:4px}
+.guide h3.sub{font-size:13px;letter-spacing:.05em;text-transform:uppercase;color:var(--ink2)}
+.tip{background:var(--accent-soft);border-radius:8px;padding:10px 14px;font-size:13.5px}
+.sheets{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.sheet{border:1px solid var(--line);border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.sheet.wide{grid-column:1/-1}
+.sheet h3{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.tab{font:600 12px/1 var(--mono);background:#E3F1E6;color:#22542F;border:1px solid #BFD9C5;border-radius:4px 4px 0 0;padding:5px 8px}
+.xl{overflow-x:auto;border:1px solid #C9D1D7;border-radius:6px}
+.xl table{border-collapse:collapse;font-size:13px;min-width:100%}
+.xl th,.xl td{border:1px solid #D4DADF;padding:4px 8px;white-space:nowrap;text-align:left}
+.xl thead th{background:#F1F3F5;font-weight:600}
+.xl td.y{background:var(--yellow)}
+.xl td.g{background:var(--grey)}
+.xl td.r{text-align:right;font-variant-numeric:tabular-nums}
+.cols{margin:0;padding:0;list-style:none;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 20px;font-size:13.5px}
+.legendx{display:flex;gap:14px;flex-wrap:wrap;font-size:12.5px;color:var(--ink2)}
+.legendx span{display:inline-flex;gap:6px;align-items:center}
+.legendx i{width:14px;height:14px;border:1px solid #C9D1D7;border-radius:2px}
+.check{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px;font-size:14px}
+.check li{display:flex;gap:10px;align-items:flex-start}
+.check li::before{content:"";flex:none;width:16px;height:16px;margin-top:3px;border:2px solid var(--accent);border-radius:3px}
+.flow{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;counter-reset:f}
+.flow li{position:relative;padding:0 16px 0 0;display:flex;flex-direction:column;gap:6px}
+.flow li::before{counter-increment:f;content:counter(f);width:28px;height:28px;border-radius:50%;background:var(--raised);border:2px solid var(--accent);color:var(--accent);display:grid;place-items:center;font-weight:700;font-size:13px;position:relative;z-index:1}
+.flow li::after{content:"";position:absolute;top:14px;left:28px;right:0;height:2px;background:var(--line)}
+.flow li:last-child::after{display:none}
+.flow b{font-size:14.5px}
+.flow span{font-size:13.5px;color:var(--ink2);line-height:1.45}
+.outcomes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.oc{border-radius:10px;padding:14px 16px;font-size:14px;display:flex;flex-direction:column;gap:4px}
+.oc.bad{background:var(--bf-s)}
+.oc.good{background:var(--ok-s)}
+.oc b{font-size:14.5px}
+.guide-foot{display:flex;gap:10px;flex-wrap:wrap;border-top:1px solid var(--line);padding-top:14px}
+
+/* Lagrede kjøringer */
+.runs{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.runs li{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:10px 0;border-top:1px solid var(--line);flex-wrap:wrap}
+.runs li:first-child{border-top:0}
+.confirm{display:flex;gap:8px;align-items:center;flex-wrap:wrap;background:var(--bf-s);border-radius:8px;padding:8px 12px;font-size:14px}
+.card-h{display:flex;justify-content:space-between;align-items:baseline;gap:6px 12px;flex-wrap:wrap}
+
+/* Resultat: konsept 4 i en ramme, med brukerreisens gule linje som eneste prototypemerknad */
+#view-result{height:100vh;display:flex;flex-direction:column}
+#view-result iframe{flex:1;border:0;width:100%;background:var(--base)}
+
+.status{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);background:var(--ink);color:#fff;border-radius:8px;padding:8px 14px;font-size:13.5px;z-index:40}
+.status:empty{display:none}
+
+@media (max-width:1100px){
+  #view-start{grid-template-columns:1fr}
+  .rail{height:auto;flex-direction:row;flex-wrap:nowrap;align-items:center;overflow-x:auto;padding:8px 12px}
+  .rail nav{flex-direction:row;gap:4px}
+  .rail a[aria-current="page"],.rail a[aria-current="true"]{box-shadow:inset 0 -3px 0 #6CC3D5}
+  .logo{padding:0 10px 0 4px}.rail .foot{display:none}
+  .process{grid-template-columns:1fr}
+  .process>li+li::before{left:32px;top:-13px;transform:rotate(135deg)}
+}
+@media (max-width:800px){
+  .content{padding:20px 16px 64px}.proto{padding-left:16px;padding-right:16px}
+  .flow,.outcomes,.sheets,.cols{grid-template-columns:1fr}
+  .flow{gap:14px}.flow li::after{display:none}
+  .guide,.card{padding:18px 16px}
+  .btn.xl{width:100%;min-width:0}
+  .rail .ic svg{display:none}
+}
+</style>
+</head>
+<body>
+
+<!-- ============ STARTSIDE ============ -->
+<div id="view-start">
+  <a class="skip" href="#s-last-opp" id="skip">Hopp til opplastingen</a>
+  <div class="rail">
+    <span class="logo"><i aria-hidden="true"></i>COSI-MRP</span>
+    <nav aria-label="Appen">
+      <a href="#s-start" data-s="s-start"><span class="ic"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M10 4v12M4 10h12"/></svg>Ny kjøring</span></a>
+      <a href="#s-lagret" data-s="s-lagret"><span class="ic"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 3h10v14l-5-3-5 3z"/></svg>Lagrede kjøringer</span><span class="n" id="n-runs">0</span></a>
+      <a href="#veiledning" data-s="veiledning"><span class="ic"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="10" cy="10" r="7.5"/><path d="M8 8a2 2 0 113 1.7c-.7.4-1 .8-1 1.6M10 14v.5"/></svg>Veiledning</span></a>
+    </nav>
+    <div class="foot"><span class="tag">Forslag – ikke godkjent av gruppen</span></div>
+  </div>
+
+  <div class="main">
+    <div class="proto" role="note" aria-label="Om prototypen">
+      <div class="grow"><b>Prototype – ikke godkjent av gruppen.</b> Leser ikke filen og beregner ingenting. Filnavn med «02» eller «03» viser Kontorstol Pro, alle andre .xlsx viser testeksempel 01. <a href="index.html">Galleriet</a></div>
+      <span class="demo-grp">Demo: <a href="../../../../testdata/testeksempel-02.xlsx" download="testeksempel-02.xlsx">testeksempel 02</a> · <a href="../../../../testdata/testeksempel-03.xlsx" download="testeksempel-03.xlsx">03</a></span>
+      <span class="demo-grp"><label for="p-ds">Kjør uten fil:</label><select id="p-ds"><option value="01">testeksempel 01</option><option value="02">testeksempel 02</option><option value="03">testeksempel 03</option></select><button type="button" id="p-run">Kjør</button></span>
+      <label><input type="checkbox" id="p-fail"> Neste opplasting gir valideringsfeil</label>
+      <label><input type="checkbox" id="p-kap"> Med produksjonskapasitet (trinn 4)</label>
+    </div>
+
+    <main class="content">
+      <!-- Hva COSI-MRP gjør -->
+      <section id="s-start" class="intro" aria-labelledby="h-start">
+        <h1 id="h-start">Bestillingsplanen fra én utfylt Excel-mal</h1>
+        <p class="lede">COSI-MRP regner ut hva du må bestille og produsere, uke for uke, for ett ferdigprodukt, og viser hvor planen ikke går opp.</p>
+        <p class="privacy"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M10 2l6 3v5c0 4-3 7-6 8-3-1-6-4-6-8V5l6-3z"/><path d="M7 10l2 2 4-4"/></svg>Filen leses i nettleseren din og sendes ikke til noen server.</p>
+      </section>
+
+      <!-- Valideringsfeil står øverst, over stegene (EXPERIENCE.md) -->
+      <div id="val" hidden></div>
+
+      <ol class="process" aria-label="Slik bruker du COSI-MRP">
+        <!-- STEG 1 -->
+        <li class="step" id="s-steg1" aria-labelledby="h-steg1">
+          <h2 id="h-steg1"><span class="stepno" aria-hidden="true">1</span>Last ned og fyll ut malen</h2>
+          <p>Fyll ut stykklisten, prognostiserte behov og planlagte mottak. Én fil per ferdigprodukt.</p>
+          <a class="btn pri" href="../../../../testdata/COSI-MRP-mal.xlsx" download="COSI-MRP-mal.xlsx" style="align-self:flex-start"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M10 3v10M6 9l4 4 4-4M4 16h12"/></svg>Last ned Excel-mal</a>
+          <button type="button" class="toggle" id="guide-btn" aria-expanded="false" aria-controls="veiledning"><span id="guide-btn-t">Vis utfyllingsveiledning</span><svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 5l4 4 4-4"/></svg></button>
+          <p class="first"><b>Første gang?</b> Last ned <a class="textlink" href="../../../../testdata/testeksempel-01.xlsx" download="testeksempel-01.xlsx">testeksempel 01</a> og last det opp uten endringer for å se et ferdig resultat.</p>
+        </li>
+
+        <!-- STEG 2: hovedhandlingen -->
+        <li class="step main-step" id="s-last-opp" aria-labelledby="h-steg2">
+          <h2 id="h-steg2"><span class="stepno" aria-hidden="true">2</span>Last opp den utfylte malen</h2>
+          <div class="msg err" id="up-err" role="alert" hidden></div>
+          <fieldset class="choice" id="calc-choice" hidden>
+            <legend>Hva vil du beregne?</legend>
+            <label><input type="radio" name="calc" value="plan" checked><span>Bare bestillingsplan</span><span class="muted">Bestillingsforslag, kritiske deler og resultattabell.</span></label>
+            <label><input type="radio" name="calc" value="both"><span>Bestillingsplan og produksjonskapasitet</span><span class="muted">Produksjonskapasiteten vises i et eget panel nederst på samme side.</span></label>
+            <label><input type="radio" name="calc" value="cap"><span>Bare produksjonskapasitet</span><span class="muted">Hvor mange ferdigprodukter delene rekker til. Kjøringen lagres ikke.</span></label>
+          </fieldset>
+          <div class="drop" id="drop">
+            <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 16v3a1 1 0 001 1h14a1 1 0 001-1v-3"/></svg>
+            <input type="file" id="file" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" tabindex="-1" aria-hidden="true">
+            <button type="button" class="btn pri xl" id="pick" aria-describedby="file-help auto-help"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 4h8l4 4v8H4z"/><path d="M12 4v4h4"/></svg>Velg Excel-fil</button>
+            <span class="small">eller slipp filen her</span>
+            <span class="small" id="file-help">Én fil om gangen, laget fra COSI-MRP-malen (.xlsx).</span>
+          </div>
+          <p class="auto" id="auto-help"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="10" cy="10" r="7.5"/><path d="M6.8 10.2l2.2 2.2 4.2-4.6"/></svg><span>Filen kontrolleres automatisk før materialbehovet beregnes.</span></p>
+          <div id="progress" hidden>
+            <ol class="prog" id="prog" aria-label="Fremdrift">
+              <li data-s="read"><span class="dot" aria-hidden="true"></span>Leser filen …</li>
+              <li data-s="check"><span class="dot" aria-hidden="true"></span>Kontrollerer malen og verdiene …</li>
+              <li data-s="calc"><span class="dot" aria-hidden="true"></span>Beregner …</li>
+            </ol>
+          </div>
+          <div class="sr" role="status" id="up-status"></div>
+        </li>
+
+        <!-- STEG 3 -->
+        <li class="step done-step" id="s-steg3" aria-labelledby="h-steg3">
+          <h2 id="h-steg3"><span class="stepno" aria-hidden="true">3</span>Se resultatet</h2>
+          <p>Resultatet åpnes når filen er godkjent. Les det i denne rekkefølgen:</p>
+          <ol class="reading"><li>Bestillingsforslag</li><li>Kritiske deler</li><li>Resultattabellen: velg et tall for å se utregningen</li></ol>
+          <p class="first">Har du kjørt samme ferdigprodukt før, ser du også hva som er endret siden forrige kjøring.</p>
+        </li>
+      </ol>
+
+      <!-- Utfyllingsveiledningen: kan åpnes og lukkes. Innholdet er det samme som i versjon 1. -->
+      <section id="veiledning" class="guide" aria-labelledby="h-guide" hidden>
+        <div class="guide-h">
+          <div>
+            <h2 id="h-guide" tabindex="-1">Utfyllingsveiledning</h2>
+            <p class="small" style="margin-top:4px">Malen har tre ark du fyller ut. Eksemplene er fra testeksempel 01.</p>
+          </div>
+          <button type="button" class="btn" id="guide-close">Skjul veiledningen</button>
+        </div>
+        <p style="max-width:75ch;font-size:14.5px">Fyll bare ut de gule cellene. En celle blir hvit når den er fylt ut, og grå celler skal stå tomme. Ikke endre arknavn, kolonneoverskrifter eller rekkefølge.</p>
+        <div class="legendx"><span><i style="background:var(--yellow)"></i>Fylles ut</span><span><i style="background:#fff"></i>Fylt ut</span><span><i style="background:var(--grey)"></i>Skal stå tom</span></div>
+        <div class="sheets">
+          <div class="sheet wide">
+            <h3><span class="tab">Stykkliste</span> Ferdigproduktet og alle delene</h3>
+            <p style="font-size:14px">Én rad per del, ovenfra og ned. Første rad er ferdigproduktet. Under det står hovedkomponentene, og under hver av dem delene den bygges av.</p>
+            <div class="xl" tabindex="0" role="region" aria-label="Eksempel fra arket Stykkliste"><table>
+              <thead><tr><th>Nivå</th><th>Varenummer</th><th>Beskrivelse</th><th>Antall</th><th>Type</th><th>Lagerbeholdning</th><th>Sikkerhetslager</th><th>Ledetid (uker)</th><th>Kontroll</th></tr></thead>
+              <tbody>
+                <tr><td>0</td><td class="vn">100-002</td><td>Kontorstol Basic</td><td class="g"></td><td>Ferdigvare</td><td class="r">0</td><td class="r">0</td><td class="r">0</td><td></td></tr>
+                <tr><td>.1</td><td class="vn">300-001</td><td>Sete</td><td class="r">1</td><td>Komponent (Kjøpes inn)</td><td class="r">200</td><td class="r">20</td><td class="r">2</td><td></td></tr>
+                <tr><td>.1</td><td class="vn">300-003</td><td>Hjul</td><td class="r">5</td><td>Komponent (Kjøpes inn)</td><td class="r">80</td><td class="r">30</td><td class="r">1</td><td></td></tr>
+                <tr><td class="y"></td><td class="y"></td><td class="y"></td><td class="y"></td><td class="y"></td><td class="y"></td><td class="y"></td><td class="y"></td><td></td></tr>
+              </tbody></table></div>
+            <ul class="cols">
+              <li><b>Nivå:</b> 0 er ferdigproduktet, .1 er hovedkomponentene, ..2 er delene til hovedkomponenten rett over.</li>
+              <li><b>Antall:</b> hvor mange som trengs per enhet av delen over. Tom for nivå 0.</li>
+              <li><b>Type:</b> Ferdigvare, Komponent (Kjøpes inn) eller Komponent (Produseres selv). Velg fra listen.</li>
+              <li><b>Lagerbeholdning:</b> antall på lager ved starten av uke 1.</li>
+              <li><b>Sikkerhetslager:</b> den laveste lagerbeholdningen planen skal holde.</li>
+              <li><b>Ledetid (uker):</b> hele uker fra en ordre frigis til den mottas. Minst 1 for delene.</li>
+            </ul>
+          </div>
+          <div class="sheet">
+            <h3><span class="tab">MPS</span> Prognostiserte behov (MPS)</h3>
+            <p style="font-size:14px">Antall ferdigprodukter per uke. Fyll ut fra uke 1 og sammenhengende fremover, 8 til 12 uker. Antall utfylte uker blir horisonten.</p>
+            <div class="xl"><table><thead><tr><th>Uke</th><th>Antall ferdigprodukter</th></tr></thead><tbody>
+              <tr><td class="r">1</td><td class="r">20</td></tr><tr><td class="r">2</td><td class="r">25</td></tr><tr><td class="r">3</td><td class="r">30</td></tr><tr><td class="r">…</td><td class="r">…</td></tr></tbody></table></div>
+          </div>
+          <div class="sheet">
+            <h3><span class="tab">Planlagte mottak</span> Det som allerede er bestilt</h3>
+            <p style="font-size:14px">Innkjøp som er bestilt og produksjonsordrer som er startet, med uken de kommer. Arket kan stå tomt.</p>
+            <div class="xl"><table><thead><tr><th>Varenummer</th><th>Uke</th><th>Antall</th></tr></thead><tbody>
+              <tr><td class="vn">300-005</td><td class="r">4</td><td class="r">100</td></tr><tr><td class="vn">300-007</td><td class="r">2</td><td class="r">120</td></tr></tbody></table></div>
+          </div>
+        </div>
+        <div class="tip"><b>Én fil per ferdigprodukt.</b> Brukes en del i flere ferdigprodukter, for eksempel skruesett i flere stoler, fordeler du lagerbeholdningen av den delen mellom filene selv.</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <h3 class="sub">Før du laster opp</h3>
+          <ul class="check">
+            <li>Kolonnen Kontroll i Stykkliste er tom på alle rader.</li>
+            <li>Ukene i MPS er fylt ut sammenhengende fra uke 1.</li>
+            <li>Malen er lagret som Excel-arbeidsbok (.xlsx).</li>
+          </ul>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <h3 class="sub">Dette skjer når du laster opp</h3>
+          <ol class="flow">
+            <li><b>Filen leses</b><span>I nettleseren din. Ingenting sendes til en server.</span></li>
+            <li><b>Malen kontrolleres</b><span>At arkene og kolonneoverskriftene finnes, og at alle verdiene er gyldige.</span></li>
+            <li><b>Planen beregnes</b><span>Behovet brytes ned nivå for nivå. Appen finner bestillingsforslag og eksepsjoner for hver del og uke.</span></li>
+            <li><b>Resultatet vises</b><span>Kjøringen lagres i nettleseren, så neste opplasting kan sammenlignes med den.</span></li>
+          </ol>
+          <div class="outcomes">
+            <div class="oc bad"><b>Hvis malen har feil</b><span>Ingenting beregnes. Alle valideringsfeilene vises samlet øverst på siden, med ark, rad, felt og årsak. Rett dem i Excel og last opp på nytt. En lagret kjøring blir ikke endret.</span></div>
+            <div class="oc good"><b>Hvis malen er riktig</b><span>Resultatet åpnes: bestillingsforslag, endringer siden forrige kjøring, kritiske deler og resultattabellen, der du velger et tall for å se hvordan det er regnet ut.</span></div>
+          </div>
+        </div>
+        <div class="guide-foot">
+          <button type="button" class="btn pri" id="guide-to-upload">Gå til opplastingen</button>
+          <button type="button" class="btn" id="guide-close2">Skjul veiledningen</button>
+        </div>
+      </section>
+
+      <!-- Lagrede kjøringer -->
+      <section id="s-lagret" class="card" aria-labelledby="h-lagret">
+        <div class="card-h"><h2 id="h-lagret">Lagrede kjøringer</h2><span class="small">Siste kjøring per ferdigprodukt. Neste opplasting sammenlignes med den.</span></div>
+        <ul class="runs" id="runs"></ul>
+      </section>
+    </main>
+  </div>
+</div>
+
+<!-- ============ RESULTAT ============ -->
+<div id="view-result" hidden>
+  <div class="proto" role="note" aria-label="Om prototypen">
+    <div class="grow"><b>Prototype – ikke godkjent av gruppen.</b> <span id="res-info"></span></div>
+    <button type="button" id="p-back">← Ny kjøring</button>
+  </div>
+  <iframe id="res-frame" title="Resultat for kjøringen"></iframe>
+</div>
+
+<div class="status" id="toast" aria-hidden="true"></div>
+
+<script>
+(function(){
+'use strict';
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const store={get(){try{return JSON.parse(localStorage.getItem('cosi-proto-runs-v2')||'[]');}catch(e){return[];}},set(v){try{localStorage.setItem('cosi-proto-runs-v2',JSON.stringify(v));}catch(e){}}};
+const pref={get(){try{return localStorage.getItem('cosi-proto-guide');}catch(e){return null;}},set(v){try{localStorage.setItem('cosi-proto-guide',v);}catch(e){}}};
+const toast=t=>{$('#toast').textContent=t;clearTimeout(toast.t);toast.t=setTimeout(()=>$('#toast').textContent='',3500);};
+/* Testeksemplene i prototypen. Ferdigproduktet kjennes igjen på varenummeret på nivå 0 (FR-19). */
+const DS={'01':{navn:'Kontorstol Basic',vn:'100-002'},'02':{navn:'Kontorstol Pro',vn:'100-001'},'03':{navn:'Kontorstol Pro',vn:'100-001'}};
+const dsFromName=n=>/03/.test(n)?'03':/02/.test(n)?'02':'01';
+const now=()=>{const d=new Date();return d.toLocaleDateString('nb-NO')+' kl. '+d.toLocaleTimeString('nb-NO',{hour:'2-digit',minute:'2-digit'});};
+let current=null; // siste kjøring som vises i resultatet
+
+/* ---------- Utfyllingsveiledningen ---------- */
+/* Første besøk (ingen lagrede kjøringer): åpen. Senere besøk: lukket. Brukerens eget valg huskes (EXPERIENCE.md, Første/Senere besøk). */
+function setGuide(open,{remember=true,focus=false}={}){
+  $('#veiledning').hidden=!open;
+  $('#guide-btn').setAttribute('aria-expanded',String(open));
+  $('#guide-btn-t').textContent=open?'Skjul utfyllingsveiledning':'Vis utfyllingsveiledning';
+  if(remember)pref.set(open?'1':'0');
+  if(open&&focus){$('#veiledning').scrollIntoView({block:'start'});$('#h-guide').focus({preventScroll:true});}
+  active();
+}
+$('#guide-btn').addEventListener('click',()=>{const open=$('#veiledning').hidden;setGuide(open,{focus:open});});
+['#guide-close','#guide-close2'].forEach(s=>$(s).addEventListener('click',()=>{setGuide(false);$('#guide-btn').focus({preventScroll:true});$('#s-steg1').scrollIntoView({block:'nearest'});}));
+$('#guide-to-upload').addEventListener('click',()=>{toUpload();});
+function toUpload(){$('#s-last-opp').scrollIntoView({block:'start'});$('#pick').focus({preventScroll:true});}
+$('#skip').addEventListener('click',e=>{e.preventDefault();toUpload();});
+/* «Veiledning» i sidemenyen åpner veiledningen og går dit */
+$$('.rail a[data-s="veiledning"]').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();history.replaceState(null,'','#veiledning');setGuide(true,{focus:true});}));
+
+/* ---------- Visning: #resultat viser resultatet, alle andre adresser startsiden ---------- */
+function route(){
+  const res=location.hash==='#resultat'&&current;
+  $('#view-start').hidden=!!res;$('#view-result').hidden=!res;
+  document.title=(res?'Resultat':'Startside')+' (forslag) · COSI-MRP';
+  if(res)$('#res-frame').focus();
+  else if(location.hash==='#veiledning'&&$('#veiledning').hidden)setTimeout(()=>setGuide(true,{focus:true}),0); // etter nettleserens eget hopp til #veiledning
+}
+addEventListener('hashchange',route);
+addEventListener('popstate',route); // tilbake-knappen etter pushState under
+$('#p-back').addEventListener('click',()=>{location.hash='#s-start';});
+/* Resultatsiden ber om å komme tilbake («Last opp ny fil», «Ny kjøring», «Lagrede kjøringer», «Veiledning») */
+addEventListener('message',e=>{
+  if(e.source!==$('#res-frame').contentWindow||!e.data||e.data.cosi!=='nav')return;
+  let to=String(e.data.to||'s-start').replace(/[^a-z0-9-]/gi,'');
+  if(to==='s-steg1')to='veiledning'; // eldre lenke fra versjon 1 av resultatsiden
+  // pushState i stedet for location.hash: nettleserens hopp til #-målet ville ellers ta fokus fra der vi setter det
+  history.pushState(null,'','#'+to);route(); // vis startsiden med en gang, så fokus kan settes
+  if(to==='veiledning'){setGuide(true,{focus:true});return;}
+  const el=document.getElementById(to);
+  if(el){el.scrollIntoView({block:'start'});if(to==='s-last-opp')$('#pick').focus({preventScroll:true});}
+});
+
+/* ---------- Prototypevalg ---------- */
+$('#p-kap').addEventListener('change',e=>{$('#calc-choice').hidden=!e.target.checked;});
+$('#p-run').addEventListener('click',()=>run(`testeksempel-${$('#p-ds').value}.xlsx`));
+
+/* ---------- Opplasting: knappen, klikk i sonen, eller dra og slipp ---------- */
+const drop=$('#drop'),file=$('#file');
+$('#pick').addEventListener('click',e=>{e.stopPropagation();file.click();});
+drop.addEventListener('click',e=>{if(e.target.closest('button'))return;file.click();});
+file.addEventListener('change',e=>{const f=e.target.files[0];if(f)run(f.name);e.target.value='';});
+['dragenter','dragover'].forEach(t=>drop.addEventListener(t,e=>{e.preventDefault();drop.classList.add('over');}));
+['dragleave','drop'].forEach(t=>drop.addEventListener(t,e=>{e.preventDefault();drop.classList.remove('over');}));
+drop.addEventListener('drop',e=>{const fs=e.dataTransfer.files;if(!fs.length)return;
+  if(fs.length>1){showErr(`Du slapp ${fs.length} filer. Last opp én fil om gangen.`);return;}run(fs[0].name);});
+
+function showErr(t){$('#up-err').textContent=t;$('#up-err').hidden=!t;}
+const wait=ms=>new Promise(r=>setTimeout(r,ms));
+let busy=false;
+async function run(name){
+  if(busy)return;
+  if(location.hash==='#resultat')history.replaceState(null,'','#s-start');
+  route();
+  showErr('');$('#val').hidden=true;$('#val').innerHTML='';
+  if(!/\.xlsx$/i.test(name)){showErr(`«${name}» er ikke en Excel-fil. Appen tar bare imot Excel-malen (.xlsx). Lagre malen som Excel-arbeidsbok og prøv igjen.`);$('#s-last-opp').scrollIntoView({block:'nearest'});return;}
+  busy=true;drop.classList.add('busy');$('#pick').disabled=true;$('#progress').hidden=false;
+  $('#s-last-opp').scrollIntoView({block:'nearest'});
+  const steps=$$('#prog li');steps.forEach(li=>li.className='');
+  const say=t=>{$('#up-status').textContent=t;};
+  const fail=$('#p-fail').checked;
+  for(const li of steps){
+    li.className='doing';say(li.textContent.trim());
+    await wait(600);
+    if(fail&&li.dataset.s==='check'){li.className='';break;}
+    li.className='done';
+  }
+  drop.classList.remove('busy');$('#pick').disabled=false;busy=false;
+  if(fail){$('#progress').hidden=true;showValidation(name);return;}
+  /* Vellykket kjøring: finn forrige kjøring for samme ferdigprodukt, og erstatt den (FR-19, FR-20) */
+  const ds=dsFromName(name),prod=DS[ds],calc=(document.querySelector('input[name=calc]:checked')||{}).value||'plan';
+  const kapValgt=!$('#calc-choice').hidden&&calc!=='plan';
+  const runs=store.get(),prev=runs.find(r=>r.vn===prod.vn),tid=now();
+  current={ds,fil:name,tid,prev:prev||null,kap:kapValgt};
+  if(!(kapValgt&&calc==='cap')){store.set([{navn:prod.navn,vn:prod.vn,ds,fil:name,tid}].concat(runs.filter(r=>r.vn!==prod.vn)));renderRuns();}
+  say('Beregningen er ferdig. Resultatet åpnes.');
+  await wait(300);$('#progress').hidden=true;steps.forEach(li=>li.className='');
+  showResult();
+}
+
+function showResult(){
+  const c=current,p=new URLSearchParams({reise:'1',data:c.ds,fil:c.fil,kjort:c.tid});
+  if(c.prev){p.set('forrige',c.prev.ds);p.set('forrigeKjort',c.prev.tid);}
+  if(c.kap&&c.ds==='01')p.set('kap','1');
+  $('#res-frame').src='konsept-4-hybrid-forbedret.html?'+p.toString();
+  const prod=DS[c.ds];
+  let info=`Resultat for ${c.fil}: fasiten for testeksempel ${c.ds} (${prod.navn}). `;
+  info+=c.prev?`Sammenlignet med lagret kjøring fra ${c.prev.tid} (${c.prev.fil}). `:'Første kjøring for dette ferdigproduktet. ';
+  if(c.kap&&c.ds!=='01')info+='Produksjonskapasitet finnes bare for testeksempel 01 i prototypen. ';
+  info+='Eksport og opplasting på resultatsiden er demonstrasjoner.';
+  $('#res-info').textContent=info;
+  location.hash='#resultat';route();
+}
+
+/* ---------- Valideringsfeil: eksempelet fra UJ-4. Ingen beregning, alle feil samlet øverst, fokus til oppsummeringen. ---------- */
+function showValidation(name){
+  const v=$('#val');
+  v.innerHTML=`<div class="val" tabindex="-1" id="val-box" role="region" aria-labelledby="val-h"><h2 class="t" id="val-h"><svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="9" fill="currentColor"/><path d="M6.5 6.5l7 7M13.5 6.5l-7 7" stroke="#fff" stroke-width="2"/></svg>Filen har 3 feil. Ingenting er beregnet.</h2>
+  <p style="font-size:14px">Rett feilene i Excel og last opp <b>${name.replace(/[<&]/g,'')}</b> på nytt. Den lagrede kjøringen er urørt.</p>
+  <h3>MPS (1)</h3><table class="errt"><thead><tr><th>Hvor</th><th>Felt</th><th>Årsak</th></tr></thead><tbody><tr><td>Uke 11</td><td>Antall ferdigprodukter</td><td>Uke 10 er tom, så uke 11 kan ikke fylles ut.</td></tr></tbody></table>
+  <h3>Planlagte mottak (2)</h3><table class="errt"><thead><tr><th>Hvor</th><th>Felt</th><th>Årsak</th></tr></thead><tbody><tr><td>Rad 4</td><td>Uke</td><td>Uke 0 er før horisonten.</td></tr><tr><td>Rad 5</td><td>Antall</td><td>Må være et heltall.</td></tr></tbody></table>
+  <div class="row"><button type="button" class="btn pri" id="val-again">Last opp på nytt</button></div>
+  <p class="muted" style="font-size:12.5px">Demonstrasjon: feilene er eksempelet fra brukerreise UJ-4 i PRD-en. Fjern krysset for «Neste opplasting gir valideringsfeil» i den gule linjen for å komme videre.</p></div>`;
+  v.hidden=false;document.title='Feil: Startside (forslag) · COSI-MRP';
+  $('#up-status').textContent='Filen har 3 feil. Ingenting er beregnet.';
+  $('#val-again').addEventListener('click',toUpload);
+  $('#val-box').scrollIntoView({block:'start'});$('#val-box').focus({preventScroll:true});
+}
+
+/* ---------- Lagrede kjøringer med sletting i siden selv, ikke nettleserdialog (FR-21) ---------- */
+function renderRuns(){
+  const runs=store.get();$('#n-runs').textContent=runs.length;
+  $('#runs').innerHTML=runs.length?runs.map((r,i)=>`<li><span><b>${r.navn}</b> <span class="vn muted">${r.vn}</span> · <span class="muted">Kjørt ${r.tid} · ${r.fil}</span></span><button type="button" class="btn" data-del="${i}" style="padding:4px 12px;font-size:13.5px">Slett</button></li>`).join(''):'<li class="muted">Ingen lagrede kjøringer ennå.</li>';
+}
+$('#runs').addEventListener('click',e=>{
+  const d=e.target.closest('[data-del]'),y=e.target.closest('[data-yes]'),n=e.target.closest('[data-no]');
+  if(d){const i=+d.dataset.del,r=store.get()[i],li=d.closest('li');
+    li.innerHTML=`<div class="confirm" role="group" aria-label="Bekreft sletting"><span>Slette lagret kjøring for ${r.navn}? Neste opplasting vises uten sammenligning.</span><button type="button" class="btn" data-yes="${i}" style="padding:3px 12px">Slett</button><button type="button" class="btn" data-no style="padding:3px 12px">Avbryt</button></div>`;
+    li.querySelector('[data-no]').focus();}
+  if(y){const runs=store.get();const r=runs.splice(+y.dataset.yes,1)[0];store.set(runs);renderRuns();toast(`Lagret kjøring for ${r.navn} er slettet.`);}
+  if(n)renderRuns();
+});
+
+/* ---------- Aktiv lenke i sidemenyen: Lagrede kjøringer, Veiledning eller Ny kjøring ---------- */
+const links=$$('.rail a[data-s]');
+function active(){
+  const mid=innerHeight*0.4,inView=id=>{const el=document.getElementById(id);if(!el||el.hidden)return false;const r=el.getBoundingClientRect();return r.top<=mid&&r.bottom>mid;};
+  let cur='s-start';
+  if(inView('veiledning'))cur='veiledning';
+  // «Bunnen av siden» teller bare når siden faktisk kan rulles, ellers blir Lagrede kjøringer markert på en kort side
+  const H=document.documentElement.scrollHeight,canScroll=H>innerHeight+4;
+  if(inView('s-lagret')||(canScroll&&scrollY>0&&innerHeight+scrollY>=H-4))cur='s-lagret';
+  links.forEach(a=>a.setAttribute('aria-current',a.dataset.s===cur?'true':'false'));
+}
+addEventListener('scroll',active,{passive:true});addEventListener('resize',active);
+
+renderRuns();
+const p0=pref.get();
+setGuide(p0===null?store.get().length===0:p0==='1',{remember:false});
+if(location.hash==='#resultat')history.replaceState(null,'',location.pathname);
+route();active();
+})();
+</script>
+</body>
+</html>
