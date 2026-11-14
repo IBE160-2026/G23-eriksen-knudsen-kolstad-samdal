@@ -72,3 +72,4 @@
 - [ ] 2026-11-14 [ux-kjernen](976-2026-11-13-21-59-35-ux-kjernen.md) — se over Don't-eksempelet «Slettet.» for «Lagret kjøring slettet» i EXPERIENCE.md › Voice and Tone
 - [ ] 2026-11-14 [ux-kjernen](976-2026-11-13-21-59-35-ux-kjernen.md) — valgfritt: oppdater Impeccable til v4.9.0 (`npx impeccable update`)
 - [ ] 2026-11-14 [ux-kjernen](976-2026-11-13-21-59-35-ux-kjernen.md) — kjør `bmad-architecture` i ny kontekst (neste BMAD-steg)
+- [ ] 2026-11-14 [impeccable-skill](980-2026-11-09-10-22-27-impeccable-skill.md) — avgjør om rot-DESIGN.md skal forbli en henvisning eller speile tokens fra BMAD-DESIGN.md, slik at designhooken og live-panelet kan bruke dem
