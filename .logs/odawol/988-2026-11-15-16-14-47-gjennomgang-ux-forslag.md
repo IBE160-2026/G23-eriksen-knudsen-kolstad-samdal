@@ -22,3 +22,22 @@ Oda ville se UX-forslagene i Carmens og Sebastians brancher før gruppemøtet 16
 - Carmens liste over konflikter med PRD-en må avgjøres før retningen føres inn i EXPERIENCE.md: FR-17 (ukeliste med filter), FR-18 (forklaringspanel ved siden av tabellen), vanlig språk mot ordbankens navn på eksepsjonene, og introduksjonssiden.
 - Godkjente menyord (Resultat, Ukeplan, Detaljer, Krever oppfølging) må legges inn i ordbanken.
 - Carmens branch har 61 nye filer, blant annet PRD-utkast, testdata-arkiv og logger. UX-delen bør trolig få sin egen PR hvis den skal inn på `main`.
+
+## 2026-11-15 kl. 21:50 — Odawol
+
+### Oppgave
+Oda ville åpne Carmens UX-forslag i nettleseren for å teste en kjøring selv.
+
+### Plan
+- Hentet `origin/Carmen/Branch`. Den står fortsatt på `9d528d4`, samme commit som ved gjennomgangen tidligere i dag.
+- Leste `demo-2026-11-16/README.md` for oppstartsinstruksjon og forslag til testkjøring.
+- Sjekket ut branchen i et midlertidig git-worktree i scratchpad og startet `python -m http.server 8765` derfra.
+- Åpnet `cosi-mrp-b-mork-samlet.html` i standardnettleseren, og stoppet serveren og fjernet worktreen da Oda var ferdig.
+
+### Resultat
+- Prototypen svarte med HTTP 200 og ble åpnet på http://localhost:8765/.docs/planning-artifacts/ux/demo-2026-11-16/cosi-mrp-b-mork-samlet.html.
+- Oda fikk oppskriften på testkjøringen: last opp testeksempel 01, gå gjennom Resultat, Ukeplan og Detaljer, last opp 02 og 03 for å se Endringer, og bruk «Prototypevalg» for å se Kapasitet.
+- Ingen filer i repoet ble endret. Serveren er stoppet og worktreen fjernet (`git worktree list` viser bare `C:/IBE160`).
+
+### Åpne punkter
+Ingen nye. Punktene fra gjennomgangen tidligere i dag står fortsatt åpne i `issues.md`.
