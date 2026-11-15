@@ -16,7 +16,7 @@ Oda ville sette Carmens og Sebastians UX-forslag opp mot hverandre og få notate
 - Hverken utkastet eller ordbanken er committet. Begge venter på gjennomgangen med Oda.
 - Gjennomgang med Oda: hun liker én resultatside med ankermeny og ukefilteret (notert i §10 nr. 1 og 4). Hun vil se alternativ A, der Endringer står etter Kritiske deler.
 - Klikkbar skisse: `ux-designs/ux-COSI - MRP-2026-11-15/skisse-resultatside.html`. Den har startsiden med tre nummererte steg og valideringsfeil, og resultatsiden med nummererte seksjoner, bestillingsforslag gruppert per uke med ukefilter, kritiske deler, endringer, resultattabellen og forklaringspanelet. Knapper lar Oda bytte mellom utkastets rekkefølge og alternativ A, og mellom første kjøring og ny opplasting. Tallene er fra fasit-CSV-en for testeksempel 01. Kontrollert med en skjermdump i Chrome uten vindu.
-- Ordbanken er bare endret i `Oda/Branch`, ikke på `main`, og ikke committet.
+- Ordbanken er committet i `Oda/Branch` (e111219) slik at gruppen kan gjennomgå de fem nye ordene. Den er ikke pushet og ikke på `main`.
 
 ### Åpne punkter
 - Gå gjennom UX-utkastet sammen med Oda og avgjøre de åtte åpne spørsmålene i §10.
