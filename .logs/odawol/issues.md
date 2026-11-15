@@ -25,3 +25,8 @@
 - [ ] 2026-11-15 [gjennomgang-ux-forslag](988-2026-11-15-16-14-47-gjennomgang-ux-forslag.md) — Carmens konflikter med PRD-en (FR-17, FR-18, eksepsjonsnavn i vanlig språk, introduksjonsside) må avgjøres før retningen føres inn i EXPERIENCE.md
 - [ ] 2026-11-15 [gjennomgang-ux-forslag](988-2026-11-15-16-14-47-gjennomgang-ux-forslag.md) — godkjente menyord (Resultat, Ukeplan, Detaljer, Krever oppfølging) må legges inn i ordbanken
 - [ ] 2026-11-15 [gjennomgang-ux-forslag](988-2026-11-15-16-14-47-gjennomgang-ux-forslag.md) — Carmens branch har 61 nye filer. UX-delen bør trolig få egen PR før den går inn på `main`
+- [ ] 2026-11-15 [ux-utkast-experience](987-2026-11-15-21-59-04-ux-utkast-experience.md) — gå gjennom UX-utkastet (`ux-designs/ux-COSI - MRP-2026-11-15/EXPERIENCE.md`) sammen og avgjør de åtte åpne spørsmålene i §10
+- [ ] 2026-11-15 [ux-utkast-experience](987-2026-11-15-21-59-04-ux-utkast-experience.md) — gruppen må godkjenne introduksjonen til brukertesten (utkastet §9, PRD §9 nr. 4) før prøvetesten rundt 27.11
+- [ ] 2026-11-15 [ux-utkast-experience](987-2026-11-15-21-59-04-ux-utkast-experience.md) — gruppen må bekrefte de nye ordene i ordbanken: Startside, Resultatside, Kjøringslinje, Forklaringspanel, Ukefilter
+- [ ] 2026-11-15 [ux-utkast-experience](987-2026-11-15-21-59-04-ux-utkast-experience.md) — fasit-CSV-en for testeksempel 01 bruker 100-001 for ferdigproduktet, mens PRD-en bruker 100-002
+- [ ] 2026-11-15 [ux-utkast-experience](987-2026-11-15-21-59-04-ux-utkast-experience.md) — DESIGN.md (visuell retning) gjenstår til gruppen har valgt uttrykk
