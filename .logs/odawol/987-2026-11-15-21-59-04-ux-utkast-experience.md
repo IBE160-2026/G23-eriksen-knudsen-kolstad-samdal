@@ -17,6 +17,7 @@ Oda ville sette Carmens og Sebastians UX-forslag opp mot hverandre og få notate
 - Gjennomgang med Oda: hun liker én resultatside med ankermeny og ukefilteret (notert i §10 nr. 1 og 4). Hun vil se alternativ A, der Endringer står etter Kritiske deler.
 - Klikkbar skisse: `ux-designs/ux-COSI - MRP-2026-11-15/skisse-resultatside.html`. Den har startsiden med tre nummererte steg og valideringsfeil, og resultatsiden med nummererte seksjoner, bestillingsforslag gruppert per uke med ukefilter, kritiske deler, endringer, resultattabellen og forklaringspanelet. Knapper lar Oda bytte mellom utkastets rekkefølge og alternativ A, og mellom første kjøring og ny opplasting. Tallene er fra fasit-CSV-en for testeksempel 01. Kontrollert med en skjermdump i Chrome uten vindu.
 - Ordbanken er committet i `Oda/Branch` (e111219) slik at gruppen kan gjennomgå de fem nye ordene. Den er ikke pushet og ikke på `main`.
+- Oda syntes ukeoversikten ble for lang. Hun valgte en kompakt tabell: én liste uten ukebokser, uka i første kolonne, forfalt i egen kolonne og filteret på Uke 1. «Alle uker» blar i eget felt. Skissen og EXPERIENCE.md §5.1 og §10 nr. 4 er oppdatert. Nå vises Bestillingsforslag, Kritiske deler og Endringer på én skjerm (kontrollert med skjermdump).
 
 ### Åpne punkter
 - Gå gjennom UX-utkastet sammen med Oda og avgjøre de åtte åpne spørsmålene i §10.
@@ -24,5 +25,4 @@ Oda ville sette Carmens og Sebastians UX-forslag opp mot hverandre og få notate
 - De nye ordene i ordbanken (Startside, Resultatside, Kjøringslinje, Forklaringspanel, Ukefilter) må bekreftes av gruppen.
 - Fasit-CSV-en for testeksempel 01 bruker 100-001 for ferdigproduktet, mens PRD-en bruker 100-002. Utkastet følger PRD-en.
 - Oda skal vurdere alternativ A for plasseringen av Endringer i skissen og avgjøre §10 nr. 3.
-- Med «Alle uker» blir lista over bestillingsforslag lang (60 linjer) og skyver Kritiske deler langt ned. Det må vurderes sammen med §10 nr. 4.
 - DESIGN.md (visuell retning) gjenstår til gruppen har valgt uttrykk.
