@@ -14,10 +14,15 @@ Oda ville sette Carmens og Sebastians UX-forslag opp mot hverandre og få notate
 - Nytt utkast: `.docs/planning-artifacts/ux-designs/ux-COSI - MRP-2026-11-15/EXPERIENCE.md`, med status «utkast – til gjennomgang med Oda». Innhold: grunnlag og prinsipper, skjermer og navigasjon (én resultatside med ankermeny i rekkefølgen fra PRD §4.4), startside, valideringsfeil, resultatsiden (bestillingsforslag med ukefilter, endringer, kritiske deler, resultattabell, forklaringspanel, kort om kapasitet og eksport), eksepsjonsmeldinger for alle fem typene, tilstander, UJ-1–UJ-5 gjennom skjermene, SM-3-oppgavene med klikkvei, forslag til introduksjon til brukertesten (PRD §9 nr. 4) og åtte åpne spørsmål.
 - Ordbanken: lagt inn Startside, Resultatside, Kjøringslinje, Forklaringspanel og Ukefilter som forslag fra UX-utkastet, og `updated` er satt til 2026-11-15.
 - Hverken utkastet eller ordbanken er committet. Begge venter på gjennomgangen med Oda.
+- Gjennomgang med Oda: hun liker én resultatside med ankermeny og ukefilteret (notert i §10 nr. 1 og 4). Hun vil se alternativ A, der Endringer står etter Kritiske deler.
+- Klikkbar skisse: `ux-designs/ux-COSI - MRP-2026-11-15/skisse-resultatside.html`. Den har startsiden med tre nummererte steg og valideringsfeil, og resultatsiden med nummererte seksjoner, bestillingsforslag gruppert per uke med ukefilter, kritiske deler, endringer, resultattabellen og forklaringspanelet. Knapper lar Oda bytte mellom utkastets rekkefølge og alternativ A, og mellom første kjøring og ny opplasting. Tallene er fra fasit-CSV-en for testeksempel 01. Kontrollert med en skjermdump i Chrome uten vindu.
+- Ordbanken er bare endret i `Oda/Branch`, ikke på `main`, og ikke committet.
 
 ### Åpne punkter
 - Gå gjennom UX-utkastet sammen med Oda og avgjøre de åtte åpne spørsmålene i §10.
 - Gruppen må godkjenne introduksjonen til brukertesten (utkastet §9, PRD §9 nr. 4) før prøvetesten rundt 27.11.
 - De nye ordene i ordbanken (Startside, Resultatside, Kjøringslinje, Forklaringspanel, Ukefilter) må bekreftes av gruppen.
 - Fasit-CSV-en for testeksempel 01 bruker 100-001 for ferdigproduktet, mens PRD-en bruker 100-002. Utkastet følger PRD-en.
+- Oda skal vurdere alternativ A for plasseringen av Endringer i skissen og avgjøre §10 nr. 3.
+- Med «Alle uker» blir lista over bestillingsforslag lang (60 linjer) og skyver Kritiske deler langt ned. Det må vurderes sammen med §10 nr. 4.
 - DESIGN.md (visuell retning) gjenstår til gruppen har valgt uttrykk.

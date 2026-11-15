@@ -30,3 +30,5 @@
 - [ ] 2026-11-15 [ux-utkast-experience](987-2026-11-15-21-59-04-ux-utkast-experience.md) — gruppen må bekrefte de nye ordene i ordbanken: Startside, Resultatside, Kjøringslinje, Forklaringspanel, Ukefilter
 - [ ] 2026-11-15 [ux-utkast-experience](987-2026-11-15-21-59-04-ux-utkast-experience.md) — fasit-CSV-en for testeksempel 01 bruker 100-001 for ferdigproduktet, mens PRD-en bruker 100-002
 - [ ] 2026-11-15 [ux-utkast-experience](987-2026-11-15-21-59-04-ux-utkast-experience.md) — DESIGN.md (visuell retning) gjenstår til gruppen har valgt uttrykk
+- [ ] 2026-11-15 [ux-utkast-experience](987-2026-11-15-21-59-04-ux-utkast-experience.md) — vurder alternativ A (Endringer etter Kritiske deler) i skissen og avgjør §10 nr. 3
+- [ ] 2026-11-15 [ux-utkast-experience](987-2026-11-15-21-59-04-ux-utkast-experience.md) — med «Alle uker» blir lista over bestillingsforslag lang (60 linjer) og skyver Kritiske deler ned. Vurder sammen med §10 nr. 4
