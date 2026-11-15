@@ -20,3 +20,8 @@
 - [ ] 2026-11-05 [avklaringer-powerpoint](992-2026-11-05-19-02-25-avklaringer-powerpoint.md) — OneNote-notatblokken «COSI - MRP G23» må deles med Sebastian, Carmen og Idun (Fil > Del i OneNote)
 - [ ] 2026-11-14 [revidert-fremdriftsplan](990-2026-11-14-16-17-03-revidert-fremdriftsplan.md) — gruppen bør bekrefte statusene i arket Tilbakemelding og at arkitekturen står som «Pågår» i fremdriftsplanen
 - [ ] 2026-11-14 [revidert-fremdriftsplan](990-2026-11-14-16-17-03-revidert-fremdriftsplan.md) — Ansvarlig (kolonne J) mangler for de fleste stegene i fremdriftsplanen. Trinn 1a, 1b og de neste stegene bør fordeles før 20.11
+- [ ] 2026-11-15 [gjennomgang-ux-forslag](988-2026-11-15-16-14-47-gjennomgang-ux-forslag.md) — Carmens `vurdering.md` anbefaler resultatkonsept A, men demoen bygger på B. Gruppen bør avklare hvilken retning hun foreslår
+- [ ] 2026-11-15 [gjennomgang-ux-forslag](988-2026-11-15-16-14-47-gjennomgang-ux-forslag.md) — gruppen må velge mellom Carmens og Sebastians UX-forslag (begge har egne DESIGN.md og EXPERIENCE.md), eller slå dem sammen
+- [ ] 2026-11-15 [gjennomgang-ux-forslag](988-2026-11-15-16-14-47-gjennomgang-ux-forslag.md) — Carmens konflikter med PRD-en (FR-17, FR-18, eksepsjonsnavn i vanlig språk, introduksjonsside) må avgjøres før retningen føres inn i EXPERIENCE.md
+- [ ] 2026-11-15 [gjennomgang-ux-forslag](988-2026-11-15-16-14-47-gjennomgang-ux-forslag.md) — godkjente menyord (Resultat, Ukeplan, Detaljer, Krever oppfølging) må legges inn i ordbanken
+- [ ] 2026-11-15 [gjennomgang-ux-forslag](988-2026-11-15-16-14-47-gjennomgang-ux-forslag.md) — Carmens branch har 61 nye filer. UX-delen bør trolig få egen PR før den går inn på `main`

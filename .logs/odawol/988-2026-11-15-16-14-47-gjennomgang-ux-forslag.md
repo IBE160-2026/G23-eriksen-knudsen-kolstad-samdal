@@ -1,0 +1,24 @@
+# Gjennomgang av UX-forslag
+
+## 2026-11-15 kl. 16:14 — Odawol
+
+### Oppgave
+Oda ville se UX-forslagene i Carmens og Sebastians brancher før gruppemøtet 16.11.
+
+### Plan
+- Hentet remote-branchene og listet UX-filene i `origin/Carmen/Branch` og `origin/Sebastian/Branch` mot `main`.
+- Leste Carmens `demo-2026-11-16/README.md` og `resultatkonsepter-2026-11-15/vurdering.md`.
+- Sjekket ut hver branch i et midlertidig git-worktree i scratchpad, slik at `Oda/Branch` og de ukommitterte endringene ikke ble rørt, og startet en lokal server for hver (port 8765 og 8766).
+- Åpnet forslagene i nettleseren, og stoppet serverne og fjernet worktreene da Oda var ferdig.
+
+### Resultat
+- **Carmen** (`9d528d4`): én samlet klikkbar prototype, `.docs/planning-artifacts/ux/demo-2026-11-16/cosi-mrp-b-mork-samlet.html`. Mørkt Design B med sidemeny, og sidene Introduksjon, Ny kjøring, Resultat, Ukeplan, Detaljer, Endringer, Kapasitet, Lagrede kjøringer og Veiledning. Innlogging og bedriftskonto er merket «Fremtidig». Beregningen er simulert med fasitene fra testeksempel 01–03. DESIGN.md og EXPERIENCE.md er utkast «til godkjenning».
+- **Sebastian** (`af5dadd`): fire skisser av hovedskjermbildene i `.docs/planning-artifacts/ux-designs/ux-COSI - MRP-2026-11-13/mockups/` (startside, resultatside, endringer, kapasitet). DESIGN.md og EXPERIENCE.md er merket «final». Han har også fem designretninger og fargetemaer under `.working/`, `reconcile-prd.md` og en valideringsrapport.
+- Ingen filer i repoet ble endret. De midlertidige worktreene er fjernet (`git worktree list` viser bare `C:/IBE160`).
+
+### Åpne punkter
+- Carmens `vurdering.md` anbefaler resultatkonsept A som hovedvisning, men demoen til møtet bygger på B. Gruppen bør avklare hvilken retning hun foreslår.
+- Gruppen må velge mellom Carmens og Sebastians UX-forslag, eller slå dem sammen. Begge har egne versjoner av DESIGN.md og EXPERIENCE.md.
+- Carmens liste over konflikter med PRD-en må avgjøres før retningen føres inn i EXPERIENCE.md: FR-17 (ukeliste med filter), FR-18 (forklaringspanel ved siden av tabellen), vanlig språk mot ordbankens navn på eksepsjonene, og introduksjonssiden.
+- Godkjente menyord (Resultat, Ukeplan, Detaljer, Krever oppfølging) må legges inn i ordbanken.
+- Carmens branch har 61 nye filer, blant annet PRD-utkast, testdata-arkiv og logger. UX-delen bør trolig få sin egen PR hvis den skal inn på `main`.
