@@ -41,4 +41,4 @@ Oda ville slette UX-utkastet hun og Claude laget (EXPERIENCE.md og den klikkbare
 - Ordbanken er ikke endret. De fem UX-ordene fra utkastet står fortsatt i commit `e111219` i `Oda/Branch`, som ikke er pushet.
 
 ### Åpne punkter
-- Oda må avgjøre om de fem UX-ordene i ordbanken (`e111219`) skal beholdes nå som utkastet er slettet.
+Ingen. Oda ba om å fjerne ordene, og `e111219` er angret med `48c1350` (revert). Ordbanken er tilbake slik den var, med `updated: 2026-11-13`.
