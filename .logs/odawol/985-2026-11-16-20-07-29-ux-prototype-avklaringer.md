@@ -41,3 +41,19 @@ Oda kom med presiseringer til prototypen og ville ha et nytt forslag: «filen» 
 
 ### Åpne punkter
 - Rekkefølgen med kritiske deler først krever en endring i PRD §4.4 hvis gruppen velger den (U14).
+
+## 2026-11-16 kl. 21:12 — Odawol
+
+### Oppgave
+Oda ba om å committe og pushe prototypemappene, så de ligger i `Oda/Branch` på GitHub.
+
+### Plan
+- Kontrollerte at `Oda/Branch` var aktiv, og at GitHub ikke hadde nye commits i branchen.
+- Committet bare mappen `.docs/planning-artifacts/ux-designs/` med en commit som er begrenset til den stien. Andre ukommitterte filer (BMAD-konfig, brainstorming, Odas PRD-utkast og Word-filene) ble ikke tatt med.
+
+### Resultat
+- `4cfb393` «UX: klikkbare prototyper 16.11 (versjon 1 og 2)», 8 filer i `ux-prototype-2026-11-16/` og `ux-prototype-2026-11-16-v2/`.
+- Pushet `6211a2f..4cfb393` til `origin/Oda/Branch`, sammen med loggcommitene fra i dag. `main` er ikke rørt.
+
+### Åpne punkter
+Ingen nye.
