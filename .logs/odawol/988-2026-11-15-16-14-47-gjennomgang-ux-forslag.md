@@ -41,3 +41,24 @@ Oda ville åpne Carmens UX-forslag i nettleseren for å teste en kjøring selv.
 
 ### Åpne punkter
 Ingen nye. Punktene fra gjennomgangen tidligere i dag står fortsatt åpne i `issues.md`.
+
+## 2026-11-16 kl. 19:19 — Odawol
+
+### Oppgave
+Oda ville at PRD-en og UX-forslagene til Carmen og Sebastian ble lest, for å finne hva hvert forslag avviker fra PRD-en i, og hvordan forslagene skiller seg fra hverandre.
+
+### Plan
+- Leste hele den godkjente PRD-en (`prd-COSI - MRP-2026-10-19/prd.md`, final 13.11).
+- Leste Carmens filer fra `origin/Carmen/Branch` uten å merge: EXPERIENCE.md, DESIGN.md (utkast 12.11), README for demoen, `vurdering.md` og avstemmingen, og gikk gjennom prototypen `cosi-mrp-b-mork-samlet.html`.
+- Leste Sebastians filer fra `origin/Sebastian/Branch`: EXPERIENCE.md, DESIGN.md (final 14.11) og `reconcile-prd.md`.
+- Filene ble kopiert til scratchpad for lesing. Ingen filer i repoet ble endret.
+
+### Resultat
+- Sammenligningen ble gitt i chatten.
+- **Carmen:** demoen hun foretrekker (16.11) avviker mest. Den har egne sider for Resultat (nøkkeltall), Ukeplan, Detaljer og Kapasitet i stedet for én resultatside (§4.4). Ukeplanen erstatter lista med ukefilter (FR-17 forbyr egen ukevisning), og kapasiteten står på en egen side (FR-34). Den har også en introduksjonsside, «Krever oppfølging» i stedet for Kritiske deler, eksepsjonsnavn i vanlig språk (ordbanken 05.11) og innlogging merket «Fremtidig» (§7.2). Hennes egen EXPERIENCE.md (12.11) ligger nær PRD-en, men er skrevet før PRD-en ble final: der står UJ-5 og oppgavene i brukertesten fortsatt som antagelser.
+- **Sebastian:** forslaget følger PRD-en tett. Avvikene er små: ukefilteret starter på Uke 1 (gjør at Rygg i uke 2, oppgave 3 i SM-3, er skjult ved start), filteret «Vis bare kritiske deler», shadcn/Tailwind er valgt i UX i stedet for i arkitekturen, prøvetesten gjøres med en person utenfor gruppen (§8.1 sier gruppemedlem), «fila» i stedet for «filen», og status «final» før gruppen har godkjent.
+- På `origin/Carmen/Branch` ligger også `c834a94`, en samlet prototype fra gruppemøtet 16.11 med fire uavklarte valg.
+
+### Åpne punkter
+- Sebastians ukefilter starter på Uke 1, og da er svaret på oppgave 3 i brukertesten (Rygg, uke 2) skjult ved start. Gruppen bør avgjøre standardfilteret før prøvetesten rundt 27.11.
+- Carmens EXPERIENCE.md er fra før PRD-en ble final (UJ-5 og oppgavene i brukertesten står som antagelser) og må oppdateres hvis den skal brukes videre.
