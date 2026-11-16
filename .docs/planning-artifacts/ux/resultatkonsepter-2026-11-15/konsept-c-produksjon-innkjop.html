@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Konsept C – Produksjon og innkjøp · COSI-MRP</title>
+<!-- KONSEPT C – Produksjon og innkjøp. Forslag – ikke godkjent av gruppen. 2026-11-15.
+     Struktur: to arbeidsområder (faner). Hvert område viser én rad per vare eller komponent, med neste forslag
+     og mengden for hver uke. Data og detaljpanel: felles-resultat.js. Ingen beregning. -->
+<link rel="stylesheet" href="felles-resultat.css">
+<style>
+.c-tabs{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.c-tab{display:flex;gap:12px;align-items:center;text-align:left;border:2px solid var(--line);background:var(--raised);border-radius:12px;padding:14px 16px}
+.c-tab svg{width:26px;height:26px;flex:none}
+.c-tab .t{font-size:18px;font-weight:700;display:block}
+.c-tab .s{font-size:13.5px;color:var(--ink2)}
+.c-tab.prod{color:var(--prod)}.c-tab.inn{color:var(--inn)}
+.c-tab .t,.c-tab .s{color:inherit}.c-tab .s{color:var(--ink2)}
+.c-tab[aria-selected="true"].prod{border-color:var(--prod);background:var(--prod-s)}
+.c-tab[aria-selected="true"].inn{border-color:var(--inn);background:var(--inn-s)}
+.c-tab:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.c-panel{background:var(--raised);border:1px solid var(--line);border-radius:14px;padding:20px 22px;display:flex;flex-direction:column;gap:14px}
+.c-panel h2{font-size:20px}
+.c-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px}
+.c-t{border-collapse:collapse;width:100%;min-width:820px;font-size:14px}
+.c-t th,.c-t td{padding:8px 8px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+.c-t thead th{font-size:12.5px;color:var(--ink2);font-weight:600;background:var(--sunken)}
+.c-t thead th.now{color:var(--accent)}
+.c-t th[scope=row],.c-t thead th:first-child{text-align:left;position:sticky;left:0;background:var(--raised);min-width:220px;white-space:normal}
+.c-t thead th:first-child{background:var(--sunken)}
+.c-t th[scope=row] button{border:0;background:none;padding:0;text-align:left;display:flex;flex-direction:column;gap:3px}
+.c-t th[scope=row] .n{font-weight:600;color:var(--ink)}
+.c-t th[scope=row] button:hover .n{color:var(--accent);text-decoration:underline}
+.c-t td.next{text-align:left;font-size:13.5px}
+.c-t td.next b{font-size:15px}
+.c-t td.q{font-variant-numeric:tabular-nums;position:relative}
+.c-t td.q.has b{display:inline-block;min-width:40px;border-radius:6px;padding:2px 6px}
+.prod .c-t td.q.has b{background:var(--prod-s);color:var(--prod)}
+.inn .c-t td.q.has b{background:var(--inn-s);color:var(--inn)}
+.c-t td.q.x b{box-shadow:inset 0 0 0 2px var(--bf)}
+.c-t td.q.zero{color:#C3CBD2}
+.c-t td.q.zero.x b{display:inline-block;min-width:28px;border-radius:6px;padding:2px 6px;color:var(--bf);background:var(--bf-s)}
+.c-t tr.none th[scope=row] .n{color:var(--ink2);font-weight:500}
+@media (max-width:700px){.c-tabs{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<main class="rk-main" id="main">
+  <div class="c-tabs" role="tablist" aria-label="Arbeidsområder">
+    <button type="button" class="c-tab prod" role="tab" id="tab-prod" aria-controls="panel" data-k="prod"></button>
+    <button type="button" class="c-tab inn" role="tab" id="tab-inn" aria-controls="panel" data-k="inn"></button>
+  </div>
+  <section class="c-panel" id="panel" role="tabpanel" aria-labelledby="c-h">
+    <div><h2 id="c-h"></h2><p class="rk-muted" id="c-sub"></p></div>
+    <div class="c-wrap"><table class="c-t" id="c-t"></table></div>
+    <p class="rk-muted">Tallene er hvor mange planen foreslår å <span id="c-verb"></span> i uken. Rød ramme betyr at noe krever oppfølging. Velg en rad for å se hvorfor.</p>
+  </section>
+  <p><button type="button" class="rk-link" id="c-all">Vis hele beregningen for alle deler</button></p>
+</main>
+<script src="../konsepter-2026-11-12/felles.js"></script>
+<script src="../konsepter-2026-11-12/data-kontorstol-pro.js"></script>
+<script src="felles-resultat.js"></script>
+<script>
+(function(){
+'use strict';
+const {C,F,fmt,esc,xlabel,ICON,isProd}=RK;
+RK.frame('Konsept C · Produksjon og innkjøp');
+const $=s=>document.querySelector(s);
+const deler={prod:C.DELER.filter(p=>isProd(p)),inn:C.DELER.filter(p=>!isProd(p))};
+const medForslag=k=>deler[k].filter(p=>F.some(f=>f.del.vn===p.vn));
+const TXT={prod:{t:'Produksjon',s:n=>`${n} ${n===1?'vare':'varer'} å produsere internt`,h:'Dette bør produseres',sub:'Varer dere lager selv. Én rad per vare, med forslag om når produksjonen bør startes og hvor mange.',verb:'starte produksjon av'},
+           inn:{t:'Innkjøp',s:n=>`${n} ${n===1?'komponent':'komponenter'} å bestille hos leverandør`,h:'Dette bør bestilles',sub:'Komponenter dere kjøper fra leverandør. Én rad per komponent, med forslag om når de bør bestilles og hvor mange.',verb:'bestille'}};
+let cur='inn';
+['prod','inn'].forEach(k=>{const n=medForslag(k).length,krit=deler[k].filter(p=>C.eksepsjoner(p.vn).length).length;
+  $('#tab-'+k).innerHTML=`${ICON[k]}<span><span class="t">${TXT[k].t}</span><span class="s">${TXT[k].s(n)}${krit?` · ${krit} krever oppfølging`:''}</span></span>`;});
+function render(k){
+  cur=k;
+  ['prod','inn'].forEach(x=>{const b=$('#tab-'+x);b.setAttribute('aria-selected',String(x===k));b.tabIndex=x===k?0:-1;});
+  $('#panel').className='c-panel '+k;$('#panel').setAttribute('aria-labelledby','tab-'+k);
+  $('#c-h').textContent=TXT[k].h;$('#c-sub').textContent=TXT[k].sub;$('#c-verb').textContent=TXT[k].verb;
+  // Delene med forslag først (etter første forslagsuke), deretter delene uten forslag
+  const rows=deler[k].map(p=>({p,fs:F.filter(f=>f.del.vn===p.vn)})).sort((a,b)=>(a.fs.length?a.fs[0].uke:99)-(b.fs.length?b.fs[0].uke:99));
+  let h=`<thead><tr><th scope="col">${k==='prod'?'Vare':'Komponent'}</th><th scope="col" style="text-align:left">Neste forslag</th>${C.UKER.map(w=>`<th scope="col" class="${w===1?'now':''}">Uke ${w}${w===1?' · nå':''}</th>`).join('')}</tr></thead><tbody>`;
+  h+=rows.map(({p,fs})=>{const xs=C.eksepsjoner(p.vn),n=fs[0];
+    return `<tr class="${fs.length?'':'none'}"><th scope="row"><button type="button" data-vn="${p.vn}"><span class="n">${esc(p.d)} <span class="rk-vn">${p.vn}</span></span>${xs.length?`<span style="display:flex;gap:4px;flex-wrap:wrap">${xs.map(x=>xlabel(x)).join('')}</span>`:''}</button></th>
+      <td class="next">${n?`Uke ${n.uke}: <b>${fmt(n.mengde)}</b>${n.forfalt?` <span class="rk-due">${n.forfalt} for sent</span>`:''}`:'<span class="rk-muted">Ingen forslag</span>'}</td>
+      ${C.UKER.map(w=>{const f=fs.find(f=>f.uke===w),x=xs.some(e=>e.uke===w);return f?`<td class="q has${x?' x':''}"><b>${fmt(f.mengde)}</b></td>`:`<td class="q zero${x?' x':''}">${x?`<b title="Krever oppfølging i uke ${w}">!</b><span class="rk-sr" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Krever oppfølging i uke ${w}</span>`:'·'}</td>`;}).join('')}</tr>`;}).join('');
+  $('#c-t').innerHTML=h+'</tbody>';
+}
+$('.c-tabs').addEventListener('click',e=>{const b=e.target.closest('[data-k]');if(b)render(b.dataset.k);});
+$('.c-tabs').addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key==='ArrowLeft'){const k=cur==='prod'?'inn':'prod';render(k);$('#tab-'+k).focus();e.preventDefault();}});
+$('#c-t').addEventListener('click',e=>{const b=e.target.closest('[data-vn]');if(b)RK.openPart(b.dataset.vn);});
+$('#c-all').addEventListener('click',()=>RK.openAll());
+render('prod');
+})();
+</script>
+</body>
+</html>

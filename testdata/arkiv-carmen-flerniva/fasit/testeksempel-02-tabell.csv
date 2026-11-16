@@ -1,0 +1,481 @@
+varenummer,rad,uke,verdi
+100-001,Bruttobehov,1,30
+100-001,Bruttobehov,2,30
+100-001,Bruttobehov,3,35
+100-001,Bruttobehov,4,25
+100-001,Bruttobehov,5,40
+100-001,Bruttobehov,6,35
+100-001,Bruttobehov,7,30
+100-001,Bruttobehov,8,45
+100-001,Bruttobehov,9,35
+100-001,Bruttobehov,10,30
+100-001,Planlagte mottak,1,0
+100-001,Planlagte mottak,2,0
+100-001,Planlagte mottak,3,0
+100-001,Planlagte mottak,4,0
+100-001,Planlagte mottak,5,0
+100-001,Planlagte mottak,6,0
+100-001,Planlagte mottak,7,0
+100-001,Planlagte mottak,8,0
+100-001,Planlagte mottak,9,0
+100-001,Planlagte mottak,10,0
+100-001,Forventet lagerbeholdning,1,5
+100-001,Forventet lagerbeholdning,2,5
+100-001,Forventet lagerbeholdning,3,5
+100-001,Forventet lagerbeholdning,4,5
+100-001,Forventet lagerbeholdning,5,5
+100-001,Forventet lagerbeholdning,6,5
+100-001,Forventet lagerbeholdning,7,5
+100-001,Forventet lagerbeholdning,8,5
+100-001,Forventet lagerbeholdning,9,5
+100-001,Forventet lagerbeholdning,10,5
+100-001,Nettobehov,1,15
+100-001,Nettobehov,2,30
+100-001,Nettobehov,3,35
+100-001,Nettobehov,4,25
+100-001,Nettobehov,5,40
+100-001,Nettobehov,6,35
+100-001,Nettobehov,7,30
+100-001,Nettobehov,8,45
+100-001,Nettobehov,9,35
+100-001,Nettobehov,10,30
+100-001,Planlagte ordremottak,1,15
+100-001,Planlagte ordremottak,2,30
+100-001,Planlagte ordremottak,3,35
+100-001,Planlagte ordremottak,4,25
+100-001,Planlagte ordremottak,5,40
+100-001,Planlagte ordremottak,6,35
+100-001,Planlagte ordremottak,7,30
+100-001,Planlagte ordremottak,8,45
+100-001,Planlagte ordremottak,9,35
+100-001,Planlagte ordremottak,10,30
+100-001,Planlagte ordrefrigivelser,1,45
+100-001,Planlagte ordrefrigivelser,2,35
+100-001,Planlagte ordrefrigivelser,3,25
+100-001,Planlagte ordrefrigivelser,4,40
+100-001,Planlagte ordrefrigivelser,5,35
+100-001,Planlagte ordrefrigivelser,6,30
+100-001,Planlagte ordrefrigivelser,7,45
+100-001,Planlagte ordrefrigivelser,8,35
+100-001,Planlagte ordrefrigivelser,9,30
+100-001,Planlagte ordrefrigivelser,10,0
+200-001,Bruttobehov,1,45
+200-001,Bruttobehov,2,35
+200-001,Bruttobehov,3,25
+200-001,Bruttobehov,4,40
+200-001,Bruttobehov,5,35
+200-001,Bruttobehov,6,30
+200-001,Bruttobehov,7,45
+200-001,Bruttobehov,8,35
+200-001,Bruttobehov,9,30
+200-001,Bruttobehov,10,0
+200-001,Planlagte mottak,1,0
+200-001,Planlagte mottak,2,0
+200-001,Planlagte mottak,3,0
+200-001,Planlagte mottak,4,0
+200-001,Planlagte mottak,5,0
+200-001,Planlagte mottak,6,0
+200-001,Planlagte mottak,7,0
+200-001,Planlagte mottak,8,0
+200-001,Planlagte mottak,9,0
+200-001,Planlagte mottak,10,0
+200-001,Forventet lagerbeholdning,1,5
+200-001,Forventet lagerbeholdning,2,5
+200-001,Forventet lagerbeholdning,3,5
+200-001,Forventet lagerbeholdning,4,5
+200-001,Forventet lagerbeholdning,5,5
+200-001,Forventet lagerbeholdning,6,5
+200-001,Forventet lagerbeholdning,7,5
+200-001,Forventet lagerbeholdning,8,5
+200-001,Forventet lagerbeholdning,9,5
+200-001,Forventet lagerbeholdning,10,5
+200-001,Nettobehov,1,20
+200-001,Nettobehov,2,35
+200-001,Nettobehov,3,25
+200-001,Nettobehov,4,40
+200-001,Nettobehov,5,35
+200-001,Nettobehov,6,30
+200-001,Nettobehov,7,45
+200-001,Nettobehov,8,35
+200-001,Nettobehov,9,30
+200-001,Nettobehov,10,0
+200-001,Planlagte ordremottak,1,20
+200-001,Planlagte ordremottak,2,35
+200-001,Planlagte ordremottak,3,25
+200-001,Planlagte ordremottak,4,40
+200-001,Planlagte ordremottak,5,35
+200-001,Planlagte ordremottak,6,30
+200-001,Planlagte ordremottak,7,45
+200-001,Planlagte ordremottak,8,35
+200-001,Planlagte ordremottak,9,30
+200-001,Planlagte ordremottak,10,0
+200-001,Planlagte ordrefrigivelser,1,55
+200-001,Planlagte ordrefrigivelser,2,25
+200-001,Planlagte ordrefrigivelser,3,40
+200-001,Planlagte ordrefrigivelser,4,35
+200-001,Planlagte ordrefrigivelser,5,30
+200-001,Planlagte ordrefrigivelser,6,45
+200-001,Planlagte ordrefrigivelser,7,35
+200-001,Planlagte ordrefrigivelser,8,30
+200-001,Planlagte ordrefrigivelser,9,0
+200-001,Planlagte ordrefrigivelser,10,0
+200-002,Bruttobehov,1,45
+200-002,Bruttobehov,2,35
+200-002,Bruttobehov,3,25
+200-002,Bruttobehov,4,40
+200-002,Bruttobehov,5,35
+200-002,Bruttobehov,6,30
+200-002,Bruttobehov,7,45
+200-002,Bruttobehov,8,35
+200-002,Bruttobehov,9,30
+200-002,Bruttobehov,10,0
+200-002,Planlagte mottak,1,0
+200-002,Planlagte mottak,2,0
+200-002,Planlagte mottak,3,0
+200-002,Planlagte mottak,4,40
+200-002,Planlagte mottak,5,0
+200-002,Planlagte mottak,6,0
+200-002,Planlagte mottak,7,0
+200-002,Planlagte mottak,8,0
+200-002,Planlagte mottak,9,0
+200-002,Planlagte mottak,10,0
+200-002,Forventet lagerbeholdning,1,40
+200-002,Forventet lagerbeholdning,2,5
+200-002,Forventet lagerbeholdning,3,5
+200-002,Forventet lagerbeholdning,4,5
+200-002,Forventet lagerbeholdning,5,5
+200-002,Forventet lagerbeholdning,6,5
+200-002,Forventet lagerbeholdning,7,5
+200-002,Forventet lagerbeholdning,8,5
+200-002,Forventet lagerbeholdning,9,5
+200-002,Forventet lagerbeholdning,10,5
+200-002,Nettobehov,1,0
+200-002,Nettobehov,2,0
+200-002,Nettobehov,3,25
+200-002,Nettobehov,4,0
+200-002,Nettobehov,5,35
+200-002,Nettobehov,6,30
+200-002,Nettobehov,7,45
+200-002,Nettobehov,8,35
+200-002,Nettobehov,9,30
+200-002,Nettobehov,10,0
+200-002,Planlagte ordremottak,1,0
+200-002,Planlagte ordremottak,2,0
+200-002,Planlagte ordremottak,3,25
+200-002,Planlagte ordremottak,4,0
+200-002,Planlagte ordremottak,5,35
+200-002,Planlagte ordremottak,6,30
+200-002,Planlagte ordremottak,7,45
+200-002,Planlagte ordremottak,8,35
+200-002,Planlagte ordremottak,9,30
+200-002,Planlagte ordremottak,10,0
+200-002,Planlagte ordrefrigivelser,1,0
+200-002,Planlagte ordrefrigivelser,2,25
+200-002,Planlagte ordrefrigivelser,3,0
+200-002,Planlagte ordrefrigivelser,4,35
+200-002,Planlagte ordrefrigivelser,5,30
+200-002,Planlagte ordrefrigivelser,6,45
+200-002,Planlagte ordrefrigivelser,7,35
+200-002,Planlagte ordrefrigivelser,8,30
+200-002,Planlagte ordrefrigivelser,9,0
+200-002,Planlagte ordrefrigivelser,10,0
+300-004,Bruttobehov,1,225
+300-004,Bruttobehov,2,175
+300-004,Bruttobehov,3,125
+300-004,Bruttobehov,4,200
+300-004,Bruttobehov,5,175
+300-004,Bruttobehov,6,150
+300-004,Bruttobehov,7,225
+300-004,Bruttobehov,8,175
+300-004,Bruttobehov,9,150
+300-004,Bruttobehov,10,0
+300-004,Planlagte mottak,1,0
+300-004,Planlagte mottak,2,0
+300-004,Planlagte mottak,3,0
+300-004,Planlagte mottak,4,0
+300-004,Planlagte mottak,5,0
+300-004,Planlagte mottak,6,0
+300-004,Planlagte mottak,7,0
+300-004,Planlagte mottak,8,0
+300-004,Planlagte mottak,9,0
+300-004,Planlagte mottak,10,0
+300-004,Forventet lagerbeholdning,1,75
+300-004,Forventet lagerbeholdning,2,30
+300-004,Forventet lagerbeholdning,3,30
+300-004,Forventet lagerbeholdning,4,30
+300-004,Forventet lagerbeholdning,5,30
+300-004,Forventet lagerbeholdning,6,30
+300-004,Forventet lagerbeholdning,7,30
+300-004,Forventet lagerbeholdning,8,30
+300-004,Forventet lagerbeholdning,9,30
+300-004,Forventet lagerbeholdning,10,30
+300-004,Nettobehov,1,0
+300-004,Nettobehov,2,130
+300-004,Nettobehov,3,125
+300-004,Nettobehov,4,200
+300-004,Nettobehov,5,175
+300-004,Nettobehov,6,150
+300-004,Nettobehov,7,225
+300-004,Nettobehov,8,175
+300-004,Nettobehov,9,150
+300-004,Nettobehov,10,0
+300-004,Planlagte ordremottak,1,0
+300-004,Planlagte ordremottak,2,130
+300-004,Planlagte ordremottak,3,125
+300-004,Planlagte ordremottak,4,200
+300-004,Planlagte ordremottak,5,175
+300-004,Planlagte ordremottak,6,150
+300-004,Planlagte ordremottak,7,225
+300-004,Planlagte ordremottak,8,175
+300-004,Planlagte ordremottak,9,150
+300-004,Planlagte ordremottak,10,0
+300-004,Planlagte ordrefrigivelser,1,130
+300-004,Planlagte ordrefrigivelser,2,125
+300-004,Planlagte ordrefrigivelser,3,200
+300-004,Planlagte ordrefrigivelser,4,175
+300-004,Planlagte ordrefrigivelser,5,150
+300-004,Planlagte ordrefrigivelser,6,225
+300-004,Planlagte ordrefrigivelser,7,175
+300-004,Planlagte ordrefrigivelser,8,150
+300-004,Planlagte ordrefrigivelser,9,0
+300-004,Planlagte ordrefrigivelser,10,0
+300-005,Bruttobehov,1,45
+300-005,Bruttobehov,2,35
+300-005,Bruttobehov,3,25
+300-005,Bruttobehov,4,40
+300-005,Bruttobehov,5,35
+300-005,Bruttobehov,6,30
+300-005,Bruttobehov,7,45
+300-005,Bruttobehov,8,35
+300-005,Bruttobehov,9,30
+300-005,Bruttobehov,10,0
+300-005,Planlagte mottak,1,0
+300-005,Planlagte mottak,2,0
+300-005,Planlagte mottak,3,0
+300-005,Planlagte mottak,4,0
+300-005,Planlagte mottak,5,0
+300-005,Planlagte mottak,6,0
+300-005,Planlagte mottak,7,0
+300-005,Planlagte mottak,8,0
+300-005,Planlagte mottak,9,0
+300-005,Planlagte mottak,10,0
+300-005,Forventet lagerbeholdning,1,355
+300-005,Forventet lagerbeholdning,2,320
+300-005,Forventet lagerbeholdning,3,295
+300-005,Forventet lagerbeholdning,4,255
+300-005,Forventet lagerbeholdning,5,220
+300-005,Forventet lagerbeholdning,6,190
+300-005,Forventet lagerbeholdning,7,145
+300-005,Forventet lagerbeholdning,8,110
+300-005,Forventet lagerbeholdning,9,80
+300-005,Forventet lagerbeholdning,10,80
+300-005,Nettobehov,1,0
+300-005,Nettobehov,2,0
+300-005,Nettobehov,3,0
+300-005,Nettobehov,4,0
+300-005,Nettobehov,5,0
+300-005,Nettobehov,6,0
+300-005,Nettobehov,7,0
+300-005,Nettobehov,8,0
+300-005,Nettobehov,9,0
+300-005,Nettobehov,10,0
+300-005,Planlagte ordremottak,1,0
+300-005,Planlagte ordremottak,2,0
+300-005,Planlagte ordremottak,3,0
+300-005,Planlagte ordremottak,4,0
+300-005,Planlagte ordremottak,5,0
+300-005,Planlagte ordremottak,6,0
+300-005,Planlagte ordremottak,7,0
+300-005,Planlagte ordremottak,8,0
+300-005,Planlagte ordremottak,9,0
+300-005,Planlagte ordremottak,10,0
+300-005,Planlagte ordrefrigivelser,1,0
+300-005,Planlagte ordrefrigivelser,2,0
+300-005,Planlagte ordrefrigivelser,3,0
+300-005,Planlagte ordrefrigivelser,4,0
+300-005,Planlagte ordrefrigivelser,5,0
+300-005,Planlagte ordrefrigivelser,6,0
+300-005,Planlagte ordrefrigivelser,7,0
+300-005,Planlagte ordrefrigivelser,8,0
+300-005,Planlagte ordrefrigivelser,9,0
+300-005,Planlagte ordrefrigivelser,10,0
+300-001,Bruttobehov,1,55
+300-001,Bruttobehov,2,25
+300-001,Bruttobehov,3,40
+300-001,Bruttobehov,4,35
+300-001,Bruttobehov,5,30
+300-001,Bruttobehov,6,45
+300-001,Bruttobehov,7,35
+300-001,Bruttobehov,8,30
+300-001,Bruttobehov,9,0
+300-001,Bruttobehov,10,0
+300-001,Planlagte mottak,1,0
+300-001,Planlagte mottak,2,0
+300-001,Planlagte mottak,3,0
+300-001,Planlagte mottak,4,0
+300-001,Planlagte mottak,5,0
+300-001,Planlagte mottak,6,0
+300-001,Planlagte mottak,7,0
+300-001,Planlagte mottak,8,0
+300-001,Planlagte mottak,9,0
+300-001,Planlagte mottak,10,0
+300-001,Forventet lagerbeholdning,1,65
+300-001,Forventet lagerbeholdning,2,40
+300-001,Forventet lagerbeholdning,3,10
+300-001,Forventet lagerbeholdning,4,10
+300-001,Forventet lagerbeholdning,5,10
+300-001,Forventet lagerbeholdning,6,10
+300-001,Forventet lagerbeholdning,7,10
+300-001,Forventet lagerbeholdning,8,10
+300-001,Forventet lagerbeholdning,9,10
+300-001,Forventet lagerbeholdning,10,10
+300-001,Nettobehov,1,0
+300-001,Nettobehov,2,0
+300-001,Nettobehov,3,10
+300-001,Nettobehov,4,35
+300-001,Nettobehov,5,30
+300-001,Nettobehov,6,45
+300-001,Nettobehov,7,35
+300-001,Nettobehov,8,30
+300-001,Nettobehov,9,0
+300-001,Nettobehov,10,0
+300-001,Planlagte ordremottak,1,0
+300-001,Planlagte ordremottak,2,0
+300-001,Planlagte ordremottak,3,10
+300-001,Planlagte ordremottak,4,35
+300-001,Planlagte ordremottak,5,30
+300-001,Planlagte ordremottak,6,45
+300-001,Planlagte ordremottak,7,35
+300-001,Planlagte ordremottak,8,30
+300-001,Planlagte ordremottak,9,0
+300-001,Planlagte ordremottak,10,0
+300-001,Planlagte ordrefrigivelser,1,10
+300-001,Planlagte ordrefrigivelser,2,35
+300-001,Planlagte ordrefrigivelser,3,30
+300-001,Planlagte ordrefrigivelser,4,45
+300-001,Planlagte ordrefrigivelser,5,35
+300-001,Planlagte ordrefrigivelser,6,30
+300-001,Planlagte ordrefrigivelser,7,0
+300-001,Planlagte ordrefrigivelser,8,0
+300-001,Planlagte ordrefrigivelser,9,0
+300-001,Planlagte ordrefrigivelser,10,0
+300-002,Bruttobehov,1,220
+300-002,Bruttobehov,2,150
+300-002,Bruttobehov,3,160
+300-002,Bruttobehov,4,210
+300-002,Bruttobehov,5,180
+300-002,Bruttobehov,6,270
+300-002,Bruttobehov,7,210
+300-002,Bruttobehov,8,180
+300-002,Bruttobehov,9,0
+300-002,Bruttobehov,10,0
+300-002,Planlagte mottak,1,0
+300-002,Planlagte mottak,2,0
+300-002,Planlagte mottak,3,0
+300-002,Planlagte mottak,4,0
+300-002,Planlagte mottak,5,0
+300-002,Planlagte mottak,6,0
+300-002,Planlagte mottak,7,0
+300-002,Planlagte mottak,8,0
+300-002,Planlagte mottak,9,0
+300-002,Planlagte mottak,10,0
+300-002,Forventet lagerbeholdning,1,180
+300-002,Forventet lagerbeholdning,2,50
+300-002,Forventet lagerbeholdning,3,50
+300-002,Forventet lagerbeholdning,4,50
+300-002,Forventet lagerbeholdning,5,50
+300-002,Forventet lagerbeholdning,6,50
+300-002,Forventet lagerbeholdning,7,50
+300-002,Forventet lagerbeholdning,8,50
+300-002,Forventet lagerbeholdning,9,50
+300-002,Forventet lagerbeholdning,10,50
+300-002,Nettobehov,1,0
+300-002,Nettobehov,2,20
+300-002,Nettobehov,3,160
+300-002,Nettobehov,4,210
+300-002,Nettobehov,5,180
+300-002,Nettobehov,6,270
+300-002,Nettobehov,7,210
+300-002,Nettobehov,8,180
+300-002,Nettobehov,9,0
+300-002,Nettobehov,10,0
+300-002,Planlagte ordremottak,1,0
+300-002,Planlagte ordremottak,2,20
+300-002,Planlagte ordremottak,3,160
+300-002,Planlagte ordremottak,4,210
+300-002,Planlagte ordremottak,5,180
+300-002,Planlagte ordremottak,6,270
+300-002,Planlagte ordremottak,7,210
+300-002,Planlagte ordremottak,8,180
+300-002,Planlagte ordremottak,9,0
+300-002,Planlagte ordremottak,10,0
+300-002,Planlagte ordrefrigivelser,1,20
+300-002,Planlagte ordrefrigivelser,2,160
+300-002,Planlagte ordrefrigivelser,3,210
+300-002,Planlagte ordrefrigivelser,4,180
+300-002,Planlagte ordrefrigivelser,5,270
+300-002,Planlagte ordrefrigivelser,6,210
+300-002,Planlagte ordrefrigivelser,7,180
+300-002,Planlagte ordrefrigivelser,8,0
+300-002,Planlagte ordrefrigivelser,9,0
+300-002,Planlagte ordrefrigivelser,10,0
+300-003,Bruttobehov,1,0
+300-003,Bruttobehov,2,25
+300-003,Bruttobehov,3,0
+300-003,Bruttobehov,4,35
+300-003,Bruttobehov,5,30
+300-003,Bruttobehov,6,45
+300-003,Bruttobehov,7,35
+300-003,Bruttobehov,8,30
+300-003,Bruttobehov,9,0
+300-003,Bruttobehov,10,0
+300-003,Planlagte mottak,1,0
+300-003,Planlagte mottak,2,0
+300-003,Planlagte mottak,3,0
+300-003,Planlagte mottak,4,0
+300-003,Planlagte mottak,5,0
+300-003,Planlagte mottak,6,0
+300-003,Planlagte mottak,7,0
+300-003,Planlagte mottak,8,0
+300-003,Planlagte mottak,9,0
+300-003,Planlagte mottak,10,0
+300-003,Forventet lagerbeholdning,1,40
+300-003,Forventet lagerbeholdning,2,30
+300-003,Forventet lagerbeholdning,3,30
+300-003,Forventet lagerbeholdning,4,30
+300-003,Forventet lagerbeholdning,5,30
+300-003,Forventet lagerbeholdning,6,30
+300-003,Forventet lagerbeholdning,7,30
+300-003,Forventet lagerbeholdning,8,30
+300-003,Forventet lagerbeholdning,9,30
+300-003,Forventet lagerbeholdning,10,30
+300-003,Nettobehov,1,0
+300-003,Nettobehov,2,15
+300-003,Nettobehov,3,0
+300-003,Nettobehov,4,35
+300-003,Nettobehov,5,30
+300-003,Nettobehov,6,45
+300-003,Nettobehov,7,35
+300-003,Nettobehov,8,30
+300-003,Nettobehov,9,0
+300-003,Nettobehov,10,0
+300-003,Planlagte ordremottak,1,0
+300-003,Planlagte ordremottak,2,15
+300-003,Planlagte ordremottak,3,0
+300-003,Planlagte ordremottak,4,35
+300-003,Planlagte ordremottak,5,30
+300-003,Planlagte ordremottak,6,45
+300-003,Planlagte ordremottak,7,35
+300-003,Planlagte ordremottak,8,30
+300-003,Planlagte ordremottak,9,0
+300-003,Planlagte ordremottak,10,0
+300-003,Planlagte ordrefrigivelser,1,15
+300-003,Planlagte ordrefrigivelser,2,35
+300-003,Planlagte ordrefrigivelser,3,30
+300-003,Planlagte ordrefrigivelser,4,45
+300-003,Planlagte ordrefrigivelser,5,35
+300-003,Planlagte ordrefrigivelser,6,30
+300-003,Planlagte ordrefrigivelser,7,0
+300-003,Planlagte ordrefrigivelser,8,0
+300-003,Planlagte ordrefrigivelser,9,0
+300-003,Planlagte ordrefrigivelser,10,0

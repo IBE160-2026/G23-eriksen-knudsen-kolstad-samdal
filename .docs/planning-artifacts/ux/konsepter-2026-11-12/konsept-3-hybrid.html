@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Konsept 3 – Hybrid · COSI-MRP</title>
+<!--
+  KONSEPT 3 – HYBRID. Forslag, ikke godkjent design (2026-11-12, Carmen Kolstad).
+  Personlighet: moderne ramme rundt et fullt, detaljert MRP-rutenett. Mørk sidelist for navigasjon,
+  handlingsflater (bestillingsforslag og kritiske deler) side om side, deretter hele tabellen med alle seks
+  rader for alle deler, og forklaringspanel som skyver tabellen til side. Systemskrift, ingen nettverk.
+  Farger: sidelist #0F2A33, aksent (petrol) #0D7285, flate #FFFFFF, bakgrunn #EEF2F4, tekst #12212A,
+  dempet #56656F, Bestilling forsinket #B42318/#FDECEA, Bruk av SS og Mottak forsinket #8A5300/#FFF2D6,
+  Kanseller mottak #1D5FAE/#E6EFFB, Ledetid overskrider horisont #5B47AA/#EEEAFB.
+-->
+<style>
+:root{--rail:#0F2A33;--rail-ink:#CFE2E7;--accent:#0D7285;--accent-s:#E0F0F3;--bg:#EEF2F4;--card:#FFFFFF;--ink:#12212A;--muted:#56656F;--line:#DAE1E5;--sunk:#F4F7F8;
+--bf:#B42318;--bf-s:#FDECEA;--ss:#8A5300;--ss-s:#FFF2D6;--km:#1D5FAE;--km-s:#E6EFFB;--lh:#5B47AA;--lh-s:#EEEAFB}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{font:14px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--bg);display:grid;grid-template-columns:200px minmax(0,1fr)}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.rail{background:var(--rail);color:var(--rail-ink);position:sticky;top:0;height:100vh;padding:18px 12px;display:flex;flex-direction:column;gap:4px}
+.rail .logo{font-weight:700;font-size:17px;color:#fff;padding:0 8px 16px;display:flex;gap:8px;align-items:center}
+.rail .logo i{width:20px;height:20px;border-radius:5px;background:var(--accent)}
+.rail a{color:var(--rail-ink);text-decoration:none;padding:7px 10px;border-radius:6px;display:flex;justify-content:space-between;font-size:14px}
+.rail a:hover,.rail a.on{background:rgb(255 255 255 / .08);color:#fff}
+.rail .n{font-size:12px;background:rgb(255 255 255 / .12);border-radius:999px;padding:0 7px}
+.rail .n.crit{background:#E5484D;color:#fff}
+.rail .foot{margin-top:auto;font-size:12px;opacity:.75;padding:0 8px}
+.page{min-width:0}
+.concept{background:#FFF7D6;color:#5B4A00;font-size:13px;padding:6px 20px;border-bottom:1px solid #EAD98C}
+.runbar{background:var(--card);border-bottom:1px solid var(--line);padding:14px 20px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:center;position:sticky;top:0;z-index:5}
+.runbar h1{margin:0;font-size:21px}
+.runbar h1 span{font-family:ui-monospace,Menlo,monospace;font-size:14px;color:var(--muted);font-weight:500}
+.runbar .m{font-size:13px;color:var(--muted)}
+.runbar .kpi{font-size:13px;margin-top:2px}
+.runbar .kpi a{color:var(--accent);font-weight:600;text-decoration:none}
+.btn{border:1px solid var(--line);background:var(--card);border-radius:7px;padding:7px 14px;font-weight:500}
+.btn.pri{background:var(--accent);border-color:var(--accent);color:#fff}
+.content{padding:18px 20px 60px;display:flex;flex-direction:column;gap:18px}
+.two{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr);gap:18px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.card h2{margin:0;font-size:17px}
+.card .hd{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+.muted{color:var(--muted);font-size:13px}
+.chips{display:flex;gap:5px;flex-wrap:wrap}
+.chip{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:2px 10px;font-size:13px}
+.chip.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.list{border-collapse:collapse;width:100%;font-size:13.5px}
+.list th,.list td{padding:6px 8px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
+.list th{font-size:12px;color:var(--muted);font-weight:600;background:var(--sunk);position:sticky;top:0}
+.list .r{text-align:right;font-variant-numeric:tabular-nums}
+.vn{font-family:ui-monospace,Menlo,monospace;font-size:12.5px}
+.due{font-size:12px;font-weight:600;color:var(--bf);background:var(--bf-s);padding:1px 7px;border-radius:4px}
+.scroll{max-height:270px;overflow:auto;border:1px solid var(--line);border-radius:8px}
+.crow{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:start;padding:10px;border:1px solid var(--line);border-radius:8px;background:var(--card);text-align:left;width:100%}
+.crow:hover{border-color:var(--accent)}
+.crow .t{font-weight:600}
+.crow .s{font-size:12.5px;color:var(--muted)}
+.xg{display:inline-grid;place-items:center;min-width:22px;height:22px;border-radius:5px;font-family:ui-monospace,Menlo,monospace;font-weight:700;font-size:12px;color:#fff;padding:0 3px}
+.xg.BF{background:var(--bf)}.xg.SS,.xg.MF{background:var(--ss)}.xg.KM{background:var(--km)}.xg.LH{background:var(--lh)}
+.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:12.5px;color:var(--muted)}
+.legend span{display:inline-flex;gap:5px;align-items:center}
+.work{display:grid;grid-template-columns:minmax(0,1fr);gap:0;border:1px solid var(--line);border-radius:10px;background:var(--card);overflow:hidden}
+.work.panel{grid-template-columns:minmax(0,1fr) 340px}
+.tbl{overflow:auto;max-height:640px}
+.mrp{border-collapse:separate;border-spacing:0;font-size:13px;width:100%}
+.mrp th,.mrp td{padding:0;white-space:nowrap;border-bottom:1px solid #EDF1F3}
+.mrp thead th{position:sticky;top:0;background:var(--sunk);z-index:3;font-size:12px;color:var(--muted);font-weight:600;padding:7px 10px;text-align:right;border-bottom:1px solid var(--line)}
+.mrp thead th:first-child{left:0;z-index:4;text-align:left}
+.mrp .lab{position:sticky;left:0;background:var(--card);z-index:2;min-width:220px;border-right:1px solid var(--line)}
+.mrp .lab button{border:0;background:none;width:100%;text-align:left;padding:5px 10px;color:var(--muted)}
+.mrp td{text-align:right;min-width:60px}
+.mrp td button{border:0;background:none;width:100%;text-align:right;padding:5px 10px;font-variant-numeric:tabular-nums;position:relative}
+.mrp td.z button{color:#6E7C86}
+.mrp td.neg button{color:var(--bf);font-weight:700}
+.mrp tr.rel td button,.mrp tr.rel .lab button{font-weight:700;color:var(--ink)}
+.mrp td.w1{background:color-mix(in srgb,var(--accent-s) 55%,transparent)}
+.mrp td button:hover,.mrp .lab button:hover{background:var(--accent-s)}
+.mrp td.sel button,.mrp .lab.sel button{background:var(--accent-s);box-shadow:inset 0 0 0 2px var(--accent)}
+.mrp td.x-BF{background:var(--bf-s)}.mrp td.x-SS,.mrp td.x-MF{background:var(--ss-s)}
+.mrp td .corner{position:absolute;left:4px;top:50%;transform:translateY(-50%);min-width:18px;height:18px;font-size:11px}
+.mrp tr.ph th{background:var(--sunk);text-align:left;padding:0;border-top:2px solid var(--line)}
+.ph-in{position:sticky;left:0;display:flex;gap:10px;align-items:center;padding:8px 10px;width:max-content;flex-wrap:wrap}
+.lvl{font-family:ui-monospace,Menlo,monospace;font-size:11px;color:var(--muted);border:1px solid var(--line);border-radius:3px;padding:0 5px;background:var(--card)}
+.meta{font-weight:400;font-size:12px;color:var(--muted)}
+.crit{color:var(--bf);font-weight:700;font-size:12px}
+.panel-x{border-left:1px solid var(--line);padding:16px;display:flex;flex-direction:column;gap:12px;max-height:640px;overflow:auto;background:var(--card)}
+.panel-x header{display:flex;justify-content:space-between;gap:10px}
+.panel-x .ey{font-size:12px;color:var(--muted)}
+.panel-x h3{margin:2px 0 0;font-size:17px}
+.panel-x .ans{background:var(--accent-s);border-radius:8px;padding:10px 12px;font-weight:500}
+.calc{border:1px solid var(--line);border-radius:8px}
+.calc div{display:flex;justify-content:space-between;gap:8px;padding:6px 10px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums;font-size:13.5px}
+.calc div:last-child{border-bottom:0;font-weight:700;background:var(--sunk)}
+.rule{font-size:12.5px;color:var(--muted);background:var(--sunk);border-radius:6px;padding:8px 10px}
+.xm{border-radius:8px;padding:10px;font-size:13.5px;display:flex;flex-direction:column;gap:4px}
+.xm.BF{background:var(--bf-s)}.xm.SS,.xm.MF{background:var(--ss-s)}.xm.KM{background:var(--km-s)}.xm.LH{background:var(--lh-s)}
+.xm b{display:flex;gap:6px;align-items:center}
+.capcard{border:2px solid var(--line)}
+.capnote{background:#FFF7D6;color:#5B4A00;border-radius:6px;padding:8px 12px;font-size:13px}
+.cap{border-collapse:collapse;width:100%;font-size:13.5px}
+.cap th,.cap td{padding:8px;border-bottom:1px solid var(--line);text-align:right;vertical-align:bottom;white-space:nowrap;font-variant-numeric:tabular-nums}
+.cap th:first-child,.cap td:first-child{text-align:left;position:sticky;left:0;background:var(--card)}
+.cap thead th{font-size:12px;color:var(--muted);background:var(--sunk)}
+.cap .bar{display:block;margin-left:auto;width:26px;background:var(--accent);border-radius:3px 3px 0 0;opacity:.85}
+.cap .bar.l{background:#9FB7BF}
+.cap .v{font-weight:700;font-size:15px}
+.cap .why{display:block;font-size:11.5px;color:var(--muted)}
+details{border:1px solid var(--line);border-radius:8px}
+details summary{padding:8px 12px;cursor:pointer;font-weight:500}
+@media (max-width:1100px){.two{grid-template-columns:1fr}}
+@media (max-width:860px){body{grid-template-columns:1fr}.rail{position:static;height:auto;flex-direction:row;flex-wrap:wrap}.rail .foot{display:none}.work.panel{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="rail" aria-label="Seksjoner">
+  <span class="logo"><i></i>COSI-MRP</span>
+  <a href="#s-best">Bestillingsforslag <span class="n" id="n-best"></span></a>
+  <a href="#s-endr">Endringer <span class="n">–</span></a>
+  <a href="#s-krit">Kritiske deler <span class="n crit" id="n-krit"></span></a>
+  <a href="#s-tab">Resultattabell</a>
+  <a href="#s-kap">Produksjonskapasitet</a>
+  <span class="foot">Ny kjøring · Lagrede kjøringer · Veiledning</span>
+</nav>
+<div class="page">
+  <div class="concept"><b>Konsept 3 – Hybrid.</b> Forslag til diskusjon, ikke godkjent design. Data: fasit for testeksempel 01.</div>
+  <header class="runbar">
+    <div><h1 id="prod"></h1><div class="m" id="meta"></div><div class="kpi" id="kpi"></div></div>
+    <div style="display:flex;gap:8px"><button class="btn" type="button">Last opp ny fil</button><button class="btn pri" type="button">Eksporter til Excel</button></div>
+  </header>
+  <div class="content">
+    <div class="two">
+      <section class="card" id="s-best"><div class="hd"><h2>Bestillingsforslag</h2><span class="muted">Sortert etter frigivelsesuke</span></div>
+        <div class="chips" id="weeks" role="group" aria-label="Filtrer på uke"></div>
+        <div class="scroll"><table class="list" id="best"><thead><tr><th>Uke</th><th>Varenr.</th><th>Beskrivelse</th><th class="r">Mengde</th><th>Art</th><th></th></tr></thead><tbody></tbody></table></div>
+      </section>
+      <div style="display:flex;flex-direction:column;gap:18px;min-width:0">
+        <section class="card" id="s-endr"><h2>Endringer siden forrige kjøring</h2><span class="muted">Første kjøring for Kontorstol Basic. Ingen tidligere kjøring å sammenligne med.</span></section>
+        <section class="card" id="s-krit"><div class="hd"><h2 id="krit-h"></h2><span class="muted">Velg for å gå til delen</span></div><div style="display:flex;flex-direction:column;gap:6px" id="krit"></div></section>
+      </div>
+    </div>
+
+    <section id="s-tab" style="display:flex;flex-direction:column;gap:8px">
+      <div class="hd" style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:baseline"><h2 style="margin:0;font-size:17px">Resultattabell</h2><div class="legend" id="legend"></div></div>
+      <div class="work" id="work"><div class="tbl"><table class="mrp" id="mrp"></table></div><aside class="panel-x" id="px" hidden aria-label="Forklaring" aria-live="polite" tabindex="-1"></aside></div>
+    </section>
+
+    <section class="card capcard" id="s-kap">
+      <div class="hd"><h2>Produksjonskapasitet fra lager</h2><span class="muted">Hvor mange hele ferdigprodukter kan være ferdige innen hver uke?</span></div>
+      <span class="muted">Ledetid og planlagte mottak er med. Prognostiserte behov er ikke med, så dette er ikke en produksjonsplan.</span>
+      <div class="capnote"><b>Ikke manuelt kontrollert.</b> <span id="capsrc"></span></div>
+      <div style="overflow-x:auto"><table class="cap" id="cap"></table></div>
+      <details><summary>Grunnlag per del (lager, SS, ledig beholdning, ledetid, planlagte mottak per uke)</summary><div style="overflow-x:auto"><table class="list" id="capbase"></table></div></details>
+    </section>
+  </div>
+</div>
+
+<script src="felles.js"></script>
+<script>
+(function(){
+const C=COSI,$=s=>document.querySelector(s),fmt=C.fmt;
+const F=C.forslag(),K=C.kritiske();
+$('#prod').innerHTML=`${C.META.produkt} <span>${C.META.varenummer}</span>`;
+$('#meta').textContent=`Horisont ${C.META.horisont} uker · ${C.META.fil} · Kjørt ${C.META.kjort} · ✓ Lagret i denne nettleseren`;
+$('#kpi').innerHTML=`<a href="#s-best">${F.length} bestillingsforslag</a> · <a href="#s-best">${F.filter(f=>f.uke===1).length} i uke 1</a> · <a href="#s-krit" style="color:var(--bf)">${K.length} kritiske deler</a> · ingen tidligere kjøring`;
+$('#n-best').textContent=F.length;$('#n-krit').textContent=K.length;
+$('#legend').innerHTML=Object.entries(C.TYPER).map(([k,t])=>`<span><span class="xg ${k}">${t.g}</span>${t.navn}</span>`).join('');
+
+let wf=0;
+function chips(){$('#weeks').innerHTML=[0,...C.UKER].map(w=>`<button type="button" class="chip${wf===w?' on':''}" data-w="${w}" aria-pressed="${wf===w}">${w?'Uke '+w:'Alle uker'} <span style="opacity:.6">${w?F.filter(f=>f.uke===w).length:F.length}</span></button>`).join('');}
+function best(){const r=F.filter(f=>!wf||f.uke===wf);$('#best tbody').innerHTML=r.length?r.map(f=>`<tr><td>Uke ${f.uke}</td><td class="vn">${f.del.vn}</td><td>${f.del.d}</td><td class="r"><b>${fmt(f.mengde)}</b></td><td class="muted">${C.art(f.del)}</td><td>${f.forfalt?`<span class="due">! ${f.forfalt} forfalt</span>`:''}</td></tr>`).join(''):`<tr><td colspan="6" class="muted">Ingen bestillingsforslag i uke ${wf}.</td></tr>`;}
+$('#weeks').addEventListener('click',e=>{const b=e.target.closest('.chip');if(!b)return;wf=+b.dataset.w;chips();best();});chips();best();
+
+$('#krit-h').textContent=`${K.length} kritiske deler`;
+$('#krit').innerHTML=C.EKSEPSJONER.map(x=>{const p=C.byVn[x.vn];return `<button type="button" class="crow" data-vn="${x.vn}"><span class="xg ${x.t}">${C.TYPER[x.t].g}</span><span><span class="t">${p.d}</span> <span class="vn" style="color:var(--muted)">${p.vn}</span><br><span class="s">${C.TYPER[x.t].navn} · ${x.uke?'uke '+x.uke:'hele delen'}</span></span><span class="s" style="color:var(--accent)">→</span></button>`;}).join('');
+$('#krit').addEventListener('click',e=>{const b=e.target.closest('.crow');if(!b)return;const row=document.getElementById('part-'+b.dataset.vn);const box=row.closest('.tbl');box.scrollTop=row.offsetTop-34;$('#s-tab').scrollIntoView({block:'start'});const first=row.nextElementSibling.querySelector('button');first&&first.focus({preventScroll:true});});
+
+// Full MRP-tabell: alle deler, alle seks rader. Eksepsjonen markeres i nettobehov-cellen.
+let h=`<thead><tr><th>Del / rad</th>${C.UKER.map(w=>`<th>Uke ${w}</th>`).join('')}</tr></thead><tbody>`;
+C.DELER.forEach(p=>{const xs=C.eksepsjoner(p.vn),lh=xs.find(x=>!x.uke),ind=p.niva==='0'?0:p.niva==='.1'?12:24;
+  h+=`<tr class="ph" id="part-${p.vn}"><th colspan="${C.H+1}"><div class="ph-in" style="padding-left:${10+ind}px"><span class="lvl">${p.niva}</span><span class="vn">${p.vn}</span><b>${p.d}</b><span class="meta">${C.kort(p.type)} · lager ${p.lager} · SS ${p.ss} · L ${p.L}${p.antall?` · ${p.antall} per stol`:''}</span>${xs.length?'<span class="crit">● Kritisk</span>':''}${lh?`<button type="button" class="btn" style="padding:1px 8px;font-size:12px" data-x="${p.vn}|0"><span class="xg LH" style="height:18px;min-width:18px">⧗</span> Ledetid overskrider horisont</button>`:''}</div></th></tr>`;
+  C.RADER.forEach(r=>{h+=`<tr class="${r.k==='POF'?'rel':''}"><th class="lab"><button type="button" data-r="${p.vn}|${r.k}">${r.navn}</button></th>`+C.UKER.map(w=>{const v=p[r.k][w-1],x=r.k==='NB'?xs.find(e=>e.uke===w):null;
+    return `<td class="${v===0?'z':''}${v<0?' neg':''}${w===1?' w1':''}${x?' x-'+x.t:''}"><button type="button" data-c="${p.vn}|${r.k}|${w}" aria-label="${p.d}, ${r.navn}, uke ${w}: ${v}${x?', '+C.TYPER[x.t].navn:''}">${x?`<span class="xg ${x.t} corner">${C.TYPER[x.t].g}</span>`:''}${fmt(v)}</button></td>`;}).join('')+'</tr>';});});
+$('#mrp').innerHTML=h+'</tbody>';
+
+let trig=null;
+function open(f,b){document.querySelectorAll('.mrp .sel').forEach(e=>e.classList.remove('sel'));b.closest('td,th').classList.add('sel');trig=b;
+  const px=$('#px');px.hidden=false;$('#work').classList.add('panel');
+  px.innerHTML=`<header><div><div class="ey">${f.under}</div><h3>${f.tittel}</h3></div><button type="button" class="btn" id="close">Lukk</button></header>${f.svar?`<div class="ans">${f.svar}</div>`:''}${f.linjer.length?`<div class="calc">${f.linjer.map(([a,v])=>`<div><span>${a}</span><span>${v}</span></div>`).join('')}</div>`:''}${f.merknad?`<p style="margin:0;font-size:13.5px">${f.merknad}</p>`:''}${f.eksepsjoner.map(x=>`<div class="xm ${x.t}"><b><span class="xg ${x.t}">${C.TYPER[x.t].g}</span>${C.TYPER[x.t].navn}</b><span>${x.melding}</span><span class="muted">Hvorfor: ${C.TYPER[x.t].hvorfor}</span></div>`).join('')}${f.regel?`<div class="rule">${f.regel}</div>`:''}`;
+  $('#close').addEventListener('click',close);}
+function close(){$('#px').hidden=true;$('#work').classList.remove('panel');document.querySelectorAll('.mrp .sel').forEach(e=>e.classList.remove('sel'));if(trig)trig.focus({preventScroll:true});}
+$('#mrp').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
+  if(b.dataset.c){const [vn,k,w]=b.dataset.c.split('|');open(C.forklarCelle(C.byVn[vn],k,+w),b);}
+  else if(b.dataset.r){const [vn,k]=b.dataset.r.split('|');open(C.forklarRad(C.byVn[vn],k),b);}
+  else if(b.dataset.x){const [vn,w]=b.dataset.x.split('|');open(C.forklarEksepsjon(vn,+w||null),b);}});
+C.escLukker(()=>{if(!$('#px').hidden)close();});
+// Vis FR-18-eksempelet (hjul, nettobehov, uke 1) åpent fra start på brede skjermer
+if(matchMedia('(min-width: 1100px)').matches){const b=document.querySelector('[data-c="300-003|NB|1"]');open(C.forklarCelle(C.byVn['300-003'],'NB',1),b);trig=null;}
+
+// Kapasitet: søyle per uke for begge radene, begrensende del under
+const R=C.KAPASITET.rader,max=Math.max(...R.flatMap(r=>r.verdier))||1;
+$('#capsrc').textContent=C.KAPASITET.kilde;
+$('#cap').innerHTML=`<thead><tr><th>Ferdige innen</th>${C.UKER.map(w=>`<th>Uke ${w}</th>`).join('')}</tr></thead><tbody>${R.map((r,ri)=>`<tr><td><b>${r.navn}</b><span class="why">${r.hjelp}</span></td>${r.verdier.map((v,i)=>`<td><span class="bar${ri?'':' l'}" style="height:${Math.round(v/max*34)}px"></span><span class="v">${v}</span><span class="why">${r.begrensende[i].map(b=>`<span class="vn">${b.vn}</span> ${b.arsak==='lager'?'▤ lager':'⧗ ledetid'}`).join(', ')}</span></td>`).join('')}</tr>`).join('')}</tbody>`;
+$('#capbase').innerHTML=`<thead><tr><th>Varenr.</th><th>Beskrivelse</th><th class="r">Lager</th><th class="r">SS</th><th class="r">Ledig</th><th class="r">L</th>${C.UKER.map(w=>`<th class="r">Mottak u${w}</th>`).join('')}</tr></thead><tbody>${C.DELER.map(p=>`<tr><td class="vn">${p.vn}</td><td>${p.d}</td><td class="r">${p.lager}</td><td class="r">${p.ss}</td><td class="r"><b>${C.ledig(p)}</b></td><td class="r">${p.L}</td>${C.UKER.map(w=>`<td class="r">${C.mottakFor(p.vn,w)||''}</td>`).join('')}</tr>`).join('')}</tbody>`;
+})();
+</script>
+</body>
+</html>

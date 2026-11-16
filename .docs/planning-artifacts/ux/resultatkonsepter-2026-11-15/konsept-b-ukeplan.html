@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Konsept B – Visuell ukeplan · COSI-MRP</title>
+<!-- KONSEPT B – Visuell ukeplan. Forslag – ikke godkjent av gruppen. 2026-11-15.
+     Struktur: en kalender med én kolonne per uke og tre spor (Produksjon, Innkjøp, Krever oppfølging).
+     Velg en uke for å se hva som skjer den uken. Data og detaljpanel: felles-resultat.js. Ingen beregning. -->
+<link rel="stylesheet" href="felles-resultat.css">
+<style>
+.b-intro{display:flex;justify-content:space-between;align-items:flex-end;gap:8px 16px;flex-wrap:wrap}
+.b-intro h2{font-size:22px}
+.b-legend{display:flex;gap:14px;font-size:13px;color:var(--ink2);flex-wrap:wrap}
+.b-legend span{display:inline-flex;gap:6px;align-items:center}
+.b-legend i{width:12px;height:12px;border-radius:3px}
+.b-planwrap{overflow-x:auto;background:var(--raised);border:1px solid var(--line);border-radius:14px;padding:12px}
+.b-plan{border-collapse:separate;border-spacing:6px;width:100%;min-width:760px;table-layout:fixed}
+.b-plan th[scope=row]{width:150px;text-align:left;font-size:14px;font-weight:600;padding-right:6px}
+.b-plan th[scope=row] span{display:flex;gap:8px;align-items:center}
+.b-plan th[scope=row] svg{width:18px;height:18px;flex:none}
+.b-plan tr.prod th[scope=row]{color:var(--prod)}.b-plan tr.inn th[scope=row]{color:var(--inn)}.b-plan tr.krit th[scope=row]{color:var(--bf)}
+.b-plan thead th{font-size:13px;font-weight:600;color:var(--ink2);padding:0}
+.b-plan thead th:first-child{width:160px}
+.b-wbtn{width:100%;border:1px solid transparent;background:none;border-radius:8px;padding:6px 0;font-weight:700;color:var(--ink)}
+.b-wbtn .now{display:block;font-size:11px;font-weight:600;color:var(--accent)}
+.b-wbtn[aria-pressed="true"]{background:var(--ink);color:#fff}
+.b-wbtn[aria-pressed="true"] .now{color:#BFE3EA}
+.b-cell{width:100%;height:64px;border:1px solid var(--line);border-radius:10px;background:var(--raised);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:4px}
+.b-cell b{font-size:20px;line-height:1;font-variant-numeric:tabular-nums}
+.b-cell small{font-size:11.5px;color:var(--ink2)}
+.b-cell.zero b{color:#B6C0C8;font-weight:500}
+tr.prod .b-cell:not(.zero){background:var(--prod-s);border-color:#B7D3DA}tr.prod .b-cell:not(.zero) b{color:var(--prod)}
+tr.inn .b-cell:not(.zero){background:var(--inn-s);border-color:#E3CFB6}tr.inn .b-cell:not(.zero) b{color:var(--inn)}
+tr.krit .b-cell:not(.zero){background:var(--bf-s);border-color:#F3C1BD}tr.krit .b-cell:not(.zero) b{color:var(--bf)}
+.b-cell:hover{border-color:var(--accent)}
+.b-col-on .b-cell{outline:2px solid var(--ink);outline-offset:1px}
+.b-week{background:var(--raised);border:1px solid var(--line);border-radius:14px;padding:20px 22px;display:flex;flex-direction:column;gap:14px}
+.b-week-h{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.b-week-h h2{font-size:20px}
+.b-nav{display:flex;gap:6px}
+.b-cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.b-grp h3{font-size:15px;display:flex;gap:8px;align-items:center;margin-bottom:6px}
+.b-grp h3 svg{width:18px;height:18px}
+.b-grp.prod h3{color:var(--prod)}.b-grp.inn h3{color:var(--inn)}
+.b-grp ul{list-style:none;margin:0;padding:0;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.b-grp li{border-top:1px solid var(--line)}.b-grp li:first-child{border-top:0}
+.b-row{width:100%;display:grid;grid-template-columns:minmax(0,1fr) 64px;gap:4px 10px;align-items:center;border:0;background:none;text-align:left;padding:9px 12px}
+.b-row:hover{background:var(--sunken)}
+.b-row .n{font-weight:600}
+.b-row b{text-align:right;font-size:16px;font-variant-numeric:tabular-nums}
+.b-row .t{grid-column:1/-1;display:flex;gap:6px;flex-wrap:wrap}
+.b-empty{padding:10px 12px;color:var(--ink2);font-size:14px}
+@media (max-width:900px){.b-cols{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<main class="rk-main" id="main">
+  <div class="b-intro">
+    <div><h2>Ukeplan</h2><p class="rk-muted">Hva planen foreslår hver uke. Velg en uke for å se detaljene.</p></div>
+    <div class="b-legend" aria-hidden="true"><span><i style="background:var(--prod-s);border:1px solid #B7D3DA"></i>Produksjon</span><span><i style="background:var(--inn-s);border:1px solid #E3CFB6"></i>Innkjøp</span><span><i style="background:var(--bf-s);border:1px solid #F3C1BD"></i>Krever oppfølging</span></div>
+  </div>
+  <div class="b-planwrap"><table class="b-plan" id="plan" aria-label="Ukeplan: antall forslag per uke"></table></div>
+  <section class="b-week" id="week" aria-labelledby="b-wh">
+    <div class="b-week-h"><h2 id="b-wh" tabindex="-1"></h2>
+      <div class="b-nav"><button type="button" class="rk-btn" id="prev">← Forrige uke</button><button type="button" class="rk-btn" id="next">Neste uke →</button></div></div>
+    <div id="b-krit"></div>
+    <div class="b-cols"><div class="b-grp prod" id="b-prod"></div><div class="b-grp inn" id="b-inn"></div></div>
+  </section>
+  <p><button type="button" class="rk-link" id="b-all">Vis hele beregningen for alle deler</button></p>
+</main>
+<script src="../konsepter-2026-11-12/felles.js"></script>
+<script src="../konsepter-2026-11-12/data-kontorstol-pro.js"></script>
+<script src="felles-resultat.js"></script>
+<script>
+(function(){
+'use strict';
+const {C,F,fmt,esc,xlabel,ICON}=RK;
+RK.frame('Konsept B · Visuell ukeplan');
+let sel=1;
+const $=s=>document.querySelector(s);
+const kritUke=w=>C.EKSEPSJONER.filter(x=>x.uke===w);
+const kritHele=C.EKSEPSJONER.filter(x=>!x.uke);
+function plan(){
+  const cell=(w,n,word)=>`<td class="${w===sel?'b-col-on':''}"><button type="button" class="b-cell${n?'':' zero'}" data-w="${w}" aria-label="Uke ${w}: ${n} ${word}"><b>${n||'–'}</b>${n?`<small>${word}</small>`:''}</button></td>`;
+  let h=`<thead><tr><th scope="col"><span class="rk-muted" style="font-weight:500">Uke</span></th>${C.UKER.map(w=>`<th scope="col"><button type="button" class="b-wbtn" data-w="${w}" aria-pressed="${w===sel}">${w}${w===1?'<span class="now">nå</span>':''}</button></th>`).join('')}</tr></thead><tbody>`;
+  h+=`<tr class="prod"><th scope="row"><span>${ICON.prod}Produksjon</span></th>${C.UKER.map(w=>cell(w,F.filter(f=>f.uke===w&&f.prod).length,'varer')).join('')}</tr>`;
+  h+=`<tr class="inn"><th scope="row"><span>${ICON.inn}Innkjøp</span></th>${C.UKER.map(w=>cell(w,F.filter(f=>f.uke===w&&!f.prod).length,'komponenter')).join('')}</tr>`;
+  h+=`<tr class="krit"><th scope="row"><span>Krever oppfølging</span></th>${C.UKER.map(w=>cell(w,kritUke(w).length,'forhold')).join('')}</tr></tbody>`;
+  $('#plan').innerHTML=h;
+}
+function week(focus){
+  const fs=F.filter(f=>f.uke===sel),pr=fs.filter(f=>f.prod),inn=fs.filter(f=>!f.prod),ks=kritUke(sel);
+  $('#b-wh').textContent=`Uke ${sel}${sel===1?' – denne uken':''}`;
+  const row=f=>`<li><button type="button" class="b-row" data-vn="${f.del.vn}"><span class="n">${esc(f.del.d)} <span class="rk-vn">${f.del.vn}</span></span><b>${fmt(f.mengde)}</b>${f.eks.length||f.forfalt?`<span class="t">${f.eks.map(x=>xlabel(x,{week:false})).join('')}${f.forfalt?`<span class="rk-due">${f.forfalt} skulle vært ${f.prod?'startet':'bestilt'} før uke 1</span>`:''}</span>`:''}</button></li>`;
+  $('#b-prod').innerHTML=`<h3>${ICON.prod}Start produksjon (${pr.length})</h3>`+(pr.length?`<ul>${pr.map(row).join('')}</ul>`:`<p class="b-empty">Ingen produksjon foreslått i uke ${sel}.</p>`);
+  $('#b-inn').innerHTML=`<h3>${ICON.inn}Bestill hos leverandør (${inn.length})</h3>`+(inn.length?`<ul>${inn.map(row).join('')}</ul>`:`<p class="b-empty">Ingen innkjøp foreslått i uke ${sel}.</p>`);
+  // Forhold i uken som ikke står ved et forslag, og forhold som gjelder hele planen (vises i uke 1)
+  const extra=ks.filter(x=>!fs.some(f=>f.del.vn===x.vn)).concat(sel===1?kritHele:[]);
+  $('#b-krit').innerHTML=extra.length?`<div style="display:flex;flex-direction:column;gap:6px">${extra.map(x=>`<button type="button" class="rk-link" data-vn="${x.vn}" style="text-decoration:none;display:flex;gap:8px;align-items:center;flex-wrap:wrap">${xlabel(x)}<span style="color:var(--ink)">${esc(C.byVn[x.vn].d)}: ${RK.ENKEL[x.t].tekst}</span></button>`).join('')}</div>`:'';
+  $('#prev').disabled=sel===1;$('#next').disabled=sel===C.H;
+  if(focus)$('#b-wh').focus();
+}
+function select(w,focus){sel=Math.max(1,Math.min(C.H,w));plan();week(focus);}
+$('#plan').addEventListener('click',e=>{const b=e.target.closest('[data-w]');if(b)select(+b.dataset.w,true);});
+$('#prev').addEventListener('click',()=>select(sel-1,false));
+$('#next').addEventListener('click',()=>select(sel+1,false));
+$('#week').addEventListener('click',e=>{const b=e.target.closest('[data-vn]');if(b)RK.openPart(b.dataset.vn);});
+$('#b-all').addEventListener('click',()=>RK.openAll());
+select(1,false);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+varenummer,uke,type,melding
+100-001,1,Bestilling forsinket,"Lager blir -10 i uke 1. Bestillingen på 15 måtte vært frigitt i uke 0, før horisonten. De 15 er forfalt og tatt med i frigivelsen på 45 i uke 1, men kommer tidligst i uke 2. Leveranse til kunde blir forsinket."
+200-001,1,Bestilling forsinket,"Lager blir -15 i uke 1. Bestillingen på 20 måtte vært frigitt i uke 0, før horisonten. De 20 er forfalt og tatt med i frigivelsen på 55 i uke 1, men kommer tidligst i uke 2. Leveransen til produksjonen av delen over blir forsinket."
+200-002,3,Mottak forsinket,"Nettobehov 25 i uke 3, mens planlagt mottak fra egen produksjon ligger i uke 4. Vurder å fremskynde mottaket."
+300-005,–,Ledetid overskrider horisont,Ledetid 12 uker ≥ horisont 10 uker. Ingen ny bestilling kan dekke behov innenfor horisonten.
+300-003,2,Bruk av sikkerhetslager,"Lager blir 15 i uke 2, under sikkerhetslager 30, før ny leveranse kan komme inn. Bestillingen på 15 måtte vært frigitt i uke 0. De 15 er forfalt og tatt med i frigivelsen på 15 i uke 1, men kommer tidligst i uke 3."

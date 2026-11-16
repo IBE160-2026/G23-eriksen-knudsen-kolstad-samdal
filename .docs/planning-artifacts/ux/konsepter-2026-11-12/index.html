@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>COSI-MRP konseptgalleri</title>
+<style>
+:root{--bg:#EEF1F3;--card:#FFFFFF;--ink:#15212B;--muted:#5A6772;--line:#D8DFE4;--accent:#0D5C6E;--warn:#FFF4D1;--warn-ink:#5B4A00}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font:15px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--bg);padding:28px max(16px,3vw) 60px}
+.wrap{max-width:1500px;margin:0 auto;display:flex;flex-direction:column;gap:28px}
+h1{margin:0;font-size:30px}
+h2{margin:0;font-size:21px}
+p{margin:0;max-width:78ch}
+.warn{background:var(--warn);color:var(--warn-ink);border:1px solid #E8D58A;border-radius:8px;padding:12px 16px;display:flex;flex-direction:column;gap:4px}
+.modes{display:flex;gap:6px;flex-wrap:wrap}
+.modes button{font:inherit;border:1px solid var(--line);background:var(--card);border-radius:8px;padding:7px 14px;cursor:pointer}
+.modes button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden;display:flex;flex-direction:column;min-width:0}
+.thumb{position:relative;height:520px;overflow:hidden;border-bottom:1px solid var(--line);background:#fff}
+.thumb iframe{position:absolute;top:0;left:0;width:1440px;height:2400px;border:0;transform-origin:0 0;pointer-events:none}
+.body{padding:16px;display:flex;flex-direction:column;gap:10px}
+.body h2 span{font-size:13px;font-weight:500;color:var(--muted);display:block}
+.body ul{margin:0;padding-left:18px;font-size:14px;display:flex;flex-direction:column;gap:3px}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+.actions a{text-decoration:none;font-size:14px;font-weight:600;padding:7px 14px;border-radius:8px;border:1px solid var(--line);color:var(--ink)}
+.actions a.pri{background:var(--accent);color:#fff;border-color:var(--accent)}
+.side{display:none;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.side iframe{width:100%;height:82vh;border:1px solid var(--line);border-radius:8px;background:#fff}
+.single{display:none}
+.single iframe{width:100%;height:85vh;border:1px solid var(--line);border-radius:8px;background:#fff}
+body.m-side .grid{display:none}body.m-side .side{display:grid}
+body.m-single .grid{display:none}body.m-single .single{display:block}
+table{border-collapse:collapse;width:100%;background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden;font-size:14px}
+th,td{text-align:left;vertical-align:top;padding:10px 12px;border-bottom:1px solid var(--line)}
+thead th{background:#F5F7F8;font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+td:first-child{font-weight:600;white-space:nowrap}
+.risk{color:#8A2A1E}
+.ok{color:#2C6E3F}
+.tbl{overflow-x:auto}
+code{font-size:.9em}
+@media (max-width:1100px){.grid,.side{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header style="display:flex;flex-direction:column;gap:10px">
+    <span style="font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600">G23 · UX-steget · konseptfase · 2026-11-12</span>
+    <h1>Tre designkonsepter for COSI-MRP</h1>
+    <p>Samme resultatside i tre visuelle retninger: kjøringslinje, bestillingsforslag, endringer, kritiske deler, resultattabell med forklaring og produksjonskapasitet, i rekkefølgen fra PRD §4.4. Klikk på tall i tabellene for å se forklaringen. Esc lukker den.</p>
+    <div class="warn">
+      <b>Forslag, ikke godkjent design.</b>
+      <span>Konseptene er Carmens forslag til diskusjon i gruppen. Utkastene til DESIGN.md og EXPERIENCE.md og det opprinnelige designforslaget er ikke endret.</span>
+      <span>MRP-tallene, eksepsjonene og bestillingsforslagene er fra fasiten til testeksempel 01. <b>Kapasitetstallene for testeksempel 01 er beregnet med referanseberegningen <code>kapasitet()</code> i <code>testdata/lag_testdata.py</code> og er ikke manuelt kontrollert.</b></span>
+    </div>
+    <div class="modes" role="group" aria-label="Visning">
+      <button type="button" class="on" data-m="grid">Oversikt</button>
+      <button type="button" data-m="side">Side om side</button>
+      <button type="button" data-m="single" data-f="konsept-1-erp.html">1 · ERP</button>
+      <button type="button" data-m="single" data-f="konsept-2-saas.html">2 · SaaS</button>
+      <button type="button" data-m="single" data-f="konsept-3-hybrid.html">3 · Hybrid</button>
+    </div>
+  </header>
+
+  <section class="grid">
+    <article class="card">
+      <div class="thumb"><iframe src="konsept-1-erp.html" title="Forhåndsvisning konsept 1" loading="lazy" tabindex="-1"></iframe></div>
+      <div class="body"><h2>1 · Profesjonelt ERP<span>Kompakt, strukturert, datadrevet</span></h2>
+        <ul><li>Tittellinje, verktøylinje og statuslinje som et ERP-vindu</li><li>Regnearkrutenett med 22 px rader, alle seks rader for alle deler</li><li>Bestillingsforslag og kritiske deler side om side over tabellen</li><li>Detaljrute nederst i tre kolonner i stedet for sidepanel</li></ul>
+        <div class="actions"><a class="pri" href="konsept-1-erp.html" target="_blank" rel="noopener">Åpne i ny fane</a></div></div>
+    </article>
+    <article class="card">
+      <div class="thumb"><iframe src="konsept-2-saas.html" title="Forhåndsvisning konsept 2" loading="lazy" tabindex="-1"></iframe></div>
+      <div class="body"><h2>2 · Moderne SaaS<span>Minimalistisk, luftig, veiledende</span></h2>
+        <ul><li>Store kort, mye luft, nøkkeltall som piller</li><li>Bestillingsforslag gruppert per uke, kritiske deler som kort</li><li>Én åpnebar blokk per del; kritiske deler er åpne</li><li>Forklaring i en skuff fra høyre, svaret i én setning først</li><li>Kapasitet med stort tall og trappediagram</li></ul>
+        <div class="actions"><a class="pri" href="konsept-2-saas.html" target="_blank" rel="noopener">Åpne i ny fane</a></div></div>
+    </article>
+    <article class="card">
+      <div class="thumb"><iframe src="konsept-3-hybrid.html" title="Forhåndsvisning konsept 3" loading="lazy" tabindex="-1"></iframe></div>
+      <div class="body"><h2>3 · Hybrid<span>Moderne ramme, full MRP-tabell</span></h2>
+        <ul><li>Mørk sidelist med seksjoner og antall</li><li>Bestillingsforslag og kritiske deler side om side</li><li>Hele tabellen med delens hode, nivå og innrykk</li><li>Forklaringspanel som skyver tabellen til side</li><li>Kapasitet med søyler per uke og begrensende del</li></ul>
+        <div class="actions"><a class="pri" href="konsept-3-hybrid.html" target="_blank" rel="noopener">Åpne i ny fane</a></div></div>
+    </article>
+  </section>
+
+  <section class="side" aria-label="Side om side">
+    <iframe src="konsept-1-erp.html" title="Konsept 1 – ERP"></iframe>
+    <iframe src="konsept-2-saas.html" title="Konsept 2 – SaaS"></iframe>
+    <iframe src="konsept-3-hybrid.html" title="Konsept 3 – Hybrid"></iframe>
+  </section>
+  <section class="single" aria-label="Ett konsept"><iframe id="one" title="Valgt konsept"></iframe></section>
+
+  <section style="display:flex;flex-direction:column;gap:12px">
+    <h2>Sammenligning</h2>
+    <div class="tbl"><table>
+      <thead><tr><th></th><th>1 · Profesjonelt ERP</th><th>2 · Moderne SaaS</th><th>3 · Hybrid</th></tr></thead>
+      <tbody>
+        <tr><td>Tetthet</td><td>Høy. 22 px rader, systemskrift 12 px</td><td>Lav. 40+ px rader, 15 px tekst</td><td>Middels. 28–30 px rader, 13–14 px</td></tr>
+        <tr><td>Resultattabell (FR-14)</td><td>Alle deler og rader i ett rutenett. Del gjentas i faste kolonner</td><td>Én blokk per del. Bare kritiske deler er åpne fra start</td><td>Alle deler og rader, delens hode som radgruppe</td></tr>
+        <tr><td>Eksepsjoner (FR-15)</td><td>Farget nettobehov-celle med symbol</td><td>Symbol i nettobehov-cellen, merkelapp i delens hode</td><td>Symbol i hjørnet av nettobehov-cellen, svak farge</td></tr>
+        <tr><td>Forklaring (FR-18)</td><td>Detaljrute nederst, tre kolonner</td><td>Skuff fra høyre over innholdet</td><td>Panel til høyre som skyver tabellen</td></tr>
+        <tr><td>Kritiske deler (FR-16)</td><td>Tabell, lenke ruller til delen</td><td>Kort med meldingen, åpner delen</td><td>Liste med symbol, ruller til delen</td></tr>
+        <tr><td>Kapasitet (FR-32–FR-34)</td><td>Tabell, tynn stolpe, grunnlag med mottak per uke</td><td>Stort tall, trappediagram, tabell, grunnlag skjult</td><td>Søyler i tabellen, grunnlag med mottak per uke</td></tr>
+        <tr><td>Passer for</td><td>Erfarne planleggere som vil se alt</td><td>Nye brukere og brukertesten (SM-3)</td><td>Begge, nærmest UX-utkastene</td></tr>
+        <tr><td>Risiko mot PRD</td><td class="risk">FR-18 sier panel «ved siden av tabellen»; detaljruten står under. Tett tekst kan svekke SM-3</td><td class="risk">Lukkede deler kan bryte FR-14 (rader for hvert varenummer). Skuffen dekker tabellen. Grunnlaget i kapasiteten viser ikke mottak per uke (FR-34)</td><td class="ok">Ingen kjente brudd. Eksepsjonen står i cellen, ikke i egen rad (åpen beslutning 1 i EXPERIENCE.md)</td></tr>
+        <tr><td>Avvik fra UX-utkastene</td><td>Radhøyde, panelplassering, sterkere farger</td><td>Indigo i stedet for petrol, sammenslåtte deler, diagram</td><td>Sidelist i stedet for seksjonsmeny, markør i celle</td></tr>
+      </tbody>
+    </table></div>
+    <p style="font-size:14px;color:var(--muted)">Alle tre bruker samme data (<code>felles.js</code>) og har ikke-modal forklaring som åpnes ved klikk eller Enter og lukkes med Esc. Ingen av dem viser forklaring ved peking. Tastaturmodellen med én tabulatorstopp (EXPERIENCE.md) er ikke bygget i noen av konseptene.</p>
+  </section>
+</div>
+<script>
+// Skaler forhåndsvisningene til kortbredden
+function scale(){document.querySelectorAll('.thumb').forEach(t=>{const f=t.querySelector('iframe');f.style.transform=`scale(${t.clientWidth/1440})`;});}
+addEventListener('resize',scale);scale();
+document.querySelector('.modes').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
+  document.querySelectorAll('.modes button').forEach(x=>x.classList.toggle('on',x===b));
+  document.body.className=b.dataset.m==='grid'?'':'m-'+b.dataset.m;
+  if(b.dataset.f)document.getElementById('one').src=b.dataset.f;
+  if(b.dataset.m==='grid')requestAnimationFrame(scale);});
+</script>
+</body>
+</html>
