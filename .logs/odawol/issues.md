@@ -35,3 +35,4 @@
 - [x] 2026-11-16 [ux-utkast-experience](987-2026-11-15-21-59-04-ux-utkast-experience.md) — avgjør om de fem UX-ordene i ordbanken (commit `e111219`) skal beholdes nå som utkastet er slettet (løst 2026-11-16: ordene er fjernet med revert 48c1350)
 - [ ] 2026-11-16 [gjennomgang-ux-forslag](988-2026-11-15-16-14-47-gjennomgang-ux-forslag.md) — standardvalget for ukefilteret (Sebastian: Uke 1) skjuler svaret på oppgave 3 i brukertesten (Rygg, uke 2). Avgjøres før prøvetesten rundt 27.11
 - [ ] 2026-11-16 [gjennomgang-ux-forslag](988-2026-11-15-16-14-47-gjennomgang-ux-forslag.md) — Carmens EXPERIENCE.md (12.11) er eldre enn den endelige PRD-en (UJ-5 og oppgavene i brukertesten står som antagelser) og må oppdateres hvis den skal brukes
+- [ ] 2026-11-16 [speil-main-til-skrivebord](986-2026-11-16-19-20-16-speil-main-til-skrivebord.md) — `.claude/` og `_bmad/` er med i skrivebordskopien av main og kan være støy for ChatGPT. Vurder å filtrere dem bort
