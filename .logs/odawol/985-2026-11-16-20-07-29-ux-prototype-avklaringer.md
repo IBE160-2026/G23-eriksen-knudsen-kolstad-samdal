@@ -21,3 +21,23 @@ Oda ville ha en ny klikkbar UX-prototype bygd på gruppens avklaringer fra møte
 ### Åpne punkter
 - Gruppen må gå gjennom de 13 uavklarte spørsmålene (U1–U13) i prototypen og i `README.md`, særlig U1 (hva «én resultatside» betyr), U2 (eksepsjonstekst A eller B) og U5 (ukeplanen mot FR-17).
 - Velger gruppen ukeplanen, introduksjonssiden eller nye ord i grensesnittet, må PRD-en og ordbanken oppdateres (U5, U6, U8).
+
+## 2026-11-16 kl. 20:43 — Odawol
+
+### Oppgave
+Oda kom med presiseringer til prototypen og ville ha et nytt forslag: «filen» i stedet for «fila», ikke noe utklipp og ingen «Les veiledningen» på introduksjonssiden, en veiledning om nettsiden og ikke om Excel-malen, ukeplan uten «valgfri», kritiske deler før bestillingsforslag, tydeligere symboler og forklaring i produksjonskapasiteten, eksepsjonssymboler som hos Carmen, og at prototypevalgene beholdes.
+
+### Plan
+- Kopierte versjon 1 til en ny mappe, så versjon 1 står urørt til sammenligning, og gjorde endringene med et skript som stopper hvis en tekst ikke finnes nøyaktig én gang.
+- Hentet symbolstilen fra Carmens prototype (`origin/Carmen/Branch`): fylte fargede firkanter med symbolet og typenavnet i en myk merkelapp.
+- Testet i Edge uten vindu med Playwright, i lys og mørk, med testeksempel 01, 02 → 03 og 05. Ingen feil i konsollen.
+
+### Resultat
+- Ny mappe: `.docs/planning-artifacts/ux-designs/ux-prototype-2026-11-16-v2/` med `index.html`, `data.js`, `lag_data.py` og `README.md` (endringslisten står der). Den er ikke committet. Versjon 1 er ikke endret.
+- Kritiske deler står først i resultatet. Hver kritisk del viser sitt første bestillingsforslag, og forslagene for kritiske deler har samme symbol som eksepsjonen. Dette går mot PRD §4.4 og er merket U14. Rekkefølgen fra PRD-en er et nytt valg under Prototypevalg.
+- Veiledningssiden forklarer nå hvordan nettsiden brukes. Den korte veiledningen på Ny kjøring, som FR-27 krever, står fortsatt.
+- Produksjonskapasiteten har en egen forklaringsboks for symbolene Lager og Ledetid, og innledningen er delt i fire punkter.
+- Prototypen er åpnet i nettleseren og mappen i Utforsker.
+
+### Åpne punkter
+- Rekkefølgen med kritiske deler først krever en endring i PRD §4.4 hvis gruppen velger den (U14).
