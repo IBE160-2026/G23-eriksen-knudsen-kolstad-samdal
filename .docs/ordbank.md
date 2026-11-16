@@ -2,7 +2,7 @@
 title: COSI - MRP Ordbank
 status: forslag
 created: 2026-10-21
-updated: 2026-11-15
+updated: 2026-11-13
 ---
 
 # Ordbank: COSI - MRP
@@ -127,11 +127,6 @@ Forslaget bygger på Excel-malen for flernivå stykkliste (Sebastian, 2026-10-23
 | Kjøring | Én beregning fra én opplastet Excel-mal. | beregning (om hele kjøringen) |
 | Valideringsfeil | En feil i filen som appen finner, og som stopper beregningen. Oppgir ark, rad og årsak. | feilmelding |
 | Resultattabell | MRP-tabellen per del og uke, med eksepsjonene markert. | MRP-tabell, resultatside, oversikt |
-| Startside | Siden appen åpner med: veiledningen, nedlasting av malen og testeksempel 01, opplasting og Beregn. Viser også valideringsfeil. Forslag fra UX-utkastet 2026-11-15, ikke bekreftet av gruppen. | forside, landingsside |
-| Resultatside | Siden som vises etter en vellykket kjøring, med bestillingsforslag, endringer, kritiske deler, resultattabell og eventuelt produksjonskapasitet. Ikke det samme som resultattabellen. Forslag fra UX-utkastet 2026-11-15, ikke bekreftet av gruppen. | dashbord, oversikt |
-| Kjøringslinje | Linja øverst på resultatsiden med ferdigprodukt, horisont, tidspunkt for kjøringen og knappene «Last opp ny fil» og «Eksporter til Excel». Forslag fra UX-utkastet 2026-11-15, ikke bekreftet av gruppen. | toppfelt, header |
-| Forklaringspanel | Panelet ved siden av resultattabellen som forklarer et tall eller en eksepsjon når brukeren klikker på det (PRD FR-18). Forslag fra UX-utkastet 2026-11-15, ikke bekreftet av gruppen. | popup, tooltip, detaljpanel |
-| Ukefilter | Valget over bestillingsforslagene som viser bare forslagene for én frigivelsesuke (PRD FR-17). Forslag fra UX-utkastet 2026-11-15, ikke bekreftet av gruppen. | ukevisning, ukeplan (om filteret) |
 | Før/etter-sammenligning | Forskjellen i bestillingsforslag og eksepsjoner mellom forrige og ny kjøring for samme ferdigprodukt. Appen husker siste kjøring per ferdigprodukt (PRD FR-19, besluttet 2026-11-05). | – |
 | Testeksempel | Et utfylt datasett med fasit, i `testdata/` (01–05). | øvingseksempel (slettet, se merknad 4) |
 | Fasit | Manuelt kontrollert forventet resultattabell og eksepsjonsliste for et testeksempel. | – |
