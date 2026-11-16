@@ -26,3 +26,19 @@ Oda ville sette Carmens og Sebastians UX-forslag opp mot hverandre og få notate
 - Fasit-CSV-en for testeksempel 01 bruker 100-001 for ferdigproduktet, mens PRD-en bruker 100-002. Utkastet følger PRD-en.
 - Oda skal vurdere alternativ A for plasseringen av Endringer i skissen og avgjøre §10 nr. 3.
 - DESIGN.md (visuell retning) gjenstår til gruppen har valgt uttrykk.
+
+## 2026-11-16 kl. 18:43 — Odawol
+
+### Oppgave
+Oda ville slette UX-utkastet hun og Claude laget (EXPERIENCE.md og den klikkbare skissen).
+
+### Plan
+- Kontrollerte at mappen bare inneholdt de to filene, og at ingen av dem var committet.
+- Slettet mappen `.docs/planning-artifacts/ux-designs/ux-COSI - MRP-2026-11-15/` og den tomme mappen `ux-designs/`.
+
+### Resultat
+- Utkastet og skissen er slettet. De var ikke committet og kan ikke hentes fra git.
+- Ordbanken er ikke endret. De fem UX-ordene fra utkastet står fortsatt i commit `e111219` i `Oda/Branch`, som ikke er pushet.
+
+### Åpne punkter
+- Oda må avgjøre om de fem UX-ordene i ordbanken (`e111219`) skal beholdes nå som utkastet er slettet.
