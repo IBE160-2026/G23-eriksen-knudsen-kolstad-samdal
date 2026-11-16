@@ -40,10 +40,30 @@ Lese faglærers tilbakemelding på PRD-en (`tilbakemelding-prd.md`) og finne ut 
 - **Memlog:** seks nye linjer.
 - **Reviewer-pass i Finalize** (rubrikk og polering med subagenter) er ikke kjørt, fordi endringene er små og avgrenset. Konsistensen er sjekket med grep: ingen gjenværende Vercel- eller localStorage-henvisninger i PRD-en.
 - **`issues.md`:** Mac-testen og kapasitetens brukerreise er lukket, og brukertest-punktet er delvis løst.
-- PRD-endringene er ikke committet.
+- PRD-endringene er committet (`68c4339`) og pushet til `Sebastian/Branch`. De er merget til `main` via PR #13 (merge-commit `8be2e5e`), sammen med UI-researchen fra 2026-11-09 og sesjonsloggene.
 
 ### Åpne punkter
 - Få gruppas bekreftelse på beslutningene. Gruppemeldingen er skrevet, men ikke sendt.
 - Lag introduksjonen til brukertesten i UX-steget før prøvetesten rundt 27.11.
 - Prøvetest rundt 27.11, og opprett `.docs/brukertest/brukertest-resultat.md`.
 - Rett UJ-5 hvis håndkontrollen av fasit 05 endrer tallene.
+
+## 2026-11-13 kl. 15:33 — Sebastian
+
+### Oppgave
+Sebastian meldte at gruppa har godkjent gruppemeldingen om beslutningene 2026-11-13. Punktet skal lukkes, og neste steg i BMad skal avklares.
+
+### Plan
+- Kjøre `bmad-help` for å finne ut hvor prosjektet står.
+- Lukke punktet om gruppas bekreftelse i `issues.md`.
+
+### Resultat
+- Gruppa har bekreftet beslutningene 2026-11-13: minstekrav trinn 1–3, kuttmøte 30.11, UJ-5, brukertest 2.–7.12 og at Carmen tester Mac. Punktet er lukket i `issues.md`.
+- Ifølge `bmad-help` er status:
+  - PRD-en er `final` og merget til `main`.
+  - UX (DESIGN.md og EXPERIENCE.md), arkitektur, epics og sprintplan er ikke startet.
+  - `architecture/technology.md` er et referanseoppsett fra et annet prosjekt (Pytagoras), ikke arkitekturen for COSI - MRP.
+- Neste steg er `bmad-ux` i et nytt kontekstvindu, deretter `bmad-architecture`.
+
+### Åpne punkter
+- Kjør `bmad-ux`. Ta med introduksjonen til brukertesten, de valgfrie innspillene fra UI-rapporten, og merk tallene i UJ-5 som foreløpige til fasit 05 er kontrollert for hånd (punktene står allerede i `issues.md`).

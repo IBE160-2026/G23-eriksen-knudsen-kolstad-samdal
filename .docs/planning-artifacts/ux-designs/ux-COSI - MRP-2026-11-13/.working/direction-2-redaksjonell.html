@@ -1,0 +1,571 @@
+<!doctype html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Retning 2 Redaksjonell</title>
+<style>
+/* =====================================================================
+   DESIGNRETNING 2 — «REDAKSJONELL»
+   Personlighet: eksklusivt magasin / årsrapport. Elegant serif i side-
+   overskrift, kortoverskrifter og forklaringssvaret; ren sans for alt
+   annet. Tall og tabeller er ALLTID sans med tabular-nums. Generøs luft,
+   tynne messingstreker (#8A6726) under seksjonsoverskriftene.
+
+   LÅST FARGETEMA A «Salvie i to lag» (ingen nye tekstnyanser er laget):
+     --bg #EFEDE4  --surface #FBFAF5  --band #E4E2D6
+     --topbar #2C3A31 --topbar-fg #EEF0E8 --topbar-muted #B4C0B5
+     --tb-btn #C9A862 --tb-btn-fg #1F2620
+     --nav-bg #3A4A3F --nav-fg #D2DBD1 --nav-active #FFFFFF --nav-ind #C9A862
+     --text #1D2420 --muted #535E57 --divider #DAD8CC --border #86887C
+     --primary #2F5A43 --on-primary #FFFFFF --focus #7D5B1E
+     --sel-bg #E3ECE0 --sel-ring #2F5A43
+     --crit #A0302A --crit-soft #F6E2DE --warn #8A4F0B --warn-soft #F7E8D6
+     --info #45586A --info-soft #E3EAEE --over #7E2F55 --over-soft #F2E2EA
+     --brass-line #8A6726 (mørk messing som strek på lyst)
+   Fordeling i denne retningen: lite tonet flate, mye surface + hårstreker.
+   Messing brukes som 1 px strek under seksjonsoverskrifter og som tekst
+   KUN på --surface (4,96:1). På --bg er den bare strek (4,42:1 > 3:1).
+   Kontrast sjekket med skript (node): muted/surface 6,47 · muted/band 5,20
+   · topbar-muted/topbar 6,35 · nav-fg/nav-bg 6,63 · crit/crit-soft 5,71
+   · primary/sel-bg 6,51 · tb-btn-fg/tb-btn 6,83 · border/surface 3,45.
+   Presentasjonslerretet rundt nettleserrammene (#D5D3C7) er ikke en del
+   av appen og bærer ingen tekst under 4,5:1.
+
+   SKRIFT
+     Serif (display): "Sitka Heading", "Sitka Display", Georgia, Constantia, serif
+     Sans (UI/tall):  "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif
+     Selvhostet anbefaling (NFR-4, ingen Google Fonts): Source Serif 4
+     (optisk størrelse «Display/Subhead» til overskrifter) + Source Sans 3
+     (tekst, tabeller, tnum). Begge SIL OFL 1.1, fra samme Adobe-familie, med
+     avstemte x-høyder, så serifen og sansen står roligere sammen enn
+     Fraunces + Inter. Fraunces er mykere og mer leken («wonk»), og det
+     trekker bort fra «rolig og eksklusivt». Source Sans 3 har ekte
+     tabulartall og smal nok bredde til 8-ukerstabellen.
+
+   STØRRELSER (px / linjehøyde)
+     Sideoverskrift h1 ........ 40 / 1.15 serif 600   (startside 48 / 1.1)
+     Kortoverskrift h2 ........ 26 / 1.25 serif 600
+     Forklaringssvar .......... 21 / 1.45 serif 400
+     Panel-overskrift ......... 20 / 1.3  serif 600
+     Brødtekst ................ 15 / 1.55 sans 400
+     Tabell ................... 14 / 20   sans 400, tabular-nums
+     Etikett/overlinje ........ 12 / 16   sans 600, versaler, sporing .08em
+     Toppfelt ................. 14 / 20   sans; ordmerke 18 serif
+   RADHØYDE tabell: 36 px (resultattabell og bestillingsforslag)
+   AVSTANDER: 4 · 8 · 12 · 16 · 24 · 32 · 48 · 64 (kortpolstring 32,
+     mellomrom mellom kort 32, sidemarg 48)
+   HJØRNERADIUS: kort 2 · knapper/felter 4 · slippsone 6 · tabellceller 0
+   STREKER: messing 1 px under h2 · kortkant 1 px --divider · delskille
+     i resultattabellen 1 px --border · ingen streker inne i delblokken
+   FOKUS: 2 px --focus (#7D5B1E) + 2 px forskyvning
+   BEVEGELSE (ikke implementert, ingen JS): rolig inntoning — kort toner
+     inn 240 ms ease-out med 4 px løft, forklaringspanelet glir/toner inn
+     200 ms mens innholdet skyves; respekter prefers-reduced-motion.
+   ===================================================================== */
+
+:root{
+  --bg:#EFEDE4; --surface:#FBFAF5; --band:#E4E2D6;
+  --topbar:#2C3A31; --topbar-fg:#EEF0E8; --topbar-muted:#B4C0B5;
+  --tb-btn:#C9A862; --tb-btn-fg:#1F2620;
+  --nav-bg:#3A4A3F; --nav-fg:#D2DBD1; --nav-active:#FFFFFF; --nav-ind:#C9A862;
+  --text:#1D2420; --muted:#535E57; --divider:#DAD8CC; --border:#86887C;
+  --primary:#2F5A43; --on-primary:#FFFFFF; --focus:#7D5B1E;
+  --sel-bg:#E3ECE0; --sel-ring:#2F5A43;
+  --crit:#A0302A; --crit-soft:#F6E2DE; --warn:#8A4F0B; --warn-soft:#F7E8D6;
+  --info:#45586A; --info-soft:#E3EAEE; --over:#7E2F55; --over-soft:#F2E2EA;
+  --brass:#8A6726;
+  --serif:"Sitka Heading","Sitka Display",Georgia,Constantia,serif;
+  --sans:"Segoe UI Variable Text","Segoe UI",system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:#D5D3C7;color:var(--text);font:400 15px/1.55 var(--sans);padding:48px 0 80px}
+a{color:var(--primary);text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.num{font-family:var(--sans);font-variant-numeric:tabular-nums lining-nums}
+
+/* ---------- presentasjon (ikke appen) ---------- */
+.screen-label{width:1440px;margin:0 auto 14px;display:flex;align-items:baseline;gap:16px;color:#1D2420}
+.screen-label b{font:600 22px/1.2 var(--serif)}
+.screen-label span{font-size:14px;color:#3E4740}
+.frame{width:1440px;margin:0 auto 72px;background:var(--bg);border-radius:10px;overflow:hidden;box-shadow:0 1px 0 rgba(0,0,0,.08),0 18px 48px -20px rgba(29,36,32,.35)}
+.chrome{height:40px;background:#E9E7DE;display:flex;align-items:center;gap:8px;padding:0 16px;border-bottom:1px solid #D5D3C7}
+.chrome i{width:12px;height:12px;border-radius:50%;background:#C9C6B8;display:block}
+.chrome .url{margin-left:24px;flex:0 0 520px;height:24px;border-radius:12px;background:#FBFAF5;font-size:12px;line-height:24px;padding:0 14px;color:#535E57}
+
+/* ---------- toppfelt (lag 1) ---------- */
+.topbar{background:var(--topbar);color:var(--topbar-fg);height:64px;display:flex;align-items:center;padding:0 48px;gap:32px}
+.wordmark{font:600 18px/1 var(--serif);letter-spacing:.06em;color:var(--topbar-fg);white-space:nowrap}
+.wordmark small{font:400 11px/1 var(--sans);letter-spacing:.12em;color:var(--topbar-muted);margin-left:8px;text-transform:uppercase}
+.context{display:flex;align-items:baseline;gap:20px;font-size:14px;color:var(--topbar-muted);border-left:1px solid #4A5B50;padding-left:32px}
+.context strong{color:var(--topbar-fg);font-weight:600}
+.tb-actions{margin-left:auto;display:flex;align-items:center;gap:16px}
+.tb-link{color:var(--topbar-muted);font-size:13px;text-decoration:underline;text-underline-offset:3px;background:none;border:0;padding:0;font-family:var(--sans);cursor:pointer}
+.btn{font:600 14px/1 var(--sans);height:36px;padding:0 18px;border-radius:4px;display:inline-flex;align-items:center;gap:8px;cursor:pointer;white-space:nowrap}
+.btn-ghost-dark{background:transparent;color:var(--topbar-fg);border:1px solid #8A988D}
+.btn-brass{background:var(--tb-btn);color:var(--tb-btn-fg);border:1px solid var(--tb-btn)}
+.btn-primary{background:var(--primary);color:var(--on-primary);border:1px solid var(--primary)}
+.btn-secondary{background:var(--surface);color:var(--primary);border:1px solid var(--border)}
+
+/* ---------- navigasjonsrad (lag 2) ---------- */
+.navrow{background:var(--nav-bg);height:48px;padding:0 48px;display:flex;align-items:stretch;gap:36px}
+.navrow a{color:var(--nav-fg);text-decoration:none;font-size:14px;letter-spacing:.02em;display:flex;align-items:center;position:relative}
+.navrow a[aria-current]{color:var(--nav-active);font-weight:600}
+.navrow a[aria-current]::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;background:var(--nav-ind)}
+.navrow .quiet{color:var(--nav-fg);font-size:14px;display:flex;align-items:center}
+
+/* ---------- arbeidsflate med skyvepanel ---------- */
+.workspace{display:grid;grid-template-columns:minmax(0,1fr) 404px;align-items:start}
+.main{padding:48px 40px 64px 48px;min-width:0}
+
+/* sideoverskrift + statuslinje */
+.overline{font:600 12px/16px var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.page-head{margin-bottom:40px}
+.page-head h1{font:600 40px/1.15 var(--serif);margin:8px 0 16px;letter-spacing:-.005em}
+.statusline{font-size:16px;color:var(--text);padding-top:16px;border-top:1px solid var(--brass)}
+.statusline .sep{color:var(--muted);margin:0 10px}
+
+/* kort */
+.card{background:var(--surface);border:1px solid var(--divider);border-radius:2px;padding:32px;margin-bottom:32px}
+.card-head{display:flex;align-items:flex-end;gap:16px;padding-bottom:14px;border-bottom:1px solid var(--brass);margin-bottom:20px}
+.card-head h2{font:600 26px/1.25 var(--serif);margin:0;letter-spacing:-.005em}
+.card-head h2 .count{font-family:var(--sans);font-weight:400;font-size:20px;color:var(--muted);font-variant-numeric:tabular-nums}
+.card-head .aside-meta{margin-left:auto;font-size:13px;color:var(--muted)}
+.card-sub{font-size:14px;color:var(--muted);margin:-8px 0 16px}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:32px}
+.pair .card{margin-bottom:32px}
+
+/* nedtrekksfilter */
+.select{margin-left:auto;display:inline-flex;align-items:center;gap:10px;height:34px;padding:0 12px;border:1px solid var(--border);border-radius:4px;background:var(--surface);font:400 14px var(--sans);color:var(--text)}
+.select label{color:var(--muted);font-size:13px}
+
+/* enkel tabell (bestillingsforslag) */
+table{border-collapse:separate;border-spacing:0}
+.simple{width:100%;font-size:14px}
+.simple th{font:600 12px/16px var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);text-align:left;padding:0 16px 10px 0;border-bottom:1px solid var(--divider)}
+.simple td{height:36px;padding:0 16px 0 0;border-bottom:1px solid var(--divider);white-space:nowrap}
+.simple tr:last-child td{border-bottom:0}
+.simple .r{text-align:right;font-variant-numeric:tabular-nums}
+.simple td.vnr{font-variant-numeric:tabular-nums;color:var(--muted)}
+.overdue{display:inline-flex;align-items:center;gap:4px;color:var(--crit);font-size:13px;margin-left:8px}
+.more{margin-top:14px;font-size:14px}
+
+/* endringer */
+.chg-group+.chg-group{margin-top:20px}
+.chg-group h3{font:600 15px/1.4 var(--sans);margin:0 0 8px}
+.chg-group h3 .num{font-weight:400;color:var(--muted)}
+.chg{list-style:none;margin:0;padding:0}
+.chg li{display:grid;grid-template-columns:64px 1fr;padding:6px 0;font-size:14px;border-top:1px solid var(--divider)}
+.chg li:first-child{border-top:0}
+.tag{font:600 11px/20px var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+
+/* kritiske deler */
+.crit-list{list-style:none;margin:0;padding:0}
+.crit-list li{display:grid;grid-template-columns:20px 1fr auto;gap:10px;align-items:start;padding:10px 0;border-top:1px solid var(--divider);font-size:14px}
+.crit-list li:first-child{border-top:0;padding-top:2px}
+.crit-list .t{color:var(--crit);font-weight:600}
+.crit-list .vn{color:var(--muted);font-variant-numeric:tabular-nums;margin-right:6px}
+.crit-list a{font-size:13px;white-space:nowrap}
+
+/* resultattabell */
+.rt-context{font-size:14px;color:var(--muted);margin:-6px 0 16px}
+.rt-context strong{color:var(--text);font-weight:600}
+.rt-wrap{overflow-x:auto;border:1px solid var(--divider);border-radius:2px;background:var(--surface)}
+.rt{font-size:14px;font-variant-numeric:tabular-nums;width:max-content;min-width:100%}
+.rt th,.rt td{height:36px;padding:0 12px;white-space:nowrap}
+.rt thead th{position:sticky;top:0;z-index:3;background:var(--band);font:600 12px/16px var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);text-align:right;border-bottom:1px solid var(--border)}
+.rt thead th.l{text-align:left}
+.rt thead th.on{color:var(--text);font-weight:800}
+.rt thead th.on span{border-bottom:2px solid var(--primary);padding-bottom:2px}
+.rt .c1,.rt .c2,.rt .c3{position:sticky;background:var(--surface);z-index:2;text-align:left}
+.rt thead .c1,.rt thead .c2,.rt thead .c3{background:var(--band);z-index:4}
+.rt .c1{left:0;width:84px;min-width:84px}
+.rt .c2{left:84px;width:154px;min-width:154px}
+.rt .c3{left:238px;width:200px;min-width:200px;border-right:1px solid var(--divider)}
+.rt td.c1,.rt td.c2{vertical-align:top;padding-top:9px;white-space:normal}
+.rt td.c1{color:var(--text);font-weight:600}
+.rt td.c2 .d{font-weight:600}
+.rt td.c2 .m{display:block;font-size:12px;line-height:17px;color:var(--muted);margin-top:4px;font-weight:400}
+.rt td.c3{color:var(--muted)}
+.rt td.c3.on{color:var(--text);font-weight:700}
+.rt td.n{text-align:right;min-width:74px}
+.rt tbody.part tr:first-child td{border-top:1px solid var(--border)}
+.rt tbody.part:first-of-type tr:first-child td{border-top:0}
+.rt tbody.part tr:last-child td{padding-bottom:0}
+.rt td.zero{color:var(--muted)}
+.rt td.neg{color:var(--text)}
+.rt td.exc{background:var(--crit-soft)}
+.rt td.sel{box-shadow:inset 0 0 0 3px var(--sel-ring)}
+.mark{display:inline-flex;align-items:center;gap:3px;float:left;font-size:12px;font-weight:600;color:var(--crit);margin-right:10px}
+.rt-foot{display:flex;gap:24px;font-size:13px;color:var(--muted);margin-top:12px}
+.rt-foot .k{display:inline-flex;align-items:center;gap:6px}
+.swatch{width:14px;height:14px;border-radius:2px;display:inline-block}
+
+.illustr{font-size:12px;color:var(--muted);margin-top:24px;padding-top:12px;border-top:1px solid var(--divider)}
+
+/* ---------- forklaringspanel (aside, ikke-modal, skyver innhold) ---------- */
+.explain{background:var(--surface);border-left:1px solid var(--border);min-height:100%;padding:32px 32px 40px;position:sticky;top:0;align-self:stretch}
+.explain .x-top{display:flex;align-items:flex-start;gap:16px;padding-bottom:16px;border-bottom:1px solid var(--brass)}
+.explain h2{font:600 20px/1.3 var(--serif);margin:6px 0 0}
+.explain h2 .vn{font-family:var(--sans);font-weight:400;font-variant-numeric:tabular-nums}
+.close{margin-left:auto;flex:none;background:var(--surface);border:1px solid var(--border);border-radius:4px;height:32px;padding:0 10px;font:600 13px var(--sans);color:var(--text);display:inline-flex;align-items:center;gap:8px}
+kbd{font:600 11px/1 var(--sans);border:1px solid var(--border);border-radius:3px;padding:2px 5px;color:var(--muted);background:var(--bg)}
+.layer{padding:20px 0;border-bottom:1px solid var(--divider)}
+.layer:last-of-type{border-bottom:0}
+.layer .overline{display:flex;gap:10px;align-items:baseline;margin-bottom:8px}
+.layer .overline em{font-style:normal;color:var(--brass)}
+.answer{font:400 21px/1.45 var(--serif);margin:0;color:var(--text)}
+.calc{font-variant-numeric:tabular-nums;display:grid;grid-template-columns:1fr auto;row-gap:2px;font-size:15px;margin:0}
+.calc dt{color:var(--muted)}
+.calc dd{margin:0;text-align:right}
+.calc .tot{border-top:1px solid var(--text);padding-top:6px;margin-top:6px;font-weight:700;color:var(--text)}
+.calc-line{font-size:14px;color:var(--muted);margin:10px 0 0}
+.links{list-style:none;margin:0;padding:0;font-size:14px}
+.links li{display:flex;justify-content:space-between;padding:6px 0;border-top:1px solid var(--divider)}
+.links li:first-child{border-top:0}
+.links .num{font-weight:600}
+.rule{font-size:14px;margin:0}
+.exc-box{margin-top:20px;background:var(--crit-soft);border-left:3px solid var(--crit);padding:14px 16px;display:grid;grid-template-columns:20px 1fr;gap:10px;font-size:14px}
+.exc-box b{color:var(--crit)}
+.x-note{font-size:12px;color:var(--muted);margin-top:20px}
+
+/* ---------- startside ---------- */
+.navrow.empty{height:40px}
+.start{display:grid;grid-template-columns:1fr 600px;gap:80px;padding:72px 96px 88px}
+.start h1{font:600 48px/1.1 var(--serif);margin:12px 0 20px;letter-spacing:-.01em;max-width:560px}
+.lead{font-size:17px;color:var(--muted);max-width:520px;margin:0 0 40px}
+.steps{list-style:none;margin:0;padding:0;counter-reset:s;max-width:560px}
+.steps li{counter-increment:s;display:grid;grid-template-columns:56px 1fr;padding:20px 0;border-top:1px solid var(--brass)}
+.steps li:last-child{border-bottom:1px solid var(--divider)}
+.steps li::before{content:counter(s);font:400 34px/1 var(--serif);color:var(--muted)}
+.steps .st{font-weight:600;font-size:16px}
+.steps .sl{margin-top:6px;font-size:14px;display:flex;gap:20px}
+.help{font-size:14px;color:var(--text);background:var(--info-soft);border-left:3px solid var(--info);padding:12px 16px;margin-top:28px;max-width:560px;display:grid;grid-template-columns:20px 1fr;gap:10px}
+.upload-card{background:var(--surface);border:1px solid var(--divider);border-radius:2px;padding:36px}
+.upload-card h2{font:600 26px/1.25 var(--serif);margin:0 0 4px}
+.upload-card .h2rule{border-bottom:1px solid var(--brass);padding-bottom:14px;margin-bottom:24px}
+.drop{border:1.5px dashed var(--border);border-radius:6px;background:var(--bg);padding:40px 32px;text-align:center}
+.drop .ico{margin:0 auto 12px;display:block}
+.drop p{margin:0}
+.drop .big{font:400 19px/1.4 var(--serif);margin-bottom:16px}
+.drop .small{font-size:14px;color:var(--muted);margin-top:16px}
+.drop .small+.small{margin-top:4px}
+fieldset{border:0;padding:0;margin:28px 0 0}
+legend{font:600 16px/1.4 var(--sans);padding:0;margin-bottom:10px}
+.radio{display:grid;grid-template-columns:28px 1fr;padding:12px 0;border-top:1px solid var(--divider)}
+.radio:first-of-type{border-top:0}
+.radio .dot{width:18px;height:18px;border-radius:50%;border:1.5px solid var(--border);margin-top:2px;background:var(--surface)}
+.radio.on .dot{border:5px solid var(--primary)}
+.radio .lab{font-weight:600}
+.radio .hint{display:block;font-size:13px;color:var(--muted);font-weight:400}
+.calc-btn{margin-top:20px;display:flex;gap:16px;align-items:center}
+.calc-btn .btn{height:40px;padding:0 28px;font-size:15px}
+
+/* ---------- valideringsfeil ---------- */
+.err-wrap{padding:56px 96px 72px;display:grid;grid-template-columns:1fr 520px;gap:56px;align-items:start}
+.err{background:var(--surface);border:1px solid var(--divider);border-top:3px solid var(--crit);border-radius:2px;padding:32px 36px}
+.err-head{display:grid;grid-template-columns:28px 1fr;gap:12px;padding-bottom:16px;border-bottom:1px solid var(--brass);margin-bottom:8px}
+.err-head h1{font:600 30px/1.2 var(--serif);margin:0}
+.err-head p{margin:6px 0 0;color:var(--muted);font-size:15px}
+.sheet{padding:18px 0 4px}
+.sheet h2{font:600 15px/1.4 var(--sans);margin:0 0 6px}
+.sheet h2 .num{font-weight:400;color:var(--muted)}
+.sheet ul{list-style:none;margin:0;padding:0}
+.sheet li{display:grid;grid-template-columns:20px 216px 1fr;gap:8px;padding:8px 0;border-top:1px solid var(--divider);font-size:14px}
+.sheet li:first-child{border-top:0}
+.sheet .loc{font-weight:600;font-variant-numeric:tabular-nums}
+</style>
+</head>
+<body>
+
+<!-- ===================================================================
+     SKJERM 1 — Resultatsiden etter beregning, forklaringspanelet åpent
+     =================================================================== -->
+<div class="screen-label"><b>1 · Resultatsiden</b><span>Etter beregning, med forklaringspanelet åpent. Brukeren har klikket seg ned til Resultattabell og valgt cellen Nettobehov, uke 1 for Hjul.</span></div>
+<div class="frame">
+  <div class="chrome"><i></i><i></i><i></i><div class="url">cosi-mrp/resultat#resultattabell</div></div>
+
+  <header class="topbar">
+    <div class="wordmark">COSI MRP</div>
+    <div class="context">
+      <strong>Kontorstol Pro (100-001)</strong>
+      <span>Horisont: 8 uker</span>
+      <span class="num">Beregnet 13.11.2026 kl. 08:04</span>
+    </div>
+    <div class="tb-actions">
+      <button class="tb-link">Slett lagret kjøring</button>
+      <button class="btn btn-ghost-dark">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M8 11V2M4.5 5.5 8 2l3.5 3.5M2.5 11v2.5h11V11"/></svg>
+        Last opp ny fil</button>
+      <button class="btn btn-brass">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M8 2v9M4.5 7.5 8 11l3.5-3.5M2.5 11v2.5h11V11"/></svg>
+        Eksporter til Excel</button>
+    </div>
+  </header>
+  <nav class="navrow" aria-label="Seksjoner på siden">
+    <a href="#bf">Bestillingsforslag</a>
+    <a href="#en">Endringer</a>
+    <a href="#kd">Kritiske deler</a>
+    <a href="#rt" aria-current="location">Resultattabell</a>
+  </nav>
+
+  <div class="workspace">
+    <main class="main">
+      <div class="page-head">
+        <div class="overline">Bestillingsplan · ferdigprodukt</div>
+        <h1>Kontorstol Pro</h1>
+        <p class="statusline num" role="status">
+          <a href="#bf">12 bestillingsforslag</a><span class="sep">·</span><a href="#kd">4 kritiske deler trenger handling</a><span class="sep">·</span><a href="#en">3 endringer siden forrige kjøring</a>
+        </p>
+      </div>
+
+      <!-- Bestillingsforslag -->
+      <section class="card" id="bf" aria-labelledby="bf-h">
+        <div class="card-head">
+          <h2 id="bf-h">Bestillingsforslag <span class="count">(12)</span></h2>
+          <div class="select"><label>Uke</label>Alle uker <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5 6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></div>
+        </div>
+        <table class="simple">
+          <thead><tr><th>Varenummer</th><th>Beskrivelse</th><th class="r">Frigivelsesuke</th><th class="r">Mengde</th><th style="padding-left:32px">Ordretype</th></tr></thead>
+          <tbody>
+            <tr><td class="vnr">300-003</td><td>Hjul</td><td class="r">1</td><td class="r">175<span class="overdue"><svg width="13" height="13" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M8 4.5V8l2.5 1.5" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>50 forfalt</span></td><td style="padding-left:32px">Innkjøp</td></tr>
+            <tr><td class="vnr">300-006</td><td>Skruesett M6</td><td class="r">2</td><td class="r">30</td><td style="padding-left:32px">Innkjøp</td></tr>
+            <tr><td class="vnr">200-002</td><td>Seteenhet</td><td class="r">2</td><td class="r">45</td><td style="padding-left:32px">Produksjonsordre</td></tr>
+            <tr><td class="vnr">300-005</td><td>Gassfjær</td><td class="r">3</td><td class="r">100</td><td style="padding-left:32px">Innkjøp</td></tr>
+            <tr><td class="vnr">300-002</td><td>Rygg</td><td class="r">3</td><td class="r">40</td><td style="padding-left:32px">Innkjøp</td></tr>
+          </tbody>
+        </table>
+        <div class="more"><a href="#bf">… 7 til</a></div>
+      </section>
+
+      <div class="pair">
+        <!-- Endringer -->
+        <section class="card" id="en" aria-labelledby="en-h">
+          <div class="card-head"><h2 id="en-h">Endringer siden forrige kjøring</h2></div>
+          <p class="card-sub num">13.11 kl. 07:31 → 08:04</p>
+          <div class="chg-group">
+            <h3>Bestillingsforslag <span class="num">· 1 ny, 1 endret</span></h3>
+            <ul class="chg num">
+              <li><span class="tag">Ny</span><span>300-006 Skruesett M6, uke 2: 30</span></li>
+              <li><span class="tag">Endret</span><span>300-003 Hjul, uke 1: 130 → 205 (+75)</span></li>
+            </ul>
+          </div>
+          <div class="chg-group">
+            <h3>Eksepsjoner <span class="num">· 1 ny</span></h3>
+            <ul class="chg num">
+              <li><span class="tag">Ny</span><span>300-002 Rygg: Bruk av sikkerhetslager (uke 2)</span></li>
+            </ul>
+          </div>
+        </section>
+
+        <!-- Kritiske deler -->
+        <section class="card" id="kd" aria-labelledby="kd-h">
+          <div class="card-head"><h2 id="kd-h">Kritiske deler <span class="count">(4)</span></h2></div>
+          <ul class="crit-list num">
+            <li><svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M9 2 16.5 15h-15z" fill="none" stroke="#A0302A" stroke-width="1.6" stroke-linejoin="round"/><path d="M9 7v3.6" stroke="#A0302A" stroke-width="1.6"/><circle cx="9" cy="12.8" r=".9" fill="#A0302A"/></svg>
+              <div><span class="vn">300-005</span>Gassfjær<br><span class="t">Mottak forsinket</span> · uke 3</div><a href="#rt">Vis i tabellen</a></li>
+            <li><svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M9 2 16.5 15h-15z" fill="none" stroke="#A0302A" stroke-width="1.6" stroke-linejoin="round"/><path d="M9 7v3.6" stroke="#A0302A" stroke-width="1.6"/><circle cx="9" cy="12.8" r=".9" fill="#A0302A"/></svg>
+              <div><span class="vn">300-003</span>Hjul<br><span class="t">Bestilling forsinket</span> · uke 1</div><a href="#rt">Vis i tabellen</a></li>
+            <li><svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M9 2 16.5 15h-15z" fill="none" stroke="#A0302A" stroke-width="1.6" stroke-linejoin="round"/><path d="M9 7v3.6" stroke="#A0302A" stroke-width="1.6"/><circle cx="9" cy="12.8" r=".9" fill="#A0302A"/></svg>
+              <div><span class="vn">300-002</span>Rygg<br><span class="t">Bruk av sikkerhetslager</span> · uke 2</div><a href="#rt">Vis i tabellen</a></li>
+            <li><svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M9 2 16.5 15h-15z" fill="none" stroke="#A0302A" stroke-width="1.6" stroke-linejoin="round"/><path d="M9 7v3.6" stroke="#A0302A" stroke-width="1.6"/><circle cx="9" cy="12.8" r=".9" fill="#A0302A"/></svg>
+              <div><span class="vn">300-007</span>Armlene<br><span class="t">Kanseller mottak</span> · uke 6</div><a href="#rt">Vis i tabellen</a></li>
+          </ul>
+        </section>
+      </div>
+
+      <!-- Resultattabell -->
+      <section class="card" id="rt" aria-labelledby="rt-h">
+        <div class="card-head">
+          <h2 id="rt-h">Resultattabell</h2>
+          <span class="aside-meta">Klikk en celle for forklaring</span>
+        </div>
+        <p class="rt-context"><strong>Kontorstol Pro (100-001)</strong> · Horisont 8 uker</p>
+        <div class="rt-wrap">
+          <table class="rt">
+            <thead>
+              <tr>
+                <th class="c1 l">Varenr.</th><th class="c2 l">Beskrivelse</th><th class="c3 l">Rad</th>
+                <th class="on"><span>Uke 1</span></th><th>Uke 2</th><th>Uke 3</th><th>Uke 4</th><th>Uke 5</th><th>Uke 6</th><th>Uke 7</th><th>Uke 8</th>
+              </tr>
+            </thead>
+            <tbody class="part">
+              <tr><td class="c1" rowspan="6">300-003</td><td class="c2" rowspan="6"><span class="d">Hjul</span><span class="m">Nivå ..2<br>Komponent (Kjøpes inn)</span></td>
+                <td class="c3">Bruttobehov</td><td class="n">205</td><td class="n zero">0</td><td class="n">180</td><td class="n zero">0</td><td class="n">150</td><td class="n zero">0</td><td class="n">120</td><td class="n zero">0</td></tr>
+              <tr><td class="c3">Planlagte mottak</td><td class="n zero">0</td><td class="n zero">0</td><td class="n zero">0</td><td class="n zero">0</td><td class="n zero">0</td><td class="n zero">0</td><td class="n zero">0</td><td class="n zero">0</td></tr>
+              <tr><td class="c3">Forventet lagerbeholdning</td><td class="n zero">0</td><td class="n zero">0</td><td class="n zero">0</td><td class="n zero">0</td><td class="n zero">0</td><td class="n zero">0</td><td class="n zero">0</td><td class="n zero">0</td></tr>
+              <tr><td class="c3 on">Nettobehov</td>
+                <td class="n exc sel" aria-selected="true"><span class="mark" title="1 eksepsjon"><svg width="12" height="12" viewBox="0 0 18 18" aria-hidden="true"><path d="M9 2 16.5 15h-15z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9 7v3.4" stroke="currentColor" stroke-width="2"/></svg>1</span><b>175</b></td>
+                <td class="n zero">0</td><td class="n">180</td><td class="n zero">0</td><td class="n">150</td><td class="n zero">0</td><td class="n">120</td><td class="n zero">0</td></tr>
+              <tr><td class="c3">Planlagte ordremottak</td><td class="n">175</td><td class="n zero">0</td><td class="n">180</td><td class="n zero">0</td><td class="n">150</td><td class="n zero">0</td><td class="n">120</td><td class="n zero">0</td></tr>
+              <tr><td class="c3">Planlagte ordrefrigivelser</td><td class="n">175</td><td class="n">180</td><td class="n zero">0</td><td class="n">150</td><td class="n zero">0</td><td class="n">120</td><td class="n zero">0</td><td class="n zero">0</td></tr>
+            </tbody>
+            <tbody class="part">
+              <tr><td class="c1" rowspan="6">300-005</td><td class="c2" rowspan="6"><span class="d">Gassfjær</span><span class="m">Nivå ..2<br>Komponent (Kjøpes inn)</span></td>
+                <td class="c3">Bruttobehov</td><td class="n">40</td><td class="n zero">0</td><td class="n">35</td><td class="n zero">0</td><td class="n">30</td><td class="n zero">0</td><td class="n">25</td><td class="n zero">0</td></tr>
+              <tr><td class="c3">Planlagte mottak</td><td class="n zero">0</td><td class="n zero">0</td><td class="n zero">0</td><td class="n">100</td><td class="n zero">0</td><td class="n zero">0</td><td class="n zero">0</td><td class="n zero">0</td></tr>
+              <tr><td class="c3">Forventet lagerbeholdning</td><td class="n">5</td><td class="n">5</td><td class="n neg">−30</td><td class="n">70</td><td class="n">40</td><td class="n">40</td><td class="n">15</td><td class="n">15</td></tr>
+              <tr><td class="c3">Nettobehov</td><td class="n zero">0</td><td class="n zero">0</td>
+                <td class="n exc"><span class="mark" title="1 eksepsjon"><svg width="12" height="12" viewBox="0 0 18 18" aria-hidden="true"><path d="M9 2 16.5 15h-15z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9 7v3.4" stroke="currentColor" stroke-width="2"/></svg>1</span>30</td>
+                <td class="n zero">0</td><td class="n zero">0</td><td class="n zero">0</td><td class="n zero">0</td><td class="n zero">0</td></tr>
+              <tr><td class="c3">Planlagte ordremottak</td><td class="n zero">0</td><td class="n zero">0</td><td class="n zero">0</td><td class="n zero">0</td><td class="n zero">0</td><td class="n zero">0</td><td class="n zero">0</td><td class="n zero">0</td></tr>
+              <tr><td class="c3">Planlagte ordrefrigivelser</td><td class="n zero">0</td><td class="n zero">0</td><td class="n zero">0</td><td class="n zero">0</td><td class="n zero">0</td><td class="n zero">0</td><td class="n zero">0</td><td class="n zero">0</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="rt-foot">
+          <span class="k"><span class="swatch" style="background:var(--crit-soft);border:1px solid #D9B9B3"></span><svg width="12" height="12" viewBox="0 0 18 18" aria-hidden="true"><path d="M9 2 16.5 15h-15z" fill="none" stroke="#A0302A" stroke-width="2" stroke-linejoin="round"/></svg> Eksepsjon (ikon + antall)</span>
+          <span class="k"><span class="swatch" style="box-shadow:inset 0 0 0 3px var(--sel-ring)"></span> Valgt celle</span>
+          <span>Varenummer, beskrivelse og rad står fast når du ruller sidelengs. Uke 7–8 ligger til høyre.</span>
+        </div>
+      </section>
+
+      <p class="illustr">Tallene er illustrative og viser bare utformingen. De er ikke en fasit for testeksempel 01.</p>
+    </main>
+
+    <!-- Forklaringspanel: ikke-modal aside som skyver innholdet -->
+    <aside class="explain" aria-labelledby="x-h">
+      <div class="x-top">
+        <div>
+          <div class="overline">Forklaring</div>
+          <h2 id="x-h"><span class="vn">300-003</span> Hjul – Nettobehov, uke 1</h2>
+        </div>
+        <button class="close">Lukk <kbd>Esc</kbd></button>
+      </div>
+
+      <div class="layer">
+        <div class="overline"><em>I</em> Svar</div>
+        <p class="answer">Du mangler 175 hjul i uke 1, og 50 av dem er forfalte fra før horisonten.</p>
+      </div>
+
+      <div class="layer">
+        <div class="overline"><em>II</em> Utregning</div>
+        <dl class="calc">
+          <dt>Bruttobehov</dt><dd>205</dd>
+          <dt>− Disponibelt (lager ved start)</dt><dd>30</dd>
+          <dt class="tot">Nettobehov, uke 1</dt><dd class="tot">175</dd>
+        </dl>
+        <p class="calc-line num">Bruttobehov 205 − disponibelt 30 = 175</p>
+      </div>
+
+      <div class="layer">
+        <div class="overline"><em>III</em> Tallene</div>
+        <ul class="links num">
+          <li><a href="#">Bruttobehov, uke 1</a><span class="num">205</span></li>
+          <li><a href="#">Disponibelt ved start</a><span class="num">30</span></li>
+          <li><a href="#">Forfalt fra før horisonten</a><span class="num">50</span></li>
+        </ul>
+      </div>
+
+      <div class="layer">
+        <div class="overline"><em>IV</em> Regelen</div>
+        <p class="rule">Nettobehov er det bruttobehovet som lageret og planlagte mottak ikke dekker. <a href="#">Ordliste</a></p>
+      </div>
+
+      <div class="exc-box" role="note">
+        <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M9 2 16.5 15h-15z" fill="none" stroke="#A0302A" stroke-width="1.6" stroke-linejoin="round"/><path d="M9 7v3.6" stroke="#A0302A" stroke-width="1.6"/><circle cx="9" cy="12.8" r=".9" fill="#A0302A"/></svg>
+        <div><b>Bestilling forsinket.</b> Bestill nå, eller avtal raskere levering med leverandøren. Produksjonen av <span class="num">200-002</span> Seteenhet blir forsinket.</div>
+      </div>
+
+      <p class="x-note">Panelet lukkes med Lukk eller Esc. Tabellen er fortsatt i bruk mens panelet er åpent.</p>
+    </aside>
+  </div>
+</div>
+
+
+<!-- ===================================================================
+     SKJERM 2 — Startsiden før opplasting (FR-27)
+     =================================================================== -->
+<div class="screen-label"><b>2 · Startsiden</b><span>Før opplasting (FR-27). Ingen seksjoner ennå, så navigasjonsraden er tom.</span></div>
+<div class="frame">
+  <div class="chrome"><i></i><i></i><i></i><div class="url">cosi-mrp/</div></div>
+  <header class="topbar"><div class="wordmark">COSI MRP</div></header>
+  <div class="navrow empty"><span class="quiet">Ingen fil lastet opp ennå</span></div>
+
+  <div class="start">
+    <div>
+      <div class="overline">Materialbehovsplanlegging</div>
+      <h1>Lag bestillingsplanen fra Excel-fila di</h1>
+      <p class="lead">Du fyller ut malen, laster den opp og får bestillingsforslag og en resultattabell for hver del.</p>
+      <ol class="steps">
+        <li><div><div class="st">Last ned malen og fyll den ut.</div>
+          <div class="sl"><a href="#">Last ned tom mal</a><a href="#">Last ned testeksempel 01</a></div></div></li>
+        <li><div><div class="st">Last opp fila.</div></div></li>
+        <li><div><div class="st">Les bestillingsforslagene og resultattabellen.</div></div></li>
+      </ol>
+      <div class="help">
+        <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><circle cx="9" cy="9" r="7.2" fill="none" stroke="#45586A" stroke-width="1.5"/><path d="M9 8v4.6" stroke="#45586A" stroke-width="1.6"/><circle cx="9" cy="5.5" r=".95" fill="#45586A"/></svg>
+        <span>Hver fil gjelder ett ferdigprodukt. Lageret for deler som brukes i flere produkter, må du fordele mellom filene.</span>
+      </div>
+    </div>
+
+    <section class="upload-card" aria-labelledby="up-h">
+      <div class="h2rule"><h2 id="up-h">Last opp fila</h2></div>
+      <div class="drop">
+        <svg class="ico" width="40" height="40" viewBox="0 0 40 40" fill="none" stroke="#535E57" stroke-width="1.5" aria-hidden="true"><path d="M11 5h13l8 8v22H11z"/><path d="M24 5v8h8"/><path d="M21.5 30V19M17 23.5l4.5-4.5 4.5 4.5"/></svg>
+        <p class="big">Slipp Excel-fila her</p>
+        <button class="btn btn-secondary">Velg fil</button>
+        <p class="small">Du kan laste opp én Excel-fil (.xlsx).</p>
+        <p class="small">Filen sendes ikke noe sted. Den leses bare i nettleseren din.</p>
+      </div>
+      <fieldset>
+        <legend>Hva vil du beregne?</legend>
+        <div class="radio on"><span class="dot"></span><span><span class="lab">Bestillingsplan</span><span class="hint">Bestillingsforslag, kritiske deler og resultattabell for alle deler.</span></span></div>
+        <div class="radio"><span class="dot"></span><span><span class="lab">Produksjonskapasitet</span><span class="hint">Belastning per arbeidsstasjon og uke, sammenlignet med kapasiteten.</span></span></div>
+        <div class="radio"><span class="dot"></span><span><span class="lab">Begge</span><span class="hint">Bestillingsplan først, deretter produksjonskapasitet som eget panel.</span></span></div>
+      </fieldset>
+      <div class="calc-btn"><button class="btn btn-primary">Beregn</button><span style="font-size:13px;color:var(--muted)">Velg en fil først. Du får beskjed her hvis noe mangler.</span></div>
+    </section>
+  </div>
+</div>
+
+
+<!-- ===================================================================
+     SKJERM 3 — Valideringsfeil (UJ-4), utsnitt
+     =================================================================== -->
+<div class="screen-label"><b>3 · Valideringsfeil</b><span>UJ-4, utsnitt. Oppsummeringen står øverst, opplastingen er aktiv igjen ved siden av.</span></div>
+<div class="frame">
+  <div class="chrome"><i></i><i></i><i></i><div class="url">cosi-mrp/</div></div>
+  <header class="topbar"><div class="wordmark">COSI MRP</div><div class="context"><strong>kontorstol-pro.xlsx</strong><span>Ikke beregnet</span></div></header>
+  <div class="navrow empty"><span class="quiet">Ingen resultater ennå</span></div>
+
+  <div class="err-wrap">
+    <section class="err" role="alert" aria-labelledby="err-h">
+      <div class="err-head">
+        <svg width="26" height="26" viewBox="0 0 18 18" aria-hidden="true"><circle cx="9" cy="9" r="7.6" fill="none" stroke="#A0302A" stroke-width="1.4"/><path d="M9 4.8v5" stroke="#A0302A" stroke-width="1.6"/><circle cx="9" cy="12.6" r=".95" fill="#A0302A"/></svg>
+        <div>
+          <h1 id="err-h">Filen har 3 feil. Ingenting er beregnet.</h1>
+          <p>Rett feilene i Excel, lagre filen og last den opp på nytt.</p>
+        </div>
+      </div>
+      <div class="sheet">
+        <h2>Planlagte mottak <span class="num">(2)</span></h2>
+        <ul>
+          <li><svg width="16" height="16" viewBox="0 0 18 18" aria-hidden="true"><path d="M9 2 16.5 15h-15z" fill="none" stroke="#A0302A" stroke-width="1.6" stroke-linejoin="round"/></svg><span class="loc">rad 4, Uke</span><span>uke 0 er før horisonten.</span></li>
+          <li><svg width="16" height="16" viewBox="0 0 18 18" aria-hidden="true"><path d="M9 2 16.5 15h-15z" fill="none" stroke="#A0302A" stroke-width="1.6" stroke-linejoin="round"/></svg><span class="loc">rad 5, Antall</span><span>må være et heltall.</span></li>
+        </ul>
+      </div>
+      <div class="sheet">
+        <h2>MPS <span class="num">(1)</span></h2>
+        <ul>
+          <li><svg width="16" height="16" viewBox="0 0 18 18" aria-hidden="true"><path d="M9 2 16.5 15h-15z" fill="none" stroke="#A0302A" stroke-width="1.6" stroke-linejoin="round"/></svg><span class="loc">uke 11, Antall ferdigprodukter</span><span>uke 10 er tom, så uke 11 kan ikke fylles ut.</span></li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="upload-card" aria-labelledby="up2-h">
+      <div class="h2rule"><h2 id="up2-h">Last opp på nytt</h2></div>
+      <div class="drop" style="padding:28px 24px">
+        <p class="big">Slipp den rettede fila her</p>
+        <button class="btn btn-secondary">Velg fil</button>
+        <p class="small">Du kan laste opp én Excel-fil (.xlsx).</p>
+        <p class="small">Filen sendes ikke noe sted. Den leses bare i nettleseren din.</p>
+      </div>
+      <div class="calc-btn"><button class="btn btn-primary">Beregn</button><span style="font-size:13px;color:var(--muted)">Valget «Bestillingsplan» er beholdt.</span></div>
+    </section>
+  </div>
+</div>
+
+</body>
+</html>

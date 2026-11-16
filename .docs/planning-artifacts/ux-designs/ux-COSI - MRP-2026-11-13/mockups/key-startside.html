@@ -1,0 +1,339 @@
+<!doctype html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nøkkelskjerm – Startside</title>
+<style>
+/* =====================================================================
+   NØKKELSKJERM: STARTSIDE (FR-1–FR-4, FR-27, FR-30, NFR-9) – COSI - MRP
+   Mocken illustrerer; ved konflikt gjelder spine-dokumentene.
+
+   Styrende seksjoner
+   DESIGN.md
+   - frontmatter: colors, typography, rounded, spacing, components
+     (toppfelt, navigasjonsrad, brett, kort, veiledning, slippsone,
+     radiogruppe, knapp-primaer, feiloppsummering)
+   - Brand & Style (ordmerket «COSI - MRP», «MRP» i lys messing, lett vekt;
+     register Operate også på startsiden)
+   - Colors › Fokus, Semantikk (exception-critical brukes av feiloppsummering)
+   - Typography (display = h1 på startsiden, error-heading, sheet-heading,
+     drop-hint, option-label, panel-step, button-large, small)
+   - Layout & Spacing › Startsiden (smalere kolonne; veiledning øverst;
+     slippsone og radiogruppe side om side; 1366 × 630 uten rulling)
+   - Elevation & Depth (lag, ingen skygger; box-shadow bare som fokusring)
+   - Shapes (rounded.lg på brett og feiloppsummering, DEFAULT på kort,
+     knapper og slippsone)
+   - Components › Toppfelt («På startsiden har lag 1 bare ordmerket»),
+     Statuslinje (startside: tekstlinje ved Beregn), Brett og kort,
+     Veiledning, Slippsone, Radiogruppe, Knapper, Feiloppsummering
+   - Do's and Don'ts (ingen farget sidekant, lette overskrifter)
+   EXPERIENCE.md
+   - Information Architecture (Startside; Startside med valideringsfeil;
+     «Startsidens navigasjonsrad»)
+   - Voice and Tone (Valideringsfeil, Oppsummering av valideringsfeil,
+     Opplasting, Veiledning; «fila» i bestemt form)
+   - Component Patterns: Toppfelt, Statuslinje, Brett og kort, Veiledning,
+     Radiogruppe, Knapper, Feiloppsummering; ### Slippsone; ### Feiloppsummering
+   - State Patterns: Første besøk, Valideringsfeil, Fokus
+   - Accessibility Floor (Kunngjøringer, Fokus, Semantikk: fieldset/legend)
+   - Key Flows › UJ-1 (trinn 1–2), UJ-4 (trinn 3–5)
+   Feilene i seksjon 2 er de tre fra UJ-4 (PRD §2 og EXPERIENCE UJ-4).
+   .memlog.md 2026-11-14 (går foran spine-teksten der de sier noe annet):
+   - «Synlig h1 på begge sider» + h1-beslutningen: h1 «Beregn fra Excel-fila di»
+     (nøytral, gjelder alle valg) i display-token; med valideringsfeil er
+     feiloppsummeringens overskrift h1.
+   - Impeccable critique 2026-11-14: feiloppsummeringen har ikke role=alert;
+     fokus flyttes dit (tabindex=-1). Fokusringer med ring / topbar-ring.
+     Radier bare fra rounded-skalaen.
+   - «Startside 1366×630»: veiledningen er en lav stripe (stegene i én rad,
+     nedlastingene ved siden av stegtekst 1, setningen om ett ferdigprodukt til
+     høyre i brettoverskriften), slik at slippsone, radiogruppe og Beregn står
+     helt over 630 px. Målt i headless Edge 1366 × 630: Beregn slutter 618 px
+     ned i vinduet. For å få plass står legend på linje med «Last opp», Beregn
+     står i egen kolonne til høyre for radiogruppen, og hovedfeltet har full
+     bredde (avvik fra DESIGN «smalere kolonne» og «under stegene»).
+   - Valgkortene står loddrett ved siden av slippsonen; hjelpeteksten er én linje.
+   Uten JS, uten nett. Source Sans 3 brukes hvis den er installert lokalt.
+   ===================================================================== */
+
+:root{
+  /* farger (DESIGN.md › colors) */
+  --background:#EFEDE4; --foreground:#1D2420; --card:#FBFAF5;
+  --primary:#2F5A43; --primary-foreground:#FFFFFF;
+  --muted-foreground:#535E57; --border:#DAD8CC; --ring:#7D5B1E;
+  --band:#E4E2D6; --edge:#74776B; --divider-subtle:#ECEADF; --brass-line:#8A6726;
+  --topbar:#2C3A31; --topbar-foreground:#EEF0E8; --topbar-muted:#B4C0B5;
+  --topbar-button:#C9A862; --topbar-ring:#C9A862;
+  --navrow:#3A4A3F; --navrow-foreground:#D2DBD1; --navrow-active:#FFFFFF; --navrow-indicator:#C9A862;
+  --selected-cell:#E3ECE0; --selected-cell-ring:#2F5A43;
+  --exception-critical:#A0302A; --exception-critical-soft:#F6E2DE;
+  /* form og mål */
+  --r:10px; --r-lg:14px; --r-full:9999px;
+  --page-margin:24px; --tray-gap:16px; --tray-inset:6px; --tray-head-top:18px;
+  --topbar-height:60px; --navrow-height:48px;
+  --font:'Source Sans 3', Corbel, Candara, 'Segoe UI', system-ui, sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:#D3D1C5;color:var(--foreground);font:400 16px/24px var(--font);font-variant-numeric:lining-nums tabular-nums;-webkit-font-smoothing:antialiased}
+a{color:var(--primary);text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px;cursor:pointer}
+a:focus-visible{outline:none;box-shadow:0 0 0 2px var(--card),0 0 0 5px var(--ring)}
+button,label{cursor:pointer}
+svg.i{width:16px;height:16px;flex:none;vertical-align:-3px}
+.sr{position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0;padding:0}
+
+/* ---------- presentasjonsramme (ikke en del av appen) ---------- */
+.plate{width:1366px;margin:0 auto}
+.label{padding:28px 0 12px;font:15px/22px var(--font);color:#2C3A31;max-width:1100px}
+.label b{font-weight:600}
+.browser{position:relative;width:1366px;background:var(--background);border-radius:10px 10px 0 0;overflow:hidden}
+.chrome{height:40px;background:#CFCDC1;display:flex;align-items:center;gap:8px;padding:0 14px;font:12px/16px var(--font);color:#3E4A43}
+.chrome .dot{width:11px;height:11px;border-radius:50%;background:#A9A799}
+.chrome .tab{margin-left:12px;background:var(--background);border-radius:8px 8px 0 0;align-self:flex-end;height:32px;padding:8px 16px 0;min-width:220px}
+.chrome .addr{margin-left:12px;flex:0 0 480px;height:24px;border-radius:12px;background:#E4E2D6}
+.fold{position:absolute;left:0;right:0;height:0;border-top:2px dashed #8C3B8C;z-index:5;pointer-events:none}
+.fold span{position:absolute;right:12px;top:8px;background:#8C3B8C;color:#fff;font:12px/16px var(--font);padding:6px 12px;border-radius:4px}
+.note{font:13px/20px var(--font);color:#3E4A43;padding:8px 0 40px;max-width:1100px}
+
+/* ---------- toppfelt (lag 1) og navigasjonsrad (lag 2) ---------- */
+.toppfelt{height:var(--topbar-height);background:var(--topbar);color:var(--topbar-foreground);display:flex;align-items:center;padding:0 var(--page-margin)}
+.brand{font-size:19px;line-height:24px;font-weight:700;letter-spacing:.06em;color:var(--topbar-foreground)}
+.brand span{color:var(--topbar-button);font-weight:300}
+.navrad{height:var(--navrow-height);background:var(--navrow);display:flex;align-items:stretch;gap:6px;padding:0 var(--page-margin)}
+.navrad a{position:relative;display:flex;align-items:center;padding:0 14px;color:var(--navrow-foreground);text-decoration:none;font-size:16px}
+.navrad a[aria-current]{color:var(--navrow-active);font-weight:700}
+.navrad a[aria-current]::after{content:"";position:absolute;left:14px;right:14px;bottom:0;height:3px;border-radius:var(--r-full) var(--r-full) 0 0;background:var(--navrow-indicator)}
+.navrad a:focus-visible{outline:none;box-shadow:0 0 0 2px var(--navrow),0 0 0 5px var(--topbar-ring)}
+
+/* ---------- hovedfelt ---------- */
+/* Full bredde (page-margin) i stedet for smal kolonne: stegene i én rad og tre
+   kolonner i opplastingen trenger bredden for å holde seg innenfor 630 px. */
+.start{padding:20px var(--page-margin) 48px;scroll-padding-top:calc(var(--topbar-height) + var(--navrow-height))}
+.start h1.side{font-size:36px;line-height:44px;font-weight:300;margin:0 0 12px}
+
+/* brett og kort */
+.brett{background:var(--band);border-radius:var(--r-lg);padding:0 var(--tray-inset) var(--tray-inset);margin-bottom:var(--tray-gap)}
+.brett-head{display:flex;align-items:baseline;gap:14px;padding:var(--tray-head-top) 14px 12px}
+.brett-head h2{margin:0;font-size:22px;line-height:28px;font-weight:300;letter-spacing:.01em}
+.brett-head .hoyre{margin-left:auto;font-size:14px;line-height:20px;color:var(--muted-foreground)}
+.kort{background:var(--card);border-radius:var(--r)}
+
+/* veiledning: lav stripe, de tre stegene i én rad (memlog 2026-11-14,
+   «Startside 1366×630»). Setningen om ett ferdigprodukt står til høyre i
+   brettoverskriften; nedlastingene står i steg 1, ved siden av stegteksten. */
+.veiledning{padding:10px 16px}
+.steg{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:minmax(0,650px) minmax(0,190px) minmax(0,1fr);gap:24px}
+.steg > li{display:grid;grid-template-columns:32px minmax(0,1fr);gap:12px;align-items:start}
+.steg > li.med-dl{grid-template-columns:32px minmax(0,1fr) auto}
+.steg .nr{width:32px;height:32px;border-radius:var(--r-full);border:1.5px solid var(--brass-line);display:grid;place-items:center;font-size:17px;line-height:1;font-weight:400}
+.steg p{margin:3px 0 0;font-size:17px;line-height:26px}
+.dl{list-style:none;margin:3px 0 0;padding:0;display:flex;flex-direction:column;gap:2px}
+.dl li{display:flex;align-items:baseline;gap:8px;white-space:nowrap}
+.dl a{display:inline-flex;align-items:center;gap:6px;font-size:16px;line-height:24px}
+.dl .fil{font-size:14px;line-height:20px;color:var(--muted-foreground)}
+.ett{margin:0}
+
+/* opplasting: overskrift og legend på samme linje i brettet; slippsone,
+   radiogruppe og Beregn i tre kolonner */
+.opplasting{display:grid;grid-template-columns:minmax(0,1fr) 540px 240px;grid-template-rows:40px auto;column-gap:var(--tray-gap);align-items:stretch}
+.brett.opp{padding-top:var(--tray-head-top)}
+.opplasting > .brett-head{grid-column:1;grid-row:1;padding-top:0}
+.opplasting > .slippsone{grid-column:1;grid-row:2}
+.opplasting > .valg{grid-column:2;grid-row:1 / 3}
+.opplasting > .beregn{grid-column:3;grid-row:2;align-self:end;margin:0}
+.slippsone{border:2px dashed var(--edge);border-radius:var(--r);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:14px 24px}
+.slippsone .ikon{width:44px;height:44px;color:var(--primary);margin-bottom:6px}
+.slippsone .hint{font-size:20px;line-height:28px;font-weight:300;margin:0 0 10px}
+.slippsone .hjelp{margin:10px 0 0;font-size:14px;line-height:20px;color:var(--muted-foreground)}
+fieldset{border:0;margin:0;padding:0;min-width:0}
+legend{padding:4px 0 12px;margin:0;font-size:17px;line-height:24px;font-weight:400}
+.radio{position:relative;display:grid;grid-template-columns:20px 1fr;gap:12px;align-items:start;background:var(--card);border-radius:var(--r);padding:12px 16px 13px;margin-bottom:var(--tray-inset)}
+.radio:last-of-type{margin-bottom:0}
+.radio .prikk{width:20px;height:20px;border-radius:var(--r-full);border:2px solid var(--edge);background:var(--card);display:grid;place-items:center;margin-top:2px}
+.radio .etikett{display:block;font-size:17px;line-height:24px}
+.radio .hjelp{display:block;font-size:14px;line-height:20px;color:var(--muted-foreground)}
+.radio:has(input:checked){background:var(--selected-cell);box-shadow:inset 0 0 0 2px var(--selected-cell-ring)}
+.radio:has(input:checked) .prikk{border-color:var(--primary)}
+.radio:has(input:checked) .prikk::after{content:"";width:10px;height:10px;border-radius:var(--r-full);background:var(--primary)}
+.radio:has(input:checked) .etikett{font-weight:700}
+.radio:has(input:focus-visible){box-shadow:inset 0 0 0 2px var(--selected-cell-ring),0 0 0 2px var(--band),0 0 0 5px var(--ring)}
+.beregn{display:flex;align-items:center;gap:16px}
+.statuslinje{margin:0;font-size:17px;line-height:24px;color:var(--muted-foreground);min-height:24px}
+
+/* knapper */
+.knapp{font-family:inherit;font-size:16px;line-height:20px;border-radius:var(--r);padding:9px 16px;border:1px solid transparent;display:inline-flex;align-items:center;gap:8px}
+.knapp-primaer{background:var(--primary);color:var(--primary-foreground);font-weight:700}
+.knapp-primaer.stor{font-size:17px;padding:11px 28px}
+.knapp:focus-visible{outline:none;box-shadow:0 0 0 2px var(--card),0 0 0 5px var(--ring)}
+.brett > * .knapp:focus-visible,.valg .knapp:focus-visible{box-shadow:0 0 0 2px var(--band),0 0 0 5px var(--ring)}
+
+/* feiloppsummering: brett i svak rødtone, feil per ark i lyse kort, ingen sidekant */
+.feiloppsummering{background:var(--exception-critical-soft);border-radius:var(--r-lg);padding:0 var(--tray-inset) var(--tray-inset);margin-bottom:var(--tray-gap)}
+.feiloppsummering:focus,.feiloppsummering.fokus{outline:none;box-shadow:0 0 0 3px var(--background),0 0 0 6px var(--ring)}
+.feil-head{display:grid;grid-template-columns:24px 1fr;gap:12px;padding:var(--tray-head-top) 14px 14px}
+.feil-head svg{width:24px;height:24px;color:var(--exception-critical);margin-top:6px}
+.feil-head h1{margin:0;font-size:28px;line-height:36px;font-weight:300}
+.feil-head h1 b{font-weight:700;color:var(--exception-critical)}
+.feil-head p{margin:4px 0 0}
+.ark{display:grid;grid-template-columns:1fr 1fr;gap:var(--tray-inset);align-items:start}
+.ark-kort{padding:14px 18px}
+.ark-kort h2{margin:0 0 4px;font-size:18px;line-height:24px;font-weight:400}
+.ark-kort h2 span{color:var(--muted-foreground)}
+.ark-kort ul{list-style:none;margin:0;padding:0}
+.ark-kort li{display:grid;grid-template-columns:14px 1fr;gap:10px;padding:8px 0;font-size:16px;line-height:24px}
+.ark-kort li + li{border-top:1px solid var(--divider-subtle)}
+.ark-kort li svg{width:14px;height:14px;color:var(--exception-critical);margin-top:5px}
+.ark-kort .sted{font-weight:700}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="ic-crit" viewBox="0 0 16 16"><path d="M8 1.6 15 14H1L8 1.6Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M8 6v4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><circle cx="8" cy="12" r="1" fill="currentColor"/></symbol>
+  <symbol id="ic-down" viewBox="0 0 16 16"><path d="M8 2v8m-3.5-3.5L8 10l3.5-3.5M3 13.5h10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="ic-file" viewBox="0 0 44 44"><path d="M11 4h15l9 9v25a2 2 0 0 1-2 2H11a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M26 4v9h9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M15 21h14M15 26h14M15 31h9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+</svg>
+
+<!-- =================== SEKSJON 1: STARTSIDE I RO =================== -->
+<div class="plate">
+  <div class="label"><b>1 · Startside i ro (første besøk, vanlig bygg).</b> Toppfelt med bare ordmerket, navigasjonsrad «Slik gjør du det» / «Last opp», h1, veiledningen som lav stripe (tre steg i én rad, nedlastingene i steg 1), og under den slippsonen, radiogruppen «Hva vil du beregne?» og Beregn side om side. Alt i opplastingen står over 630-streken. Bestillingsplan er forhåndsvalgt. I testbygget for brukertesten er radiogruppen skjult.</div>
+  <div class="browser">
+    <div class="chrome"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="tab">COSI - MRP</span><span class="addr"></span></div>
+    <div class="fold" style="top:670px" aria-hidden="true"><span>Vindu 1366 × 630 (100 %) slutter her. Slippsonen, «Hva vil du beregne?» og Beregn står helt over streken uten rulling (Beregn slutter 618 px ned i vinduet).</span></div>
+
+    <header class="toppfelt"><span class="brand">COSI - <span>MRP</span></span></header>
+    <nav class="navrad" aria-label="Seksjoner på startsiden">
+      <a href="#s1-slik" aria-current="location">Slik gjør du det</a>
+      <a href="#s1-last">Last opp</a>
+    </nav>
+
+    <main class="start">
+      <h1 class="side">Beregn fra Excel-fila di</h1>
+
+      <section class="brett" id="s1-slik" aria-labelledby="s1-slik-h">
+        <div class="brett-head"><h2 id="s1-slik-h">Slik gjør du det</h2><p class="hoyre ett">Hver fil gjelder ett ferdigprodukt. Lageret for deler som brukes i flere ferdigprodukter, må du fordele mellom filene.</p></div>
+        <div class="kort veiledning">
+          <ol class="steg">
+            <li class="med-dl"><span class="nr" aria-hidden="true">1</span>
+              <p>Fyll ut Excel-malen. Vil du prøve først, kan du bruke testeksempel 01.</p>
+              <ul class="dl">
+                <li><a href="COSI-MRP-mal.xlsx" download><svg class="i" aria-hidden="true"><use href="#ic-down"/></svg>Last ned Excel-malen</a><span class="fil">COSI-MRP-mal.xlsx</span></li>
+                <li><a href="testeksempel-01.xlsx" download><svg class="i" aria-hidden="true"><use href="#ic-down"/></svg>Last ned testeksempel 01</a><span class="fil">testeksempel-01.xlsx</span></li>
+              </ul></li>
+            <li><span class="nr" aria-hidden="true">2</span><p>Last opp fila og trykk Beregn.</p></li>
+            <li><span class="nr" aria-hidden="true">3</span><p>Les bestillingsforslagene og tabellen. Klikk på et tall for å se hvordan det er regnet ut.</p></li>
+          </ol>
+        </div>
+      </section>
+
+      <section class="brett opp" id="s1-last" aria-labelledby="s1-last-h">
+        <div class="opplasting">
+          <div class="brett-head"><h2 id="s1-last-h">Last opp</h2></div>
+          <div class="kort slippsone">
+            <svg class="ikon" aria-hidden="true"><use href="#ic-file"/></svg>
+            <p class="hint" aria-hidden="true">Slipp Excel-fila her</p>
+            <button class="knapp knapp-primaer" type="button">Velg fil</button>
+            <input class="sr" type="file" accept=".xlsx" tabindex="-1" aria-hidden="true">
+            <p class="hjelp">Du kan laste opp én Excel-fil (.xlsx).<br>Fila sendes ikke noe sted. Den leses bare i nettleseren din.</p>
+          </div>
+          <fieldset class="valg">
+              <legend>Hva vil du beregne?</legend>
+              <label class="radio"><input class="sr" type="radio" name="s1-beregn" checked><span class="prikk" aria-hidden="true"></span><span><span class="etikett">Bestillingsplan</span><span class="hjelp">Bestillingsforslag, kritiske deler og resultattabellen.</span></span></label>
+              <label class="radio"><input class="sr" type="radio" name="s1-beregn"><span class="prikk" aria-hidden="true"></span><span><span class="etikett">Produksjonskapasitet</span><span class="hjelp">Hvor mange ferdigprodukter lageret og planlagte mottak rekker til, uke for uke.</span></span></label>
+              <label class="radio"><input class="sr" type="radio" name="s1-beregn"><span class="prikk" aria-hidden="true"></span><span><span class="etikett">Begge</span><span class="hjelp">Bestillingsplanen, med produksjonskapasitet som eget panel nederst.</span></span></label>
+            </fieldset>
+          <div class="beregn">
+              <button class="knapp knapp-primaer stor" type="button">Beregn</button>
+              <p class="statuslinje"></p>
+            </div>
+        </div>
+      </section>
+    </main>
+  </div>
+  <p class="note">Statuslinja ved Beregn er tom i ro; ved Beregn viser den «Leser fila …» og så «Beregner …». Kunngjøringen går gjennom statusregionen på appnivå (role="status"), som ikke er tegnet.</p>
+</div>
+
+<!-- ============ SEKSJON 2: STARTSIDE MED VALIDERINGSFEIL (UJ-4) ============ -->
+<div class="plate">
+  <div class="label"><b>2 · Startside med valideringsfeil (UJ-4).</b> Kari har lastet opp den kopierte fila. Feiloppsummeringen står øverst, over opplastingen, og har fokus (ringen). Navigasjonsraden viser «Feil i fila» / «Last opp». Filvalget er nullstilt, forrige filnavn står bare som informasjon, og valget i radiogruppen står igjen.</div>
+  <div class="browser">
+    <div class="chrome"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="tab">Feil: Fila har 3 feil – COSI - MRP</span><span class="addr"></span></div>
+
+    <header class="toppfelt"><span class="brand">COSI - <span>MRP</span></span></header>
+    <nav class="navrad" aria-label="Seksjoner på startsiden">
+      <a href="#s2-feil" aria-current="location">Feil i fila</a>
+      <a href="#s2-last">Last opp</a>
+    </nav>
+
+    <main class="start">
+      <section class="feiloppsummering fokus" id="s2-feil" tabindex="-1" aria-labelledby="s2-feil-h">
+        <div class="feil-head">
+          <svg aria-hidden="true"><use href="#ic-crit"/></svg>
+          <div>
+            <h1 id="s2-feil-h">Fila har <b>3 feil</b>. Ingenting er beregnet.</h1>
+            <p>Rett feilene i Excel, lagre fila og last den opp på nytt.</p>
+          </div>
+        </div>
+        <div class="ark">
+          <div class="kort ark-kort">
+            <h2>Prognostiserte behov (arket MPS) <span>(1)</span></h2>
+            <ul>
+              <li><svg aria-hidden="true"><use href="#ic-crit"/></svg><span><span class="sted">uke 11, Antall ferdigprodukter:</span> uke 10 er tom, så uke 11 kan ikke fylles ut.</span></li>
+            </ul>
+          </div>
+          <div class="kort ark-kort">
+            <h2>Planlagte mottak <span>(2)</span></h2>
+            <ul>
+              <li><svg aria-hidden="true"><use href="#ic-crit"/></svg><span><span class="sted">rad 4, Uke:</span> uke 0 er før horisonten. Første uke i horisonten er uke 1.</span></li>
+              <li><svg aria-hidden="true"><use href="#ic-crit"/></svg><span><span class="sted">rad 5, Antall:</span> må være et heltall.</span></li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="brett opp" id="s2-last" aria-labelledby="s2-last-h">
+        <div class="opplasting">
+          <div class="brett-head"><h2 id="s2-last-h">Last opp den rettede fila</h2><span class="hoyre">Forrige fil: kontorstol-basic.xlsx</span></div>
+          <div class="kort slippsone">
+            <svg class="ikon" aria-hidden="true"><use href="#ic-file"/></svg>
+            <p class="hint" aria-hidden="true">Slipp Excel-fila her</p>
+            <button class="knapp knapp-primaer" type="button">Velg fil</button>
+            <input class="sr" type="file" accept=".xlsx" tabindex="-1" aria-hidden="true">
+            <p class="hjelp">Du kan laste opp én Excel-fil (.xlsx).<br>Fila sendes ikke noe sted. Den leses bare i nettleseren din.</p>
+          </div>
+          <fieldset class="valg">
+              <legend>Hva vil du beregne?</legend>
+              <label class="radio"><input class="sr" type="radio" name="s2-beregn" checked><span class="prikk" aria-hidden="true"></span><span><span class="etikett">Bestillingsplan</span><span class="hjelp">Bestillingsforslag, kritiske deler og resultattabellen.</span></span></label>
+              <label class="radio"><input class="sr" type="radio" name="s2-beregn"><span class="prikk" aria-hidden="true"></span><span><span class="etikett">Produksjonskapasitet</span><span class="hjelp">Hvor mange ferdigprodukter lageret og planlagte mottak rekker til, uke for uke.</span></span></label>
+              <label class="radio"><input class="sr" type="radio" name="s2-beregn"><span class="prikk" aria-hidden="true"></span><span><span class="etikett">Begge</span><span class="hjelp">Bestillingsplanen, med produksjonskapasitet som eget panel nederst.</span></span></label>
+            </fieldset>
+          <div class="beregn">
+              <button class="knapp knapp-primaer stor" type="button">Beregn</button>
+              <p class="statuslinje"></p>
+            </div>
+        </div>
+      </section>
+
+      <section class="brett" aria-labelledby="s2-slik-h">
+        <div class="brett-head"><h2 id="s2-slik-h">Slik gjør du det</h2><p class="hoyre ett">Hver fil gjelder ett ferdigprodukt. Lageret for deler som brukes i flere ferdigprodukter, må du fordele mellom filene.</p></div>
+        <div class="kort veiledning">
+          <ol class="steg">
+            <li class="med-dl"><span class="nr" aria-hidden="true">1</span>
+              <p>Fyll ut Excel-malen. Vil du prøve først, kan du bruke testeksempel 01.</p>
+              <ul class="dl">
+                <li><a href="COSI-MRP-mal.xlsx" download><svg class="i" aria-hidden="true"><use href="#ic-down"/></svg>Last ned Excel-malen</a><span class="fil">COSI-MRP-mal.xlsx</span></li>
+                <li><a href="testeksempel-01.xlsx" download><svg class="i" aria-hidden="true"><use href="#ic-down"/></svg>Last ned testeksempel 01</a><span class="fil">testeksempel-01.xlsx</span></li>
+              </ul></li>
+            <li><span class="nr" aria-hidden="true">2</span><p>Last opp fila og trykk Beregn.</p></li>
+            <li><span class="nr" aria-hidden="true">3</span><p>Les bestillingsforslagene og tabellen. Klikk på et tall for å se hvordan det er regnet ut.</p></li>
+          </ol>
+        </div>
+      </section>
+    </main>
+  </div>
+  <p class="note">Feilene er de tre fra UJ-4: Kari flyttet ukene ett hakk, så mottaket av hjul står i uke 0, den nye uka havnet i uke 11, og hun skrev «ca. 40» som antall. Rekkefølge: ark i malens rekkefølge, så Excel-rad. Den lagrede kjøringen er urørt. Veiledningen står under opplastingen, fordi den alltid skal være synlig, men navigasjonsraden har ingen lenke til den i denne tilstanden (se åpne punkter).</p>
+</div>
+
+</body>
+</html>

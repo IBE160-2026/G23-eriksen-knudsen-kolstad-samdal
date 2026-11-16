@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nøkkelskjerm – Kapasitetspanel</title>
+<style>
+/* =====================================================================
+   NØKKELSKJERM: KAPASITETSPANEL (trinn 4) – COSI - MRP
+   Mock, ikke kontrakt. Ved konflikt gjelder DESIGN.md og EXPERIENCE.md.
+   Data: testeksempel 05 (Kontorstol Kompakt, 100-004), alle tall fra
+   testdata/testeksempel-05-fasit.xlsx (Kapasitet, Fasittabell, Materiell,
+   Bestillingsforslag, Eksepsjoner).
+
+   STYRENDE SPINE-SEKSJONER
+   EXPERIENCE.md
+   - Produksjonskapasitet (trinn 4): overskrift som spørsmål, innledende tekst,
+     to rader, begrensende deler med årsak i tekst, tabellen per del,
+     ingen klikkbar forklaring
+   - Information Architecture (rekkefølge: … → Resultattabell →
+     Produksjonskapasitet; «↳ Produksjonskapasitet: bare når Begge er valgt»)
+   - State Patterns: Begge valgt; Component Patterns: Toppfelt, Statuslinje,
+     Brett og kort, Kapasitetspanel
+   - Key Flows › UJ-5 (unntak: Begge), Accessibility Floor (ikke farge alene)
+   DESIGN.md
+   - frontmatter colors / typography / rounded / spacing /
+     components.kapasitetspanel
+   - Layout & Spacing (Kapasitetspanel får full bredde), Components ›
+     Kapasitetspanel, Brett og kort, Toppfelt, Statuslinje
+   .memlog.md 2026-11-14 (går foran spine-teksten, spines oppdateres etterpå)
+   - Kapasitetspanel = variant C i kapasitet-skisse.html: (a) invertert brett,
+     korttone utenfor og steintone i kortene inni; (b) én celle per
+     sammenhengende ukeløp (colspan, headers knyttet til hver uke den dekker),
+     «Uke 4–8: 300-033 Ryggplate (lager)» skrevet inni, 2 px kant øverst.
+   - Synlig h1 «Bestillingsplan for <varenr> <navn>» i display-token.
+   - Årsakstekst: kode «lager» → «(lager)» på Fra lager og «(lager og
+     planlagte mottak)» på Med planlagte mottak; «ledetid» → «(ledetid)».
+     (Fasitens årsakskolonne er lik på begge rader; UI-koblingen gjelder.)
+   PRD FR-30–FR-34
+
+   - Impeccable critique (godtatt): rygg-cellene er <th scope=rowgroup>;
+     :focus-visible-ringer (ring / topbar-ring); hjelpeteksten for Ledig
+     beholdning står synlig under tabellen og er knyttet til kolonneoverskriften
+     med aria-describedby; radier bare fra rounded-skalaen; radene i tabellen
+     per del skilles med divider-subtle som i Bestillingsforslag; navigasjonsraden
+     har ikke antall på Resultattabell og Produksjonskapasitet.
+
+   MOCK-TEKNIKK (ingen JS)
+   - Siden er vist i rulleposisjon nederst. Toppen (toppfelt, h1 og
+     statuslinje) er tegnet, og det som er rullet forbi mellom statuslinja og
+     utsnittet av Resultattabell, er markert med en stiplet klippelinje
+     (presentasjon, ikke app).
+   ===================================================================== */
+
+:root{
+  /* DESIGN.md frontmatter › colors */
+  --background:#EFEDE4; --foreground:#1D2420; --card:#FBFAF5;
+  --primary:#2F5A43;
+  --muted-foreground:#535E57; --border:#DAD8CC; --ring:#7D5B1E;
+  --band:#E4E2D6; --edge:#74776B; --divider-subtle:#ECEADF; --brass-line:#8A6726;
+  --topbar:#2C3A31; --topbar-foreground:#EEF0E8; --topbar-muted:#B4C0B5;
+  --topbar-divider:#56655A; --topbar-button:#C9A862; --topbar-button-foreground:#1F2620;
+  --topbar-ghost-border:#8C9A8F; --topbar-ring:#C9A862;
+  --navrow:#3A4A3F; --navrow-foreground:#D2DBD1; --navrow-active:#FFFFFF; --navrow-indicator:#C9A862;
+  --selected-cell:#E3ECE0; --selected-cell-ring:#2F5A43;
+  --exception-critical:#A0302A; --exception-critical-soft:#F6E2DE;
+  /* rounded */
+  --r:10px; --r-lg:14px; --r-full:9999px;
+  /* spacing */
+  --page-margin:24px; --tray-gap:16px; --tray-inset:6px; --tray-head-top:18px;
+  --row-height:40px; --topbar-height:60px; --navrow-height:48px;
+  --col-varenummer:76px; --col-beskrivelse:132px; --col-rad:196px; --col-uke:76px;
+  /* typography */
+  --font:'Source Sans 3', Corbel, Candara, 'Segoe UI', system-ui, sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:#D3D1C5;font-family:var(--font);color:var(--foreground);font-size:16px;line-height:24px;
+  font-variant-numeric:lining-nums tabular-nums}
+.lf{font-weight:400}               /* tall i lette overskrifter settes i 400 */
+svg.i{width:16px;height:16px;flex:none;vertical-align:-3px}
+a,button{cursor:pointer}
+a{color:var(--primary);text-underline-offset:3px;text-decoration-thickness:1px}
+button{font-family:inherit}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* ---------- presentasjon (utenfor appen) ---------- */
+.label{width:1366px;margin:0 auto;padding:28px 0 12px;font-size:15px;line-height:22px;color:#2C3A31}
+.label b{font-weight:600}
+.frame{width:1366px;margin:0 auto 48px;background:var(--background);box-shadow:0 0 0 1px #B9B7AA}
+.chrome{height:40px;background:#CFCDC1;display:flex;align-items:center;gap:8px;padding:0 14px;font-size:12px;line-height:24px;color:#3E4640}
+.chrome .dot{width:11px;height:11px;border-radius:50%;background:#A9A799}
+.chrome .tab{margin-left:12px;background:var(--background);border-radius:8px 8px 0 0;padding:0 14px;height:30px;line-height:30px;align-self:flex-end;max-width:380px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.chrome .url{margin-left:12px;height:24px;flex:0 0 420px;background:#EFEDE4;border-radius:12px;padding:0 12px;color:#535E57}
+.klipp{position:relative;margin:4px 0 20px;border-top:2px dashed #8C3B8C}
+.klipp span{position:absolute;left:50%;top:-12px;transform:translateX(-50%);background:#8C3B8C;color:#fff;font-size:12px;line-height:16px;padding:4px 12px;border-radius:4px;white-space:nowrap}
+
+/* ---------- toppfelt (lag 1) og navigasjonsrad (lag 2) ---------- */
+.topbar{height:var(--topbar-height);background:var(--topbar);color:var(--topbar-foreground);display:flex;align-items:center;padding:0 var(--page-margin);gap:20px}
+.brand{font-size:19px;letter-spacing:.06em;font-weight:700;white-space:nowrap}
+.brand span{color:var(--topbar-button);font-weight:300}
+.ctx{display:flex;align-items:baseline;gap:18px;padding-left:20px;position:relative;white-space:nowrap}
+.ctx::before{content:"";position:absolute;left:0;top:2px;bottom:2px;width:1px;background:var(--topbar-divider)}
+.ctx .prod{font-size:18px;line-height:24px;font-weight:400}   /* kontekst, ikke overskrift */
+.ctx .meta{font-size:15px;color:var(--topbar-muted)}
+.tb-actions{margin-left:auto;display:flex;align-items:center;gap:10px;white-space:nowrap}
+.tb-link{color:var(--topbar-muted);font-size:15px;text-decoration:underline;text-underline-offset:3px;background:none;border:0;padding:6px 8px}
+.btn{font-size:16px;line-height:20px;border-radius:var(--r);padding:9px 16px;display:inline-flex;align-items:center;gap:8px;border:1px solid transparent}
+.btn-tb{background:var(--topbar-button);color:var(--topbar-button-foreground);font-weight:700}
+.btn-tb-ghost{background:transparent;color:var(--topbar-foreground);border-color:var(--topbar-ghost-border)}
+.navrow{height:var(--navrow-height);background:var(--navrow);display:flex;align-items:stretch;padding:0 var(--page-margin);gap:6px;margin:0}
+.navrow a{color:var(--navrow-foreground);text-decoration:none;font-size:16px;display:flex;align-items:center;padding:0 14px;position:relative}
+.navrow a .c{font-size:13px;line-height:16px;margin-left:7px;color:var(--topbar-muted)}
+.navrow a[aria-current]{color:var(--navrow-active);font-weight:700}
+.navrow a[aria-current]::after{content:"";position:absolute;left:14px;right:14px;bottom:0;height:3px;border-radius:var(--r-full) var(--r-full) 0 0;background:var(--navrow-indicator)}
+
+/* ---------- hovedfelt ---------- */
+.main{padding:20px var(--page-margin) 32px}
+.page-h1{margin:0 0 4px;padding:0 4px;font-size:36px;line-height:44px;font-weight:300}   /* display-token */
+.status{display:flex;align-items:center;gap:10px;font-size:17px;line-height:24px;margin:0;padding:4px 4px 16px}
+.status .sep{color:var(--muted-foreground)}
+.status a{color:var(--foreground);text-decoration-color:var(--brass-line);text-decoration-thickness:2px}
+.status a.crit{color:var(--exception-critical);text-decoration-color:var(--exception-critical)}
+
+/* brett og kort */
+.tray{background:var(--band);border-radius:var(--r-lg);padding:0 var(--tray-inset) var(--tray-inset);margin-bottom:var(--tray-gap)}
+.tray-head{display:flex;align-items:center;gap:14px;padding:var(--tray-head-top) 14px 12px}
+.tray-head h2{margin:0;font-size:22px;line-height:28px;font-weight:300;letter-spacing:.01em}
+.card{background:var(--card);border-radius:var(--r)}
+.card + .card{margin-top:var(--tray-inset)}
+
+/* ---------- Resultattabell (utsnitt nederst) ---------- */
+.rt-tray{border-radius:0 0 var(--r-lg) var(--r-lg);padding-top:0}
+.rt-tray .card{border-radius:0 0 var(--r) var(--r)}
+.rt{font-size:15px;line-height:20px;border-collapse:separate;border-spacing:0;table-layout:fixed}
+.rt caption{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.rt th,.rt td{height:var(--row-height);padding:0 12px;white-space:nowrap}
+.rt thead th{background:var(--card);font-weight:400;font-size:14px;color:var(--muted-foreground);text-align:right;border-bottom:2px solid var(--edge)}
+.rt thead th.l{text-align:left}
+.rt .c-rad{border-right:2px solid var(--edge)}
+.rt tbody .spine{background:var(--band);vertical-align:top;padding-top:10px;white-space:normal}
+.rt tbody th.spine{font-weight:400;text-align:left}      /* rygg = <th scope=rowgroup> */
+.rt tbody .spine small{display:block;font-size:13px;line-height:16px;color:var(--muted-foreground);margin-top:4px}
+.rt tbody th.c-rad{background:var(--card);text-align:left;font-weight:400;color:var(--foreground)}
+.rt td.c{text-align:right;background:var(--card)}
+.rt td.z{color:var(--muted-foreground)}
+.rt-foot{display:flex;flex-wrap:wrap;gap:8px 20px;padding:10px 16px 12px;font-size:14px;line-height:20px;color:var(--muted-foreground);border-top:1px solid var(--divider-subtle)}
+.rt-foot > span{display:inline-flex;align-items:center;gap:6px}
+.mark{display:inline-flex;align-items:center;gap:2px;font-size:13px;line-height:16px;font-weight:700;border-radius:var(--r-full);padding:1px 5px 1px 3px}
+.mark svg{width:12px;height:12px}
+.mark.crit{color:var(--exception-critical);background:var(--exception-critical-soft)}
+.kmerke{display:inline-flex;align-items:center;gap:4px;font-size:13px;line-height:16px;font-weight:700}
+.kmerke svg{width:13px;height:13px}
+.t-crit{color:var(--exception-critical)}
+.swatch{display:inline-block;width:20px;height:16px;border-radius:var(--r);background:var(--selected-cell);box-shadow:inset 0 0 0 3px var(--selected-cell-ring)}
+
+/* ---------- Kapasitetspanel: invertert brett (memlog 2026-11-14, variant C) ---------- */
+.tray.inv{background:var(--card);margin-top:24px;margin-bottom:0}
+.tray.inv .card{background:var(--background)}
+.tray.inv{--rg:var(--card)} .tray.inv .card{--rg:var(--background)}
+.intro{margin:0;padding:0 14px 14px;font-size:16px;line-height:24px;max-width:1040px}
+.card-cap{margin:0;padding:12px 16px 4px;font-size:15px;line-height:20px;color:var(--muted-foreground)}
+.capt{border-collapse:collapse;font-size:15px;line-height:20px;table-layout:fixed}
+.capt caption{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.capt thead th{height:var(--row-height);padding:0 12px;font-weight:400;font-size:14px;color:var(--muted-foreground);text-align:right;border-bottom:1px solid var(--border)}
+.capt td,.capt th{padding:0 12px}
+.capt tr.caprow > *{height:var(--row-height)}
+.capt tr.caprow th{text-align:left;font-weight:400;font-size:17px;line-height:24px}
+.capt td.n{text-align:right}
+.capt tbody + tbody tr.caprow > *{border-top:1px solid var(--border)}
+.capt tr.lim th{text-align:left;font-weight:400;font-size:14px;line-height:20px;color:var(--muted-foreground);vertical-align:top;padding-top:12px}
+.capt tr.lim td{padding:6px 4px 12px;vertical-align:top}
+.seg{border-top:2px solid var(--edge);background:var(--card);border-radius:0 0 var(--r) var(--r);padding:6px 10px 8px;font-size:14px;line-height:20px}
+.segwk{display:block;color:var(--muted-foreground);font-size:13px;line-height:18px}
+
+/* tabellen per del (FR-34) */
+.part-card{padding-bottom:6px}
+.plain{width:100%;border-collapse:collapse;table-layout:fixed;font-size:15px;line-height:20px}
+.plain th{font-weight:400;font-size:13px;line-height:16px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted-foreground);text-align:left;padding:8px 12px;border-bottom:1px solid var(--border);vertical-align:bottom}
+.plain th.n{text-align:right}
+.plain th.w{padding:8px 8px}
+.plain th.grp{text-align:center;padding-bottom:4px}
+.plain td{height:var(--row-height);padding:0 12px}
+.plain td.n{text-align:right}
+.plain td.z{color:var(--muted-foreground)}
+.plain tbody tr + tr td{border-top:1px solid var(--divider-subtle)}   /* som Bestillingsforslag */
+.tab-note{margin:0;padding:10px 12px 8px;font-size:14px;line-height:20px;color:var(--muted-foreground)}
+.tab-note b{font-weight:700}
+.plain tbody td:nth-child(n+7){padding:0 8px}
+
+/* ---------- fokus (DESIGN Colors › Fokus; samme regler som key-startside.html) ----------
+   ring på lyse flater med 2 px luft i flatens egen farge; topbar-ring i toppfelt
+   og navigasjonsrad. Celler i Resultattabell: outline, så valgt-ringen står igjen. */
+.main{--rg:var(--background)}
+.tray,.explain{--rg:var(--band)}
+.card,.layer{--rg:var(--card)}
+:where(a,button,[tabindex]):focus-visible{outline:none;box-shadow:0 0 0 2px var(--rg,var(--card)),0 0 0 5px var(--ring)}
+.topbar :focus-visible{outline:none;box-shadow:0 0 0 2px var(--topbar),0 0 0 5px var(--topbar-ring)}
+.navrow a:focus-visible{outline:none;box-shadow:0 0 0 2px var(--navrow),0 0 0 5px var(--topbar-ring)}
+.rt td.c:focus-visible{box-shadow:none;outline:3px solid var(--ring);outline-offset:2px;z-index:2}
+.rt td.c.sel:focus-visible{box-shadow:inset 0 0 0 3px var(--selected-cell-ring)}
+</style>
+</head>
+<body>
+
+<!-- ikoner (inline, ingen nettverk) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="ic-crit" viewBox="0 0 16 16"><path d="M8 1.6 15 14H1L8 1.6Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M8 6v4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><circle cx="8" cy="12" r="1" fill="currentColor"/></symbol>
+  <symbol id="ic-down" viewBox="0 0 16 16"><path d="M8 2v8m-3.5-3.5L8 10l3.5-3.5M3 13.5h10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="ic-up" viewBox="0 0 16 16"><path d="M8 11V3m-3.5 3.5L8 3l3.5 3.5M3 13.5h10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+</svg>
+
+<div class="label"><b>Resultatsiden når «Begge» er valgt, rullet ned til Kapasitetspanelet (1366 px bred).</b>
+Testeksempel 05, Kontorstol Kompakt (100-004), første kjøring. Kapasitetspanelet står sist, etter Resultattabell, og er aktivt i navigasjonsraden.
+Brettet er invertert (lyst brett, steinfargede kort inni). Begrensende deler står i én celle per sammenhengende ukeløp under hver rad. Panelet har ingen klikkbar forklaring i v1, og derfor ingen tabulatorstopp.</div>
+<div class="frame">
+  <div class="chrome" aria-hidden="true"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="tab">Kontorstol Kompakt (100-004) – Resultat – COSI - MRP</span><span class="url">cosi-mrp.local/</span></div>
+
+  <header class="topbar">
+    <div class="brand">COSI - <span>MRP</span></div>
+    <div class="ctx">
+      <span class="prod">Kontorstol Kompakt (100-004)</span>
+      <span class="meta">Horisont: 8 uker</span>
+      <span class="meta">Beregnet 14.11.2026 kl. 08:04</span>
+    </div>
+    <div class="tb-actions">
+      <button class="tb-link">Slett lagret kjøring</button>
+      <button class="btn btn-tb-ghost"><svg class="i" aria-hidden="true"><use href="#ic-up"/></svg>Last opp ny fil</button>
+      <button class="btn btn-tb"><svg class="i" aria-hidden="true"><use href="#ic-down"/></svg>Eksporter til Excel</button>
+    </div>
+  </header>
+  <nav class="navrow" aria-label="Seksjoner på resultatsiden">
+    <a href="#bf">Bestillingsforslag<span class="c">21</span></a>
+    <a href="#kd">Kritiske deler<span class="c">1</span></a>
+    <a href="#rt">Resultattabell</a>
+    <a href="#kap" aria-current="location">Produksjonskapasitet</a>
+  </nav>
+
+  <main class="main">
+    <h1 class="page-h1" tabindex="-1">Bestillingsplan for <span class="lf">100-004</span> Kontorstol Kompakt</h1>
+    <p class="status">
+      <a href="#bf">21 bestillingsforslag</a><span class="sep" aria-hidden="true">·</span>
+      <a href="#kd" class="crit">1 kritisk del trenger handling</a>
+    </p>
+
+    <div class="klipp" aria-hidden="true"><span>Rullet forbi: Bestillingsforslag, Kritiske deler og Resultattabell til og med 300-033 Ryggplate</span></div>
+
+    <!-- Resultattabell: bunnen av brettet, rullet helt ned til siste del -->
+    <section class="tray rt-tray" id="rt" aria-label="Resultattabell (utsnitt)">
+      <div class="card">
+        <table class="rt">
+          <caption>Kontorstol Kompakt (100-004), horisont 8 uker</caption>
+          <colgroup><col style="width:var(--col-varenummer)"><col style="width:var(--col-beskrivelse)"><col style="width:var(--col-rad)"><col span="8" style="width:var(--col-uke)"></colgroup>
+          <thead><tr><th class="l" scope="col">Varenr.</th><th class="l" scope="col">Beskrivelse</th><th class="l c-rad" scope="col">Rad</th><th scope="col">Uke 1</th><th scope="col">Uke 2</th><th scope="col">Uke 3</th><th scope="col">Uke 4</th><th scope="col">Uke 5</th><th scope="col">Uke 6</th><th scope="col">Uke 7</th><th scope="col">Uke 8</th></tr></thead>
+          <!-- 300-034 Hjul: Bruttobehov og Planlagte mottak er rullet ut av synet over -->
+          <tbody>
+            <tr><th class="spine" scope="rowgroup" rowspan="4">300-034</th><th class="spine" scope="rowgroup" rowspan="4">Hjul<small>Nivå .1<br>Komponent (Kjøpes inn)</small></th><th class="c-rad" scope="row">Forventet lagerbeholdning</th><td class="c">150</td><td class="c">120</td><td class="c">190</td><td class="c">150</td><td class="c">110</td><td class="c">80</td><td class="c">50</td><td class="c">50</td></tr>
+            <tr><th class="c-rad" scope="row">Nettobehov</th><td class="c z">0</td><td class="c z">0</td><td class="c z">0</td><td class="c z">0</td><td class="c z">0</td><td class="c z">0</td><td class="c z">0</td><td class="c z">0</td></tr>
+            <tr><th class="c-rad" scope="row">Planlagte ordremottak</th><td class="c z">0</td><td class="c z">0</td><td class="c z">0</td><td class="c z">0</td><td class="c z">0</td><td class="c z">0</td><td class="c z">0</td><td class="c z">0</td></tr>
+            <tr><th class="c-rad" scope="row">Planlagte ordrefrigivelser</th><td class="c z">0</td><td class="c z">0</td><td class="c z">0</td><td class="c z">0</td><td class="c z">0</td><td class="c z">0</td><td class="c z">0</td><td class="c z">0</td></tr>
+          </tbody>
+        </table>
+        <div class="rt-foot">
+          <span><span class="mark crit" aria-hidden="true"><svg class="i"><use href="#ic-crit"/></svg>1</span>1 eksepsjon i cellen</span>
+          <span><span class="kmerke t-crit" aria-hidden="true"><svg class="i"><use href="#ic-crit"/></svg>Kritisk del</span>delen har minst én eksepsjon</span>
+          <span><span class="swatch" aria-hidden="true"></span>valgt celle</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Kapasitetspanel: sist på siden, invertert brett -->
+    <section class="tray inv" id="kap" aria-labelledby="kap-h">
+      <div class="tray-head"><h2 id="kap-h" tabindex="-1">Hvor mange ferdigprodukter kan være ferdige?</h2></div>
+      <p class="intro">Produksjonskapasiteten tar med ledetid, men ikke prognostiserte behov. Sikkerhetslageret holdes av og regnes ikke som ledig.</p>
+
+      <div class="card">
+        <p class="card-cap">Kontorstol Kompakt (100-004), antall som kan være ferdige innen uka</p>
+        <table class="capt">
+          <caption>Kontorstol Kompakt (100-004): antall som kan være ferdige innen hver uke, med begrensende del</caption>
+          <colgroup><col style="width:236px"><col span="8" style="width:128px"></colgroup>
+          <thead><tr><th scope="col"><span class="sr-only">Rad</span></th><th scope="col" id="w1">Uke 1</th><th scope="col" id="w2">Uke 2</th><th scope="col" id="w3">Uke 3</th><th scope="col" id="w4">Uke 4</th><th scope="col" id="w5">Uke 5</th><th scope="col" id="w6">Uke 6</th><th scope="col" id="w7">Uke 7</th><th scope="col" id="w8">Uke 8</th></tr></thead>
+          <tbody>
+            <tr class="caprow"><th scope="row">Fra lager</th><td class="n">10</td><td class="n">10</td><td class="n">18</td><td class="n">30</td><td class="n">30</td><td class="n">30</td><td class="n">30</td><td class="n">30</td></tr>
+            <tr class="lim"><th scope="row" id="lim-l">Begrenset av</th>
+              <td headers="lim-l w1"><div class="seg"><span class="segwk">Uke 1:</span> 100-004 Kontorstol Kompakt (ledetid)</div></td>
+              <td headers="lim-l w2"><div class="seg"><span class="segwk">Uke 2:</span> 200-021 Rygg (ledetid)</div></td>
+              <td headers="lim-l w3"><div class="seg"><span class="segwk">Uke 3:</span> 200-020 Sete (ledetid)</div></td>
+              <td colspan="5" headers="lim-l w4 w5 w6 w7 w8"><div class="seg"><span class="segwk">Uke 4–8:</span> 300-033 Ryggplate (lager)</div></td></tr>
+          </tbody>
+          <tbody>
+            <tr class="caprow"><th scope="row">Med planlagte mottak</th><td class="n">10</td><td class="n">10</td><td class="n">18</td><td class="n">30</td><td class="n">30</td><td class="n">30</td><td class="n">35</td><td class="n">35</td></tr>
+            <tr class="lim"><th scope="row" id="lim-m">Begrenset av</th>
+              <td headers="lim-m w1"><div class="seg"><span class="segwk">Uke 1:</span> 100-004 Kontorstol Kompakt (ledetid)</div></td>
+              <td headers="lim-m w2"><div class="seg"><span class="segwk">Uke 2:</span> 200-021 Rygg (ledetid)</div></td>
+              <td headers="lim-m w3"><div class="seg"><span class="segwk">Uke 3:</span> 200-020 Sete (ledetid)</div></td>
+              <td colspan="3" headers="lim-m w4 w5 w6"><div class="seg"><span class="segwk">Uke 4–6:</span> 300-033 Ryggplate (lager og planlagte mottak)</div></td>
+              <td colspan="2" headers="lim-m w7 w8"><div class="seg"><span class="segwk">Uke 7–8:</span> 300-032 Skruesett M6 (lager og planlagte mottak)</div></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card part-card">
+        <p class="card-cap" id="del-cap">Lager, ledetid og planlagte mottak per del</p>
+        <table class="plain" aria-labelledby="del-cap">
+          <colgroup><col style="width:84px"><col style="width:150px"><col style="width:124px"><col style="width:124px"><col style="width:124px"><col style="width:104px"><col span="8" style="width:58px"></colgroup>
+          <thead>
+            <tr><th rowspan="2" scope="col">Varenr.</th><th rowspan="2" scope="col">Beskrivelse</th><th rowspan="2" class="n" scope="col">Lager&shy;beholdning</th><th rowspan="2" class="n" scope="col">Sikkerhets&shy;lager</th><th rowspan="2" class="n" scope="col" aria-describedby="ledig-hjelp">Ledig beholdning</th><th rowspan="2" class="n" scope="col">Ledetid (uker)</th><th colspan="8" class="grp" scope="colgroup">Planlagte mottak</th></tr>
+            <tr><th class="n w" scope="col">Uke 1</th><th class="n w" scope="col">Uke 2</th><th class="n w" scope="col">Uke 3</th><th class="n w" scope="col">Uke 4</th><th class="n w" scope="col">Uke 5</th><th class="n w" scope="col">Uke 6</th><th class="n w" scope="col">Uke 7</th><th class="n w" scope="col">Uke 8</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>100-004</td><td>Kontorstol Kompakt</td><td class="n">12</td><td class="n">2</td><td class="n">10</td><td class="n">1</td><td class="n z">0</td><td class="n z">0</td><td class="n z">0</td><td class="n z">0</td><td class="n z">0</td><td class="n z">0</td><td class="n z">0</td><td class="n z">0</td></tr>
+            <tr><td>200-020</td><td>Sete</td><td class="n">8</td><td class="n z">0</td><td class="n">8</td><td class="n">2</td><td class="n z">0</td><td class="n z">0</td><td class="n z">0</td><td class="n z">0</td><td class="n z">0</td><td class="n z">0</td><td class="n z">0</td><td class="n z">0</td></tr>
+            <tr><td>300-031</td><td>Seteplate</td><td class="n">40</td><td class="n">10</td><td class="n">30</td><td class="n">2</td><td class="n z">0</td><td class="n z">0</td><td class="n z">0</td><td class="n z">0</td><td class="n z">0</td><td class="n z">0</td><td class="n z">0</td><td class="n z">0</td></tr>
+            <tr><td>300-032</td><td>Skruesett M6</td><td class="n">140</td><td class="n">20</td><td class="n">120</td><td class="n">1</td><td class="n z">0</td><td class="n z">0</td><td class="n z">0</td><td class="n z">0</td><td class="n z">0</td><td class="n z">0</td><td class="n z">0</td><td class="n z">0</td></tr>
+            <tr><td>200-021</td><td>Rygg</td><td class="n z">0</td><td class="n z">0</td><td class="n z">0</td><td class="n">1</td><td class="n z">0</td><td class="n z">0</td><td class="n z">0</td><td class="n z">0</td><td class="n z">0</td><td class="n z">0</td><td class="n z">0</td><td class="n z">0</td></tr>
+            <tr><td>300-033</td><td>Ryggplate</td><td class="n">25</td><td class="n">5</td><td class="n">20</td><td class="n">3</td><td class="n z">0</td><td class="n z">0</td><td class="n z">0</td><td class="n z">0</td><td class="n">30</td><td class="n z">0</td><td class="n z">0</td><td class="n z">0</td></tr>
+            <tr><td>300-034</td><td>Hjul</td><td class="n">150</td><td class="n">30</td><td class="n">120</td><td class="n">1</td><td class="n z">0</td><td class="n z">0</td><td class="n">100</td><td class="n z">0</td><td class="n z">0</td><td class="n z">0</td><td class="n z">0</td><td class="n z">0</td></tr>
+          </tbody>
+        </table>
+        <p class="tab-note"><b>Ledig beholdning:</b> <span id="ledig-hjelp">Lagerbeholdning minus sikkerhetslager, aldri under 0.</span></p>
+      </div>
+    </section>
+  </main>
+</div>
+
+</body>
+</html>

@@ -2,7 +2,7 @@
 title: COSI - MRP Ordbank
 status: forslag
 created: 2026-10-21
-updated: 2026-11-13
+updated: 2026-11-14
 ---
 
 # Ordbank: COSI - MRP
@@ -17,7 +17,7 @@ Forslaget bygger på Excel-malen for flernivå stykkliste (Sebastian, 2026-10-23
 |---|---|---|
 | BMAD | – | Metoden og verktøysettet vi planlegger med: product brief → PRD → arkitektur → epics og stories. |
 | BOM | Bill of Materials | Stykkliste. Se *Stykkliste*. |
-| COSI - MRP | – | Navnet på verktøyet vi lager. |
+| COSI - MRP | – | Navnet på verktøyet vi lager. Står også som ordmerke i toppfeltet. |
 | ERP | Enterprise Resource Planning | Stort, integrert forretningssystem som dekker blant annet økonomi, lager, innkjøp og produksjon. MRP er bare én del av et ERP-system. |
 | H | Horisont | Se *Horisont*. |
 | IBE160 | – | Emnet ved Høgskolen i Molde som prosjektet er en del av. |
@@ -28,7 +28,9 @@ Forslaget bygger på Excel-malen for flernivå stykkliste (Sebastian, 2026-10-23
 | MRP II | Manufacturing Resource Planning | Videreutvikling av MRP som også tar med kapasitet, økonomi og andre ressurser. Nevnt i tilbakemeldingen fra faglærer. |
 | PRD | Product Requirements Document | Kravdokument som bygger på briefen og beskriver i detalj hva verktøyet skal gjøre. |
 | SS | Sikkerhetslager (safety stock) | Se *Sikkerhetslager*. |
+| UX | User Experience | Brukeropplevelse: hvordan appen ser ut og oppfører seg. UX-steget gir DESIGN.md (utseende) og EXPERIENCE.md (oppførsel). |
 | v1 | Versjon 1 | Første versjon av verktøyet, det vi leverer i kurset. |
+| Varenr. | Varenummer | Kort form som bare brukes i smale kolonneoverskrifter i appen. Ellers skrives *Varenummer*. |
 
 ## Inndata
 
@@ -46,7 +48,7 @@ Forslaget bygger på Excel-malen for flernivå stykkliste (Sebastian, 2026-10-23
 | Felles del | En del som står flere steder i stykklisten, f.eks. skruer i både sete og rygg. Samme varenummer, beskrivelse og type hver gang. Lager, sikkerhetslager og ledetid står bare første gang, og delen beregnes én gang (PRD FR-28). | – |
 | Antall (*quantity per*) | Hvor mange av delen som trengs per enhet av delen over. Heltall ≥ 1. Fylles ikke ut for nivå 0. | antall per ferdigprodukt, antall per A, antall per produkt |
 | Type | Ferdigvare, Komponent (Kjøpes inn) eller Komponent (Produseres selv). Ferdigvare brukes bare på nivå 0. En del som kjøpes inn, kan ikke ha underkomponenter. «Komponent» brukes bare om typen (besluttet 2026-11-05, se merknad 1 og 5). | Delmontering, Råvare (som typer) |
-| Prognostiserte behov | Antall ferdigprodukter per uke. Fylles ut i arket MPS i malen (arket beholder navnet, besluttet 2026-11-05). Brukes i malen og appen. I dokumenter skrives «Prognostiserte behov (MPS)» første gang (besluttet 2026-11-05, se merknad 2). | MPS (alene), prognose, produksjonsplan |
+| Prognostiserte behov | Antall ferdigprodukter per uke. Fylles ut i arket MPS i malen (arket beholder navnet, besluttet 2026-11-05). Brukes i malen og appen. I dokumenter skrives «Prognostiserte behov (MPS)» første gang (besluttet 2026-11-05, se merknad 2). I feilmeldinger og andre tekster i appen som viser til arket, skrives «Prognostiserte behov (arket MPS)» (besluttet 2026-11-14). | MPS (alene), prognose, produksjonsplan |
 | Lagerbeholdning (*on-hand inventory*) | Antall på lager ved starten av uke 1. Fylles ut første gang varenummeret står. | startlager, lagerstatus |
 | Sikkerhetslager (SS, *safety stock*) | Laveste forventede lagerbeholdning planen skal holde. Fylles ut første gang varenummeret står. | buffer |
 | Ledetid (L, *lead time*) | Hele uker fra en ordre frigis til den mottas: innkjøpstid for deler som kjøpes inn, produksjonstid for deler som produseres selv. Heltall ≥ 1, 0 er lov for ferdigproduktet. | innkjøpstid (alene), leveringstid |
@@ -85,6 +87,8 @@ Forslaget bygger på Excel-malen for flernivå stykkliste (Sebastian, 2026-10-23
 | Forventet lagerbeholdning (*projected on-hand*) | Disponibel beholdning + planlagt ordremottak − fremskyndede mottak som ennå ikke er kommet. Det er lagerbeholdningen resultattabellen viser (PRD FR-7). | forventet lager, forventet beholdning, beregnet lager |
 | Forfalt frigivelse | En planlagt ordrefrigivelse der t − L < 1. Den legges i uke 1 og blir bruttobehov i uke 1 for underkomponentene. | bestilling før planstart, uke 0 |
 | Bestillingsforslag | Det brukeren handler på: del, frigivelsesuke og mengde. | – |
+| Frigivelsesuke | Uken bestillingen eller produksjonsordren må sendes, det vil si uken for den planlagte ordrefrigivelsen. Ikke det samme som uken varene kommer. | bestillingsuke, leveringsuke |
+| Forfalt mengde | Den delen av et bestillingsforslag i uke 1 som egentlig skulle vært frigitt før horisonten (se *Forfalt frigivelse*). Vises i appen som mengden «175» med knappen «50 forfalt» etter, og hjelpeteksten «Forfalt: skulle vært bestilt før uke 1.» | forsinket mengde |
 | Bestillingsregel (*lot sizing rule*) | Regelen som gjør nettobehov om til planlagt ordremottak. | – |
 | Lot-for-lot (L4L) | Planlagt ordremottak = nettobehov. | – |
 | Fast partistørrelse (*fixed order quantity*) | Planlagt ordremottak rundes opp til et helt antall partier. Planlagt utvidelse. Kolonnen i malen og verdien Q heter «Partistørrelse». | partistørrelse (alene, om regelen) |
@@ -123,7 +127,7 @@ Forslaget bygger på Excel-malen for flernivå stykkliste (Sebastian, 2026-10-23
 | Kontroll | Kolonnen i Stykkliste som viser hva som mangler eller ikke stemmer i hver rad, før opplasting. | – |
 | Kjøring | Én beregning fra én opplastet Excel-mal. | beregning (om hele kjøringen) |
 | Valideringsfeil | En feil i filen som appen finner, og som stopper beregningen. Oppgir ark, rad og årsak. | feilmelding |
-| Resultattabell | MRP-tabellen per del og uke, med eksepsjonene markert. | MRP-tabell, resultatside, oversikt |
+| Resultattabell | MRP-tabellen per del og uke, med eksepsjonene markert. Én seksjon på resultatsiden. | MRP-tabell, resultatside (om tabellen), oversikt |
 | Før/etter-sammenligning | Forskjellen i bestillingsforslag og eksepsjoner mellom forrige og ny kjøring for samme ferdigprodukt. Appen husker siste kjøring per ferdigprodukt (PRD FR-19, besluttet 2026-11-05). | – |
 | Testeksempel | Et utfylt datasett med fasit, i `testdata/` (01–05). | øvingseksempel (slettet, se merknad 4) |
 | Fasit | Manuelt kontrollert forventet resultattabell og eksepsjonsliste for et testeksempel. | – |
@@ -131,10 +135,46 @@ Forslaget bygger på Excel-malen for flernivå stykkliste (Sebastian, 2026-10-23
 | Vercel | Tjenesten appen publiseres på, med en lenke som kan åpnes uten installasjon. Vercel leverer bare appens kode. Innlesing, validering, beregning og lagring av kjøringer skjer i brukerens nettleser (besluttet 2026-11-05). Står i PRD-addendumet, ikke i kravene: NFR-3 og NFR-4 beskriver atferden (endret 2026-11-13). | – |
 | Lokal lagring | Nettleserens lagring på brukerens maskin, der appen husker siste kjøring per ferdigprodukt. Den opplastede Excel-filen lagres ikke (PRD FR-19, NFR-10). Hvilken lagring i nettleseren som brukes, velges i arkitekturen. | – |
 | Brukertest | Test der testpersoner løser de samme tre oppgavene i appen etter en kort introduksjon, hver for seg og uten veiledning. En oppgave er løst ved riktig svar innen 3 minutter. Holdes 2.–7. desember 2026 (PRD SM-3, §8.1). | brukstest, brukstesting, brukertesting |
-| Prøvetest | En prøve av brukertesten med et gruppemedlem, for å se at introduksjonen og oppgavene fungerer. Teller ikke med i resultatet (PRD §8.1). | pilottest |
+| Prøvetest | En prøve av brukertesten før testuka, for å se at introduksjonen og oppgavene fungerer. Teller ikke med i resultatet (PRD §8.1). | pilottest |
 | Testperson | En person som deltar i brukertesten. Trenger ikke ha brukt appen før. 4–8 i alt, 1–2 per gruppemedlem (PRD §8.1). | testbruker |
 | Testleder | Gruppemedlemmet som gjennomfører brukertesten med en testperson. Kan hjelpe med tekniske problemer, men ikke med oppgavene (PRD §8.1). | – |
 | Grensetilfelle (*edge case*) | Testtilfelle i ytterkanten av det normale, f.eks. behov i uke 1, eller ledetid lik eller lengre enn horisonten. | – |
+
+## Brukergrensesnitt
+
+Begreper fra UX-steget (`ux-designs/ux-COSI - MRP-2026-11-13/`, DESIGN.md og EXPERIENCE.md, 2026-11-13). Brukes i UX-dokumentene, stories og koden. Bare ordene som står i appen (f.eks. Bestillingsforslag, Kritiske deler, Resultattabell) vises for brukeren.
+
+| Begrep | Definisjon | Ikke bruk |
+|---|---|---|
+| Startside | Siden før opplasting: kort veiledning, nedlasting av malen og testeksempel 01, opplasting og valget «Hva vil du beregne?» (PRD FR-27, FR-30). Valideringsfeil vises øverst her. | forside, landingsside |
+| Resultatside | Hele siden etter en vellykket kjøring. Har seksjonene Bestillingsforslag, Endringer, Kritiske deler, Resultattabell og Produksjonskapasitet i den rekkefølgen (PRD §4.4). Appen har bare denne ene siden for resultatene. | forside, dashbord, oversikt, resultattabell (om hele siden) |
+| Bestillingsplan | Resultatet av MRP-beregningen for ett ferdigprodukt: bestillingsforslag, kritiske deler og resultattabellen (PRD §4.2–4.6, FR-30). Et av valgene i radiogruppen, og overskriften (h1) på resultatsiden, f.eks. «Bestillingsplan for 100-002 Kontorstol Basic». | produksjonsplan (om bestillingsplanen) |
+| Toppfelt | Det mørke feltet øverst med appnavnet, ferdigproduktet, horisonten og handlingene (Eksporter til Excel, Last opp ny fil, Slett lagret kjøring). Blir stående når brukeren blar. | header, banner |
+| Navigasjonsrad | Raden under toppfeltet med ankerlenker til seksjonene på resultatsiden. Ser ut som navigasjon, men åpner ingen nye sider. | oppgavelinje, meny, faner |
+| Statuslinje | En kort tekstlinje med status. På resultatsiden står den rett under sidens overskrift (h1) og viser nøkkeltall som lenker, f.eks. «12 bestillingsforslag · 4 kritiske deler trenger handling». På startsiden viser den «Leser fila …» og «Beregner …» etter Beregn. | nøkkeltallskort, KPI-kort |
+| Brett | Den tonede flaten som rammer inn én seksjon med overskrift. Seksjonene skilles med toner, ikke streker (DESIGN.md). | panel (om seksjonen), boks |
+| Kort | Den lyse flaten inne i et brett, der innholdet står. | rubrikk, flis |
+| Stein | Den varme grunnflaten under brettene, den nederste av de tre lyse tonene stein, brett og kort (DESIGN.md, `background`). | – |
+| Tint | En lys tone av en semantisk farge, brukt som flate bak tekst og ikon i samme farge, f.eks. eksepsjonstint (`exception-critical-soft`) bak en eksepsjonsmarkør eller et eksepsjonskort. | – |
+| Slippsone | Feltet på startsiden der brukeren slipper Excel-fila eller velger den med knappen «Velg fil». | dropzone, opplastingsboks |
+| Forklaringspanel | Panelet til høyre som åpnes ved klikk på en celle eller rad i Resultattabell og forklarer tallet (PRD FR-18). Skyver innholdet til side, dekker det ikke. | popup, tooltip, sidemeny, modal |
+| Eksepsjonskort | Kortet øverst i forklaringspanelet når cellen har en eksepsjon: typenavnet, meldingen og «Hvorfor:». Står over de fire lagene. | – |
+| Endringsliste | Innholdet i seksjonen Endringer: før/etter-sammenligningen som liste (PRD FR-20). Etikettene er som i fasit 03: Nytt, Endret mengde og Fjernet for bestillingsforslag, Ny og Borte for eksepsjoner, Ny og Fjernet for deler. | diff, endringslogg |
+| Feiloppsummering | Lista øverst på startsiden med alle valideringsfeilene, gruppert per ark (PRD FR-2, FR-4). | feilside, feildialog |
+| Ukefilter | Valget over Bestillingsforslag som viser bare én uke. Starter på Uke 1 når resultatsiden åpnes, og kan fjernes med «Vis alle uker» (PRD FR-17). | ukevisning |
+| Eksepsjonsmarkør | Den lille pillen med ikon og antall i en celle i Resultattabell som har eksepsjon, eller i ryggen når eksepsjonen gjelder hele delen. Farge, ikon og tekst sammen, aldri farge alene. | varselikon, flagg |
+| Eksepsjonsnivå | Hvor alvorlig en eksepsjonstype er: kritisk (Bestilling forsinket, Mottak forsinket) eller advarsel (Bruk av sikkerhetslager, Ledetid overskrider horisont, Kanseller mottak). Bare internt i tokener og kode (f.eks. `exception-warning`), aldri i teksten i appen eller i tilgjengelige navn. Der står typenavnet. | info, nøytral (om en eksepsjon) |
+| Klartekstlinje | Linja under delen i kritiske deler-lista som sier i vanlige ord hva som er galt, f.eks. «Bestillingen skulle vært sendt før uke 1.» Følger ordretypen. | – |
+| Ordliste | Forklaringene av begrepene i appen. Åpnes i forklaringspanelet ved klikk, aldri ved peking. | hjelp, glossar |
+| Rygg | Kolonnene til venstre i Resultattabell med varenummer og beskrivelse, som binder de seks radene for én del sammen. Står fast ved sidescroll (PRD NFR-8). | – |
+| Statusregion | Det usynlige området som leser opp statusmeldinger for skjermlesere (`role="status"`). Finnes fra sidelasting. | – |
+| Ordretype | Kolonnen i Bestillingsforslag som sier om forslaget er Innkjøp eller Produksjonsordre. I fasitene heter kolonnen «Art». | art (i appen) |
+| Radiogruppe | Valget «Hva vil du beregne?» på startsiden: Bestillingsplan, Produksjonskapasitet eller Begge (PRD FR-30). | nedtrekksliste (om dette valget) |
+| Valgkort | Ett av de tre kortene i radiogruppen, med sirkel, etikett og én linje hjelpetekst. Hele kortet kan velges. | – |
+| Statusmelding | En melding som blir stående på resultatsiden til den ikke gjelder lenger, f.eks. at kjøringen ikke er lagret (PRD NFR-10), at lagret kjøring er slettet, eller at eksporten feilet. Ikke det samme som statuslinja. | toast, popup, varsel |
+| Bekreftelsesdialog | Den lille dialogen som spør før en handling som ikke kan angres, f.eks. Slett lagret kjøring. | popup, advarsel (om dialogen; «advarsel» er bare et internt eksepsjonsnivå, se *Eksepsjonsnivå*) |
+| Kapasitetspanel | Seksjonen Produksjonskapasitet på resultatsiden, i eget brett med tydelig skille fra bestillingsplanen (PRD FR-32–FR-34). Brettet er invertert, og begrensende deler står i raden «Begrenset av» med ukene skrevet inn, f.eks. «Uke 4–8: 300-033 Ryggplate (lager)». | kapasitetsfane, produksjonsplan |
+| Nøkkelskjerm | En tegnet skjerm i `mockups/` som viser en viktig flate i appen. Illustrerer DESIGN.md og EXPERIENCE.md; ved konflikt gjelder de to dokumentene. | mock, mockup (i løpende tekst), spine-dokument (om DESIGN.md og EXPERIENCE.md) |
 
 ## Prosjekt og omfang
 

@@ -1,0 +1,1001 @@
+<!doctype html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fargetemaer runde 1</title>
+<style>
+/* COSI - MRP · Fargetemaer runde 1 · kun lys modus (mørk modus utsatt for v1).
+   Alle hex-verdier per variant står i kommentarblokkene under og kan løftes direkte. */
+
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:#FAFAF8;color:#1E1E22;font:14px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
+.page-h{max-width:1440px;margin:0 auto;padding:32px 40px 8px}
+.page-h h1{font-size:24px;margin:0 0 6px;letter-spacing:-.01em}
+.page-h p{margin:4px 0;max-width:900px;color:#4A4A52}
+.toc{display:flex;gap:18px;flex-wrap:wrap;margin:12px 0 0;padding:0;list-style:none}
+.toc a{color:#2B4A7A}
+.variant{background:var(--bg);color:var(--text);padding:36px 40px 44px;border-top:1px solid rgba(0,0,0,.08)}
+.variant-in{max-width:1360px;margin:0 auto}
+.v-head{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;margin-bottom:6px}
+.v-num{font-size:13px;font-weight:700;color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+.v-head h2{margin:0;font-size:26px;letter-spacing:-.015em;font-weight:700}
+.v-reg{margin:0 0 6px;color:var(--muted);font-size:15px;max-width:900px}
+.v-note{margin:0 0 18px;color:var(--muted);font-size:13px}
+.chips{display:grid;grid-template-columns:repeat(auto-fill,minmax(205px,1fr));gap:8px;margin-bottom:24px}
+.chip{display:flex;gap:10px;align-items:flex-start;background:var(--surface);border:1px solid var(--divider);border-radius:6px;padding:8px}
+.sw{flex:0 0 40px;height:40px;border-radius:5px;border:1px solid rgba(0,0,0,.14);display:flex;align-items:center;justify-content:center}
+.sw-in{font-weight:700;font-size:14px}
+.chip-tx{display:flex;flex-direction:column;font-size:12px;line-height:1.35;min-width:0}
+.chip-tx b{font-size:12.5px}
+.chip-tx code{font:12px/1.35 ui-monospace,"Cascadia Mono",Consolas,monospace;color:var(--text)}
+.cr{color:var(--muted)}
+.v{font-weight:600}
+.v.ok{color:var(--text)}
+.v.bad{color:var(--crit)}
+.v.dekor{color:var(--muted);font-weight:500;font-style:italic}
+
+/* --- app snippet --- */
+.app{border-radius:calc(var(--radius) + 2px);overflow:hidden;border:1px solid var(--divider);background:var(--bg);box-shadow:0 8px 30px rgba(0,0,0,.07)}
+.ic{width:16px;height:16px;flex:0 0 16px;vertical-align:-3px}
+.topbar{background:var(--topbar);color:var(--topbar-fg);display:flex;justify-content:space-between;align-items:center;gap:16px;padding:12px 24px;border-bottom:2px solid var(--topbar-line);position:sticky;top:0}
+.tb-left{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.brand{font-weight:700;letter-spacing:.08em;font-size:12px;text-transform:uppercase;color:var(--topbar-muted)}
+.tb-sep{width:1px;height:18px;background:var(--topbar-muted);opacity:.5}
+.prod{font-weight:650;font-size:16px}
+.tb-meta{color:var(--topbar-muted);font-size:13px}
+.tb-right{display:flex;gap:10px}
+.btn-tb,.btn-tb-ghost{display:inline-flex;align-items:center;gap:7px;padding:7px 14px;border-radius:var(--radius);font-weight:600;font-size:13px;text-decoration:none;white-space:nowrap}
+.btn-tb{background:var(--tb-btn);color:var(--tb-btn-fg)}
+.btn-tb-ghost{color:var(--topbar-fg);border:1px solid var(--topbar-muted)}
+.anchors{background:var(--nav-bg);display:flex;gap:28px;padding:0 24px;border-bottom:1px solid var(--divider)}
+.anchors a{color:var(--nav-fg);text-decoration:none;font-weight:550;font-size:14px;padding:11px 0 9px;border-bottom:3px solid transparent}
+.anchors a.active{color:var(--nav-active);border-bottom-color:var(--nav-ind);font-weight:700}
+.content{padding:18px 24px 24px}
+.status-line{margin:0 0 16px;font-size:15px;color:var(--muted)}
+.status-line a,.card a,.info-line a{color:var(--primary);font-weight:600;text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px}
+.dotsep{margin:0 6px;color:var(--muted)}
+.grid{display:grid;grid-template-columns:1.3fr 1fr;gap:16px;align-items:start}
+.col{display:flex;flex-direction:column;gap:16px;min-width:0}
+.card{background:var(--surface);border:1px solid var(--divider);border-radius:var(--radius);box-shadow:var(--shadow);padding:14px 16px 12px}
+.card-h{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:8px;flex-wrap:wrap}
+.card-h h3{margin:0;font-size:var(--head-size);font-weight:var(--head-w);text-transform:var(--head-tr);letter-spacing:var(--head-ls)}
+.card-sub{color:var(--muted);font-size:12.5px}
+.tbl{width:100%;border-collapse:collapse;font-size:13.5px;font-variant-numeric:tabular-nums}
+.tbl th{text-align:left;font-weight:600;color:var(--muted);font-size:12.5px;padding:7px 8px;border-bottom:1px solid var(--border)}
+.tbl td,.tbl tbody th{padding:7px 8px;border-bottom:1px solid var(--divider)}
+.tbl tbody th{color:var(--text);font-weight:550;font-size:13px;border-bottom:1px solid var(--divider)}
+.tbl tbody tr:last-child td,.tbl tbody tr:last-child th{border-bottom:0}
+.num{text-align:right;white-space:nowrap}
+.tbl th.num{text-align:right}
+.mono{font-variant-numeric:tabular-nums;font-weight:550}
+.tag{display:inline-block;font-size:11.5px;font-weight:600;color:var(--muted);border:1px solid var(--border);border-radius:999px;padding:0 7px;margin-left:6px;line-height:17px;vertical-align:1px}
+.over-tag{display:inline-flex;align-items:center;gap:4px;color:var(--over);background:var(--over-soft);font-size:12px;font-weight:650;border-radius:4px;padding:0 6px 0 4px;margin-left:4px;line-height:20px}
+.over-tag .ic{width:13px;height:13px;flex-basis:13px;vertical-align:0}
+.info-line{display:flex;gap:8px;align-items:center;margin:10px 0 2px;padding:7px 10px;background:var(--info-soft);color:var(--info);border-radius:calc(var(--radius) - 2px);font-size:13px}
+.info-line span{color:var(--text)}
+.rt td{width:13%}
+.cell-exc{background:var(--crit-soft);color:var(--crit);font-weight:700}
+.exc-mark{display:inline-flex;align-items:center;gap:3px;color:var(--crit);font-size:12px;font-weight:700;margin-right:8px}
+.exc-mark .ic{width:14px;height:14px;flex-basis:14px;vertical-align:0}
+.cell-sel{background:var(--sel-bg);box-shadow:inset 0 0 0 3px var(--sel-ring);font-weight:700}
+.legend{display:flex;gap:18px;flex-wrap:wrap;margin:10px 0 0;font-size:12.5px;color:var(--muted)}
+.lg{display:inline-flex;align-items:center;gap:6px}
+.sel-demo{display:inline-block;width:22px;height:14px;background:var(--sel-bg);box-shadow:inset 0 0 0 3px var(--sel-ring);border-radius:2px}
+.crit-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.st{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:calc(var(--radius) - 2px);font-size:13.5px;border-left:3px solid currentColor}
+.st > span:nth-of-type(1){flex:1;color:var(--text)}
+.st-lbl{font-size:12px;font-weight:700}
+.st-crit{background:var(--crit-soft);color:var(--crit)}
+.st-warn{background:var(--warn-soft);color:var(--warn)}
+.chart{width:100%;height:auto;display:block}
+.chart .grid{stroke:var(--divider);stroke-width:1}
+.chart .ax{fill:var(--muted);font-size:11px;font-variant-numeric:tabular-nums}
+.chart .line{fill:none;stroke:var(--chart);stroke-width:2.5;stroke-linejoin:round;stroke-linecap:round}
+.chart .dot{fill:var(--surface);stroke:var(--chart);stroke-width:2}
+.chart .ref{stroke:var(--chart-ref);stroke-width:1.6;stroke-dasharray:6 5}
+.chart .lbl-ref{fill:var(--chart-ref);font-size:11.5px;font-weight:600}
+.chart .exc-pt{color:var(--crit)}
+.chart .lbl-crit{fill:var(--crit);font-size:11.5px;font-weight:700}
+.key-line{display:inline-block;width:22px;height:0;border-top:2.5px solid var(--chart)}
+.key-ref{display:inline-block;width:22px;height:0;border-top:2px dashed var(--chart-ref)}
+.focus-demo{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.btn-primary,.btn-sec{display:inline-flex;align-items:center;padding:7px 14px;border-radius:var(--radius);font-weight:600;font-size:13px;text-decoration:none}
+.btn-primary{background:var(--primary);color:var(--on-primary)}
+.btn-sec{background:var(--surface);color:var(--primary);border:1px solid var(--border)}
+.is-focus{outline:2px solid var(--focus);outline-offset:2px}
+a:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.foot{max-width:1440px;margin:0 auto;padding:20px 40px 40px;color:#4A4A52;font-size:13px}
+
+/* ===== Variant 1: Blekk og papir =====
+   Register: Rolig og skrivebordsaktig: blekkblå ramme på varmt papir – som et godt innbundet notatbokomslag.
+   --bg            #F5F1E8
+   --surface       #FFFDF8
+   --band          #ECE6D8
+   --topbar        #18233A
+   --topbar-fg     #F5F1E8
+   --topbar-muted  #B9C0CF
+   --topbar-line   #C9A45C
+   --tb-btn        #F5F1E8
+   --tb-btn-fg     #18233A
+   --nav-bg        #FBF8F1
+   --nav-fg        #4C5364
+   --nav-active    #18233A
+   --nav-ind       #24467A
+   --text          #1A2030
+   --muted         #585F6E
+   --divider       #E2DBCB
+   --border        #8E8778
+   --primary       #24467A
+   --on-primary    #FFFFFF
+   --focus         #2F5FA8
+   --sel-bg        #E4EBF6
+   --sel-ring      #24467A
+   --crit          #A42B22
+   --crit-soft     #F8E3DF
+   --warn          #845500
+   --warn-soft     #F8EDD3
+   --info          #3D5873
+   --info-soft     #E5ECF2
+   --over          #7D2F63
+   --over-soft     #F3E3EE
+   --chart         #24467A
+   --chart-ref     #7A7262
+   Merknad: Gulltråd #C9A45C kun som 2 px linje under toppfeltet (dekor, ikke informasjon).
+*/
+.t1 { --bg:#F5F1E8; --surface:#FFFDF8; --band:#ECE6D8; --topbar:#18233A; --topbar-fg:#F5F1E8; --topbar-muted:#B9C0CF; --topbar-line:#C9A45C; --tb-btn:#F5F1E8; --tb-btn-fg:#18233A; --nav-bg:#FBF8F1; --nav-fg:#4C5364; --nav-active:#18233A; --nav-ind:#24467A; --text:#1A2030; --muted:#585F6E; --divider:#E2DBCB; --border:#8E8778; --primary:#24467A; --on-primary:#FFFFFF; --focus:#2F5FA8; --sel-bg:#E4EBF6; --sel-ring:#24467A; --crit:#A42B22; --crit-soft:#F8E3DF; --warn:#845500; --warn-soft:#F8EDD3; --info:#3D5873; --info-soft:#E5ECF2; --over:#7D2F63; --over-soft:#F3E3EE; --chart:#24467A; --chart-ref:#7A7262; --radius:6px; --shadow:0 1px 0 rgba(24,35,58,.06), 0 1px 3px rgba(24,35,58,.06); --head-tr:none; --head-ls:0; --head-size:15px; --head-w:650 }
+/* ===== Variant 2: Salvie og messing =====
+   Register: Dempet og håndverksmessig: salvie og stein med et diskret messingdrag – stille luksus.
+   --bg            #ECEEE7
+   --surface       #F9FAF6
+   --band          #E0E5DA
+   --topbar        #2C3A31
+   --topbar-fg     #EEF0E8
+   --topbar-muted  #B4C0B5
+   --topbar-line   #B08D4A
+   --tb-btn        #C9A862
+   --tb-btn-fg     #1F2620
+   --nav-bg        #E0E5DA
+   --nav-fg        #46524A
+   --nav-active    #1D2420
+   --nav-ind       #8A6726
+   --text          #1D2420
+   --muted         #535E57
+   --divider       #D3D9CC
+   --border        #838C82
+   --primary       #2F5A43
+   --on-primary    #FFFFFF
+   --focus         #7D5B1E
+   --sel-bg        #E3ECE0
+   --sel-ring      #2F5A43
+   --crit          #A0302A
+   --crit-soft     #F6E2DE
+   --warn          #8A4F0B
+   --warn-soft     #F7E8D6
+   --info          #45586A
+   --info-soft     #E3EAEE
+   --over          #7E2F55
+   --over-soft     #F2E2EA
+   --chart         #2F5A43
+   --chart-ref     #8A6726
+   Merknad: Messing #B08D4A/#8A6726 kun til aktiv navigasjonsmarkør, linje under toppfeltet og referanselinjen i grafen.
+*/
+.t2 { --bg:#ECEEE7; --surface:#F9FAF6; --band:#E0E5DA; --topbar:#2C3A31; --topbar-fg:#EEF0E8; --topbar-muted:#B4C0B5; --topbar-line:#B08D4A; --tb-btn:#C9A862; --tb-btn-fg:#1F2620; --nav-bg:#E0E5DA; --nav-fg:#46524A; --nav-active:#1D2420; --nav-ind:#8A6726; --text:#1D2420; --muted:#535E57; --divider:#D3D9CC; --border:#838C82; --primary:#2F5A43; --on-primary:#FFFFFF; --focus:#7D5B1E; --sel-bg:#E3ECE0; --sel-ring:#2F5A43; --crit:#A0302A; --crit-soft:#F6E2DE; --warn:#8A4F0B; --warn-soft:#F7E8D6; --info:#45586A; --info-soft:#E3EAEE; --over:#7E2F55; --over-soft:#F2E2EA; --chart:#2F5A43; --chart-ref:#8A6726; --radius:4px; --shadow:none; --head-tr:uppercase; --head-ls:.08em; --head-size:12.5px; --head-w:700 }
+/* ===== Variant 3: Horisont =====
+   Register: Kjølig og profesjonell: skiferblå ramme og presist Fiori-blått – nærmest SAP S/4HANA Horizon.
+   --bg            #EEF2F6
+   --surface       #FFFFFF
+   --band          #E4EBF2
+   --topbar        #1D2D3E
+   --topbar-fg     #FFFFFF
+   --topbar-muted  #BCC8D6
+   --topbar-line   #1D2D3E
+   --tb-btn        #0064D9
+   --tb-btn-fg     #FFFFFF
+   --nav-bg        #FFFFFF
+   --nav-fg        #556B82
+   --nav-active    #0057BD
+   --nav-ind       #0064D9
+   --text          #1D2D3E
+   --muted         #556B82
+   --divider       #D9E0E8
+   --border        #7B8CA0
+   --primary       #0064D9
+   --on-primary    #FFFFFF
+   --focus         #0032A5
+   --sel-bg        #EBF8FF
+   --sel-ring      #0064D9
+   --crit          #AA0808
+   --crit-soft     #FFEAF4
+   --warn          #A33E00
+   --warn-soft     #FFF3E0
+   --info          #475E75
+   --info-soft     #E8EFF6
+   --over          #8A1C99
+   --over-soft     #F8EAFB
+   --chart         #0064D9
+   --chart-ref     #5B738B
+   Merknad: Ingen egen aksent; Fiori-blått bærer både lenker, primærknapp og aktiv fane.
+*/
+.t3 { --bg:#EEF2F6; --surface:#FFFFFF; --band:#E4EBF2; --topbar:#1D2D3E; --topbar-fg:#FFFFFF; --topbar-muted:#BCC8D6; --topbar-line:#1D2D3E; --tb-btn:#0064D9; --tb-btn-fg:#FFFFFF; --nav-bg:#FFFFFF; --nav-fg:#556B82; --nav-active:#0057BD; --nav-ind:#0064D9; --text:#1D2D3E; --muted:#556B82; --divider:#D9E0E8; --border:#7B8CA0; --primary:#0064D9; --on-primary:#FFFFFF; --focus:#0032A5; --sel-bg:#EBF8FF; --sel-ring:#0064D9; --crit:#AA0808; --crit-soft:#FFEAF4; --warn:#A33E00; --warn-soft:#FFF3E0; --info:#475E75; --info-soft:#E8EFF6; --over:#8A1C99; --over-soft:#F8EAFB; --chart:#0064D9; --chart-ref:#5B738B; --radius:12px; --shadow:0 0 2px rgba(34,53,72,.10), 0 2px 4px rgba(34,53,72,.08); --head-tr:none; --head-ls:0; --head-size:16px; --head-w:700 }
+/* ===== Variant 4: Lavendel og plomme =====
+   Register: Mykt og stilfullt: lavendelgrå grunn med dyp plomme – som lobbyen på et designhotell.
+   --bg            #F1EFF4
+   --surface       #FCFBFD
+   --band          #E7E3EE
+   --topbar        #35213F
+   --topbar-fg     #F4EFF6
+   --topbar-muted  #C7B9CE
+   --topbar-line   #35213F
+   --tb-btn        #E9DDF0
+   --tb-btn-fg     #35213F
+   --nav-bg        #FCFBFD
+   --nav-fg        #5C5466
+   --nav-active    #5A2F72
+   --nav-ind       #5A2F72
+   --text          #221B29
+   --muted         #5C5466
+   --divider       #DDD7E4
+   --border        #8C8496
+   --primary       #5A2F72
+   --on-primary    #FFFFFF
+   --focus         #7B47A0
+   --sel-bg        #EEE6F4
+   --sel-ring      #5A2F72
+   --crit          #A3282A
+   --crit-soft     #F8E2E2
+   --warn          #855200
+   --warn-soft     #F7EBD3
+   --info          #44507A
+   --info-soft     #E6E8F2
+   --over          #8A3A1A
+   --over-soft     #F5E5DC
+   --chart         #5A2F72
+   --chart-ref     #7E7488
+   Merknad: Plomme er eneste aksent; forfalt bruker rust (#8A3A1A) for å skille seg fra plomme.
+*/
+.t4 { --bg:#F1EFF4; --surface:#FCFBFD; --band:#E7E3EE; --topbar:#35213F; --topbar-fg:#F4EFF6; --topbar-muted:#C7B9CE; --topbar-line:#35213F; --tb-btn:#E9DDF0; --tb-btn-fg:#35213F; --nav-bg:#FCFBFD; --nav-fg:#5C5466; --nav-active:#5A2F72; --nav-ind:#5A2F72; --text:#221B29; --muted:#5C5466; --divider:#DDD7E4; --border:#8C8496; --primary:#5A2F72; --on-primary:#FFFFFF; --focus:#7B47A0; --sel-bg:#EEE6F4; --sel-ring:#5A2F72; --crit:#A3282A; --crit-soft:#F8E2E2; --warn:#855200; --warn-soft:#F7EBD3; --info:#44507A; --info-soft:#E6E8F2; --over:#8A3A1A; --over-soft:#F5E5DC; --chart:#5A2F72; --chart-ref:#7E7488; --radius:10px; --shadow:0 1px 2px rgba(53,33,63,.06), 0 4px 12px rgba(53,33,63,.05); --head-tr:none; --head-ls:-.005em; --head-size:15.5px; --head-w:600 }
+/* ===== Variant 5: Sand og espresso =====
+   Register: Varmt og eksklusivt: sandtonet grunn, espresso-ramme i to lag og en presis petrol-aksent.
+   --bg            #F2ECE2
+   --surface       #FFFCF6
+   --band          #E8DFD0
+   --topbar        #2B211C
+   --topbar-fg     #F4ECE1
+   --topbar-muted  #C4B6A6
+   --topbar-line   #2B211C
+   --tb-btn        #5CC2BA
+   --tb-btn-fg     #1B1512
+   --nav-bg        #3A2D26
+   --nav-fg        #D9CCBD
+   --nav-active    #FFFFFF
+   --nav-ind       #5CC2BA
+   --text          #2A201B
+   --muted         #675A50
+   --divider       #E0D5C4
+   --border        #8F8274
+   --primary       #0F6464
+   --on-primary    #FFFFFF
+   --focus         #0F6464
+   --sel-bg        #E0F0EE
+   --sel-ring      #0F6464
+   --crit          #A42D1C
+   --crit-soft     #F8E1DA
+   --warn          #875300
+   --warn-soft     #F6EAD0
+   --info          #4C5F6B
+   --info-soft     #E5EBEE
+   --over          #833560
+   --over-soft     #F3E2EA
+   --chart         #0F6464
+   --chart-ref     #8C7B68
+   Merknad: Petrol #5CC2BA på mørk navigasjon, #0F6464 på lys flate; espresso-rammen går i to lag (toppfelt + navigasjon).
+*/
+.t5 { --bg:#F2ECE2; --surface:#FFFCF6; --band:#E8DFD0; --topbar:#2B211C; --topbar-fg:#F4ECE1; --topbar-muted:#C4B6A6; --topbar-line:#2B211C; --tb-btn:#5CC2BA; --tb-btn-fg:#1B1512; --nav-bg:#3A2D26; --nav-fg:#D9CCBD; --nav-active:#FFFFFF; --nav-ind:#5CC2BA; --text:#2A201B; --muted:#675A50; --divider:#E0D5C4; --border:#8F8274; --primary:#0F6464; --on-primary:#FFFFFF; --focus:#0F6464; --sel-bg:#E0F0EE; --sel-ring:#0F6464; --crit:#A42D1C; --crit-soft:#F8E1DA; --warn:#875300; --warn-soft:#F6EAD0; --info:#4C5F6B; --info-soft:#E5EBEE; --over:#833560; --over-soft:#F3E2EA; --chart:#0F6464; --chart-ref:#8C7B68; --radius:8px; --shadow:0 1px 0 rgba(43,33,28,.08); --head-tr:none; --head-ls:.01em; --head-size:15px; --head-w:650 }
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+ <symbol id="ic-crit" viewBox="0 0 16 16"><path d="M5.1 1h5.8L15 5.1v5.8L10.9 15H5.1L1 10.9V5.1z" fill="currentColor"/><path d="M8 4.3v4.6" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/><circle cx="8" cy="11.4" r="1.05" fill="#fff"/></symbol>
+ <symbol id="ic-warn" viewBox="0 0 16 16"><path d="M8 1.2 15.3 14.2H.7z" fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linejoin="round"/><path d="M8 5.6v4" stroke="#fff" stroke-width="1.7" stroke-linecap="round"/><circle cx="8" cy="12" r="1" fill="#fff"/></symbol>
+ <symbol id="ic-info" viewBox="0 0 16 16"><circle cx="8" cy="8" r="7" fill="currentColor"/><path d="M8 7.2v4.4" stroke="#fff" stroke-width="1.7" stroke-linecap="round"/><circle cx="8" cy="4.8" r="1" fill="#fff"/></symbol>
+ <symbol id="ic-clock" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M8 4.6V8l2.4 1.6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+ <symbol id="ic-down" viewBox="0 0 16 16"><path d="M8 2v8M4.5 6.8 8 10.3l3.5-3.5M2.5 13.5h11" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+ <symbol id="ic-up" viewBox="0 0 16 16"><path d="M8 10.5v-8M4.5 5.7 8 2.2l3.5 3.5M2.5 13.5h11" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+</svg>
+<header class="page-h">
+<h1>COSI - MRP · Fargetemaer, runde 1</h1>
+<p>Fem tolkninger av «rolig og eksklusivt – lyst, men ikke hvitt og kjedelig». Hver variant har fast palett med farget toppfelt eller tonet grunn, fargebrikker med kontrastforhold (WCAG 2.1 AA) og samme utsnitt av resultatsiden, slik at de kan sammenlignes direkte.</p>
+<p>Kun lys modus. Varselfarger brukes bare på avvik og status i tabellen, alltid med ikon og tekst. Før/etter vises med tekstetikettene «Ny», «Endret» og «Fjernet», ikke rødt/grønt. Tallene i utsnittet er illustrasjon for fargevalg, ikke beregnet fasit.</p>
+<ul class="toc"><li><a href="#t1">1. Blekk og papir</a></li><li><a href="#t2">2. Salvie og messing</a></li><li><a href="#t3">3. Horisont</a></li><li><a href="#t4">4. Lavendel og plomme</a></li><li><a href="#t5">5. Sand og espresso</a></li></ul>
+</header>
+<section class="variant t1" id="t1">
+<div class="variant-in">
+<div class="v-head"><span class="v-num">Variant 1</span><h2>Blekk og papir</h2></div>
+<p class="v-reg">Rolig og skrivebordsaktig: blekkblå ramme på varmt papir – som et godt innbundet notatbokomslag.</p>
+<p class="v-note">Gulltråd #C9A45C kun som 2 px linje under toppfeltet (dekor, ikke informasjon).</p>
+<div class="chips">
+<div class="chip"><span class="sw" style="background:#F5F1E8"><span class="sw-in" style="color:#1A2030">Aa</span></span>
+<span class="chip-tx"><b>Bakgrunn (side)</b><code>#F5F1E8</code><span class="cr">14,4:1 mot tekst</span><span class="v ok">✓ AA (≥4,5)</span></span></div>
+<div class="chip"><span class="sw" style="background:#FFFDF8"><span class="sw-in" style="color:#1A2030">Aa</span></span>
+<span class="chip-tx"><b>Flate (kort)</b><code>#FFFDF8</code><span class="cr">16,0:1 mot tekst</span><span class="v ok">✓ AA (≥4,5)</span></span></div>
+<div class="chip"><span class="sw" style="background:#ECE6D8"><span class="sw-in" style="color:#1A2030">Aa</span></span>
+<span class="chip-tx"><b>Tonet bånd</b><code>#ECE6D8</code><span class="cr">13,1:1 mot tekst</span><span class="v ok">✓ AA (≥4,5)</span></span></div>
+<div class="chip"><span class="sw" style="background:#18233A"><span class="sw-in" style="color:#F5F1E8">Aa</span></span>
+<span class="chip-tx"><b>Toppfelt bakgrunn</b><code>#18233A</code><span class="cr">13,9:1 mot toppfelt-tekst</span><span class="v ok">✓ AA (≥4,5)</span></span></div>
+<div class="chip"><span class="sw" style="background:#F5F1E8"><span class="sw-in" style="color:#18233A">Aa</span></span>
+<span class="chip-tx"><b>Toppfelt tekst</b><code>#F5F1E8</code><span class="cr">13,9:1 mot toppfelt</span><span class="v ok">✓ AA (≥4,5)</span></span></div>
+<div class="chip"><span class="sw" style="background:#B9C0CF"><span class="sw-in" style="color:#18233A">Aa</span></span>
+<span class="chip-tx"><b>Toppfelt metatekst</b><code>#B9C0CF</code><span class="cr">8,6:1 mot toppfelt</span><span class="v ok">✓ AA (≥4,5)</span></span></div>
+<div class="chip"><span class="sw" style="background:#18233A"><span class="sw-in" style="color:#FBF8F1">Aa</span></span>
+<span class="chip-tx"><b>Navigasjon aktiv</b><code>#18233A</code><span class="cr">14,8:1 mot navigasjon</span><span class="v ok">✓ AA (≥4,5)</span></span></div>
+<div class="chip"><span class="sw" style="background:#24467A"><span class="sw-in" style="color:#FBF8F1">Aa</span></span>
+<span class="chip-tx"><b>Navigasjon markør</b><code>#24467A</code><span class="cr">8,9:1 mot navigasjon</span><span class="v ok">✓ AA (≥3)</span></span></div>
+<div class="chip"><span class="sw" style="background:#1A2030"><span class="sw-in" style="color:#FFFDF8">Aa</span></span>
+<span class="chip-tx"><b>Tekst</b><code>#1A2030</code><span class="cr">16,0:1 mot flate</span><span class="v ok">✓ AA (≥4,5)</span></span></div>
+<div class="chip"><span class="sw" style="background:#585F6E"><span class="sw-in" style="color:#F5F1E8">Aa</span></span>
+<span class="chip-tx"><b>Dempet tekst</b><code>#585F6E</code><span class="cr">5,7:1 mot bakgrunn</span><span class="v ok">✓ AA (≥4,5)</span></span></div>
+<div class="chip"><span class="sw" style="background:#E2DBCB"><span class="sw-in" style="color:#FFFDF8">Aa</span></span>
+<span class="chip-tx"><b>Skillelinje</b><code>#E2DBCB</code><span class="cr">1,4:1 mot flate</span><span class="v dekor">dekor, uten krav</span></span></div>
+<div class="chip"><span class="sw" style="background:#8E8778"><span class="sw-in" style="color:#FFFDF8">Aa</span></span>
+<span class="chip-tx"><b>Kontrollkant</b><code>#8E8778</code><span class="cr">3,5:1 mot flate</span><span class="v ok">✓ AA (≥3)</span></span></div>
+<div class="chip"><span class="sw" style="background:#24467A"><span class="sw-in" style="color:#FFFDF8">Aa</span></span>
+<span class="chip-tx"><b>Primær (lenke/knapp)</b><code>#24467A</code><span class="cr">9,3:1 mot flate</span><span class="v ok">✓ AA (≥4,5)</span></span></div>
+<div class="chip"><span class="sw" style="background:#FFFFFF"><span class="sw-in" style="color:#24467A">Aa</span></span>
+<span class="chip-tx"><b>På primær</b><code>#FFFFFF</code><span class="cr">9,4:1 mot primær</span><span class="v ok">✓ AA (≥4,5)</span></span></div>
+<div class="chip"><span class="sw" style="background:#2F5FA8"><span class="sw-in" style="color:#FFFDF8">Aa</span></span>
+<span class="chip-tx"><b>Fokusring</b><code>#2F5FA8</code><span class="cr">6,2:1 mot flate</span><span class="v ok">✓ AA (≥3)</span></span></div>
+<div class="chip"><span class="sw" style="background:#E4EBF6"><span class="sw-in" style="color:#1A2030">Aa</span></span>
+<span class="chip-tx"><b>Valgt celle</b><code>#E4EBF6</code><span class="cr">13,5:1 mot tekst</span><span class="v ok">✓ AA (≥4,5)</span></span></div>
+<div class="chip"><span class="sw" style="background:#24467A"><span class="sw-in" style="color:#E4EBF6">Aa</span></span>
+<span class="chip-tx"><b>Valgt celle ring</b><code>#24467A</code><span class="cr">7,8:1 mot valgt celle</span><span class="v ok">✓ AA (≥3)</span></span></div>
+<div class="chip"><span class="sw" style="background:#A42B22"><span class="sw-in" style="color:#F8E3DF">Aa</span></span>
+<span class="chip-tx"><b>Kritisk (avvik)</b><code>#A42B22</code><span class="cr">5,8:1 mot kritisk tint</span><span class="v ok">✓ AA (≥4,5)</span></span></div>
+<div class="chip"><span class="sw" style="background:#F8E3DF"><span class="sw-in" style="color:#1A2030">Aa</span></span>
+<span class="chip-tx"><b>Kritisk tint</b><code>#F8E3DF</code><span class="cr">13,2:1 mot tekst</span><span class="v ok">✓ AA (≥4,5)</span></span></div>
+<div class="chip"><span class="sw" style="background:#845500"><span class="sw-in" style="color:#F8EDD3">Aa</span></span>
+<span class="chip-tx"><b>Advarsel</b><code>#845500</code><span class="cr">5,5:1 mot advarsel tint</span><span class="v ok">✓ AA (≥4,5)</span></span></div>
+<div class="chip"><span class="sw" style="background:#F8EDD3"><span class="sw-in" style="color:#1A2030">Aa</span></span>
+<span class="chip-tx"><b>Advarsel tint</b><code>#F8EDD3</code><span class="cr">14,0:1 mot tekst</span><span class="v ok">✓ AA (≥4,5)</span></span></div>
+<div class="chip"><span class="sw" style="background:#3D5873"><span class="sw-in" style="color:#E5ECF2">Aa</span></span>
+<span class="chip-tx"><b>Info / nøytral</b><code>#3D5873</code><span class="cr">6,2:1 mot info tint</span><span class="v ok">✓ AA (≥4,5)</span></span></div>
+<div class="chip"><span class="sw" style="background:#E5ECF2"><span class="sw-in" style="color:#1A2030">Aa</span></span>
+<span class="chip-tx"><b>Info tint</b><code>#E5ECF2</code><span class="cr">13,6:1 mot tekst</span><span class="v ok">✓ AA (≥4,5)</span></span></div>
+<div class="chip"><span class="sw" style="background:#7D2F63"><span class="sw-in" style="color:#F3E3EE">Aa</span></span>
+<span class="chip-tx"><b>Forfalt</b><code>#7D2F63</code><span class="cr">6,9:1 mot forfalt tint</span><span class="v ok">✓ AA (≥4,5)</span></span></div>
+<div class="chip"><span class="sw" style="background:#F3E3EE"><span class="sw-in" style="color:#1A2030">Aa</span></span>
+<span class="chip-tx"><b>Forfalt tint</b><code>#F3E3EE</code><span class="cr">13,2:1 mot tekst</span><span class="v ok">✓ AA (≥4,5)</span></span></div>
+<div class="chip"><span class="sw" style="background:#24467A"><span class="sw-in" style="color:#FFFDF8">Aa</span></span>
+<span class="chip-tx"><b>Graflinje (lagerbeh.)</b><code>#24467A</code><span class="cr">9,3:1 mot flate</span><span class="v ok">✓ AA (≥3)</span></span></div>
+<div class="chip"><span class="sw" style="background:#7A7262"><span class="sw-in" style="color:#FFFDF8">Aa</span></span>
+<span class="chip-tx"><b>Referanselinje (SL)</b><code>#7A7262</code><span class="cr">4,7:1 mot flate</span><span class="v ok">✓ AA (≥3)</span></span></div>
+</div>
+
+<div class="app" aria-label="Eksempel: resultatsiden i temaet Blekk og papir">
+  <header class="topbar">
+    <div class="tb-left">
+      <span class="brand">COSI&nbsp;MRP</span>
+      <span class="tb-sep" aria-hidden="true"></span>
+      <span class="prod">Kontorstol Pro <span class="tb-meta">(100-001)</span></span>
+      <span class="tb-meta">Horisont: 8 uker</span>
+      <span class="tb-meta">Beregnet 13.11.2026 kl. 08:04</span>
+    </div>
+    <div class="tb-right">
+      <a class="btn-tb-ghost" href="#t1"><svg class="ic " aria-hidden="true" focusable="false"><use href="#ic-up"/></svg>Last opp ny fil</a>
+      <a class="btn-tb" href="#t1"><svg class="ic " aria-hidden="true" focusable="false"><use href="#ic-down"/></svg>Eksporter til Excel</a>
+    </div>
+  </header>
+  <nav class="anchors" aria-label="Seksjoner på resultatsiden">
+    <a href="#t1" class="active" aria-current="true">Bestillingsforslag</a>
+    <a href="#t1">Endringer</a>
+    <a href="#t1">Kritiske deler</a>
+    <a href="#t1">Resultattabell</a>
+    <a href="#t1">Produksjonskapasitet</a>
+  </nav>
+  <div class="content">
+    <p class="status-line"><a href="#t1">12 bestillingsforslag</a> <span class="dotsep" aria-hidden="true">·</span> <a href="#t1">4 kritiske deler trenger handling</a> <span class="dotsep" aria-hidden="true">·</span> <a href="#t1">3 endringer siden forrige kjøring</a></p>
+    <div class="grid">
+      <div class="col">
+        <section class="card">
+          <div class="card-h"><h3>Bestillingsforslag</h3><span class="card-sub">Sortert etter frigivelsesuke</span></div>
+          <table class="tbl">
+            <thead><tr><th>Varenummer</th><th>Beskrivelse</th><th class="num">Frigivelsesuke</th><th class="num">Mengde</th><th>Ordretype</th></tr></thead>
+            <tbody>
+              <tr><td class="mono">300-003</td><td>Hjul <span class="tag">Endret</span></td><td class="num">Uke 1</td><td class="num">175 <span class="over-tag"><svg class="ic " aria-hidden="true" focusable="false"><use href="#ic-clock"/></svg>50 forfalt</span></td><td>Innkjøp</td></tr>
+              <tr><td class="mono">300-006</td><td>Skruesett M6 <span class="tag">Ny</span></td><td class="num">Uke 2</td><td class="num">30</td><td>Innkjøp</td></tr>
+              <tr><td class="mono">200-002</td><td>Seteenhet</td><td class="num">Uke 2</td><td class="num">45</td><td>Produksjonsordre</td></tr>
+              <tr><td class="mono">300-005</td><td>Gassfjær</td><td class="num">Uke 3</td><td class="num">100</td><td>Innkjøp</td></tr>
+            </tbody>
+          </table>
+          <p class="info-line"><svg class="ic " aria-hidden="true" focusable="false"><use href="#ic-info"/></svg><span>Viser 4 av 12 forslag. <a href="#t1">Vis alle bestillingsforslag</a></span></p>
+        </section>
+        <section class="card">
+          <div class="card-h"><h3>Resultattabell</h3><span class="card-sub">300-003 Hjul · sikkerhetslager 40 · ledetid 2 uker</span></div>
+          <table class="tbl rt">
+            <thead><tr><th>Rad</th><th class="num">Uke 1</th><th class="num">Uke 2</th><th class="num">Uke 3</th><th class="num">Uke 4</th><th class="num">Uke 5</th></tr></thead>
+            <tbody>
+              <tr><th scope="row">Bruttobehov</th><td class="num">125</td><td class="num">100</td><td class="num">210</td><td class="num">130</td><td class="num">140</td></tr>
+              <tr><th scope="row">Planlagte mottak</th><td class="num">100</td><td class="num">75</td><td class="num">0</td><td class="num">0</td><td class="num">0</td></tr>
+              <tr><th scope="row">Forventet lagerbeholdning</th><td class="num">85</td><td class="num">60</td><td class="num cell-exc"><span class="exc-mark"><svg class="ic " aria-hidden="true" focusable="false"><use href="#ic-crit"/></svg>1</span>25</td><td class="num cell-sel">70</td><td class="num">55</td></tr>
+              <tr><th scope="row">Nettobehov</th><td class="num">0</td><td class="num">0</td><td class="num">190</td><td class="num">145</td><td class="num">110</td></tr>
+              <tr><th scope="row">Planlagte ordremottak</th><td class="num">0</td><td class="num">0</td><td class="num">175</td><td class="num">175</td><td class="num">125</td></tr>
+              <tr><th scope="row">Planlagte ordrefrigivelser</th><td class="num">175 <span class="over-tag"><svg class="ic " aria-hidden="true" focusable="false"><use href="#ic-clock"/></svg>50</span></td><td class="num">175</td><td class="num">125</td><td class="num">0</td><td class="num">0</td></tr>
+            </tbody>
+          </table>
+          <p class="legend"><span class="lg"><span class="exc-mark"><svg class="ic " aria-hidden="true" focusable="false"><use href="#ic-crit"/></svg>1</span> = 1 avvik i cellen</span><span class="lg"><span class="over-tag"><svg class="ic " aria-hidden="true" focusable="false"><use href="#ic-clock"/></svg>50</span> = 50 forfalt</span><span class="lg"><span class="sel-demo"></span> Valgt celle: Forventet lagerbeholdning, uke 4</span></p>
+        </section>
+      </div>
+      <div class="col">
+        <section class="card">
+          <div class="card-h"><h3>Kritiske deler</h3><span class="card-sub">3 av 4 vist</span></div>
+          <ul class="crit-list">
+            <li class="st st-crit"><svg class="ic " aria-hidden="true" focusable="false"><use href="#ic-crit"/></svg><span><b>300-005 Gassfjær</b> – Mottak forsinket (uke 3)</span><span class="st-lbl">Kritisk</span></li>
+            <li class="st st-crit"><svg class="ic " aria-hidden="true" focusable="false"><use href="#ic-crit"/></svg><span><b>300-003 Hjul</b> – Bestilling forsinket (uke 1)</span><span class="st-lbl">Kritisk</span></li>
+            <li class="st st-warn"><svg class="ic " aria-hidden="true" focusable="false"><use href="#ic-warn"/></svg><span><b>300-002 Rygg</b> – Bruk av sikkerhetslager (uke 2)</span><span class="st-lbl">Advarsel</span></li>
+          </ul>
+        </section>
+        <section class="card">
+          <div class="card-h"><h3>Forventet lagerbeholdning – 300-003 Hjul</h3></div>
+          <svg class="chart" viewBox="0 0 520 210" role="img" aria-labelledby="t1-ch-t t1-ch-d"><title id="t1-ch-t">Forventet lagerbeholdning – 300-003 Hjul</title><desc id="t1-ch-d">Uke 1 til 8: 85, 60, 25, 70, 55, 50, 65, 45. Sikkerhetslager 40. Under sikkerhetslager i uke 3.</desc><line x1="44" x2="504" y1="176.0" y2="176.0" class="grid"/><text x="36" y="180.0" class="ax" text-anchor="end">0</text><line x1="44" x2="504" y1="97.0" y2="97.0" class="grid"/><text x="36" y="101.0" class="ax" text-anchor="end">50</text><line x1="44" x2="504" y1="18.0" y2="18.0" class="grid"/><text x="36" y="22.0" class="ax" text-anchor="end">100</text><text x="44.0" y="198" class="ax" text-anchor="middle">Uke 1</text><text x="109.7" y="198" class="ax" text-anchor="middle">Uke 2</text><text x="175.4" y="198" class="ax" text-anchor="middle">Uke 3</text><text x="241.1" y="198" class="ax" text-anchor="middle">Uke 4</text><text x="306.9" y="198" class="ax" text-anchor="middle">Uke 5</text><text x="372.6" y="198" class="ax" text-anchor="middle">Uke 6</text><text x="438.3" y="198" class="ax" text-anchor="middle">Uke 7</text><text x="504.0" y="198" class="ax" text-anchor="middle">Uke 8</text><line x1="44" x2="504" y1="112.8" y2="112.8" class="ref"/><text x="50" y="127.8" class="lbl-ref" text-anchor="start">Sikkerhetslager 40</text><polyline points="44.0,41.7 109.7,81.2 175.4,136.5 241.1,65.4 306.9,89.1 372.6,97.0 438.3,73.3 504.0,104.9" class="line"/><circle cx="44.0" cy="41.7" r="3.2" class="dot"/><circle cx="109.7" cy="81.2" r="3.2" class="dot"/><circle cx="241.1" cy="65.4" r="3.2" class="dot"/><circle cx="306.9" cy="89.1" r="3.2" class="dot"/><circle cx="372.6" cy="97.0" r="3.2" class="dot"/><circle cx="438.3" cy="73.3" r="3.2" class="dot"/><circle cx="504.0" cy="104.9" r="3.2" class="dot"/><g transform="translate(167.4,128.5)" class="exc-pt"><use href="#ic-crit" width="16" height="16"/></g><text x="187.4" y="150.5" class="lbl-crit">25 – under sikkerhetslager</text></svg>
+          <p class="legend"><span class="lg"><span class="key-line"></span> Forventet lagerbeholdning</span><span class="lg"><span class="key-ref"></span> Sikkerhetslager 40</span></p>
+        </section>
+        <div class="focus-demo"><a class="btn-primary" href="#t1">Primærknapp</a><a class="btn-sec" href="#t1">Sekundær</a><span class="btn-sec is-focus">Med fokusring</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+</section>
+<section class="variant t2" id="t2">
+<div class="variant-in">
+<div class="v-head"><span class="v-num">Variant 2</span><h2>Salvie og messing</h2></div>
+<p class="v-reg">Dempet og håndverksmessig: salvie og stein med et diskret messingdrag – stille luksus.</p>
+<p class="v-note">Messing #B08D4A/#8A6726 kun til aktiv navigasjonsmarkør, linje under toppfeltet og referanselinjen i grafen.</p>
+<div class="chips">
+<div class="chip"><span class="sw" style="background:#ECEEE7"><span class="sw-in" style="color:#1D2420">Aa</span></span>
+<span class="chip-tx"><b>Bakgrunn (side)</b><code>#ECEEE7</code><span class="cr">13,5:1 mot tekst</span><span class="v ok">✓ AA (≥4,5)</span></span></div>
+<div class="chip"><span class="sw" style="background:#F9FAF6"><span class="sw-in" style="color:#1D2420">Aa</span></span>
+<span class="chip-tx"><b>Flate (kort)</b><code>#F9FAF6</code><span class="cr">15,1:1 mot tekst</span><span class="v ok">✓ AA (≥4,5)</span></span></div>
+<div class="chip"><span class="sw" style="background:#E0E5DA"><span class="sw-in" style="color:#1D2420">Aa</span></span>
+<span class="chip-tx"><b>Tonet bånd</b><code>#E0E5DA</code><span class="cr">12,4:1 mot tekst</span><span class="v ok">✓ AA (≥4,5)</span></span></div>
+<div class="chip"><span class="sw" style="background:#2C3A31"><span class="sw-in" style="color:#EEF0E8">Aa</span></span>
+<span class="chip-tx"><b>Toppfelt bakgrunn</b><code>#2C3A31</code><span class="cr">10,4:1 mot toppfelt-tekst</span><span class="v ok">✓ AA (≥4,5)</span></span></div>
+<div class="chip"><span class="sw" style="background:#EEF0E8"><span class="sw-in" style="color:#2C3A31">Aa</span></span>
+<span class="chip-tx"><b>Toppfelt tekst</b><code>#EEF0E8</code><span class="cr">10,4:1 mot toppfelt</span><span class="v ok">✓ AA (≥4,5)</span></span></div>
+<div class="chip"><span class="sw" style="background:#B4C0B5"><span class="sw-in" style="color:#2C3A31">Aa</span></span>
+<span class="chip-tx"><b>Toppfelt metatekst</b><code>#B4C0B5</code><span class="cr">6,3:1 mot toppfelt</span><span class="v ok">✓ AA (≥4,5)</span></span></div>
+<div class="chip"><span class="sw" style="background:#1D2420"><span class="sw-in" style="color:#E0E5DA">Aa</span></span>
+<span class="chip-tx"><b>Navigasjon aktiv</b><code>#1D2420</code><span class="cr">12,4:1 mot navigasjon</span><span class="v ok">✓ AA (≥4,5)</span></span></div>
+<div class="chip"><span class="sw" style="background:#8A6726"><span class="sw-in" style="color:#E0E5DA">Aa</span></span>
+<span class="chip-tx"><b>Navigasjon markør</b><code>#8A6726</code><span class="cr">4,0:1 mot navigasjon</span><span class="v ok">✓ AA (≥3)</span></span></div>
+<div class="chip"><span class="sw" style="background:#1D2420"><span class="sw-in" style="color:#F9FAF6">Aa</span></span>
+<span class="chip-tx"><b>Tekst</b><code>#1D2420</code><span class="cr">15,1:1 mot flate</span><span class="v ok">✓ AA (≥4,5)</span></span></div>
+<div class="chip"><span class="sw" style="background:#535E57"><span class="sw-in" style="color:#ECEEE7">Aa</span></span>
+<span class="chip-tx"><b>Dempet tekst</b><code>#535E57</code><span class="cr">5,8:1 mot bakgrunn</span><span class="v ok">✓ AA (≥4,5)</span></span></div>
+<div class="chip"><span class="sw" style="background:#D3D9CC"><span class="sw-in" style="color:#F9FAF6">Aa</span></span>
+<span class="chip-tx"><b>Skillelinje</b><code>#D3D9CC</code><span class="cr">1,4:1 mot flate</span><span class="v dekor">dekor, uten krav</span></span></div>
+<div class="chip"><span class="sw" style="background:#838C82"><span class="sw-in" style="color:#F9FAF6">Aa</span></span>
+<span class="chip-tx"><b>Kontrollkant</b><code>#838C82</code><span class="cr">3,3:1 mot flate</span><span class="v ok">✓ AA (≥3)</span></span></div>
+<div class="chip"><span class="sw" style="background:#2F5A43"><span class="sw-in" style="color:#F9FAF6">Aa</span></span>
+<span class="chip-tx"><b>Primær (lenke/knapp)</b><code>#2F5A43</code><span class="cr">7,5:1 mot flate</span><span class="v ok">✓ AA (≥4,5)</span></span></div>
+<div class="chip"><span class="sw" style="background:#FFFFFF"><span class="sw-in" style="color:#2F5A43">Aa</span></span>
+<span class="chip-tx"><b>På primær</b><code>#FFFFFF</code><span class="cr">7,9:1 mot primær</span><span class="v ok">✓ AA (≥4,5)</span></span></div>
+<div class="chip"><span class="sw" style="background:#7D5B1E"><span class="sw-in" style="color:#F9FAF6">Aa</span></span>
+<span class="chip-tx"><b>Fokusring</b><code>#7D5B1E</code><span class="cr">5,9:1 mot flate</span><span class="v ok">✓ AA (≥3)</span></span></div>
+<div class="chip"><span class="sw" style="background:#E3ECE0"><span class="sw-in" style="color:#1D2420">Aa</span></span>
+<span class="chip-tx"><b>Valgt celle</b><code>#E3ECE0</code><span class="cr">13,1:1 mot tekst</span><span class="v ok">✓ AA (≥4,5)</span></span></div>
+<div class="chip"><span class="sw" style="background:#2F5A43"><span class="sw-in" style="color:#E3ECE0">Aa</span></span>
+<span class="chip-tx"><b>Valgt celle ring</b><code>#2F5A43</code><span class="cr">6,5:1 mot valgt celle</span><span class="v ok">✓ AA (≥3)</span></span></div>
+<div class="chip"><span class="sw" style="background:#A0302A"><span class="sw-in" style="color:#F6E2DE">Aa</span></span>
+<span class="chip-tx"><b>Kritisk (avvik)</b><code>#A0302A</code><span class="cr">5,7:1 mot kritisk tint</span><span class="v ok">✓ AA (≥4,5)</span></span></div>
+<div class="chip"><span class="sw" style="background:#F6E2DE"><span class="sw-in" style="color:#1D2420">Aa</span></span>
+<span class="chip-tx"><b>Kritisk tint</b><code>#F6E2DE</code><span class="cr">12,7:1 mot tekst</span><span class="v ok">✓ AA (≥4,5)</span></span></div>
+<div class="chip"><span class="sw" style="background:#8A4F0B"><span class="sw-in" style="color:#F7E8D6">Aa</span></span>
+<span class="chip-tx"><b>Advarsel</b><code>#8A4F0B</code><span class="cr">5,5:1 mot advarsel tint</span><span class="v ok">✓ AA (≥4,5)</span></span></div>
+<div class="chip"><span class="sw" style="background:#F7E8D6"><span class="sw-in" style="color:#1D2420">Aa</span></span>
+<span class="chip-tx"><b>Advarsel tint</b><code>#F7E8D6</code><span class="cr">13,2:1 mot tekst</span><span class="v ok">✓ AA (≥4,5)</span></span></div>
+<div class="chip"><span class="sw" style="background:#45586A"><span class="sw-in" style="color:#E3EAEE">Aa</span></span>
+<span class="chip-tx"><b>Info / nøytral</b><code>#45586A</code><span class="cr">6,0:1 mot info tint</span><span class="v ok">✓ AA (≥4,5)</span></span></div>
+<div class="chip"><span class="sw" style="background:#E3EAEE"><span class="sw-in" style="color:#1D2420">Aa</span></span>
+<span class="chip-tx"><b>Info tint</b><code>#E3EAEE</code><span class="cr">13,0:1 mot tekst</span><span class="v ok">✓ AA (≥4,5)</span></span></div>
+<div class="chip"><span class="sw" style="background:#7E2F55"><span class="sw-in" style="color:#F2E2EA">Aa</span></span>
+<span class="chip-tx"><b>Forfalt</b><code>#7E2F55</code><span class="cr">6,9:1 mot forfalt tint</span><span class="v ok">✓ AA (≥4,5)</span></span></div>
+<div class="chip"><span class="sw" style="background:#F2E2EA"><span class="sw-in" style="color:#1D2420">Aa</span></span>
+<span class="chip-tx"><b>Forfalt tint</b><code>#F2E2EA</code><span class="cr">12,7:1 mot tekst</span><span class="v ok">✓ AA (≥4,5)</span></span></div>
+<div class="chip"><span class="sw" style="background:#2F5A43"><span class="sw-in" style="color:#F9FAF6">Aa</span></span>
+<span class="chip-tx"><b>Graflinje (lagerbeh.)</b><code>#2F5A43</code><span class="cr">7,5:1 mot flate</span><span class="v ok">✓ AA (≥3)</span></span></div>
+<div class="chip"><span class="sw" style="background:#8A6726"><span class="sw-in" style="color:#F9FAF6">Aa</span></span>
+<span class="chip-tx"><b>Referanselinje (SL)</b><code>#8A6726</code><span class="cr">4,9:1 mot flate</span><span class="v ok">✓ AA (≥3)</span></span></div>
+</div>
+
+<div class="app" aria-label="Eksempel: resultatsiden i temaet Salvie og messing">
+  <header class="topbar">
+    <div class="tb-left">
+      <span class="brand">COSI&nbsp;MRP</span>
+      <span class="tb-sep" aria-hidden="true"></span>
+      <span class="prod">Kontorstol Pro <span class="tb-meta">(100-001)</span></span>
+      <span class="tb-meta">Horisont: 8 uker</span>
+      <span class="tb-meta">Beregnet 13.11.2026 kl. 08:04</span>
+    </div>
+    <div class="tb-right">
+      <a class="btn-tb-ghost" href="#t2"><svg class="ic " aria-hidden="true" focusable="false"><use href="#ic-up"/></svg>Last opp ny fil</a>
+      <a class="btn-tb" href="#t2"><svg class="ic " aria-hidden="true" focusable="false"><use href="#ic-down"/></svg>Eksporter til Excel</a>
+    </div>
+  </header>
+  <nav class="anchors" aria-label="Seksjoner på resultatsiden">
+    <a href="#t2" class="active" aria-current="true">Bestillingsforslag</a>
+    <a href="#t2">Endringer</a>
+    <a href="#t2">Kritiske deler</a>
+    <a href="#t2">Resultattabell</a>
+    <a href="#t2">Produksjonskapasitet</a>
+  </nav>
+  <div class="content">
+    <p class="status-line"><a href="#t2">12 bestillingsforslag</a> <span class="dotsep" aria-hidden="true">·</span> <a href="#t2">4 kritiske deler trenger handling</a> <span class="dotsep" aria-hidden="true">·</span> <a href="#t2">3 endringer siden forrige kjøring</a></p>
+    <div class="grid">
+      <div class="col">
+        <section class="card">
+          <div class="card-h"><h3>Bestillingsforslag</h3><span class="card-sub">Sortert etter frigivelsesuke</span></div>
+          <table class="tbl">
+            <thead><tr><th>Varenummer</th><th>Beskrivelse</th><th class="num">Frigivelsesuke</th><th class="num">Mengde</th><th>Ordretype</th></tr></thead>
+            <tbody>
+              <tr><td class="mono">300-003</td><td>Hjul <span class="tag">Endret</span></td><td class="num">Uke 1</td><td class="num">175 <span class="over-tag"><svg class="ic " aria-hidden="true" focusable="false"><use href="#ic-clock"/></svg>50 forfalt</span></td><td>Innkjøp</td></tr>
+              <tr><td class="mono">300-006</td><td>Skruesett M6 <span class="tag">Ny</span></td><td class="num">Uke 2</td><td class="num">30</td><td>Innkjøp</td></tr>
+              <tr><td class="mono">200-002</td><td>Seteenhet</td><td class="num">Uke 2</td><td class="num">45</td><td>Produksjonsordre</td></tr>
+              <tr><td class="mono">300-005</td><td>Gassfjær</td><td class="num">Uke 3</td><td class="num">100</td><td>Innkjøp</td></tr>
+            </tbody>
+          </table>
+          <p class="info-line"><svg class="ic " aria-hidden="true" focusable="false"><use href="#ic-info"/></svg><span>Viser 4 av 12 forslag. <a href="#t2">Vis alle bestillingsforslag</a></span></p>
+        </section>
+        <section class="card">
+          <div class="card-h"><h3>Resultattabell</h3><span class="card-sub">300-003 Hjul · sikkerhetslager 40 · ledetid 2 uker</span></div>
+          <table class="tbl rt">
+            <thead><tr><th>Rad</th><th class="num">Uke 1</th><th class="num">Uke 2</th><th class="num">Uke 3</th><th class="num">Uke 4</th><th class="num">Uke 5</th></tr></thead>
+            <tbody>
+              <tr><th scope="row">Bruttobehov</th><td class="num">125</td><td class="num">100</td><td class="num">210</td><td class="num">130</td><td class="num">140</td></tr>
+              <tr><th scope="row">Planlagte mottak</th><td class="num">100</td><td class="num">75</td><td class="num">0</td><td class="num">0</td><td class="num">0</td></tr>
+              <tr><th scope="row">Forventet lagerbeholdning</th><td class="num">85</td><td class="num">60</td><td class="num cell-exc"><span class="exc-mark"><svg class="ic " aria-hidden="true" focusable="false"><use href="#ic-crit"/></svg>1</span>25</td><td class="num cell-sel">70</td><td class="num">55</td></tr>
+              <tr><th scope="row">Nettobehov</th><td class="num">0</td><td class="num">0</td><td class="num">190</td><td class="num">145</td><td class="num">110</td></tr>
+              <tr><th scope="row">Planlagte ordremottak</th><td class="num">0</td><td class="num">0</td><td class="num">175</td><td class="num">175</td><td class="num">125</td></tr>
+              <tr><th scope="row">Planlagte ordrefrigivelser</th><td class="num">175 <span class="over-tag"><svg class="ic " aria-hidden="true" focusable="false"><use href="#ic-clock"/></svg>50</span></td><td class="num">175</td><td class="num">125</td><td class="num">0</td><td class="num">0</td></tr>
+            </tbody>
+          </table>
+          <p class="legend"><span class="lg"><span class="exc-mark"><svg class="ic " aria-hidden="true" focusable="false"><use href="#ic-crit"/></svg>1</span> = 1 avvik i cellen</span><span class="lg"><span class="over-tag"><svg class="ic " aria-hidden="true" focusable="false"><use href="#ic-clock"/></svg>50</span> = 50 forfalt</span><span class="lg"><span class="sel-demo"></span> Valgt celle: Forventet lagerbeholdning, uke 4</span></p>
+        </section>
+      </div>
+      <div class="col">
+        <section class="card">
+          <div class="card-h"><h3>Kritiske deler</h3><span class="card-sub">3 av 4 vist</span></div>
+          <ul class="crit-list">
+            <li class="st st-crit"><svg class="ic " aria-hidden="true" focusable="false"><use href="#ic-crit"/></svg><span><b>300-005 Gassfjær</b> – Mottak forsinket (uke 3)</span><span class="st-lbl">Kritisk</span></li>
+            <li class="st st-crit"><svg class="ic " aria-hidden="true" focusable="false"><use href="#ic-crit"/></svg><span><b>300-003 Hjul</b> – Bestilling forsinket (uke 1)</span><span class="st-lbl">Kritisk</span></li>
+            <li class="st st-warn"><svg class="ic " aria-hidden="true" focusable="false"><use href="#ic-warn"/></svg><span><b>300-002 Rygg</b> – Bruk av sikkerhetslager (uke 2)</span><span class="st-lbl">Advarsel</span></li>
+          </ul>
+        </section>
+        <section class="card">
+          <div class="card-h"><h3>Forventet lagerbeholdning – 300-003 Hjul</h3></div>
+          <svg class="chart" viewBox="0 0 520 210" role="img" aria-labelledby="t2-ch-t t2-ch-d"><title id="t2-ch-t">Forventet lagerbeholdning – 300-003 Hjul</title><desc id="t2-ch-d">Uke 1 til 8: 85, 60, 25, 70, 55, 50, 65, 45. Sikkerhetslager 40. Under sikkerhetslager i uke 3.</desc><line x1="44" x2="504" y1="176.0" y2="176.0" class="grid"/><text x="36" y="180.0" class="ax" text-anchor="end">0</text><line x1="44" x2="504" y1="97.0" y2="97.0" class="grid"/><text x="36" y="101.0" class="ax" text-anchor="end">50</text><line x1="44" x2="504" y1="18.0" y2="18.0" class="grid"/><text x="36" y="22.0" class="ax" text-anchor="end">100</text><text x="44.0" y="198" class="ax" text-anchor="middle">Uke 1</text><text x="109.7" y="198" class="ax" text-anchor="middle">Uke 2</text><text x="175.4" y="198" class="ax" text-anchor="middle">Uke 3</text><text x="241.1" y="198" class="ax" text-anchor="middle">Uke 4</text><text x="306.9" y="198" class="ax" text-anchor="middle">Uke 5</text><text x="372.6" y="198" class="ax" text-anchor="middle">Uke 6</text><text x="438.3" y="198" class="ax" text-anchor="middle">Uke 7</text><text x="504.0" y="198" class="ax" text-anchor="middle">Uke 8</text><line x1="44" x2="504" y1="112.8" y2="112.8" class="ref"/><text x="50" y="127.8" class="lbl-ref" text-anchor="start">Sikkerhetslager 40</text><polyline points="44.0,41.7 109.7,81.2 175.4,136.5 241.1,65.4 306.9,89.1 372.6,97.0 438.3,73.3 504.0,104.9" class="line"/><circle cx="44.0" cy="41.7" r="3.2" class="dot"/><circle cx="109.7" cy="81.2" r="3.2" class="dot"/><circle cx="241.1" cy="65.4" r="3.2" class="dot"/><circle cx="306.9" cy="89.1" r="3.2" class="dot"/><circle cx="372.6" cy="97.0" r="3.2" class="dot"/><circle cx="438.3" cy="73.3" r="3.2" class="dot"/><circle cx="504.0" cy="104.9" r="3.2" class="dot"/><g transform="translate(167.4,128.5)" class="exc-pt"><use href="#ic-crit" width="16" height="16"/></g><text x="187.4" y="150.5" class="lbl-crit">25 – under sikkerhetslager</text></svg>
+          <p class="legend"><span class="lg"><span class="key-line"></span> Forventet lagerbeholdning</span><span class="lg"><span class="key-ref"></span> Sikkerhetslager 40</span></p>
+        </section>
+        <div class="focus-demo"><a class="btn-primary" href="#t2">Primærknapp</a><a class="btn-sec" href="#t2">Sekundær</a><span class="btn-sec is-focus">Med fokusring</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+</section>
+<section class="variant t3" id="t3">
+<div class="variant-in">
+<div class="v-head"><span class="v-num">Variant 3</span><h2>Horisont</h2></div>
+<p class="v-reg">Kjølig og profesjonell: skiferblå ramme og presist Fiori-blått – nærmest SAP S/4HANA Horizon.</p>
+<p class="v-note">Ingen egen aksent; Fiori-blått bærer både lenker, primærknapp og aktiv fane.</p>
+<div class="chips">
+<div class="chip"><span class="sw" style="background:#EEF2F6"><span class="sw-in" style="color:#1D2D3E">Aa</span></span>
+<span class="chip-tx"><b>Bakgrunn (side)</b><code>#EEF2F6</code><span class="cr">12,5:1 mot tekst</span><span class="v ok">✓ AA (≥4,5)</span></span></div>
+<div class="chip"><span class="sw" style="background:#FFFFFF"><span class="sw-in" style="color:#1D2D3E">Aa</span></span>
+<span class="chip-tx"><b>Flate (kort)</b><code>#FFFFFF</code><span class="cr">14,0:1 mot tekst</span><span class="v ok">✓ AA (≥4,5)</span></span></div>
+<div class="chip"><span class="sw" style="background:#E4EBF2"><span class="sw-in" style="color:#1D2D3E">Aa</span></span>
+<span class="chip-tx"><b>Tonet bånd</b><code>#E4EBF2</code><span class="cr">11,7:1 mot tekst</span><span class="v ok">✓ AA (≥4,5)</span></span></div>
+<div class="chip"><span class="sw" style="background:#1D2D3E"><span class="sw-in" style="color:#FFFFFF">Aa</span></span>
+<span class="chip-tx"><b>Toppfelt bakgrunn</b><code>#1D2D3E</code><span class="cr">14,0:1 mot toppfelt-tekst</span><span class="v ok">✓ AA (≥4,5)</span></span></div>
+<div class="chip"><span class="sw" style="background:#FFFFFF"><span class="sw-in" style="color:#1D2D3E">Aa</span></span>
+<span class="chip-tx"><b>Toppfelt tekst</b><code>#FFFFFF</code><span class="cr">14,0:1 mot toppfelt</span><span class="v ok">✓ AA (≥4,5)</span></span></div>
+<div class="chip"><span class="sw" style="background:#BCC8D6"><span class="sw-in" style="color:#1D2D3E">Aa</span></span>
+<span class="chip-tx"><b>Toppfelt metatekst</b><code>#BCC8D6</code><span class="cr">8,3:1 mot toppfelt</span><span class="v ok">✓ AA (≥4,5)</span></span></div>
+<div class="chip"><span class="sw" style="background:#0057BD"><span class="sw-in" style="color:#FFFFFF">Aa</span></span>
+<span class="chip-tx"><b>Navigasjon aktiv</b><code>#0057BD</code><span class="cr">6,8:1 mot navigasjon</span><span class="v ok">✓ AA (≥4,5)</span></span></div>
+<div class="chip"><span class="sw" style="background:#0064D9"><span class="sw-in" style="color:#FFFFFF">Aa</span></span>
+<span class="chip-tx"><b>Navigasjon markør</b><code>#0064D9</code><span class="cr">5,5:1 mot navigasjon</span><span class="v ok">✓ AA (≥3)</span></span></div>
+<div class="chip"><span class="sw" style="background:#1D2D3E"><span class="sw-in" style="color:#FFFFFF">Aa</span></span>
+<span class="chip-tx"><b>Tekst</b><code>#1D2D3E</code><span class="cr">14,0:1 mot flate</span><span class="v ok">✓ AA (≥4,5)</span></span></div>
+<div class="chip"><span class="sw" style="background:#556B82"><span class="sw-in" style="color:#EEF2F6">Aa</span></span>
+<span class="chip-tx"><b>Dempet tekst</b><code>#556B82</code><span class="cr">4,9:1 mot bakgrunn</span><span class="v ok">✓ AA (≥4,5)</span></span></div>
+<div class="chip"><span class="sw" style="background:#D9E0E8"><span class="sw-in" style="color:#FFFFFF">Aa</span></span>
+<span class="chip-tx"><b>Skillelinje</b><code>#D9E0E8</code><span class="cr">1,3:1 mot flate</span><span class="v dekor">dekor, uten krav</span></span></div>
+<div class="chip"><span class="sw" style="background:#7B8CA0"><span class="sw-in" style="color:#FFFFFF">Aa</span></span>
+<span class="chip-tx"><b>Kontrollkant</b><code>#7B8CA0</code><span class="cr">3,4:1 mot flate</span><span class="v ok">✓ AA (≥3)</span></span></div>
+<div class="chip"><span class="sw" style="background:#0064D9"><span class="sw-in" style="color:#FFFFFF">Aa</span></span>
+<span class="chip-tx"><b>Primær (lenke/knapp)</b><code>#0064D9</code><span class="cr">5,5:1 mot flate</span><span class="v ok">✓ AA (≥4,5)</span></span></div>
+<div class="chip"><span class="sw" style="background:#FFFFFF"><span class="sw-in" style="color:#0064D9">Aa</span></span>
+<span class="chip-tx"><b>På primær</b><code>#FFFFFF</code><span class="cr">5,5:1 mot primær</span><span class="v ok">✓ AA (≥4,5)</span></span></div>
+<div class="chip"><span class="sw" style="background:#0032A5"><span class="sw-in" style="color:#FFFFFF">Aa</span></span>
+<span class="chip-tx"><b>Fokusring</b><code>#0032A5</code><span class="cr">10,5:1 mot flate</span><span class="v ok">✓ AA (≥3)</span></span></div>
+<div class="chip"><span class="sw" style="background:#EBF8FF"><span class="sw-in" style="color:#1D2D3E">Aa</span></span>
+<span class="chip-tx"><b>Valgt celle</b><code>#EBF8FF</code><span class="cr">13,0:1 mot tekst</span><span class="v ok">✓ AA (≥4,5)</span></span></div>
+<div class="chip"><span class="sw" style="background:#0064D9"><span class="sw-in" style="color:#EBF8FF">Aa</span></span>
+<span class="chip-tx"><b>Valgt celle ring</b><code>#0064D9</code><span class="cr">5,1:1 mot valgt celle</span><span class="v ok">✓ AA (≥3)</span></span></div>
+<div class="chip"><span class="sw" style="background:#AA0808"><span class="sw-in" style="color:#FFEAF4">Aa</span></span>
+<span class="chip-tx"><b>Kritisk (avvik)</b><code>#AA0808</code><span class="cr">6,7:1 mot kritisk tint</span><span class="v ok">✓ AA (≥4,5)</span></span></div>
+<div class="chip"><span class="sw" style="background:#FFEAF4"><span class="sw-in" style="color:#1D2D3E">Aa</span></span>
+<span class="chip-tx"><b>Kritisk tint</b><code>#FFEAF4</code><span class="cr">12,2:1 mot tekst</span><span class="v ok">✓ AA (≥4,5)</span></span></div>
+<div class="chip"><span class="sw" style="background:#A33E00"><span class="sw-in" style="color:#FFF3E0">Aa</span></span>
+<span class="chip-tx"><b>Advarsel</b><code>#A33E00</code><span class="cr">5,9:1 mot advarsel tint</span><span class="v ok">✓ AA (≥4,5)</span></span></div>
+<div class="chip"><span class="sw" style="background:#FFF3E0"><span class="sw-in" style="color:#1D2D3E">Aa</span></span>
+<span class="chip-tx"><b>Advarsel tint</b><code>#FFF3E0</code><span class="cr">12,8:1 mot tekst</span><span class="v ok">✓ AA (≥4,5)</span></span></div>
+<div class="chip"><span class="sw" style="background:#475E75"><span class="sw-in" style="color:#E8EFF6">Aa</span></span>
+<span class="chip-tx"><b>Info / nøytral</b><code>#475E75</code><span class="cr">5,8:1 mot info tint</span><span class="v ok">✓ AA (≥4,5)</span></span></div>
+<div class="chip"><span class="sw" style="background:#E8EFF6"><span class="sw-in" style="color:#1D2D3E">Aa</span></span>
+<span class="chip-tx"><b>Info tint</b><code>#E8EFF6</code><span class="cr">12,1:1 mot tekst</span><span class="v ok">✓ AA (≥4,5)</span></span></div>
+<div class="chip"><span class="sw" style="background:#8A1C99"><span class="sw-in" style="color:#F8EAFB">Aa</span></span>
+<span class="chip-tx"><b>Forfalt</b><code>#8A1C99</code><span class="cr">6,7:1 mot forfalt tint</span><span class="v ok">✓ AA (≥4,5)</span></span></div>
+<div class="chip"><span class="sw" style="background:#F8EAFB"><span class="sw-in" style="color:#1D2D3E">Aa</span></span>
+<span class="chip-tx"><b>Forfalt tint</b><code>#F8EAFB</code><span class="cr">12,1:1 mot tekst</span><span class="v ok">✓ AA (≥4,5)</span></span></div>
+<div class="chip"><span class="sw" style="background:#0064D9"><span class="sw-in" style="color:#FFFFFF">Aa</span></span>
+<span class="chip-tx"><b>Graflinje (lagerbeh.)</b><code>#0064D9</code><span class="cr">5,5:1 mot flate</span><span class="v ok">✓ AA (≥3)</span></span></div>
+<div class="chip"><span class="sw" style="background:#5B738B"><span class="sw-in" style="color:#FFFFFF">Aa</span></span>
+<span class="chip-tx"><b>Referanselinje (SL)</b><code>#5B738B</code><span class="cr">4,9:1 mot flate</span><span class="v ok">✓ AA (≥3)</span></span></div>
+</div>
+
+<div class="app" aria-label="Eksempel: resultatsiden i temaet Horisont">
+  <header class="topbar">
+    <div class="tb-left">
+      <span class="brand">COSI&nbsp;MRP</span>
+      <span class="tb-sep" aria-hidden="true"></span>
+      <span class="prod">Kontorstol Pro <span class="tb-meta">(100-001)</span></span>
+      <span class="tb-meta">Horisont: 8 uker</span>
+      <span class="tb-meta">Beregnet 13.11.2026 kl. 08:04</span>
+    </div>
+    <div class="tb-right">
+      <a class="btn-tb-ghost" href="#t3"><svg class="ic " aria-hidden="true" focusable="false"><use href="#ic-up"/></svg>Last opp ny fil</a>
+      <a class="btn-tb" href="#t3"><svg class="ic " aria-hidden="true" focusable="false"><use href="#ic-down"/></svg>Eksporter til Excel</a>
+    </div>
+  </header>
+  <nav class="anchors" aria-label="Seksjoner på resultatsiden">
+    <a href="#t3" class="active" aria-current="true">Bestillingsforslag</a>
+    <a href="#t3">Endringer</a>
+    <a href="#t3">Kritiske deler</a>
+    <a href="#t3">Resultattabell</a>
+    <a href="#t3">Produksjonskapasitet</a>
+  </nav>
+  <div class="content">
+    <p class="status-line"><a href="#t3">12 bestillingsforslag</a> <span class="dotsep" aria-hidden="true">·</span> <a href="#t3">4 kritiske deler trenger handling</a> <span class="dotsep" aria-hidden="true">·</span> <a href="#t3">3 endringer siden forrige kjøring</a></p>
+    <div class="grid">
+      <div class="col">
+        <section class="card">
+          <div class="card-h"><h3>Bestillingsforslag</h3><span class="card-sub">Sortert etter frigivelsesuke</span></div>
+          <table class="tbl">
+            <thead><tr><th>Varenummer</th><th>Beskrivelse</th><th class="num">Frigivelsesuke</th><th class="num">Mengde</th><th>Ordretype</th></tr></thead>
+            <tbody>
+              <tr><td class="mono">300-003</td><td>Hjul <span class="tag">Endret</span></td><td class="num">Uke 1</td><td class="num">175 <span class="over-tag"><svg class="ic " aria-hidden="true" focusable="false"><use href="#ic-clock"/></svg>50 forfalt</span></td><td>Innkjøp</td></tr>
+              <tr><td class="mono">300-006</td><td>Skruesett M6 <span class="tag">Ny</span></td><td class="num">Uke 2</td><td class="num">30</td><td>Innkjøp</td></tr>
+              <tr><td class="mono">200-002</td><td>Seteenhet</td><td class="num">Uke 2</td><td class="num">45</td><td>Produksjonsordre</td></tr>
+              <tr><td class="mono">300-005</td><td>Gassfjær</td><td class="num">Uke 3</td><td class="num">100</td><td>Innkjøp</td></tr>
+            </tbody>
+          </table>
+          <p class="info-line"><svg class="ic " aria-hidden="true" focusable="false"><use href="#ic-info"/></svg><span>Viser 4 av 12 forslag. <a href="#t3">Vis alle bestillingsforslag</a></span></p>
+        </section>
+        <section class="card">
+          <div class="card-h"><h3>Resultattabell</h3><span class="card-sub">300-003 Hjul · sikkerhetslager 40 · ledetid 2 uker</span></div>
+          <table class="tbl rt">
+            <thead><tr><th>Rad</th><th class="num">Uke 1</th><th class="num">Uke 2</th><th class="num">Uke 3</th><th class="num">Uke 4</th><th class="num">Uke 5</th></tr></thead>
+            <tbody>
+              <tr><th scope="row">Bruttobehov</th><td class="num">125</td><td class="num">100</td><td class="num">210</td><td class="num">130</td><td class="num">140</td></tr>
+              <tr><th scope="row">Planlagte mottak</th><td class="num">100</td><td class="num">75</td><td class="num">0</td><td class="num">0</td><td class="num">0</td></tr>
+              <tr><th scope="row">Forventet lagerbeholdning</th><td class="num">85</td><td class="num">60</td><td class="num cell-exc"><span class="exc-mark"><svg class="ic " aria-hidden="true" focusable="false"><use href="#ic-crit"/></svg>1</span>25</td><td class="num cell-sel">70</td><td class="num">55</td></tr>
+              <tr><th scope="row">Nettobehov</th><td class="num">0</td><td class="num">0</td><td class="num">190</td><td class="num">145</td><td class="num">110</td></tr>
+              <tr><th scope="row">Planlagte ordremottak</th><td class="num">0</td><td class="num">0</td><td class="num">175</td><td class="num">175</td><td class="num">125</td></tr>
+              <tr><th scope="row">Planlagte ordrefrigivelser</th><td class="num">175 <span class="over-tag"><svg class="ic " aria-hidden="true" focusable="false"><use href="#ic-clock"/></svg>50</span></td><td class="num">175</td><td class="num">125</td><td class="num">0</td><td class="num">0</td></tr>
+            </tbody>
+          </table>
+          <p class="legend"><span class="lg"><span class="exc-mark"><svg class="ic " aria-hidden="true" focusable="false"><use href="#ic-crit"/></svg>1</span> = 1 avvik i cellen</span><span class="lg"><span class="over-tag"><svg class="ic " aria-hidden="true" focusable="false"><use href="#ic-clock"/></svg>50</span> = 50 forfalt</span><span class="lg"><span class="sel-demo"></span> Valgt celle: Forventet lagerbeholdning, uke 4</span></p>
+        </section>
+      </div>
+      <div class="col">
+        <section class="card">
+          <div class="card-h"><h3>Kritiske deler</h3><span class="card-sub">3 av 4 vist</span></div>
+          <ul class="crit-list">
+            <li class="st st-crit"><svg class="ic " aria-hidden="true" focusable="false"><use href="#ic-crit"/></svg><span><b>300-005 Gassfjær</b> – Mottak forsinket (uke 3)</span><span class="st-lbl">Kritisk</span></li>
+            <li class="st st-crit"><svg class="ic " aria-hidden="true" focusable="false"><use href="#ic-crit"/></svg><span><b>300-003 Hjul</b> – Bestilling forsinket (uke 1)</span><span class="st-lbl">Kritisk</span></li>
+            <li class="st st-warn"><svg class="ic " aria-hidden="true" focusable="false"><use href="#ic-warn"/></svg><span><b>300-002 Rygg</b> – Bruk av sikkerhetslager (uke 2)</span><span class="st-lbl">Advarsel</span></li>
+          </ul>
+        </section>
+        <section class="card">
+          <div class="card-h"><h3>Forventet lagerbeholdning – 300-003 Hjul</h3></div>
+          <svg class="chart" viewBox="0 0 520 210" role="img" aria-labelledby="t3-ch-t t3-ch-d"><title id="t3-ch-t">Forventet lagerbeholdning – 300-003 Hjul</title><desc id="t3-ch-d">Uke 1 til 8: 85, 60, 25, 70, 55, 50, 65, 45. Sikkerhetslager 40. Under sikkerhetslager i uke 3.</desc><line x1="44" x2="504" y1="176.0" y2="176.0" class="grid"/><text x="36" y="180.0" class="ax" text-anchor="end">0</text><line x1="44" x2="504" y1="97.0" y2="97.0" class="grid"/><text x="36" y="101.0" class="ax" text-anchor="end">50</text><line x1="44" x2="504" y1="18.0" y2="18.0" class="grid"/><text x="36" y="22.0" class="ax" text-anchor="end">100</text><text x="44.0" y="198" class="ax" text-anchor="middle">Uke 1</text><text x="109.7" y="198" class="ax" text-anchor="middle">Uke 2</text><text x="175.4" y="198" class="ax" text-anchor="middle">Uke 3</text><text x="241.1" y="198" class="ax" text-anchor="middle">Uke 4</text><text x="306.9" y="198" class="ax" text-anchor="middle">Uke 5</text><text x="372.6" y="198" class="ax" text-anchor="middle">Uke 6</text><text x="438.3" y="198" class="ax" text-anchor="middle">Uke 7</text><text x="504.0" y="198" class="ax" text-anchor="middle">Uke 8</text><line x1="44" x2="504" y1="112.8" y2="112.8" class="ref"/><text x="50" y="127.8" class="lbl-ref" text-anchor="start">Sikkerhetslager 40</text><polyline points="44.0,41.7 109.7,81.2 175.4,136.5 241.1,65.4 306.9,89.1 372.6,97.0 438.3,73.3 504.0,104.9" class="line"/><circle cx="44.0" cy="41.7" r="3.2" class="dot"/><circle cx="109.7" cy="81.2" r="3.2" class="dot"/><circle cx="241.1" cy="65.4" r="3.2" class="dot"/><circle cx="306.9" cy="89.1" r="3.2" class="dot"/><circle cx="372.6" cy="97.0" r="3.2" class="dot"/><circle cx="438.3" cy="73.3" r="3.2" class="dot"/><circle cx="504.0" cy="104.9" r="3.2" class="dot"/><g transform="translate(167.4,128.5)" class="exc-pt"><use href="#ic-crit" width="16" height="16"/></g><text x="187.4" y="150.5" class="lbl-crit">25 – under sikkerhetslager</text></svg>
+          <p class="legend"><span class="lg"><span class="key-line"></span> Forventet lagerbeholdning</span><span class="lg"><span class="key-ref"></span> Sikkerhetslager 40</span></p>
+        </section>
+        <div class="focus-demo"><a class="btn-primary" href="#t3">Primærknapp</a><a class="btn-sec" href="#t3">Sekundær</a><span class="btn-sec is-focus">Med fokusring</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+</section>
+<section class="variant t4" id="t4">
+<div class="variant-in">
+<div class="v-head"><span class="v-num">Variant 4</span><h2>Lavendel og plomme</h2></div>
+<p class="v-reg">Mykt og stilfullt: lavendelgrå grunn med dyp plomme – som lobbyen på et designhotell.</p>
+<p class="v-note">Plomme er eneste aksent; forfalt bruker rust (#8A3A1A) for å skille seg fra plomme.</p>
+<div class="chips">
+<div class="chip"><span class="sw" style="background:#F1EFF4"><span class="sw-in" style="color:#221B29">Aa</span></span>
+<span class="chip-tx"><b>Bakgrunn (side)</b><code>#F1EFF4</code><span class="cr">14,6:1 mot tekst</span><span class="v ok">✓ AA (≥4,5)</span></span></div>
+<div class="chip"><span class="sw" style="background:#FCFBFD"><span class="sw-in" style="color:#221B29">Aa</span></span>
+<span class="chip-tx"><b>Flate (kort)</b><code>#FCFBFD</code><span class="cr">16,2:1 mot tekst</span><span class="v ok">✓ AA (≥4,5)</span></span></div>
+<div class="chip"><span class="sw" style="background:#E7E3EE"><span class="sw-in" style="color:#221B29">Aa</span></span>
+<span class="chip-tx"><b>Tonet bånd</b><code>#E7E3EE</code><span class="cr">13,2:1 mot tekst</span><span class="v ok">✓ AA (≥4,5)</span></span></div>
+<div class="chip"><span class="sw" style="background:#35213F"><span class="sw-in" style="color:#F4EFF6">Aa</span></span>
+<span class="chip-tx"><b>Toppfelt bakgrunn</b><code>#35213F</code><span class="cr">12,9:1 mot toppfelt-tekst</span><span class="v ok">✓ AA (≥4,5)</span></span></div>
+<div class="chip"><span class="sw" style="background:#F4EFF6"><span class="sw-in" style="color:#35213F">Aa</span></span>
+<span class="chip-tx"><b>Toppfelt tekst</b><code>#F4EFF6</code><span class="cr">12,9:1 mot toppfelt</span><span class="v ok">✓ AA (≥4,5)</span></span></div>
+<div class="chip"><span class="sw" style="background:#C7B9CE"><span class="sw-in" style="color:#35213F">Aa</span></span>
+<span class="chip-tx"><b>Toppfelt metatekst</b><code>#C7B9CE</code><span class="cr">7,8:1 mot toppfelt</span><span class="v ok">✓ AA (≥4,5)</span></span></div>
+<div class="chip"><span class="sw" style="background:#5A2F72"><span class="sw-in" style="color:#FCFBFD">Aa</span></span>
+<span class="chip-tx"><b>Navigasjon aktiv</b><code>#5A2F72</code><span class="cr">9,8:1 mot navigasjon</span><span class="v ok">✓ AA (≥4,5)</span></span></div>
+<div class="chip"><span class="sw" style="background:#5A2F72"><span class="sw-in" style="color:#FCFBFD">Aa</span></span>
+<span class="chip-tx"><b>Navigasjon markør</b><code>#5A2F72</code><span class="cr">9,8:1 mot navigasjon</span><span class="v ok">✓ AA (≥3)</span></span></div>
+<div class="chip"><span class="sw" style="background:#221B29"><span class="sw-in" style="color:#FCFBFD">Aa</span></span>
+<span class="chip-tx"><b>Tekst</b><code>#221B29</code><span class="cr">16,2:1 mot flate</span><span class="v ok">✓ AA (≥4,5)</span></span></div>
+<div class="chip"><span class="sw" style="background:#5C5466"><span class="sw-in" style="color:#F1EFF4">Aa</span></span>
+<span class="chip-tx"><b>Dempet tekst</b><code>#5C5466</code><span class="cr">6,3:1 mot bakgrunn</span><span class="v ok">✓ AA (≥4,5)</span></span></div>
+<div class="chip"><span class="sw" style="background:#DDD7E4"><span class="sw-in" style="color:#FCFBFD">Aa</span></span>
+<span class="chip-tx"><b>Skillelinje</b><code>#DDD7E4</code><span class="cr">1,4:1 mot flate</span><span class="v dekor">dekor, uten krav</span></span></div>
+<div class="chip"><span class="sw" style="background:#8C8496"><span class="sw-in" style="color:#FCFBFD">Aa</span></span>
+<span class="chip-tx"><b>Kontrollkant</b><code>#8C8496</code><span class="cr">3,5:1 mot flate</span><span class="v ok">✓ AA (≥3)</span></span></div>
+<div class="chip"><span class="sw" style="background:#5A2F72"><span class="sw-in" style="color:#FCFBFD">Aa</span></span>
+<span class="chip-tx"><b>Primær (lenke/knapp)</b><code>#5A2F72</code><span class="cr">9,8:1 mot flate</span><span class="v ok">✓ AA (≥4,5)</span></span></div>
+<div class="chip"><span class="sw" style="background:#FFFFFF"><span class="sw-in" style="color:#5A2F72">Aa</span></span>
+<span class="chip-tx"><b>På primær</b><code>#FFFFFF</code><span class="cr">10,1:1 mot primær</span><span class="v ok">✓ AA (≥4,5)</span></span></div>
+<div class="chip"><span class="sw" style="background:#7B47A0"><span class="sw-in" style="color:#FCFBFD">Aa</span></span>
+<span class="chip-tx"><b>Fokusring</b><code>#7B47A0</code><span class="cr">6,3:1 mot flate</span><span class="v ok">✓ AA (≥3)</span></span></div>
+<div class="chip"><span class="sw" style="background:#EEE6F4"><span class="sw-in" style="color:#221B29">Aa</span></span>
+<span class="chip-tx"><b>Valgt celle</b><code>#EEE6F4</code><span class="cr">13,7:1 mot tekst</span><span class="v ok">✓ AA (≥4,5)</span></span></div>
+<div class="chip"><span class="sw" style="background:#5A2F72"><span class="sw-in" style="color:#EEE6F4">Aa</span></span>
+<span class="chip-tx"><b>Valgt celle ring</b><code>#5A2F72</code><span class="cr">8,3:1 mot valgt celle</span><span class="v ok">✓ AA (≥3)</span></span></div>
+<div class="chip"><span class="sw" style="background:#A3282A"><span class="sw-in" style="color:#F8E2E2">Aa</span></span>
+<span class="chip-tx"><b>Kritisk (avvik)</b><code>#A3282A</code><span class="cr">5,9:1 mot kritisk tint</span><span class="v ok">✓ AA (≥4,5)</span></span></div>
+<div class="chip"><span class="sw" style="background:#F8E2E2"><span class="sw-in" style="color:#221B29">Aa</span></span>
+<span class="chip-tx"><b>Kritisk tint</b><code>#F8E2E2</code><span class="cr">13,5:1 mot tekst</span><span class="v ok">✓ AA (≥4,5)</span></span></div>
+<div class="chip"><span class="sw" style="background:#855200"><span class="sw-in" style="color:#F7EBD3">Aa</span></span>
+<span class="chip-tx"><b>Advarsel</b><code>#855200</code><span class="cr">5,5:1 mot advarsel tint</span><span class="v ok">✓ AA (≥4,5)</span></span></div>
+<div class="chip"><span class="sw" style="background:#F7EBD3"><span class="sw-in" style="color:#221B29">Aa</span></span>
+<span class="chip-tx"><b>Advarsel tint</b><code>#F7EBD3</code><span class="cr">14,1:1 mot tekst</span><span class="v ok">✓ AA (≥4,5)</span></span></div>
+<div class="chip"><span class="sw" style="background:#44507A"><span class="sw-in" style="color:#E6E8F2">Aa</span></span>
+<span class="chip-tx"><b>Info / nøytral</b><code>#44507A</code><span class="cr">6,4:1 mot info tint</span><span class="v ok">✓ AA (≥4,5)</span></span></div>
+<div class="chip"><span class="sw" style="background:#E6E8F2"><span class="sw-in" style="color:#221B29">Aa</span></span>
+<span class="chip-tx"><b>Info tint</b><code>#E6E8F2</code><span class="cr">13,7:1 mot tekst</span><span class="v ok">✓ AA (≥4,5)</span></span></div>
+<div class="chip"><span class="sw" style="background:#8A3A1A"><span class="sw-in" style="color:#F5E5DC">Aa</span></span>
+<span class="chip-tx"><b>Forfalt</b><code>#8A3A1A</code><span class="cr">6,3:1 mot forfalt tint</span><span class="v ok">✓ AA (≥4,5)</span></span></div>
+<div class="chip"><span class="sw" style="background:#F5E5DC"><span class="sw-in" style="color:#221B29">Aa</span></span>
+<span class="chip-tx"><b>Forfalt tint</b><code>#F5E5DC</code><span class="cr">13,6:1 mot tekst</span><span class="v ok">✓ AA (≥4,5)</span></span></div>
+<div class="chip"><span class="sw" style="background:#5A2F72"><span class="sw-in" style="color:#FCFBFD">Aa</span></span>
+<span class="chip-tx"><b>Graflinje (lagerbeh.)</b><code>#5A2F72</code><span class="cr">9,8:1 mot flate</span><span class="v ok">✓ AA (≥3)</span></span></div>
+<div class="chip"><span class="sw" style="background:#7E7488"><span class="sw-in" style="color:#FCFBFD">Aa</span></span>
+<span class="chip-tx"><b>Referanselinje (SL)</b><code>#7E7488</code><span class="cr">4,3:1 mot flate</span><span class="v ok">✓ AA (≥3)</span></span></div>
+</div>
+
+<div class="app" aria-label="Eksempel: resultatsiden i temaet Lavendel og plomme">
+  <header class="topbar">
+    <div class="tb-left">
+      <span class="brand">COSI&nbsp;MRP</span>
+      <span class="tb-sep" aria-hidden="true"></span>
+      <span class="prod">Kontorstol Pro <span class="tb-meta">(100-001)</span></span>
+      <span class="tb-meta">Horisont: 8 uker</span>
+      <span class="tb-meta">Beregnet 13.11.2026 kl. 08:04</span>
+    </div>
+    <div class="tb-right">
+      <a class="btn-tb-ghost" href="#t4"><svg class="ic " aria-hidden="true" focusable="false"><use href="#ic-up"/></svg>Last opp ny fil</a>
+      <a class="btn-tb" href="#t4"><svg class="ic " aria-hidden="true" focusable="false"><use href="#ic-down"/></svg>Eksporter til Excel</a>
+    </div>
+  </header>
+  <nav class="anchors" aria-label="Seksjoner på resultatsiden">
+    <a href="#t4" class="active" aria-current="true">Bestillingsforslag</a>
+    <a href="#t4">Endringer</a>
+    <a href="#t4">Kritiske deler</a>
+    <a href="#t4">Resultattabell</a>
+    <a href="#t4">Produksjonskapasitet</a>
+  </nav>
+  <div class="content">
+    <p class="status-line"><a href="#t4">12 bestillingsforslag</a> <span class="dotsep" aria-hidden="true">·</span> <a href="#t4">4 kritiske deler trenger handling</a> <span class="dotsep" aria-hidden="true">·</span> <a href="#t4">3 endringer siden forrige kjøring</a></p>
+    <div class="grid">
+      <div class="col">
+        <section class="card">
+          <div class="card-h"><h3>Bestillingsforslag</h3><span class="card-sub">Sortert etter frigivelsesuke</span></div>
+          <table class="tbl">
+            <thead><tr><th>Varenummer</th><th>Beskrivelse</th><th class="num">Frigivelsesuke</th><th class="num">Mengde</th><th>Ordretype</th></tr></thead>
+            <tbody>
+              <tr><td class="mono">300-003</td><td>Hjul <span class="tag">Endret</span></td><td class="num">Uke 1</td><td class="num">175 <span class="over-tag"><svg class="ic " aria-hidden="true" focusable="false"><use href="#ic-clock"/></svg>50 forfalt</span></td><td>Innkjøp</td></tr>
+              <tr><td class="mono">300-006</td><td>Skruesett M6 <span class="tag">Ny</span></td><td class="num">Uke 2</td><td class="num">30</td><td>Innkjøp</td></tr>
+              <tr><td class="mono">200-002</td><td>Seteenhet</td><td class="num">Uke 2</td><td class="num">45</td><td>Produksjonsordre</td></tr>
+              <tr><td class="mono">300-005</td><td>Gassfjær</td><td class="num">Uke 3</td><td class="num">100</td><td>Innkjøp</td></tr>
+            </tbody>
+          </table>
+          <p class="info-line"><svg class="ic " aria-hidden="true" focusable="false"><use href="#ic-info"/></svg><span>Viser 4 av 12 forslag. <a href="#t4">Vis alle bestillingsforslag</a></span></p>
+        </section>
+        <section class="card">
+          <div class="card-h"><h3>Resultattabell</h3><span class="card-sub">300-003 Hjul · sikkerhetslager 40 · ledetid 2 uker</span></div>
+          <table class="tbl rt">
+            <thead><tr><th>Rad</th><th class="num">Uke 1</th><th class="num">Uke 2</th><th class="num">Uke 3</th><th class="num">Uke 4</th><th class="num">Uke 5</th></tr></thead>
+            <tbody>
+              <tr><th scope="row">Bruttobehov</th><td class="num">125</td><td class="num">100</td><td class="num">210</td><td class="num">130</td><td class="num">140</td></tr>
+              <tr><th scope="row">Planlagte mottak</th><td class="num">100</td><td class="num">75</td><td class="num">0</td><td class="num">0</td><td class="num">0</td></tr>
+              <tr><th scope="row">Forventet lagerbeholdning</th><td class="num">85</td><td class="num">60</td><td class="num cell-exc"><span class="exc-mark"><svg class="ic " aria-hidden="true" focusable="false"><use href="#ic-crit"/></svg>1</span>25</td><td class="num cell-sel">70</td><td class="num">55</td></tr>
+              <tr><th scope="row">Nettobehov</th><td class="num">0</td><td class="num">0</td><td class="num">190</td><td class="num">145</td><td class="num">110</td></tr>
+              <tr><th scope="row">Planlagte ordremottak</th><td class="num">0</td><td class="num">0</td><td class="num">175</td><td class="num">175</td><td class="num">125</td></tr>
+              <tr><th scope="row">Planlagte ordrefrigivelser</th><td class="num">175 <span class="over-tag"><svg class="ic " aria-hidden="true" focusable="false"><use href="#ic-clock"/></svg>50</span></td><td class="num">175</td><td class="num">125</td><td class="num">0</td><td class="num">0</td></tr>
+            </tbody>
+          </table>
+          <p class="legend"><span class="lg"><span class="exc-mark"><svg class="ic " aria-hidden="true" focusable="false"><use href="#ic-crit"/></svg>1</span> = 1 avvik i cellen</span><span class="lg"><span class="over-tag"><svg class="ic " aria-hidden="true" focusable="false"><use href="#ic-clock"/></svg>50</span> = 50 forfalt</span><span class="lg"><span class="sel-demo"></span> Valgt celle: Forventet lagerbeholdning, uke 4</span></p>
+        </section>
+      </div>
+      <div class="col">
+        <section class="card">
+          <div class="card-h"><h3>Kritiske deler</h3><span class="card-sub">3 av 4 vist</span></div>
+          <ul class="crit-list">
+            <li class="st st-crit"><svg class="ic " aria-hidden="true" focusable="false"><use href="#ic-crit"/></svg><span><b>300-005 Gassfjær</b> – Mottak forsinket (uke 3)</span><span class="st-lbl">Kritisk</span></li>
+            <li class="st st-crit"><svg class="ic " aria-hidden="true" focusable="false"><use href="#ic-crit"/></svg><span><b>300-003 Hjul</b> – Bestilling forsinket (uke 1)</span><span class="st-lbl">Kritisk</span></li>
+            <li class="st st-warn"><svg class="ic " aria-hidden="true" focusable="false"><use href="#ic-warn"/></svg><span><b>300-002 Rygg</b> – Bruk av sikkerhetslager (uke 2)</span><span class="st-lbl">Advarsel</span></li>
+          </ul>
+        </section>
+        <section class="card">
+          <div class="card-h"><h3>Forventet lagerbeholdning – 300-003 Hjul</h3></div>
+          <svg class="chart" viewBox="0 0 520 210" role="img" aria-labelledby="t4-ch-t t4-ch-d"><title id="t4-ch-t">Forventet lagerbeholdning – 300-003 Hjul</title><desc id="t4-ch-d">Uke 1 til 8: 85, 60, 25, 70, 55, 50, 65, 45. Sikkerhetslager 40. Under sikkerhetslager i uke 3.</desc><line x1="44" x2="504" y1="176.0" y2="176.0" class="grid"/><text x="36" y="180.0" class="ax" text-anchor="end">0</text><line x1="44" x2="504" y1="97.0" y2="97.0" class="grid"/><text x="36" y="101.0" class="ax" text-anchor="end">50</text><line x1="44" x2="504" y1="18.0" y2="18.0" class="grid"/><text x="36" y="22.0" class="ax" text-anchor="end">100</text><text x="44.0" y="198" class="ax" text-anchor="middle">Uke 1</text><text x="109.7" y="198" class="ax" text-anchor="middle">Uke 2</text><text x="175.4" y="198" class="ax" text-anchor="middle">Uke 3</text><text x="241.1" y="198" class="ax" text-anchor="middle">Uke 4</text><text x="306.9" y="198" class="ax" text-anchor="middle">Uke 5</text><text x="372.6" y="198" class="ax" text-anchor="middle">Uke 6</text><text x="438.3" y="198" class="ax" text-anchor="middle">Uke 7</text><text x="504.0" y="198" class="ax" text-anchor="middle">Uke 8</text><line x1="44" x2="504" y1="112.8" y2="112.8" class="ref"/><text x="50" y="127.8" class="lbl-ref" text-anchor="start">Sikkerhetslager 40</text><polyline points="44.0,41.7 109.7,81.2 175.4,136.5 241.1,65.4 306.9,89.1 372.6,97.0 438.3,73.3 504.0,104.9" class="line"/><circle cx="44.0" cy="41.7" r="3.2" class="dot"/><circle cx="109.7" cy="81.2" r="3.2" class="dot"/><circle cx="241.1" cy="65.4" r="3.2" class="dot"/><circle cx="306.9" cy="89.1" r="3.2" class="dot"/><circle cx="372.6" cy="97.0" r="3.2" class="dot"/><circle cx="438.3" cy="73.3" r="3.2" class="dot"/><circle cx="504.0" cy="104.9" r="3.2" class="dot"/><g transform="translate(167.4,128.5)" class="exc-pt"><use href="#ic-crit" width="16" height="16"/></g><text x="187.4" y="150.5" class="lbl-crit">25 – under sikkerhetslager</text></svg>
+          <p class="legend"><span class="lg"><span class="key-line"></span> Forventet lagerbeholdning</span><span class="lg"><span class="key-ref"></span> Sikkerhetslager 40</span></p>
+        </section>
+        <div class="focus-demo"><a class="btn-primary" href="#t4">Primærknapp</a><a class="btn-sec" href="#t4">Sekundær</a><span class="btn-sec is-focus">Med fokusring</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+</section>
+<section class="variant t5" id="t5">
+<div class="variant-in">
+<div class="v-head"><span class="v-num">Variant 5</span><h2>Sand og espresso</h2></div>
+<p class="v-reg">Varmt og eksklusivt: sandtonet grunn, espresso-ramme i to lag og en presis petrol-aksent.</p>
+<p class="v-note">Petrol #5CC2BA på mørk navigasjon, #0F6464 på lys flate; espresso-rammen går i to lag (toppfelt + navigasjon).</p>
+<div class="chips">
+<div class="chip"><span class="sw" style="background:#F2ECE2"><span class="sw-in" style="color:#2A201B">Aa</span></span>
+<span class="chip-tx"><b>Bakgrunn (side)</b><code>#F2ECE2</code><span class="cr">13,5:1 mot tekst</span><span class="v ok">✓ AA (≥4,5)</span></span></div>
+<div class="chip"><span class="sw" style="background:#FFFCF6"><span class="sw-in" style="color:#2A201B">Aa</span></span>
+<span class="chip-tx"><b>Flate (kort)</b><code>#FFFCF6</code><span class="cr">15,5:1 mot tekst</span><span class="v ok">✓ AA (≥4,5)</span></span></div>
+<div class="chip"><span class="sw" style="background:#E8DFD0"><span class="sw-in" style="color:#2A201B">Aa</span></span>
+<span class="chip-tx"><b>Tonet bånd</b><code>#E8DFD0</code><span class="cr">12,0:1 mot tekst</span><span class="v ok">✓ AA (≥4,5)</span></span></div>
+<div class="chip"><span class="sw" style="background:#2B211C"><span class="sw-in" style="color:#F4ECE1">Aa</span></span>
+<span class="chip-tx"><b>Toppfelt bakgrunn</b><code>#2B211C</code><span class="cr">13,4:1 mot toppfelt-tekst</span><span class="v ok">✓ AA (≥4,5)</span></span></div>
+<div class="chip"><span class="sw" style="background:#F4ECE1"><span class="sw-in" style="color:#2B211C">Aa</span></span>
+<span class="chip-tx"><b>Toppfelt tekst</b><code>#F4ECE1</code><span class="cr">13,4:1 mot toppfelt</span><span class="v ok">✓ AA (≥4,5)</span></span></div>
+<div class="chip"><span class="sw" style="background:#C4B6A6"><span class="sw-in" style="color:#2B211C">Aa</span></span>
+<span class="chip-tx"><b>Toppfelt metatekst</b><code>#C4B6A6</code><span class="cr">7,9:1 mot toppfelt</span><span class="v ok">✓ AA (≥4,5)</span></span></div>
+<div class="chip"><span class="sw" style="background:#FFFFFF"><span class="sw-in" style="color:#3A2D26">Aa</span></span>
+<span class="chip-tx"><b>Navigasjon aktiv</b><code>#FFFFFF</code><span class="cr">13,3:1 mot navigasjon</span><span class="v ok">✓ AA (≥4,5)</span></span></div>
+<div class="chip"><span class="sw" style="background:#5CC2BA"><span class="sw-in" style="color:#3A2D26">Aa</span></span>
+<span class="chip-tx"><b>Navigasjon markør</b><code>#5CC2BA</code><span class="cr">6,2:1 mot navigasjon</span><span class="v ok">✓ AA (≥3)</span></span></div>
+<div class="chip"><span class="sw" style="background:#2A201B"><span class="sw-in" style="color:#FFFCF6">Aa</span></span>
+<span class="chip-tx"><b>Tekst</b><code>#2A201B</code><span class="cr">15,5:1 mot flate</span><span class="v ok">✓ AA (≥4,5)</span></span></div>
+<div class="chip"><span class="sw" style="background:#675A50"><span class="sw-in" style="color:#F2ECE2">Aa</span></span>
+<span class="chip-tx"><b>Dempet tekst</b><code>#675A50</code><span class="cr">5,7:1 mot bakgrunn</span><span class="v ok">✓ AA (≥4,5)</span></span></div>
+<div class="chip"><span class="sw" style="background:#E0D5C4"><span class="sw-in" style="color:#FFFCF6">Aa</span></span>
+<span class="chip-tx"><b>Skillelinje</b><code>#E0D5C4</code><span class="cr">1,4:1 mot flate</span><span class="v dekor">dekor, uten krav</span></span></div>
+<div class="chip"><span class="sw" style="background:#8F8274"><span class="sw-in" style="color:#FFFCF6">Aa</span></span>
+<span class="chip-tx"><b>Kontrollkant</b><code>#8F8274</code><span class="cr">3,7:1 mot flate</span><span class="v ok">✓ AA (≥3)</span></span></div>
+<div class="chip"><span class="sw" style="background:#0F6464"><span class="sw-in" style="color:#FFFCF6">Aa</span></span>
+<span class="chip-tx"><b>Primær (lenke/knapp)</b><code>#0F6464</code><span class="cr">6,8:1 mot flate</span><span class="v ok">✓ AA (≥4,5)</span></span></div>
+<div class="chip"><span class="sw" style="background:#FFFFFF"><span class="sw-in" style="color:#0F6464">Aa</span></span>
+<span class="chip-tx"><b>På primær</b><code>#FFFFFF</code><span class="cr">6,9:1 mot primær</span><span class="v ok">✓ AA (≥4,5)</span></span></div>
+<div class="chip"><span class="sw" style="background:#0F6464"><span class="sw-in" style="color:#FFFCF6">Aa</span></span>
+<span class="chip-tx"><b>Fokusring</b><code>#0F6464</code><span class="cr">6,8:1 mot flate</span><span class="v ok">✓ AA (≥3)</span></span></div>
+<div class="chip"><span class="sw" style="background:#E0F0EE"><span class="sw-in" style="color:#2A201B">Aa</span></span>
+<span class="chip-tx"><b>Valgt celle</b><code>#E0F0EE</code><span class="cr">13,5:1 mot tekst</span><span class="v ok">✓ AA (≥4,5)</span></span></div>
+<div class="chip"><span class="sw" style="background:#0F6464"><span class="sw-in" style="color:#E0F0EE">Aa</span></span>
+<span class="chip-tx"><b>Valgt celle ring</b><code>#0F6464</code><span class="cr">5,9:1 mot valgt celle</span><span class="v ok">✓ AA (≥3)</span></span></div>
+<div class="chip"><span class="sw" style="background:#A42D1C"><span class="sw-in" style="color:#F8E1DA">Aa</span></span>
+<span class="chip-tx"><b>Kritisk (avvik)</b><code>#A42D1C</code><span class="cr">5,6:1 mot kritisk tint</span><span class="v ok">✓ AA (≥4,5)</span></span></div>
+<div class="chip"><span class="sw" style="background:#F8E1DA"><span class="sw-in" style="color:#2A201B">Aa</span></span>
+<span class="chip-tx"><b>Kritisk tint</b><code>#F8E1DA</code><span class="cr">12,7:1 mot tekst</span><span class="v ok">✓ AA (≥4,5)</span></span></div>
+<div class="chip"><span class="sw" style="background:#875300"><span class="sw-in" style="color:#F6EAD0">Aa</span></span>
+<span class="chip-tx"><b>Advarsel</b><code>#875300</code><span class="cr">5,4:1 mot advarsel tint</span><span class="v ok">✓ AA (≥4,5)</span></span></div>
+<div class="chip"><span class="sw" style="background:#F6EAD0"><span class="sw-in" style="color:#2A201B">Aa</span></span>
+<span class="chip-tx"><b>Advarsel tint</b><code>#F6EAD0</code><span class="cr">13,3:1 mot tekst</span><span class="v ok">✓ AA (≥4,5)</span></span></div>
+<div class="chip"><span class="sw" style="background:#4C5F6B"><span class="sw-in" style="color:#E5EBEE">Aa</span></span>
+<span class="chip-tx"><b>Info / nøytral</b><code>#4C5F6B</code><span class="cr">5,5:1 mot info tint</span><span class="v ok">✓ AA (≥4,5)</span></span></div>
+<div class="chip"><span class="sw" style="background:#E5EBEE"><span class="sw-in" style="color:#2A201B">Aa</span></span>
+<span class="chip-tx"><b>Info tint</b><code>#E5EBEE</code><span class="cr">13,2:1 mot tekst</span><span class="v ok">✓ AA (≥4,5)</span></span></div>
+<div class="chip"><span class="sw" style="background:#833560"><span class="sw-in" style="color:#F3E2EA">Aa</span></span>
+<span class="chip-tx"><b>Forfalt</b><code>#833560</code><span class="cr">6,4:1 mot forfalt tint</span><span class="v ok">✓ AA (≥4,5)</span></span></div>
+<div class="chip"><span class="sw" style="background:#F3E2EA"><span class="sw-in" style="color:#2A201B">Aa</span></span>
+<span class="chip-tx"><b>Forfalt tint</b><code>#F3E2EA</code><span class="cr">12,8:1 mot tekst</span><span class="v ok">✓ AA (≥4,5)</span></span></div>
+<div class="chip"><span class="sw" style="background:#0F6464"><span class="sw-in" style="color:#FFFCF6">Aa</span></span>
+<span class="chip-tx"><b>Graflinje (lagerbeh.)</b><code>#0F6464</code><span class="cr">6,8:1 mot flate</span><span class="v ok">✓ AA (≥3)</span></span></div>
+<div class="chip"><span class="sw" style="background:#8C7B68"><span class="sw-in" style="color:#FFFCF6">Aa</span></span>
+<span class="chip-tx"><b>Referanselinje (SL)</b><code>#8C7B68</code><span class="cr">4,0:1 mot flate</span><span class="v ok">✓ AA (≥3)</span></span></div>
+</div>
+
+<div class="app" aria-label="Eksempel: resultatsiden i temaet Sand og espresso">
+  <header class="topbar">
+    <div class="tb-left">
+      <span class="brand">COSI&nbsp;MRP</span>
+      <span class="tb-sep" aria-hidden="true"></span>
+      <span class="prod">Kontorstol Pro <span class="tb-meta">(100-001)</span></span>
+      <span class="tb-meta">Horisont: 8 uker</span>
+      <span class="tb-meta">Beregnet 13.11.2026 kl. 08:04</span>
+    </div>
+    <div class="tb-right">
+      <a class="btn-tb-ghost" href="#t5"><svg class="ic " aria-hidden="true" focusable="false"><use href="#ic-up"/></svg>Last opp ny fil</a>
+      <a class="btn-tb" href="#t5"><svg class="ic " aria-hidden="true" focusable="false"><use href="#ic-down"/></svg>Eksporter til Excel</a>
+    </div>
+  </header>
+  <nav class="anchors" aria-label="Seksjoner på resultatsiden">
+    <a href="#t5" class="active" aria-current="true">Bestillingsforslag</a>
+    <a href="#t5">Endringer</a>
+    <a href="#t5">Kritiske deler</a>
+    <a href="#t5">Resultattabell</a>
+    <a href="#t5">Produksjonskapasitet</a>
+  </nav>
+  <div class="content">
+    <p class="status-line"><a href="#t5">12 bestillingsforslag</a> <span class="dotsep" aria-hidden="true">·</span> <a href="#t5">4 kritiske deler trenger handling</a> <span class="dotsep" aria-hidden="true">·</span> <a href="#t5">3 endringer siden forrige kjøring</a></p>
+    <div class="grid">
+      <div class="col">
+        <section class="card">
+          <div class="card-h"><h3>Bestillingsforslag</h3><span class="card-sub">Sortert etter frigivelsesuke</span></div>
+          <table class="tbl">
+            <thead><tr><th>Varenummer</th><th>Beskrivelse</th><th class="num">Frigivelsesuke</th><th class="num">Mengde</th><th>Ordretype</th></tr></thead>
+            <tbody>
+              <tr><td class="mono">300-003</td><td>Hjul <span class="tag">Endret</span></td><td class="num">Uke 1</td><td class="num">175 <span class="over-tag"><svg class="ic " aria-hidden="true" focusable="false"><use href="#ic-clock"/></svg>50 forfalt</span></td><td>Innkjøp</td></tr>
+              <tr><td class="mono">300-006</td><td>Skruesett M6 <span class="tag">Ny</span></td><td class="num">Uke 2</td><td class="num">30</td><td>Innkjøp</td></tr>
+              <tr><td class="mono">200-002</td><td>Seteenhet</td><td class="num">Uke 2</td><td class="num">45</td><td>Produksjonsordre</td></tr>
+              <tr><td class="mono">300-005</td><td>Gassfjær</td><td class="num">Uke 3</td><td class="num">100</td><td>Innkjøp</td></tr>
+            </tbody>
+          </table>
+          <p class="info-line"><svg class="ic " aria-hidden="true" focusable="false"><use href="#ic-info"/></svg><span>Viser 4 av 12 forslag. <a href="#t5">Vis alle bestillingsforslag</a></span></p>
+        </section>
+        <section class="card">
+          <div class="card-h"><h3>Resultattabell</h3><span class="card-sub">300-003 Hjul · sikkerhetslager 40 · ledetid 2 uker</span></div>
+          <table class="tbl rt">
+            <thead><tr><th>Rad</th><th class="num">Uke 1</th><th class="num">Uke 2</th><th class="num">Uke 3</th><th class="num">Uke 4</th><th class="num">Uke 5</th></tr></thead>
+            <tbody>
+              <tr><th scope="row">Bruttobehov</th><td class="num">125</td><td class="num">100</td><td class="num">210</td><td class="num">130</td><td class="num">140</td></tr>
+              <tr><th scope="row">Planlagte mottak</th><td class="num">100</td><td class="num">75</td><td class="num">0</td><td class="num">0</td><td class="num">0</td></tr>
+              <tr><th scope="row">Forventet lagerbeholdning</th><td class="num">85</td><td class="num">60</td><td class="num cell-exc"><span class="exc-mark"><svg class="ic " aria-hidden="true" focusable="false"><use href="#ic-crit"/></svg>1</span>25</td><td class="num cell-sel">70</td><td class="num">55</td></tr>
+              <tr><th scope="row">Nettobehov</th><td class="num">0</td><td class="num">0</td><td class="num">190</td><td class="num">145</td><td class="num">110</td></tr>
+              <tr><th scope="row">Planlagte ordremottak</th><td class="num">0</td><td class="num">0</td><td class="num">175</td><td class="num">175</td><td class="num">125</td></tr>
+              <tr><th scope="row">Planlagte ordrefrigivelser</th><td class="num">175 <span class="over-tag"><svg class="ic " aria-hidden="true" focusable="false"><use href="#ic-clock"/></svg>50</span></td><td class="num">175</td><td class="num">125</td><td class="num">0</td><td class="num">0</td></tr>
+            </tbody>
+          </table>
+          <p class="legend"><span class="lg"><span class="exc-mark"><svg class="ic " aria-hidden="true" focusable="false"><use href="#ic-crit"/></svg>1</span> = 1 avvik i cellen</span><span class="lg"><span class="over-tag"><svg class="ic " aria-hidden="true" focusable="false"><use href="#ic-clock"/></svg>50</span> = 50 forfalt</span><span class="lg"><span class="sel-demo"></span> Valgt celle: Forventet lagerbeholdning, uke 4</span></p>
+        </section>
+      </div>
+      <div class="col">
+        <section class="card">
+          <div class="card-h"><h3>Kritiske deler</h3><span class="card-sub">3 av 4 vist</span></div>
+          <ul class="crit-list">
+            <li class="st st-crit"><svg class="ic " aria-hidden="true" focusable="false"><use href="#ic-crit"/></svg><span><b>300-005 Gassfjær</b> – Mottak forsinket (uke 3)</span><span class="st-lbl">Kritisk</span></li>
+            <li class="st st-crit"><svg class="ic " aria-hidden="true" focusable="false"><use href="#ic-crit"/></svg><span><b>300-003 Hjul</b> – Bestilling forsinket (uke 1)</span><span class="st-lbl">Kritisk</span></li>
+            <li class="st st-warn"><svg class="ic " aria-hidden="true" focusable="false"><use href="#ic-warn"/></svg><span><b>300-002 Rygg</b> – Bruk av sikkerhetslager (uke 2)</span><span class="st-lbl">Advarsel</span></li>
+          </ul>
+        </section>
+        <section class="card">
+          <div class="card-h"><h3>Forventet lagerbeholdning – 300-003 Hjul</h3></div>
+          <svg class="chart" viewBox="0 0 520 210" role="img" aria-labelledby="t5-ch-t t5-ch-d"><title id="t5-ch-t">Forventet lagerbeholdning – 300-003 Hjul</title><desc id="t5-ch-d">Uke 1 til 8: 85, 60, 25, 70, 55, 50, 65, 45. Sikkerhetslager 40. Under sikkerhetslager i uke 3.</desc><line x1="44" x2="504" y1="176.0" y2="176.0" class="grid"/><text x="36" y="180.0" class="ax" text-anchor="end">0</text><line x1="44" x2="504" y1="97.0" y2="97.0" class="grid"/><text x="36" y="101.0" class="ax" text-anchor="end">50</text><line x1="44" x2="504" y1="18.0" y2="18.0" class="grid"/><text x="36" y="22.0" class="ax" text-anchor="end">100</text><text x="44.0" y="198" class="ax" text-anchor="middle">Uke 1</text><text x="109.7" y="198" class="ax" text-anchor="middle">Uke 2</text><text x="175.4" y="198" class="ax" text-anchor="middle">Uke 3</text><text x="241.1" y="198" class="ax" text-anchor="middle">Uke 4</text><text x="306.9" y="198" class="ax" text-anchor="middle">Uke 5</text><text x="372.6" y="198" class="ax" text-anchor="middle">Uke 6</text><text x="438.3" y="198" class="ax" text-anchor="middle">Uke 7</text><text x="504.0" y="198" class="ax" text-anchor="middle">Uke 8</text><line x1="44" x2="504" y1="112.8" y2="112.8" class="ref"/><text x="50" y="127.8" class="lbl-ref" text-anchor="start">Sikkerhetslager 40</text><polyline points="44.0,41.7 109.7,81.2 175.4,136.5 241.1,65.4 306.9,89.1 372.6,97.0 438.3,73.3 504.0,104.9" class="line"/><circle cx="44.0" cy="41.7" r="3.2" class="dot"/><circle cx="109.7" cy="81.2" r="3.2" class="dot"/><circle cx="241.1" cy="65.4" r="3.2" class="dot"/><circle cx="306.9" cy="89.1" r="3.2" class="dot"/><circle cx="372.6" cy="97.0" r="3.2" class="dot"/><circle cx="438.3" cy="73.3" r="3.2" class="dot"/><circle cx="504.0" cy="104.9" r="3.2" class="dot"/><g transform="translate(167.4,128.5)" class="exc-pt"><use href="#ic-crit" width="16" height="16"/></g><text x="187.4" y="150.5" class="lbl-crit">25 – under sikkerhetslager</text></svg>
+          <p class="legend"><span class="lg"><span class="key-line"></span> Forventet lagerbeholdning</span><span class="lg"><span class="key-ref"></span> Sikkerhetslager 40</span></p>
+        </section>
+        <div class="focus-demo"><a class="btn-primary" href="#t5">Primærknapp</a><a class="btn-sec" href="#t5">Sekundær</a><span class="btn-sec is-focus">Med fokusring</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+</section>
+<footer class="foot">Kontrastforhold er beregnet etter WCAG 2.1 (relativ luminans). Krav: tekst 4,5:1, UI-kanter, fokusring, markører og graflinjer 3:1. Skillelinjer er dekor og har ikke krav; kontroller bruker «Kontrollkant».</footer>
+</body>
+</html>
