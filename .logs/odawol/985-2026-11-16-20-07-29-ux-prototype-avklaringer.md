@@ -88,3 +88,30 @@ Oda åpnet Carmens nyeste UX (v3 Design B) og ba deretter om et tillegg med to t
 
 ### Åpne punkter
 - Gruppen må velge mellom fire bokser og sammendraget fra v2, og mellom runde knapper og lenker i sidemenyen (v3).
+
+## 2026-11-17 kl. 11:43 — Odawol
+
+### Oppgave
+Oda ba om en liste over hvor UX-prototypen v3 avviker fra PRD-en og andre relevante dokumenter, med «!» der viktige dokumenter må oppdateres.
+
+### Plan
+- Sammenlignet v3 (standardvalgene) med PRD final 13.11, addendum, beslutninger 13.11, ordbanken og Carmens DESIGN.md og EXPERIENCE.md (12.11, på `Carmen/Branch`).
+- Kontrollerte påstandene mot koden i `index.html`.
+
+### Resultat
+- Ny fil `.docs/planning-artifacts/ux-designs/ux-prototype-2026-11-17-v3/avvik-mot-prd.md`: avvikstabell (U1–U14 og bokser/knapper fra v3), krav kontrollert uten avvik, og andre funn.
+- Avvik merket «!»:
+  - rekkefølgen (PRD §4.4, UJ-1, UJ-2)
+  - ukeplanen (FR-17)
+  - introduksjonsside og startside (FR-27, UJ-1)
+  - ord som mangler i ordbanken, blant annet «Frigivelsesuke» og «Bestillingsplan», som PRD-en bruker uten at ordbanken har dem
+  - «Sammendrag», som kolliderer med FR-16
+  - eksepsjonstekst A og «Krever oppfølging», hvis de velges
+  - standardvalg for beregning, fire bokser og runde knapper (EXPERIENCE.md)
+  - mørk retning (DESIGN.md)
+- Funn: `architecture/technology.md` beskriver et annet prosjekt (Pytagoras-nettsiden).
+- Ikke committet.
+
+### Åpne punkter
+- `architecture/technology.md` gjelder et annet prosjekt og bør fjernes eller erstattes før arkitektursteget.
+- «Frigivelsesuke» og «Bestillingsplan» brukes i PRD-en, men står ikke i ordbanken.
