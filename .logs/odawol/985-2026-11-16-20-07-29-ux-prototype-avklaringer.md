@@ -115,3 +115,18 @@ Oda ba om en liste over hvor UX-prototypen v3 avviker fra PRD-en og andre releva
 ### Åpne punkter
 - `architecture/technology.md` gjelder et annet prosjekt og bør fjernes eller erstattes før arkitektursteget.
 - «Frigivelsesuke» og «Bestillingsplan» brukes i PRD-en, men står ikke i ordbanken.
+
+## 2026-11-17 kl. 11:58 — Odawol
+
+### Oppgave
+Oda ba om å committe og pushe v3-prototypen og avvikslisten til `Oda/Branch`.
+
+### Plan
+- Commit begrenset til `ux-designs/ux-prototype-2026-11-17-v3/`. Andre ukommitterte filer ble ikke tatt med.
+
+### Resultat
+- `0200f22` «UX: klikkbar prototype 17.11 versjon 3 og avvik mot PRD», 5 filer: `index.html`, `data.js`, `lag_data.py`, `README.md` og `avvik-mot-prd.md`.
+- Pushet `5263354..0200f22` til `origin/Oda/Branch`, sammen med loggcommitene fra i dag. `main` er ikke rørt.
+
+### Åpne punkter
+Ingen nye.
