@@ -57,3 +57,34 @@ Oda ba om å committe og pushe prototypemappene, så de ligger i `Oda/Branch` p�
 
 ### Åpne punkter
 Ingen nye.
+
+## 2026-11-17 kl. 11:17 — Odawol
+
+### Oppgave
+Oda åpnet Carmens nyeste UX (v3 Design B) og ba deretter om et tillegg med to tips fra Sebastian: Carmens fire bokser øverst i resultatet og Carmens runde knapper for seksjonene. Forrige UX skulle ikke endres, og hvor endringene skal inn skulle forklares før noe ble laget.
+
+### Plan
+- Åpnet `COSI-MRP-UX-v3-Design-B` fra `Carmen/Branch` (commit `cb65aea`) via en midlertidig kopi og lokal server i scratchpad. Serveren ble stoppet etterpå.
+- Fant at tipsene kommer fra `ux/samlet-prototype-2026-11-16/cosi-mrp-samlet.html`, ikke fra v3, og viste skjermbilder av Carmens topp og v2-toppen.
+- Oda godkjente forslagene 17.11:
+  - boksene og knappene følger «Rekkefølge i resultatet» (U14)
+  - ingen «Oversikt»-knapp, fordi ordbanken sier «Ikke bruk»
+  - lenkene i sidemenyen skjules som standard, men kan slås på under Prototypevalg
+  - Endringer får en femte boks når seksjonen vises
+- Laget `ux-prototype-2026-11-17-v3/` som kopi av v2 og la inn endringene med et patch-skript.
+
+### Resultat
+- Ny mappe `.docs/planning-artifacts/ux-designs/ux-prototype-2026-11-17-v3/` med `index.html`, `data.js`, `lag_data.py` og `README.md`. v1 og v2 er ikke endret.
+- Sammendraget har fire bokser med store fargede tall og en forklaring per boks (`sumCardsK4`), med en femte boks for Endringer. Symbolene er ● for kritiske deler og «!» for forfalt mengde, ikke Carmens ⚠ og ⧗, fordi ⧗ allerede betyr «Ledetid overskrider horisont».
+- Runde knapper i den faste linjen øverst (`#secnav`) markerer seksjonen man er i. Lenkene i sidemenyen vises bare når valget er slått på.
+- Tre nye valg under Prototypevalg: sammendrag (fire bokser eller som v2), runde knapper av/på og sidemenylenker av/på. Lagringsnøklene er `cosi-oda-proto-1711v3-`.
+- Testet med Playwright i Edge, uten feil i konsollen:
+  - lys og mørk utgave
+  - testeksempel 01, 02→03 (Endringer), 05 med begge valg og 05 med bare kapasitet
+  - begge valgene for rekkefølge og alle de nye valgene
+  - at et klikk på en knapp legger seksjonen rett under den faste linjen
+  - mobilbredde uten sidelengs rulling
+- Ikke committet.
+
+### Åpne punkter
+- Gruppen må velge mellom fire bokser og sammendraget fra v2, og mellom runde knapper og lenker i sidemenyen (v3).

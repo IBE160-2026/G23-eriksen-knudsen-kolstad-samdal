@@ -39,3 +39,4 @@
 - [ ] 2026-11-16 [ux-prototype-avklaringer](985-2026-11-16-20-07-29-ux-prototype-avklaringer.md) — gruppen må gå gjennom U1–U13 i den nye prototypen (`ux-designs/ux-prototype-2026-11-16/`), særlig U1 (én resultatside), U2 (eksepsjonstekst A eller B) og U5 (ukeplanen mot FR-17)
 - [ ] 2026-11-16 [ux-prototype-avklaringer](985-2026-11-16-20-07-29-ux-prototype-avklaringer.md) — velger gruppen ukeplanen, introduksjonssiden eller nye ord i grensesnittet, må PRD-en og ordbanken oppdateres (U5, U6, U8)
 - [ ] 2026-11-16 [ux-prototype-avklaringer](985-2026-11-16-20-07-29-ux-prototype-avklaringer.md) — kritiske deler før bestillingsforslag (v2) krever en endring i PRD §4.4 hvis gruppen velger det (U14)
+- [ ] 2026-11-17 [ux-prototype-avklaringer](985-2026-11-16-20-07-29-ux-prototype-avklaringer.md) — gruppen må velge mellom fire bokser og sammendraget fra v2, og mellom runde knapper og lenker i sidemenyen (`ux-designs/ux-prototype-2026-11-17-v3/`)
