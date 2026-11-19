@@ -130,3 +130,19 @@ Oda ba om å committe og pushe v3-prototypen og avvikslisten til `Oda/Branch`.
 
 ### Åpne punkter
 Ingen nye.
+
+## 2026-11-19 kl. 21:34 — Odawol
+
+### Oppgave
+Oda ba om å få det nyeste UX-forslaget (prototype versjon 3 fra 17.11) pushet til `main`.
+
+### Plan
+- `Oda/Branch` har mange commits som ikke er på `main` (logger, testdata, øvingseksempel), så samme framgangsmåte som for PR #14 ble brukt: egen gren fra `origin/main` med bare v3-commiten.
+
+### Resultat
+- Ny gren `Oda/ux-prototype-v3` fra `origin/main`, med `0200f22` plukket over (ny hash `e07158e`). 5 filer i `.docs/planning-artifacts/ux-designs/ux-prototype-2026-11-17-v3/`.
+- [PR #15](https://github.com/IBE160-2026/G23-eriksen-knudsen-kolstad-samdal/pull/15) mot `main` er merget (`8b3fba0`). Grenen er slettet lokalt og på GitHub.
+- Loggcommitene for versjon 3 ble ikke tatt med til `main`. Tilbake på `Oda/Branch`, og config-endringene i `_bmad/` er urørt.
+
+### Åpne punkter
+Ingen nye.
