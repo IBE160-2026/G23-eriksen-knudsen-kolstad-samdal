@@ -73,3 +73,5 @@
 - [x] 2026-11-14 [ux-kjernen](976-2026-11-13-21-59-35-ux-kjernen.md) — valgfritt: oppdater Impeccable til v4.9.0 (`npx impeccable update`) (løst 2026-11-14: oppdatert og pushet, 52e822d, [impeccable-skill](980-2026-11-09-10-22-27-impeccable-skill.md))
 - [ ] 2026-11-14 [ux-kjernen](976-2026-11-13-21-59-35-ux-kjernen.md) — kjør `bmad-architecture` i ny kontekst (neste BMAD-steg)
 - [ ] 2026-11-14 [impeccable-skill](980-2026-11-09-10-22-27-impeccable-skill.md) — avgjør om rot-DESIGN.md skal forbli en henvisning eller speile tokens fra BMAD-DESIGN.md, slik at designhooken og live-panelet kan bruke dem
+- [ ] 2026-11-19 [ux-valg-oda-v3](974-2026-11-19-21-47-06-ux-valg-oda-v3.md) — PÅMINNELSE 2026-11-20 under arkitekturen: få inn de enkle endringene i Odas UX v3 (Bestillingsforslag først, typenavn først, ukefilter på Uke 1, fjern ukeplanen, nytt navn på «Sammendrag»-boksene, «Frigivelsesuke» og «Bestillingsplan» i ordbanken)
+- [ ] 2026-11-19 [ux-valg-oda-v3](974-2026-11-19-21-47-06-ux-valg-oda-v3.md) — gruppa avgjør introduksjonsside mot FR-27 (U6), fire bokser mot SM-C3 og statuslinjen, og standardvalget for beregning (U11)
