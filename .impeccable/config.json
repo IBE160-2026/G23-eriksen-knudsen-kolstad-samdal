@@ -1,0 +1,17 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "low-contrast",
+        "value": "*",
+        "files": [
+          ".docs/planning-artifacts/architecture/architecture-COSI - MRP-2026-11-20/arkitektur-oppsummering.html"
+        ],
+        "createdAt": "2026-11-20T20:30:21.151Z",
+        "reason": "Claude: static detector pairs dark-theme backgrounds with unresolved default #000 text; all text colours come from tokens redefined in both dark blocks"
+      }
+    ]
+  }
+}

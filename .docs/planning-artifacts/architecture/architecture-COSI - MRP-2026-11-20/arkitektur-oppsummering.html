@@ -1,0 +1,174 @@
+<title>COSI-arkitekturen</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;600;700&family=Source+Code+Pro:wght@400;600&display=swap">
+<style>
+/* Layout: steingulv med brett (seksjoner) i én spalte, som appens resultatside. Tokens fra COSI DESIGN.md. */
+:root{
+  --stein:#EFEDE4; --kort:#FBFAF5; --brett:#E4E2D6; --tekst:#1D2420; --dempet:#535E57;
+  --primar:#2F5A43; --primar-lys:#E3ECE0; --kant:#74776B; --linje:#DAD8CC; --messing:#8A6726;
+  --kritisk:#A0302A; --kritisk-lys:#F6E3E1; --topp:#2C3A31; --topp-tekst:#EEF0E8; --topp-dempet:#B4C0B5;
+  --sans:'Source Sans 3',Corbel,Candara,'Segoe UI',system-ui,sans-serif;
+  --mono:'Source Code Pro',Consolas,'Courier New',monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --stein:#161C18; --kort:#1F2622; --brett:#27302B; --tekst:#E6E9E2; --dempet:#A6B0A8;
+  --primar:#8CC0A0; --primar-lys:#24382C; --kant:#7E877F; --linje:#36403A; --messing:#D2B06A;
+  --kritisk:#E58A82; --kritisk-lys:#3A2422; --topp:#0F1411; --topp-tekst:#EEF0E8; --topp-dempet:#9AA79C; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --stein:#161C18; --kort:#1F2622; --brett:#27302B; --tekst:#E6E9E2; --dempet:#A6B0A8;
+  --primar:#8CC0A0; --primar-lys:#24382C; --kant:#7E877F; --linje:#36403A; --messing:#D2B06A;
+  --kritisk:#E58A82; --kritisk-lys:#3A2422; --topp:#0F1411; --topp-tekst:#EEF0E8; --topp-dempet:#9AA79C; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--stein);color:var(--tekst);font-family:var(--sans);font-size:17px;line-height:1.55}
+header.topp{background:var(--topp);color:var(--topp-tekst);padding-block:2.2rem 2rem;
+  margin-top:calc(-1 * env(safe-area-inset-top,0px));padding-top:calc(env(safe-area-inset-top,0px) + 2.2rem)}
+.inn{max-width:62rem;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header .merke{font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;color:var(--topp-dempet)}
+h1{font-weight:300;font-size:clamp(2rem,4vw,2.6rem);margin:.3rem 0 .6rem;text-wrap:balance}
+header p{max-width:44rem;margin:0;color:var(--topp-tekst)}
+header .meta{margin-top:1rem;font-size:.9rem;color:var(--topp-dempet)}
+main{padding-block:2rem 3rem;display:grid;gap:1.6rem}
+section.brett{background:var(--brett);border:1px solid var(--kant);border-radius:6px;overflow:hidden}
+section.brett>h2{font-weight:600;font-size:1.15rem;margin:0;padding:.8rem 1.1rem;display:flex;gap:.6rem;align-items:baseline;flex-wrap:wrap}
+section.brett>h2 small{font-weight:400;color:var(--dempet);font-size:.9rem}
+.flate{background:var(--kort);padding:1.1rem;display:grid;gap:1rem;min-width:0}
+p{margin:0;max-width:65ch}
+.stakk{display:grid;grid-template-columns:repeat(auto-fit,minmax(11rem,1fr));gap:.7rem}
+.stakk div{border:1px solid var(--linje);border-radius:4px;padding:.6rem .75rem;background:var(--stein)}
+.stakk b{display:block}
+.stakk span{font-family:var(--mono);font-size:.82rem;color:var(--dempet)}
+.forkastet{font-size:.95rem;color:var(--dempet)}
+.diagram{overflow-x:auto}
+.diagram svg{display:block;min-width:640px;width:100%;height:auto}
+.diagram text{font-family:var(--sans);fill:var(--tekst)}
+.lag{display:grid;grid-template-columns:repeat(auto-fit,minmax(13rem,1fr));gap:.7rem}
+.lag div{border-left:3px solid var(--primar);padding:.2rem .7rem}
+.lag code{font-family:var(--mono);font-size:.85rem}
+.regler{display:grid;grid-template-columns:repeat(auto-fit,minmax(18rem,1fr));gap:.8rem}
+.regel{border:1px solid var(--linje);border-radius:4px;padding:.7rem .85rem;background:var(--kort);display:grid;gap:.25rem;align-content:start}
+.regel .id{font-family:var(--mono);font-size:.78rem;color:var(--messing);font-weight:600}
+.regel b{font-weight:600}
+.regel p{font-size:.95rem;color:var(--tekst)}
+ol.rekke{margin:0;padding-left:1.3rem;display:grid;gap:.35rem}
+ol.rekke li::marker{color:var(--messing);font-weight:600}
+.apent{display:grid;gap:.7rem}
+.apent div{border:1px solid var(--kritisk);background:var(--kritisk-lys);border-radius:4px;padding:.65rem .85rem}
+.apent b::before{content:"● ";color:var(--kritisk)}
+.avgjort{border:1px solid var(--primar);background:var(--primar-lys);border-radius:4px;padding:.65rem .85rem}
+.avgjort b::before{content:"✓ ";color:var(--primar)}
+code{font-family:var(--mono);font-size:.9em}
+footer{font-size:.9rem;color:var(--dempet)}
+a{color:var(--primar)}
+:focus-visible{outline:2px solid var(--messing);outline-offset:2px}
+</style>
+
+<header class="topp"><div class="inn">
+  <div class="merke">G23 · IBE160 · arkitektur</div>
+  <h1>Slik bygger vi COSI - MRP</h1>
+  <p>Kort oppsummering av arkitekturen før vi deler opp arbeidet. Selve byggekontrakten er <code>ARCHITECTURE-SPINE.md</code> i samme mappe. Den går foran denne siden hvis de er uenige.</p>
+  <div class="meta">Utkast 20.11.2026 · Sebastian med Claude (Party Mode med Winston, Amelia og Sally) · gjennomgått av tre uavhengige kontrollører</div>
+</div></header>
+
+<main class="inn">
+
+<section class="brett"><h2>Hva vi bygger med</h2>
+  <div class="flate">
+    <div class="stakk">
+      <div><b>TypeScript</b><span>6.0.3</span></div>
+      <div><b>Svelte 5</b><span>5.59.1</span></div>
+      <div><b>Vite</b><span>8.3.8</span></div>
+      <div><b>Vitest</b><span>5.1.1 · npm test</span></div>
+      <div><b>SheetJS</b><span>0.20.3 fra cdn.sheetjs.com</span></div>
+      <div><b>Vercel</b><span>bare statiske filer</span></div>
+    </div>
+    <p>Alt kjører i nettleseren. Svelte lar oss flytte HTML-en og CSS-en fra Odas prototype v3 nesten uendret, og Vitest ligner pytest. Node 24 LTS anbefales.</p>
+    <p class="forkastet"><b>Forkastet:</b> Python i nettleseren (Pyodide), fordi testene da ville sammenlignet beregningen med seg selv (NFR-2), og fordi den er tung å laste. React, fordi Odas HTML måtte skrives om til JSX. Ren JavaScript uten rammeverk, fordi tilstanden da må håndteres for hånd. TypeScript 7, fordi svelte-check ikke støtter den ennå.</p>
+  </div>
+</section>
+
+<section class="brett"><h2>Slik henger delene sammen <small>én vei, fra fil til skjerm</small></h2>
+  <div class="flate">
+    <div class="diagram" role="img" aria-label="Fila leses, valideres, beregnes og sammenlignes med forrige lagrede kjøring, og blir én kjøring som vises, eksporteres og lagres.">
+      <svg viewBox="0 0 900 210" xmlns="http://www.w3.org/2000/svg">
+        <defs><marker id="pil" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="var(--kant)"/></marker></defs>
+        <rect x="150" y="10" width="560" height="120" rx="6" fill="var(--primar-lys)" stroke="var(--primar)" stroke-dasharray="4 3"/>
+        <text x="430" y="30" text-anchor="middle" font-size="13" fill="var(--primar)" style="fill:var(--primar)">Kjernen: ren TypeScript, kan testes alene</text>
+        <g font-size="14">
+          <rect x="10" y="55" width="110" height="50" rx="4" fill="var(--kort)" stroke="var(--kant)"/><text x="65" y="78" text-anchor="middle">Excel-fil</text><text x="65" y="95" text-anchor="middle" font-size="11" style="fill:var(--dempet)">les (SheetJS)</text>
+          <rect x="170" y="55" width="120" height="50" rx="4" fill="var(--kort)" stroke="var(--kant)"/><text x="230" y="78" text-anchor="middle">valider</text><text x="230" y="95" text-anchor="middle" font-size="11" style="fill:var(--dempet)">+ struktur</text>
+          <rect x="320" y="55" width="120" height="50" rx="4" fill="var(--kort)" stroke="var(--kant)"/><text x="380" y="78" text-anchor="middle">beregn</text><text x="380" y="95" text-anchor="middle" font-size="11" style="fill:var(--dempet)">+ kapasitet</text>
+          <rect x="470" y="55" width="120" height="50" rx="4" fill="var(--kort)" stroke="var(--kant)"/><text x="530" y="85" text-anchor="middle">sammenlign</text>
+          <rect x="740" y="55" width="140" height="50" rx="4" fill="var(--kort)" stroke="var(--messing)" stroke-width="2"/><text x="810" y="78" text-anchor="middle">Kjøring</text><text x="810" y="95" text-anchor="middle" font-size="11" style="fill:var(--dempet)">kjor.ts styrer alt</text>
+          <rect x="470" y="150" width="120" height="44" rx="4" fill="var(--kort)" stroke="var(--kant)"/><text x="530" y="177" text-anchor="middle">localStorage</text>
+          <rect x="650" y="150" width="70" height="44" rx="4" fill="var(--kort)" stroke="var(--kant)"/><text x="685" y="177" text-anchor="middle">Svelte</text>
+          <rect x="740" y="150" width="70" height="44" rx="4" fill="var(--kort)" stroke="var(--kant)"/><text x="775" y="177" text-anchor="middle">eksport</text>
+          <rect x="820" y="150" width="70" height="44" rx="4" fill="var(--kort)" stroke="var(--kant)"/><text x="855" y="177" text-anchor="middle">lagre</text>
+        </g>
+        <g stroke="var(--kant)" stroke-width="1.5" fill="none" marker-end="url(#pil)">
+          <path d="M120 80 H166"/><path d="M290 80 H316"/><path d="M440 80 H466"/><path d="M590 80 H736"/>
+          <path d="M530 150 V109"/><path d="M790 105 L690 146"/><path d="M800 105 L780 146"/><path d="M820 105 L850 146"/>
+        </g>
+        <text x="540" y="132" font-size="11" style="fill:var(--dempet)">forrige lagrede kjøring</text>
+      </svg>
+    </div>
+    <div class="lag">
+      <div><b>Kjernen</b><br><code>src/core/</code><br>Beregning, validering, kapasitet og sammenligning. Ingen Svelte, ingen Excel, ingen lagring.</div>
+      <div><b>Skallet</b><br><code>src/shell/</code><br>Leser og eksporterer Excel, lagrer i nettleseren og kjører hele løypa i <code>kjor.ts</code>.</div>
+      <div><b>Tekstene</b><br><code>src/tekster/nb.ts</code><br>All norsk tekst på ett sted, så engelsk kan legges til senere.</div>
+      <div><b>Skjermene</b><br><code>src/ui/</code><br>Svelte-komponenter flyttet fra Odas v3. Viser bare det kjernen har regnet ut.</div>
+    </div>
+  </div>
+</section>
+
+<section class="brett"><h2>Reglene som hindrer at vi bygger forbi hverandre <small>16 i alt, de viktigste her</small></h2>
+  <div class="flate"><div class="regler">
+    <div class="regel"><span class="id">AD-1</span><b>Kjernen er ren</b><p>Ingen Svelte, SheetJS eller nettleser-API i <code>src/core/</code>. Da kan testene kjøre beregningen direkte mot fasit.</p></div>
+    <div class="regel"><span class="id">AD-2</span><b>Alle datatyper på ett sted, skrevet først</b><p><code>typer.ts</code> lages i den første storyen og merges før alt annet. Ingen lager sin egen variant av en del eller en eksepsjon.</p></div>
+    <div class="regel"><span class="id">AD-3</span><b>Uker og varenumre</b><p>Uke 1 er indeks 0 i alle lister. Varenummer er alltid tekst. Forfalt mengde er et eget felt, aldri «uke 0».</p></div>
+    <div class="regel"><span class="id">AD-4</span><b>Feil er verdier</b><p>Validering gir en liste med alle feilene. Hver type ødelagt fil har sin egen melding. Bare ekte programfeil havner i «uventet feil».</p></div>
+    <div class="regel"><span class="id">AD-5</span><b>Beregningen leverer alt som vises</b><p>Tallene i forklaringspanelet, bestillingsforslagene og kritiske deler kommer ferdig fra kjernen. Skjermene regner aldri selv.</p></div>
+    <div class="regel"><span class="id">AD-6</span><b>Koder inn, norsk ut</b><p>Kjernen gir eksepsjonskoder med alle opplysningene meldingen trenger. Ordlyden lages bare i <code>nb.ts</code>.</p></div>
+    <div class="regel"><span class="id">AD-7</span><b>Lagret kjøring er liten</b><p>Bare det sammenligningen trenger, én nøkkel per ferdigprodukt. Aldri Excel-fila. Tåler at lagringen er blokkert.</p></div>
+    <div class="regel"><span class="id">AD-8</span><b>Én sammenligning</b><p>Skjermen og eksporten viser de samme linjene, i samme rekkefølge som arket Sammenligning i fasit 03.</p></div>
+    <div class="regel"><span class="id">AD-9</span><b>Nettingen finnes én gang</b><p>Kapasiteten og fast partistørrelse bruker samme beregningssteg med valg, ikke en kopi.</p></div>
+    <div class="regel"><span class="id">AD-11</span><b>Testene er uavhengige</b><p><code>lag_testdata.py</code> kopieres aldri inn i appen. Testene leser fasit-filene og sammenligner tall, koder og rekkefølge, ikke ordlyd.</p></div>
+    <div class="regel"><span class="id">AD-13</span><b>Odas v3 med PRD-valgene</b><p>Bestillingsforslag først, offisielt typenavn først, ukefilter på Uke 1, ingen ukeplan, ingen Prototypevalg. Vanlige HTML-kontroller i stedet for shadcn/Radix.</p></div>
+    <div class="regel"><span class="id">AD-16</span><b>Én rekkefølge for en kjøring</b><p>Les, valider, hent forrige, beregn, sammenlign, og lagre til slutt. Feiler noe, lagres ingenting.</p></div>
+  </div></div>
+</section>
+
+<section class="brett"><h2>Rekkefølgen i resultatet <small>fast, ikke et valg</small></h2>
+  <div class="flate">
+    <ol class="rekke">
+      <li>Bestillingsforslag, med ukefilteret på Uke 1</li>
+      <li>Endringer, når det finnes en lagret kjøring</li>
+      <li>Kritiske deler</li>
+      <li>Resultattabell</li>
+      <li>Produksjonskapasitet, når den er valgt</li>
+    </ol>
+    <p>Feltet øverst heter <b>Statuslinje</b> i koden, ikke «Sammendrag». Det ordet er lista over kritiske deler (FR-16).</p>
+  </div>
+</section>
+
+<section class="brett"><h2>Gruppa må avgjøre <small>hindrer ikke at vi starter</small></h2>
+  <div class="flate apent">
+    <div><b>Introduksjonsside eller startside (U6)</b><p>Odas v3 har en egen introduksjonsside. FR-27 og UJ-1 sier startsiden. Arkitekturen tåler begge.</p></div>
+    <div><b>Statuslinje: fire bokser eller én tekstlinje</b><p>Ordbanken sier tekstlinje og «ikke KPI-kort». Er de fargede tallene i strid med SM-C3?</p></div>
+    <div class="avgjort"><b>Standardvalg for beregning (U11)</b><p>Bestillingsplan er forhåndsvalgt. EXPERIENCE.md og Odas v3 sier det samme, så vi regner det som avgjort med mindre noen protesterer.</p></div>
+  </div>
+</section>
+
+<section class="brett"><h2>Hva som skjer nå</h2>
+  <div class="flate">
+    <ol class="rekke">
+      <li>Gruppa leser denne siden og svarer på de to åpne punktene.</li>
+      <li>Epics og stories lages fra PRD-en og arkitekturen (<code>bmad-create-epics-and-stories</code>).</li>
+      <li>Første story: prosjektoppsett og <code>typer.ts</code>. Den merges før noen andre starter.</li>
+      <li>Deretter kan kjernen, Excel-lesingen og skjermene bygges parallelt.</li>
+      <li>Ytelsen måles tidlig med en fil på 1000 rader (NFR-5).</li>
+    </ol>
+  </div>
+</section>
+
+<footer>Kilder: PRD final 13.11, addendum, EXPERIENCE.md og DESIGN.md (final 14.11), Odas prototype v3 og avviksliste, ordbanken. Begrunnelsene for hvert valg står i <code>.memlog.md</code> i arkitekturmappa.</footer>
+</main>

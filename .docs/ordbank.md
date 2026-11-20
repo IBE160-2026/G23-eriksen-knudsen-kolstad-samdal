@@ -2,7 +2,7 @@
 title: COSI - MRP Ordbank
 status: forslag
 created: 2026-10-21
-updated: 2026-11-14
+updated: 2026-11-20
 ---
 
 # Ordbank: COSI - MRP
@@ -127,6 +127,7 @@ Forslaget bygger på Excel-malen for flernivå stykkliste (Sebastian, 2026-10-23
 | Kontroll | Kolonnen i Stykkliste som viser hva som mangler eller ikke stemmer i hver rad, før opplasting. | – |
 | Kjøring | Én beregning fra én opplastet Excel-mal. | beregning (om hele kjøringen) |
 | Valideringsfeil | En feil i filen som appen finner, og som stopper beregningen. Oppgir ark, rad og årsak. | feilmelding |
+| Feil i hele fila | En feil som gjør at den opplastede fila ikke kan leses i det hele tatt, f.eks. ikke en Excel-fil, tom, skadet eller passordbeskyttet (PRD NFR-9). Vises som én melding, ikke i feiloppsummeringen. I koden: `Filfeil`. | – |
 | Resultattabell | MRP-tabellen per del og uke, med eksepsjonene markert. Én seksjon på resultatsiden. | MRP-tabell, resultatside (om tabellen), oversikt |
 | Før/etter-sammenligning | Forskjellen i bestillingsforslag og eksepsjoner mellom forrige og ny kjøring for samme ferdigprodukt. Appen husker siste kjøring per ferdigprodukt (PRD FR-19, besluttet 2026-11-05). | – |
 | Testeksempel | Et utfylt datasett med fasit, i `testdata/` (01–05). | øvingseksempel (slettet, se merknad 4) |
