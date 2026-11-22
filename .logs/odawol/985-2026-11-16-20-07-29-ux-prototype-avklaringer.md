@@ -502,3 +502,24 @@ Oda ville ha kontrollert at alle endringene fra gjennomgangen står i dokumenten
 
 ### Åpne punkter
 Ingen nye.
+
+## 2026-11-22 kl. 21:04 — Odawol
+
+### Oppgave
+Gruppen har godkjent alle de 16 avklaringene. Oda ba om å føre dem over til originalene på `main`, men å vente med Carmens EXPERIENCE.md og DESIGN.md, fordi de bare finnes på `Carmen/Branch`. Hun spurte også om det anbefales å ta dem inn på `main`.
+
+### Plan
+- Lagde grenen `Oda/ux-avklaringer-til-main` fra `origin/main` i et eget worktree, slik at `Oda/Branch` med alle de andre filene ikke ble tatt med.
+- PRD og addendum: kopiert fra arbeidsmappen. Først sjekket jeg at `prd.md` på `main` var lik originalen kopien bygger på. Merkingen «forslag fra Oda, ikke godkjent» ble endret til «godkjent av gruppen 22.11».
+- Ordbanken på `main` er en eldre utgave enn på `Oda/Branch`. Derfor ble bare radene fra 22.11 satt inn, ikke hele fila.
+
+### Resultat
+- **PRD og ordbank på `main`:** commit `2abe679` («PRD og ordbank: UX-avklaringene 22.11, godkjent av gruppen»), merget med PR #16 (`404004b`). Endret: `prd.md` (18 linjer), `addendum.md` (5) og `.docs/ordbank.md` (13). Grenen og worktreet er slettet etterpå.
+- **`Oda/Branch`:** `main` er merget inn (`1686d02`). Arbeidsmappen er markert som godkjent: README (status og tabell), prototypen v4 (banner og siden Avklaringer 22.11) og `prototype/README.md`.
+- **Ikke gjort:** EXPERIENCE.md og DESIGN.md er ikke endret, verken på `main` eller på `Carmen/Branch`.
+- **`issues.md`:** 19 punkter er lukket (godkjenning av U-punktene, overføring til PRD og ordbank, Frigivelsesuke og Bestillingsplan i ordbanken, menyord). Ett er delvis løst. Det er lagt til to nye.
+- **Anbefaling til Oda:** ta EXPERIENCE.md og DESIGN.md inn på `main` i en egen PR fra Carmen, med 22.11-endringene lagt inn. Begrunnelse i sluttsvaret.
+
+### Åpne punkter
+- Oda avklarer om Carmens EXPERIENCE.md og DESIGN.md skal til `main`. Endringene står klare i `ux-carmen/`.
+- Vurder om lys og mørk visning (U7) skal nevnes i NFR-8.
