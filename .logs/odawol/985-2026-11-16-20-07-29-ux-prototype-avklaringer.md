@@ -146,3 +146,25 @@ Oda ba om å få det nyeste UX-forslaget (prototype versjon 3 fra 17.11) pushet 
 
 ### Åpne punkter
 Ingen nye.
+
+## 2026-11-22 kl. 18:52 — Odawol
+
+### Oppgave
+Oda ville gå gjennom UX-forslaget på `main` (prototype versjon 3) og avklaringene, med prototypen åpen i nettleseren. Hun ba deretter om at de relevante dokumentene kopieres til en egen mappe på `Oda/Branch`, slik at hun kan endre ett punkt og ett dokument om gangen.
+
+### Plan
+- Kontrollerte at v3-mappen på `Oda/Branch` er lik den på `main`, og åpnet `index.html` i standardnettleseren.
+- Hentet U1–U14 fra prototypen og avvikslisten, og foreslo en rekkefølge for gjennomgangen. Punktene som krever endringer i PRD-en, ordbanken eller UX-dokumentene, tas først, og U14 aller først.
+- Laget en arbeidsmappe med kopier og en arbeidsliste i `README.md`. Originalene er ikke endret.
+
+### Resultat
+- Ny mappe `.docs/planning-artifacts/ux-designs/ux-avklaringer-2026-11-22/` (ikke committet):
+  - `README.md`: arbeidsliste med ett avsnitt per punkt (U14, fire bokser, runde knapper, U5, U6, U2, U3, U8, U11, U7), med feltene Status, Valg, Endret og Endres i. U1, U4, U9, U10, U12 og U13 står i en tabell. Nederst står en tabell over kopiene og hvor originalene ligger.
+  - `prd/`: `prd.md`, `addendum.md` og `beslutninger-2026-11-13.md` (PRD final 13.11)
+  - `ordbank.md`: fra `Oda/Branch`, som er nyere enn `main`. `main` mangler FR, NFR, SM, Dekningstabell, Tomtilstand og Avklaring.
+  - `ux-carmen/`: `DESIGN.md` og `EXPERIENCE.md` fra `origin/Carmen/Branch` (`f409dec`, 12.11)
+  - `prototype/`: kopi av v3 med `avvik-mot-prd.md`. Lagringsnøkkelen er endret til `cosi-oda-proto-2211avk-`, slik at kjøringene ikke blandes med v3.
+- Mappen er åpnet i Utforsker, og prototypekopien er åpnet i nettleseren.
+
+### Åpne punkter
+- Endringene i arbeidsmappen `ux-avklaringer-2026-11-22/` må føres over til originalene (PRD, ordbanken og EXPERIENCE.md/DESIGN.md) når gruppen har godkjent dem.

@@ -42,3 +42,4 @@
 - [ ] 2026-11-17 [ux-prototype-avklaringer](985-2026-11-16-20-07-29-ux-prototype-avklaringer.md) — gruppen må velge mellom fire bokser og sammendraget fra v2, og mellom runde knapper og lenker i sidemenyen (`ux-designs/ux-prototype-2026-11-17-v3/`)
 - [ ] 2026-11-17 [ux-prototype-avklaringer](985-2026-11-16-20-07-29-ux-prototype-avklaringer.md) — `architecture/technology.md` beskriver et annet prosjekt (Pytagoras-nettsiden) og bør fjernes eller erstattes før arkitektursteget
 - [ ] 2026-11-17 [ux-prototype-avklaringer](985-2026-11-16-20-07-29-ux-prototype-avklaringer.md) — «Frigivelsesuke» (FR-17) og «Bestillingsplan» (FR-30) brukes i PRD-en, men står ikke i ordbanken
+- [ ] 2026-11-22 [ux-prototype-avklaringer](985-2026-11-16-20-07-29-ux-prototype-avklaringer.md) — endringene i arbeidsmappen `ux-designs/ux-avklaringer-2026-11-22/` må føres over til originalene (PRD, ordbanken og EXPERIENCE.md/DESIGN.md) når gruppen har godkjent dem
