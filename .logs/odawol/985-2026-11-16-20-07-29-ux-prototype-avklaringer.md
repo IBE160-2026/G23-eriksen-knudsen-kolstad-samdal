@@ -480,3 +480,25 @@ Oda ba om en versjon som kan åpnes i nettleseren, med alle endringene fra avkla
 
 ### Åpne punkter
 Ingen nye.
+
+## 2026-11-22 kl. 20:52 — Odawol
+
+### Oppgave
+Oda ville ha kontrollert at alle endringene fra gjennomgangen står i dokumentene, ha det pushet til `Oda/Branch` og vite om endringene kan gjøres synlige. Hvis ikke ville hun ha en nummerert liste som viser til dokumentet.
+
+### Plan
+- Hentet originalene uendret fra git og sammenlignet dem med kopiene, fil for fil. Søkte etter rester av gamle formuleringer.
+- Gjorde endringene synlige ved å committe i to steg: først originalene uendret, så endringene. GitHub viser da den andre commiten som diff.
+- Lagde `endringsliste.md` med et skript som finner linjenummeret til hver endring og stopper hvis en tekst ikke finnes nøyaktig én gang.
+
+### Resultat
+- **Kontrollert:** alle de 16 avklaringene står i de relevante kopiene. Treffene på gamle ord som er igjen, er bevisste: ord under «Ikke bruk», linjer om noe som er forkastet, og filnavn i lenker. `beslutninger-2026-11-13.md`, `data.js` og `lag_data.py` er like originalene.
+- **Endrede linjer:** `prd.md` 18, `addendum.md` 5, `ordbank.md` 13, `DESIGN.md` 62 og `EXPERIENCE.md` 93.
+- **`endringsliste.md`:** 78 nummererte punkter (P1–P8 PRD, A1–A4 addendum, O1–O11 ordbank, E1–E34 EXPERIENCE, D1–D21 DESIGN), hver med avsnitt, linjenummer, avklaring og en kolonne for avkryssing. Den er lenket fra `README.md`.
+- **Commits:**
+  - `ef8598b` «UX-avklaringer 22.11: originalene uendret (grunnlag for sammenligning)»
+  - `77b9074` «UX-avklaringer 22.11: Odas endringer»
+- Pushet til `origin/Oda/Branch` sammen med loggcommitene fra i dag. `main` er ikke rørt. BMAD-konfigurasjonen og de andre filene som ikke var committet, ble ikke tatt med.
+
+### Åpne punkter
+Ingen nye.
