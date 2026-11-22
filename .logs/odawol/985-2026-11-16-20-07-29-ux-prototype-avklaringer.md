@@ -228,3 +228,21 @@ Alt er endret i `.docs/planning-artifacts/ux-designs/ux-avklaringer-2026-11-22/`
 ### Åpne punkter
 - V3-a og V3-b er Odas valg og må godkjennes av gruppen.
 - Gruppen bør vurdere om tallene for uke 1 og i alt trenger egne farger i tallboksene, eller om bare kritiske deler og forfalt mengde skal ha farge (DESIGN.md, ånden i SM-C3).
+
+## 2026-11-22 kl. 19:25 — Odawol
+
+### Oppgave
+Oda godtok anbefalingen: i tallboksene skal bare tallene som krever handling, ha farge. Hun spurte også hva en «tallboks» er.
+
+### Plan
+- Gjorde endringene med samme type skript som stopper hvis en tekst ikke finnes nøyaktig én gang.
+
+### Resultat
+- `prototype/index.html`: tallene for bestillingsforslag i uke 1 og i alt er nøytrale (hvite). Kritiske deler (●) og forfalt mengde («!») har fortsatt farge.
+- `ux-carmen/DESIGN.md`: tokenene `summary-num-week1` og `summary-num-all` er fjernet for lys og mørk. Regelen «bare tall som krever handling, har farge» står i Brand & Style, i raden Tallbokser og i Do's and Don'ts.
+- `README.md` (V3-a) er oppdatert.
+- Testet med Playwright i Edge, med skjermbilde. Ingen feil i konsollen.
+- Svarte at «Tallboks» er et nytt ord fra økten for boksene øverst i resultatet, og at det står i ordbanken som forslag.
+
+### Åpne punkter
+Ingen nye.
