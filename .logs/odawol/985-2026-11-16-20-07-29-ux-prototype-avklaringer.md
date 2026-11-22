@@ -334,3 +334,22 @@ Oda valgte B for U2: det offisielle typenavnet fra ordbanken står først i ekse
 
 ### Åpne punkter
 - U2 (B: typenavnet først) er Odas valg og må godkjennes av gruppen.
+
+## 2026-11-22 kl. 19:58 — Odawol
+
+### Oppgave
+Oda valgte «Kritiske deler» for U3 og ba om at de relevante dokumentene ble oppdatert.
+
+### Plan
+- Søkte etter «oppfølging» i alle kopiene. Setningen fra U14 brukte «det som krever oppfølging», som ville kollidert med valget. Den ble byttet til «krever handling», som SM-C3 bruker.
+
+### Resultat
+- `ordbank.md`: «krever oppfølging» står under «Ikke bruk» for Kritisk del.
+- `prd/prd.md` (§4.4) og `prd/addendum.md`: «krever oppfølging» er byttet til «krever handling». FR-13 og FR-16 er ikke endret.
+- `ux-carmen/EXPERIENCE.md`: den samme byttingen i punkt 3 på resultatsiden, og «Krever oppfølging» er lagt inn under «Ikke gjør» i tabellen for ordlyd.
+- `prototype/index.html`: valget «Ord for deler med eksepsjon» er fjernet, og `O.kritOrd` er alltid «kritiske», også der det andre valget var lagret. U3 er merket avklart.
+- `README.md` og `prototype/avvik-mot-prd.md` er oppdatert.
+- Testet med Playwright i Edge. Ingen feil i konsollen.
+
+### Åpne punkter
+- U3 («Kritiske deler») er Odas valg og må godkjennes av gruppen.

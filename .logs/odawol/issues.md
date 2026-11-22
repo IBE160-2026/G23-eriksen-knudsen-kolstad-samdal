@@ -48,3 +48,4 @@
 - [ ] 2026-11-22 [ux-prototype-avklaringer](985-2026-11-16-20-07-29-ux-prototype-avklaringer.md) — U5 (ukeplanen fjernes, FR-17 står uendret) er Odas valg og må godkjennes av gruppen
 - [ ] 2026-11-22 [ux-prototype-avklaringer](985-2026-11-16-20-07-29-ux-prototype-avklaringer.md) — U6 (introduksjonsside første gang, startsiden er «Ny kjøring», og Lagrede kjøringer er en egen side) er Odas valg og må godkjennes av gruppen
 - [ ] 2026-11-22 [ux-prototype-avklaringer](985-2026-11-16-20-07-29-ux-prototype-avklaringer.md) — U2 (B: typenavnet fra ordbanken først i eksepsjonsteksten) er Odas valg og må godkjennes av gruppen
+- [ ] 2026-11-22 [ux-prototype-avklaringer](985-2026-11-16-20-07-29-ux-prototype-avklaringer.md) — U3 («Kritiske deler», og «krever oppfølging» under «Ikke bruk» i ordbanken) er Odas valg og må godkjennes av gruppen
