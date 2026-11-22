@@ -16,3 +16,19 @@ Hente det siste fra GitHub og merge `main` inn i `Sebastian/Branch`, slik at gre
 
 ### Åpne punkter
 Ingen.
+
+## 2026-11-22 kl. 23:19 — Sebastian
+
+### Oppgave
+Ny `git pull` og merge av `main` inn i `Sebastian/Branch`.
+
+### Plan
+- `git pull`: grenen var à jour, `main` hadde én ny commit (`de99c44`).
+- `git merge origin/main`.
+
+### Resultat
+- Merge-commit `83f65be` uten konflikter. Den er ikke pushet.
+- Fra `main` (`de99c44`): PRD FR-3, addendum, EXPERIENCE.md, arkitekturen og ordbanken oppdatert etter den vedtatte arkitekturen.
+
+### Åpne punkter
+Ingen.
