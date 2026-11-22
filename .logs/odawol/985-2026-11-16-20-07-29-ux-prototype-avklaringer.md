@@ -265,3 +265,23 @@ Oda så tallboksene i Edge og ville ha en sterkere rosa. Hun spurte også om de 
 
 ### Åpne punkter
 Ingen nye.
+
+## 2026-11-22 kl. 19:44 — Odawol
+
+### Oppgave
+Oda testet resultatsiden med og uten ukeplan og opplevde ukeplanen som bare fyll. Hun bestemte at ukeplanen skal fjernes, og at dette skal oppdateres i UX-dokumentene (U5).
+
+### Plan
+- Søkte etter «ukeplan», «ukevisning» og «ukeoversikt» i alle kopiene. DESIGN.md nevnte ikke ukeplanen, og EXPERIENCE.md forbød den allerede. FR-17 sier «ingen egen ukevisning», så PRD-en trenger ingen endring.
+
+### Resultat
+Alt er endret i `.docs/planning-artifacts/ux-designs/ux-avklaringer-2026-11-22/`.
+- `prototype/index.html`: ukeplanen er tatt ut av resultatet (`planOrder`), av Prototypevalg og av veiledningssiden. Seksjonsmenyen og «Slik leser du resultatet» følger etter. U5 er merket avklart i listen over uavklarte spørsmål. Funksjonen `secUkeplan` og CSS-en for den står igjen, men brukes ikke.
+- `ux-carmen/DESIGN.md`: ny linje i Do's and Don'ts: «Egen ukeplan eller ukeoversikt ved siden av listen» under «Ikke gjør».
+- `ux-carmen/EXPERIENCE.md`: ny linje «Forkastet 22.11 – ukeplan» med begrunnelse.
+- `prd/addendum.md`: lukket spørsmål 5 er bekreftet 22.11. `prd/prd.md` er ikke endret.
+- `README.md` (U5 avklart, og «Ukeplan» er tatt ut av U8-listen) og `prototype/avvik-mot-prd.md` er oppdatert.
+- Testet med Playwright i Edge. Resultatet har nå Kritiske deler, Bestillingsforslag og Resultattabell. Ingen feil i konsollen.
+
+### Åpne punkter
+- U5 (ukeplanen fjernes) er Odas valg og må godkjennes av gruppen.
