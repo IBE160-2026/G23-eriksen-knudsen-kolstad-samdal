@@ -1,6 +1,6 @@
 # UX-prototype 22.11.2026, versjon 4
 
-**Odas avklaringer, ikke godkjent av gruppen.** Versjon 4 er [versjon 3 på `main`](../../ux-prototype-2026-11-17-v3/README.md) med alle de 16 avklaringene fra 22.11 lagt inn. Hva som er valgt, og hvilke dokumenter som er endret, står i [`../README.md`](../README.md) og på siden «Avklaringer 22.11» i prototypen. PRD-en og ordbanken er autoritative. Kopiene i arbeidsmappen viser hvordan de blir hvis gruppen godkjenner valgene.
+**Avklaringene er godkjent av gruppen 22.11.** Versjon 4 er [versjon 3 på `main`](../../ux-prototype-2026-11-17-v3/README.md) med alle de 16 avklaringene fra 22.11 lagt inn. Hva som er valgt, og hvilke dokumenter som er endret, står i [`../README.md`](../README.md) og på siden «Avklaringer 22.11» i prototypen. PRD-en og ordbanken er autoritative. Kopiene i arbeidsmappen viser hvordan de blir hvis gruppen godkjenner valgene.
 
 ## Slik åpner du den
 

@@ -2,6 +2,8 @@
 
 Odas arbeidsmappe for å gå gjennom de uavklarte spørsmålene i UX-prototypen versjon 3 (på `main`). Her kan du gjøre endringene i ett punkt og ett dokument om gangen.
 
+**Status 22.11:** Gruppen har godkjent alle de 16 punktene. Endringene i PRD-en, addendum og ordbanken er ført over til `main` med [PR #16](https://github.com/IBE160-2026/G23-eriksen-knudsen-kolstad-samdal/pull/16). Carmens EXPERIENCE.md og DESIGN.md (`ux-carmen/`) venter, fordi det ikke er avklart om de skal til `main`.
+
 **Kontroll:** [`endringsliste.md`](endringsliste.md) viser hver endring med nummer, dokument, avsnitt og linjenummer. På GitHub viser commiten «UX-avklaringer 22.11: Odas endringer» alle endringene i rødt og grønt.
 
 **Alt her er kopier.** Originalene er ikke endret. Når gruppen har godkjent et punkt, må endringen føres over til originalen (se tabellen nederst).
@@ -21,7 +23,7 @@ Rekkefølgen er foreslått: først de som krever endringer i PRD-en, ordbanken e
 ### U14: Kritiske deler før Bestillingsforslag?
 - **Prototypen nå:** Kritiske deler står først. Boksene og knappene følger samme rekkefølge. PRD-rekkefølgen kan prøves under Prototypevalg → «Rekkefølge i resultatet».
 - **Endres i:** `prd/prd.md` §4.4, UJ-1 og UJ-2, og `ux-carmen/EXPERIENCE.md`, hvis Kritiske deler skal stå først
-- **Status:** Avklart av Oda 22.11. Venter på gruppen.
+- **Status:** Godkjent av gruppen 22.11.
 - **Valg:** Kritiske deler først, deretter Bestillingsforslag. Hensikten er at brukeren først ser det som krever oppfølging, og så hva som skal bestilles. Er det ingen kritiske deler, vises bare en kort melding («Ingen kritiske deler. Planen går opp for alle delene.»), ikke hele seksjonen.
 - **Endret:**
   - `prd/prd.md`: `updated`, UJ-1 (rekkefølgen), UJ-2 (Kari ser de kritiske delene først, så bestillingsforslagene), §4.4 (ny rekkefølge og hensikt), FR-16 (står før bestillingsforslagene, kort melding uten kritiske deler, og to nye testbare konsekvenser)
@@ -33,7 +35,7 @@ Rekkefølgen er foreslått: først de som krever endringer i PRD-en, ordbanken e
 ### V3-a: Fire bokser øverst eller sammendraget fra v2?
 - **Prototypen nå:** fire bokser: kritiske deler, forslag i uke 1, forslag i alt og forfalt mengde. En femte boks vises når det finnes endringer.
 - **Endres i:** `ux-carmen/EXPERIENCE.md` (komponentene). Vurder om de fargede tallene går mot SM-C3 i `prd/prd.md`.
-- **Status:** Avklart av Oda 22.11. Venter på gruppen.
+- **Status:** Godkjent av gruppen 22.11.
 - **Valg:** Fire bokser øverst, som i prototypen.
 - **SM-C3:** Mot-målet lyder: «Tabellen skal ikke fylles med farger og symboler for å se informativ ut. Det skal være raskt å finne det som krever handling. Balanserer SM-3.» Det gjelder tabellen, og boksene står over seksjonene, ikke i tabellen. PRD-en trenger derfor ingen endring. Det er DESIGN.md som var i konflikt («ikke et dashbord», «ingen store tall i kort», «bare to ting får farge», «ikke petrol på store flater»), og den er endret. Oda bestemte 22.11 at bare tallene som krever handling, skal ha farge: kritiske deler (●) og forfalt mengde («!»). Tallene for uke 1 og i alt er nøytrale (hvite). Rosa for forfalt mengde er gjort sterkere (lys `#FF8CC6`, mørk `#FF7AB8`).
 - **Endret:**
@@ -46,7 +48,7 @@ Rekkefølgen er foreslått: først de som krever endringer i PRD-en, ordbanken e
 ### V3-b: Runde knapper eller lenker i sidemenyen?
 - **Prototypen nå:** runde knapper i den faste linjen øverst. Lenkene i sidemenyen er skjult.
 - **Endres i:** `ux-carmen/EXPERIENCE.md` (seksjonsmenyen)
-- **Status:** Avklart av Oda 22.11. Venter på gruppen.
+- **Status:** Godkjent av gruppen 22.11.
 - **Valg:** Runde knapper i den faste linjen øverst. Seksjonene er ikke lenker i sidemenyen.
 - **Endret:**
   - `ux-carmen/EXPERIENCE.md`: seksjonsmenyen står nå i kjøringslinjen (punkt 1) med runde knapper i samme rekkefølge som seksjonene. Komponentraden er skrevet om: aktiv seksjon følger rullingen, og Endringer og Produksjonskapasitet får knapp bare når seksjonen vises (før sto det «–»). Knappene brytes over flere linjer på smal skjerm. Ny linje under Inspiration.
@@ -57,7 +59,7 @@ Rekkefølgen er foreslått: først de som krever endringer i PRD-en, ordbanken e
 ### U5: Ukeplanen
 - **Prototypen nå:** står nederst i resultatet og kan skjules
 - **Endres i:** `prd/prd.md` FR-17 («ingen egen ukevisning») og `ux-carmen/EXPERIENCE.md`, eller så fjernes ukeplanen fra prototypen
-- **Status:** Avklart av Oda 22.11. Venter på gruppen.
+- **Status:** Godkjent av gruppen 22.11.
 - **Valg:** Ukeplanen fjernes. Oda testet begge variantene, og ukeplanen ble bare fyll. FR-17 står uendret, og ukefilteret på bestillingsforslagene er den eneste ukevisningen.
 - **Endret:**
   - `prototype/index.html`: ukeplanen er tatt ut av resultatet, Prototypevalg og veiledningen. Seksjonsmenyen og «Slik leser du resultatet» følger etter. U5 i listen over uavklarte spørsmål er merket avklart.
@@ -69,7 +71,7 @@ Rekkefølgen er foreslått: først de som krever endringer i PRD-en, ordbanken e
 ### U6: Introduksjonsside og startside
 - **Prototypen nå:** Introduksjonen vises første gang appen åpnes. Malen, testeksempel 01 og den korte veiledningen står på Ny kjøring. Lagrede kjøringer er en egen side.
 - **Endres i:** `prd/prd.md` FR-27 og UJ-1 (hvilken side er «startsiden»?) og skjermlisten i `ux-carmen/EXPERIENCE.md`
-- **Status:** Avklart av Oda 22.11. Venter på gruppen.
+- **Status:** Godkjent av gruppen 22.11.
 - **Valg:** A: introduksjonssiden beholdes og vises første gang appen åpnes i en nettleser. Startsiden er «Ny kjøring» og åpnes direkte ved senere besøk. Lagrede kjøringer og Veiledning er egne sider, som i prototypen.
 - **Endret:**
   - `prd/prd.md`: FR-27 sier at startsiden er «Ny kjøring», og har et nytt avsnitt om introduksjonssiden (skilt fra introduksjonen til brukertesten, §8.1) og en ny testbar konsekvens. UJ-1: Kari ser introduksjonssiden først.
@@ -82,7 +84,7 @@ Rekkefølgen er foreslått: først de som krever endringer i PRD-en, ordbanken e
 ### U2: Eksepsjonstekst: A (vanlig språk først) eller B (typenavn først)?
 - **Prototypen nå:** A
 - **Endres i:** `ordbank.md` (merknad 3), hvis A velges. Med B trengs ingen endring.
-- **Status:** Avklart av Oda 22.11. Venter på gruppen.
+- **Status:** Godkjent av gruppen 22.11.
 - **Valg:** B. Typenavnet fra ordbanken står først, med uke, for eksempel «Bestilling forsinket · uke 1», og en setning i vanlig språk under. Carmens korte navn («Kommer for sent» osv.) brukes ikke.
 - **Endret:**
   - `prd/prd.md` og `ordbank.md`: ingen endring. Begge bruker allerede de fem typenavnene.
@@ -93,7 +95,7 @@ Rekkefølgen er foreslått: først de som krever endringer i PRD-en, ordbanken e
 ### U3: «Kritiske deler» eller «Krever oppfølging»?
 - **Prototypen nå:** Kritiske deler
 - **Endres i:** `ordbank.md` og `prd/prd.md` FR-13 og FR-16, bare hvis «Krever oppfølging» velges
-- **Status:** Avklart av Oda 22.11. Venter på gruppen.
+- **Status:** Godkjent av gruppen 22.11.
 - **Valg:** «Kritiske deler», som i PRD-en (FR-13, FR-16) og ordbanken.
 - **Endret:**
   - `ordbank.md`: «krever oppfølging» står under «Ikke bruk» for Kritisk del
@@ -105,7 +107,7 @@ Rekkefølgen er foreslått: først de som krever endringer i PRD-en, ordbanken e
 - **Ordene:** Introduksjon, Ny kjøring, Resultat, Lagrede kjøringer, Sammendrag, Frigivelsesuke og Bestillingsplan. «Introduksjonsside» og «Startside» (menyvalgene «Introduksjon» og «Ny kjøring») står i ordbanken etter U6, 22.11. «Ukeplan» trengs ikke lenger (U5, 22.11). Frigivelsesuke og Bestillingsplan brukes allerede i PRD-en.
 - **Merk:** «Sammendrag» betyr sammendraget av kritiske deler i FR-16. Boksene øverst heter nå «Tallbokser» (V3-a, 22.11), så den kollisjonen er løst. «Tallboks» og «Seksjonsmeny» står i ordbanken som forslag.
 - **Endres i:** `ordbank.md` (og `updated` i frontmatter). Eventuelt FR-16 i `prd/prd.md`.
-- **Status:** Avklart av Oda 22.11. Venter på gruppen.
+- **Status:** Godkjent av gruppen 22.11.
 - **Valg:** Alle ordene legges inn i ordbanken. FR-16 trenger ingen endring, fordi boksene heter «Tallbokser».
 - **Endret:** i `ordbank.md`:
   - **Frigivelsesuke** (Beregning, PRD FR-17). Ikke bruk: bestillingsuke, ordreuke, startuke.
@@ -120,7 +122,7 @@ Rekkefølgen er foreslått: først de som krever endringer i PRD-en, ordbanken e
 ### U11: Hva er forhåndsvalgt under «Hva vil du beregne?»
 - **Prototypen nå:** Bestillingsplan. Carmens EXPERIENCE.md har Begge.
 - **Endres i:** `ux-carmen/EXPERIENCE.md`
-- **Status:** Avklart av Oda 22.11. Venter på gruppen.
+- **Status:** Godkjent av gruppen 22.11.
 - **Valg:** Valgene står i rekkefølgen **Bestillingsplan · Produksjonskapasitet · Begge**, og Bestillingsplan er forhåndsvalgt.
 - **Endret:**
   - `ux-carmen/EXPERIENCE.md`: komponenten «Valg av beregning» har ny rekkefølge og nye navn (før: «Bestillingsplan og produksjonskapasitet (standard) · Bare bestillingsplan · Bare produksjonskapasitet»)
@@ -130,7 +132,7 @@ Rekkefølgen er foreslått: først de som krever endringer i PRD-en, ordbanken e
 ### U7: Lys eller mørk?
 - **Prototypen nå:** Lys er standard, mørk kan velges
 - **Endres i:** `ux-carmen/DESIGN.md`, hvis mørk velges
-- **Status:** Avklart av Oda 22.11. Venter på gruppen.
+- **Status:** Godkjent av gruppen 22.11.
 - **Valg:** Begge visningene er med i v1. Lys er standard, og brukeren bytter selv.
 - **Endret:**
   - `ux-carmen/DESIGN.md`: kommentaren over fargetokenene, Appmeny (knappen nederst) og Do's and Don'ts. Mørk modus er ikke lenger «ikke et v1-krav», og kontrasten skal kontrolleres i begge.
@@ -142,12 +144,12 @@ Rekkefølgen er foreslått: først de som krever endringer i PRD-en, ordbanken e
 
 | Nr. | Spørsmål | Prototypen nå | Status | Valg |
 |---|---|---|---|---|
-| U1 | Én lang side eller utvidbare seksjoner? | A: én lang side | Avklart 22.11 | A, én lang side. Ført inn i EXPERIENCE.md (Resultat). Valget er fjernet fra Prototypevalg. |
-| U4 | Starter ukefilteret på «Alle uker» eller «Uke 1»? | Alle uker. Uke 1 skjuler svaret på oppgave 3 i brukertesten. | Avklart 22.11 | Alle uker. `[ASSUMPTION]` er fjernet i EXPERIENCE.md, og åpen beslutning 3 er besluttet. Valget er fjernet fra Prototypevalg. |
-| U9 | Hvor står Endringer? | Etter Bestillingsforslag | Avklart 22.11 | Står som nå. EXPERIENCE.md har den samme plasseringen. |
-| U10 | Filteret «Vis bare kritiske deler» | Vises | Avklart 22.11 | Beholdes. Ført inn i `prd/prd.md` FR-16 (tekst og ny konsekvens), `prd/addendum.md` og EXPERIENCE.md (ny komponentrad). Filteret endrer ikke eksporten. |
-| U12 | Hvilken rad får eksepsjonsmarkøren? | Sebastians kobling | Avklart 22.11 | Sebastians kobling: Nettobehov, Planlagte mottak (Kanseller mottak) og delens navn (Ledetid overskrider horisont). Carmens «Eksepsjonsrad» er erstattet i EXPERIENCE.md (Eksepsjonsmarkering, åpen beslutning 1) og DESIGN.md (ny rad «Eksepsjonsmarkør»). «Eksepsjonsmarkør» står i ordbanken som forslag. |
-| U13 | Ordlyden i eksepsjonsmeldingene | Fasitens melding med «Hvorfor:» | Avklart 22.11 | Variant B: typenavn og uke, én setning i vanlig språk, «Melding:» og «Hvorfor:». Ført inn i EXPERIENCE.md (Eksepsjonsmarkering) og DESIGN.md (Forklaringspanel). |
+| U1 | Én lang side eller utvidbare seksjoner? | A: én lang side | Godkjent 22.11 | A, én lang side. Ført inn i EXPERIENCE.md (Resultat). Valget er fjernet fra Prototypevalg. |
+| U4 | Starter ukefilteret på «Alle uker» eller «Uke 1»? | Alle uker. Uke 1 skjuler svaret på oppgave 3 i brukertesten. | Godkjent 22.11 | Alle uker. `[ASSUMPTION]` er fjernet i EXPERIENCE.md, og åpen beslutning 3 er besluttet. Valget er fjernet fra Prototypevalg. |
+| U9 | Hvor står Endringer? | Etter Bestillingsforslag | Godkjent 22.11 | Står som nå. EXPERIENCE.md har den samme plasseringen. |
+| U10 | Filteret «Vis bare kritiske deler» | Vises | Godkjent 22.11 | Beholdes. Ført inn i `prd/prd.md` FR-16 (tekst og ny konsekvens), `prd/addendum.md` og EXPERIENCE.md (ny komponentrad). Filteret endrer ikke eksporten. |
+| U12 | Hvilken rad får eksepsjonsmarkøren? | Sebastians kobling | Godkjent 22.11 | Sebastians kobling: Nettobehov, Planlagte mottak (Kanseller mottak) og delens navn (Ledetid overskrider horisont). Carmens «Eksepsjonsrad» er erstattet i EXPERIENCE.md (Eksepsjonsmarkering, åpen beslutning 1) og DESIGN.md (ny rad «Eksepsjonsmarkør»). «Eksepsjonsmarkør» står i ordbanken som forslag. |
+| U13 | Ordlyden i eksepsjonsmeldingene | Fasitens melding med «Hvorfor:» | Godkjent 22.11 | Variant B: typenavn og uke, én setning i vanlig språk, «Melding:» og «Hvorfor:». Ført inn i EXPERIENCE.md (Eksepsjonsmarkering) og DESIGN.md (Forklaringspanel). |
 
 ## Filer og originaler
 

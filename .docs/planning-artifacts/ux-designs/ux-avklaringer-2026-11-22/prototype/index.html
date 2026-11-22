@@ -357,7 +357,7 @@ table.mrp .selrow{color:var(--ink);font-weight:700}
 
   <div class="main">
     <div class="protobar" role="note">
-      <span><b>Prototype 22.11, versjon 4 – Odas avklaringer, ikke godkjent av gruppen.</b> Ingen beregning: tallene er fra referanseberegningen bak fasitene (testeksempel 01, 02, 03 og 05). Gule merker viser hva som er avklart.</span>
+      <span><b>Prototype 22.11, versjon 4 – avklaringene er godkjent av gruppen.</b> Ingen beregning: tallene er fra referanseberegningen bak fasitene (testeksempel 01, 02, 03 og 05). Gule merker viser hva som er avklart.</span>
       <button type="button" data-act="valg">Prototypevalg</button>
     </div>
 
@@ -466,7 +466,7 @@ table.mrp .selrow{color:var(--ink);font-weight:700}
     <!-- Avklaringer 22.11 -->
     <section class="view" data-view="uavklart" hidden aria-labelledby="h-u">
       <h1 id="h-u" tabindex="-1">Avklaringer 22.11</h1>
-      <p class="lead">Oda gikk gjennom alle de 16 spørsmålene i prototypen 22.11. Valgene er ført inn i kopiene av PRD-en, ordbanken og Carmens EXPERIENCE.md og DESIGN.md i arbeidsmappen <code>ux-avklaringer-2026-11-22</code>. Ingenting er godkjent av gruppen ennå, og originalene er ikke endret.</p>
+      <p class="lead">Oda gikk gjennom alle de 16 spørsmålene i prototypen 22.11. Valgene er ført inn i kopiene av PRD-en, ordbanken og Carmens EXPERIENCE.md og DESIGN.md i arbeidsmappen <code>ux-avklaringer-2026-11-22</code>. Gruppen godkjente dem 22.11. PRD-en og ordbanken på main er oppdatert (PR #16). EXPERIENCE.md og DESIGN.md venter.</p>
       <div id="utab"></div>
     </section>
   </div>
@@ -1118,7 +1118,7 @@ const U = [
 let uHl = null;
 function renderU(){
   $("#utab").innerHTML = `<table class="utab"><thead><tr><th>Nr.</th><th>Spørsmål</th><th>Valgt av Oda 22.11</th><th>Endret i kopiene</th><th>Status</th></tr></thead><tbody>${U.map(([id,q,valg,dok]) =>
-    `<tr id="u-${id}" class="${uHl===id?"hl":""}"><td style="white-space:nowrap"><b>${id}</b></td><td><b>${esc(q)}</b></td><td>${esc(valg)}</td><td>${esc(dok)}</td><td>Venter på gruppen</td></tr>`).join("")}</tbody></table>`;
+    `<tr id="u-${id}" class="${uHl===id?"hl":""}"><td style="white-space:nowrap"><b>${id}</b></td><td><b>${esc(q)}</b></td><td>${esc(valg)}</td><td>${esc(dok)}</td><td>Godkjent av gruppen 22.11</td></tr>`).join("")}</tbody></table>`;
   if(uHl){ const r = document.getElementById("u-"+uHl); r && r.scrollIntoView({block:"center"}); }
 }
 
