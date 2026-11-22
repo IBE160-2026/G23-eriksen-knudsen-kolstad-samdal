@@ -82,4 +82,4 @@
 - [ ] 2026-11-20 [arkitektur](972-2026-11-20-21-30-37-arkitektur.md) — del arkitektur-oppsummeringen (https://claude.ai/artifact/PdDTewWJ11Lga9uZKoZDWJ) med gruppa
 - [ ] 2026-11-20 [arkitektur](972-2026-11-20-21-30-37-arkitektur.md) — kjør `bmad-create-epics-and-stories` i ny kontekst; første story er prosjektoppsett + `typer.ts` (AD-2)
 - [ ] 2026-11-22 [arkitektur](972-2026-11-20-21-30-37-arkitektur.md) — EXPERIENCE.md har fortsatt den gamle rekkefølgen i resultatet (Bestillingsforslag først). Spinen og PRD §4.4 har kritiske deler først. Avklar med Carmens oppdaterte EXPERIENCE.md
-- [ ] 2026-11-22 [arkitektur](972-2026-11-20-21-30-37-arkitektur.md) — publiser oppdatert `arkitektur-oppsummering.html` til artefakten PdDTewWJ11Lga9uZKoZDWJ før den deles med gruppa
+- [x] 2026-11-22 [arkitektur](972-2026-11-20-21-30-37-arkitektur.md) — publiser oppdatert `arkitektur-oppsummering.html` til artefakten PdDTewWJ11Lga9uZKoZDWJ før den deles med gruppa (løst 2026-11-22)
