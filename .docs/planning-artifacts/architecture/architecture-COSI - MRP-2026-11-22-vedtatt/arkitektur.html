@@ -95,23 +95,23 @@
 <div class="stack">
   <span><b>React</b> 19.3.1</span><span><b>Vite</b> 8.3.8</span><span><b>TypeScript</b> 7.0.2 strict</span>
   <span><b>SheetJS CE</b> 0.20.3</span><span><b>Vitest</b> 5.1.1</span><span><b>Playwright</b> 1.65.1</span>
-  <span><b>oxlint</b> 1.94.0</span><span><b>Node</b> 24 LTS</span><span><b>Vercel</b> statisk</span>
+  <span><b>oxlint</b> 1.94.0</span><span><b>Node</b> 24 LTS</span><span><b>Web Worker</b> fra start</span><span><b>Vercel</b> statisk</span>
   <span>Ingen komponentbibliotek</span><span>Eksakte versjoner</span>
 </div>
 
 <div class="grid">
 
   <section class="tray">
-    <h2><span class="n">1</span>Oppbygging <small>– seks deler, hver i sin mappe under src/</small></h2>
+    <h2><span class="n">1</span>Oppbygging <small>– sju deler, hver i sin mappe under src/</small></h2>
     <div class="arch">
       <div class="box"><b>UI <code>ui/</code></b>Vanlig HTML og CSS fra prototypen v3<div class="tech">fire visninger · hash-ruting · feilgrense</div></div>
       <div class="box"><b>Styring <code>app/</code></b>Én kjøring i fast rekkefølge<div class="tech">les → valider → beregn → sammenlign → lagre</div></div>
       <div class="box"><b>Lagring <code>lagring/</code></b>Ett utdrag per ferdigprodukt<div class="tech">localStorage · try/catch · intro-nøkkel</div></div>
-      <div class="box"><b>Excel-delen <code>excel/</code></b>Leser .xlsx og skriver eksport<div class="tech">SheetJS bare her · verdier, ikke formler</div></div>
+      <div class="box"><b>Excel-delen <code>excel/</code></b>Leser .xlsx og skriver eksport<div class="tech">SheetJS bare her · lesing kjører i worker-en</div></div>
       <div class="box"><b>Tekster <code>tekster/</code></b>All norsk tekst og tallformat<div class="tech">kjernen gir bare koder</div></div>
       <div class="box"><b>Tester <code>tests/</code> <code>e2e/</code></b>Vitest mot fasit · Playwright<div class="tech">npm test uten nett · arkitekturtest</div></div>
       <div class="down">▼</div>
-      <div class="box core"><b>Kjernen <code>domene/</code> – ren TypeScript, ingen nettleser, ingen klokke</b>
+      <div class="box core"><b>Web Worker <code>worker/</code> → kjernen <code>domene/</code> – ren TypeScript, ingen nettleser, ingen klokke</b>
         <div class="steps"><span>typer.ts</span><span>valider</span><span>struktur</span><span>netting</span><span>beregn</span><span>eksepsjoner</span><span>kapasitet</span><span>utdrag</span><span>sammenlign</span></div>
       </div>
       <div class="box host"><span><b>Vercel</b> · bare statiske filer · ingen serverfunksjoner eller analyse</span><span>Streng CSP · connect-src 'self' · testet</span></div>
@@ -120,13 +120,13 @@
     <div class="rules">
       <div class="r"><div class="k">Datakontrakter <em>AD-3</em></div><div class="v">Story 0 oppsett, Story 1 typer.ts – før alt annet</div></div>
       <div class="r"><div class="k">Data <em>AD-4</em></div><div class="v">Varenummer er tekst · heltall som tekst («7») godtas</div></div>
-      <div class="r"><div class="k">Feil <em>AD-5</em></div><div class="v">Feil er verdier · alle feil samlet · 30 s grense</div></div>
+      <div class="r"><div class="k">Feil <em>AD-5</em></div><div class="v">Feil er verdier · alle feil samlet · feilgrense</div></div>
       <div class="r"><div class="k">Beregning <em>AD-6–8</em></div><div class="v">Én struktur, én netting, alt ferdig i resultatet</div></div>
       <div class="r"><div class="k">Planlagte mottak <em>AD-4</em></div><div class="v">Hvert mottak for seg – sjekkes mot fasit 04</div></div>
       <div class="r"><div class="k">Lagring <em>AD-10</em></div><div class="v">Utdrag per ferdigprodukt, aldri Excel-filen</div></div>
       <div class="r"><div class="k">Stykklisten <em>AD-15</em></div><div class="v">Slutter ved første tomme rad · innhold under = én feil</div></div>
       <div class="r"><div class="k">Sammenligning <em>AD-11</em></div><div class="v">Varenummer + uke + type · fast rekkefølge</div></div>
-      <div class="r"><div class="k">Web Worker <em>AD-14</em></div><div class="v">Først hvis 1000 rader tar over 3 s</div></div>
+      <div class="r"><div class="k">Web Worker <em>AD-12</em></div><div class="v">Fra start – siden fryser aldri, 30 s stoppes med terminate()</div></div>
       <div class="r"><div class="k">Kvalitet <em>AD-18</em></div><div class="v">Test, lint og build grønne før fletting</div></div>
       <div class="r"><div class="k">Publisering <em>AD-17</em></div><div class="v">VITE_KAPASITET · frossen brukertest-branch</div></div>
       <div class="r"><div class="k">Navn i koden</div><div class="v">Ordbanken, ASCII: LagretKjoring</div></div>
@@ -136,7 +136,7 @@
     <div class="build">
       <span><i>0</i>Oppsett</span><span><i>1</i>typer.ts</span>
       <span class="t1"><i>2</i>Lesing + validering</span><span class="t1"><i>3</i>Beregning</span><span class="t1"><i>4</i>Eksepsjoner</span>
-      <span class="t1"><i>5</i>Styring + ruting</span><span class="t1"><i>6</i>Visningene + tabell</span>
+      <span class="t1"><i>5</i>Worker, styring + ruting</span><span class="t1"><i>6</i>Visningene + tabell</span>
       <span><i>7</i>Forklaringer</span><span><i>8</i>Lagring, sammenligning, eksport</span>
       <span class="t4"><i>9</i>Kapasitet</span><span class="t4"><i>10</i>Partistørrelse</span>
     </div>

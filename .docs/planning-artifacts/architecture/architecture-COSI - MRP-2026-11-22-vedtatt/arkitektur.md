@@ -17,7 +17,7 @@ sources:
 
 # Arkitektur for COSI - MRP
 
-**Vedtatt av gruppen 22.11.2026.** Dette er arkitekturen appen bygges etter. Ved avvik gjelder PRD-en og ordbanken. En endring i arkitekturen avtales i gruppen og føres inn her med dato.
+**Vedtatt av gruppen 22.11.2026.** Dette er arkitekturen appen bygges etter. Ved avvik gjelder PRD-en og ordbanken. En endring i arkitekturen avtales i gruppen og føres inn her med dato (se kapittel 12, Endringer).
 
 ## 1. Sammendrag
 
@@ -33,7 +33,7 @@ COSI - MRP er én statisk nettapp som kjører helt i brukerens nettleser. Vercel
 | Visninger | Introduksjon, Ny kjøring, Resultat og Lagrede kjøringer, hver med sin egen hash-adresse |
 | Tilstand | React Context med `useReducer`, uten eget bibliotek |
 | Lagring | `localStorage`, ett lite utdrag per ferdigprodukt |
-| Web Worker | Ikke i starten. Legges til hvis 1000 rader tar over 3 sekunder |
+| Web Worker | Fra start: lesing, validering og beregning kjører i en Web Worker, så siden aldri fryser |
 | Tester | Vitest mot fasit (`npm test`) og Playwright (`npm run test:e2e`) |
 | Kvalitet | oxlint. Test, lint og build må være grønne før fletting. Eksakte versjoner |
 | Publisering | Statiske filer på Vercel med en streng Content Security Policy |
@@ -44,13 +44,18 @@ COSI - MRP er én statisk nettapp som kjører helt i brukerens nettleser. Vercel
 ```text
  Brukerens nettleser (alt skjer her)
  ┌───────────────────────────────────────────────────────────────────┐
+ │  Hovedtråden                                                       │
  │  ui/ (React)  ──▶  app/ (styring)  ──▶  lagring/ (localStorage)     │
- │      ▲                  │                                           │
- │      │ Kjoring          ▼                                           │
- │      │      excel/ (SheetJS)  →  domene/ (ren TypeScript)           │
- │      │      les fil → rådata     valider → struktur → beregn →      │
- │      └────────────────────────── eksepsjoner → kapasitet →          │
- │                                  utdrag → sammenlign                │
+ │      ▲                  │  ▲     sammenlign + utdrag (domene/)      │
+ │      │ Kjoring          │  │                                        │
+ │      │    ArrayBuffer   │  │ resultat eller feil                    │
+ │      │    + valg        ▼  │                                        │
+ │      │   ┌──────────────────────────────────────────────┐          │
+ │      │   │ Web Worker  worker/                          │          │
+ │      │   │ excel/les (SheetJS) → domene/: valider →     │          │
+ │      │   │ struktur → beregn → eksepsjoner → kapasitet  │          │
+ │      │   └──────────────────────────────────────────────┘          │
+ │      └── excel/eksport ved klikk på Eksporter                      │
  │  tekster/: all norsk tekst                                          │
  └───────────────────────────────────────────────────────────────────┘
         ▲ bare statiske filer
@@ -67,7 +72,8 @@ COSI - MRP er én statisk nettapp som kjører helt i brukerens nettleser. Vercel
 | Tekster | `src/tekster/` | All norsk tekst og tallformatering | Typer fra `domene/` |
 | Excel-delen | `src/excel/` | Lese `.xlsx` til rådata, og skrive eksportfilen | `domene/`, `tekster/`, SheetJS |
 | Lagring | `src/lagring/` | Lese, skrive, liste og slette lagrede kjøringer, og intro-nøkkelen | Typer fra `domene/` |
-| Styring | `src/app/` | Kjøre én kjøring fra fil til resultat i fast rekkefølge, og holde felles tilstand | `domene/`, `excel/`, `lagring/`, `tekster/` |
+| Worker | `src/worker/` | Kjøre lesing, validering og beregning utenfor hovedtråden | `domene/`, `excel/` |
+| Styring | `src/app/` | Starte worker-en, holde tidsgrensen, sammenligne, lagre og holde felles tilstand | `domene/`, `excel/` (bare eksport), `lagring/`, `tekster/`, `worker/` |
 | UI | `src/ui/` | React-komponenter, visninger, ruting, tastatur og fokus | `app/`, `tekster/`, typer fra `domene/` |
 
 En arkitekturtest i Vitest leser importene i `src/` og feiler hvis en del importerer noe den ikke har lov til.
@@ -82,6 +88,7 @@ En arkitekturtest i Vitest leser importene i `src/` og feiler hvis en del import
     tekster/     nb.ts (all norsk tekst og formatering)
     excel/       les.ts (xlsx → rådata eller filfeil), eksport.ts
     lagring/     lagrede-kjoringer.ts (eneste bruk av localStorage)
+    worker/      beregning.worker.ts, meldinger.ts (typene for meldingene inn og ut)
     app/         kjoring.ts (rekkefølgen i AD-12), tilstand.tsx
     ui/          ruter.ts, introduksjon/, ny-kjoring/, resultat/, lagrede-kjoringer/,
                  resultattabell/, forklaringspanel/, kapasitet/, felles/
@@ -92,8 +99,6 @@ En arkitekturtest i Vitest leser importene i `src/` og feiler hvis en del import
   testdata/      malen, testeksemplene, fasitene, validering/, lag_testdata.py
   vercel.json    CSP og andre sikkerhetshoder
 ```
-
-`src/worker/` lages først når Web Worker innføres (AD-14).
 
 ## 3. Beslutninger
 
@@ -161,9 +166,10 @@ De viktigste typene:
   - Excel-delen og valideringen gir svar som `{ ok: true, verdi }` eller `{ ok: false, feil }`, og kaster ikke unntak for feil i brukerens data.
   - Excel-delen gir én kode for hver feil i hele filen: ikke en Excel-fil, tom fil og skadet fil. Hver kode får sin egen melding (NFR-9).
   - Valideringen samler alle feilene før den svarer, også etter FR-2-regelen om å hoppe over kontroller som avhenger av noe som mangler.
-  - Styringen har den ene `try/catch` som gjør en uventet feil om til en norsk melding. Ved feil vises ingen resultat, og ingenting lagres.
+  - Worker-en fanger alle uventede feil i lesing, validering og beregning og svarer med koden `UVENTET_FEIL`. Den sender aldri et halvt resultat.
+  - Styringen gjør en uventet feil om til en norsk melding. Det gjelder svar med `UVENTET_FEIL`, en worker som krasjer (`error` eller `messageerror`), og feil i sammenligning og lagring. Ved feil vises ingen resultat, og ingenting lagres.
   - Én React-feilgrense rundt visningene fanger feil under tegning. Den viser en norsk reservemelding og lar brukeren gå til Ny kjøring og laste opp på nytt uten å laste siden på nytt.
-  - **Tidsgrense på 30 sekunder.** Tar lesing og beregning mer enn 30 sekunder, gir det «uventet feil», og brukeren kan laste opp en ny fil. Det er ingen grense for filstørrelse. Grensen kan bare håndheves helt i en Web Worker, fordi hovedtråden ikke kan avbryte SheetJS midt i en fil. Til worker-en innføres (AD-14), måler styringen tiden og gir feilen når arbeidet er ferdig.
+  - **Tidsgrense på 30 sekunder.** Har worker-en ikke svart innen 30 sekunder, stopper styringen den med `terminate()` og gir «uventet feil». Brukeren kan straks laste opp en ny fil. Det er ingen grense for filstørrelse.
 
 ### AD-6: Én eier av stykklistestrukturen
 
@@ -215,19 +221,25 @@ De viktigste typene:
   - Endringstypene er kodene `NY`, `ENDRET_MENGDE`, `FJERNET` og `BORTE`. Teksten lages i `tekster/`.
   - Skjermen og eksporten bruker samme `Sammenligning` uten å sortere den på nytt.
 
-### AD-12: Én kjøring, fast rekkefølge
+### AD-12: Én kjøring i en Web Worker, fast rekkefølge
 
-- **Gjelder:** FR-4, FR-19, FR-20, FR-30, NFR-9, NFR-10
-- **Regel:** Bare `app/kjoring.ts` kjører en kjøring, i denne rekkefølgen:
-  1. Les filen med Excel-delen.
-  2. Valider og bygg strukturen.
-  3. Ved feil: vis feilene og stopp. Ingenting lagres.
-  4. Les forrige utdrag for ferdigproduktet.
-  5. Kjør beregningene som er valgt (bestillingsplan, produksjonskapasitet eller begge).
-  6. Sammenlign med forrige utdrag (bare når bestillingsplanen er valgt).
-  7. Lag én `Kjoring` med alt skjermen trenger.
-  8. Lagre det nye utdraget (bare når bestillingsplanen er valgt og alt over gikk bra).
-  9. Gi `Kjoring` til tilstanden og gå til `#/resultat`.
+- **Gjelder:** FR-4, FR-19, FR-20, FR-30, NFR-5, NFR-9, NFR-10, EXPERIENCE › State Patterns (Lasting)
+- **Hvorfor worker fra start:** Siden fryser ikke mens appen regner. Statuslinja kan vise «Leser fila …» og «Beregner …», og et nytt klikk på Beregn kan avvises mens en kjøring pågår. Kapasiteten (FR-31) gjør mange nettinger og kan ta tid med 1000 rader. Tidsgrensen i AD-5 virker fullt ut, fordi en worker kan stoppes.
+- **Regel for worker-en (`worker/beregning.worker.ts`):**
+  - Den lages med `new Worker(new URL('./beregning.worker.ts', import.meta.url), { type: 'module' })`, som Vite støtter uten ekstra oppsett.
+  - Den tar imot én melding: filens innhold som `ArrayBuffer` (overført, ikke kopiert) og valget (bestillingsplan, produksjonskapasitet eller begge).
+  - Den kjører `excel/les`, `domene/valider`, `domene/struktur`, `domene/beregn`, `domene/eksepsjoner` og `domene/kapasitet`, og svarer med én melding: resultatet, valideringsfeilene, en filfeil eller `UVENTET_FEIL`.
+  - Den har ingen tilstand mellom kjøringer, rører ikke `localStorage` og har ingen tilgang til DOM-en.
+  - Meldingstypene inn og ut står i `worker/meldinger.ts` og bruker typene fra `domene/typer.ts`.
+  - Testene kaller funksjonene i `domene/` og `excel/` direkte og trenger ikke worker-en. Playwright-testene går gjennom worker-en.
+- **Regel for kjøringen:** Bare `app/kjoring.ts` kjører en kjøring, i denne rekkefølgen:
+  1. Start worker-en med filen og valget, og start tidsgrensen på 30 sekunder (AD-5). Statuslinja viser at appen leser og beregner. Et nytt klikk på Beregn starter ikke en ny kjøring.
+  2. Vent på svar. Ved valideringsfeil, filfeil, uventet feil eller tidsgrense: vis feilen og stopp. Ingenting lagres.
+  3. Les forrige utdrag for ferdigproduktet fra `lagring/`.
+  4. Lag utdraget av den nye kjøringen og sammenlign med det forrige (bare når bestillingsplanen er valgt).
+  5. Lag én `Kjoring` med alt skjermen trenger.
+  6. Lagre det nye utdraget (bare når bestillingsplanen er valgt og alt over gikk bra).
+  7. Gi `Kjoring` til tilstanden og gå til `#/resultat`.
 
 ### AD-13: Visninger, ruting og tilstand
 
@@ -257,7 +269,7 @@ De viktigste typene:
   - Resultatet vises i denne rekkefølgen (PRD §4.4 og ordbanken): tallboksene, kritiske deler, bestillingsforslag, endringer (når de finnes), resultattabellen og produksjonskapasiteten (når den er valgt). Uten kritiske deler vises bare en kort melding (FR-16). Det er ingen ukeplan.
   - Resultattabell er én semantisk `<table>` med én `<tbody>` per del. Hver del er memoisert, så bare delen som endres, tegnes på nytt.
   - Valgt celle, ukefilter, filteret «Vis bare kritiske deler» (FR-16) og åpent forklaringspanel er lokal tilstand i visningen. Filteret skjuler bare deler på skjermen og endrer ikke `Resultat` eller eksporten.
-  - Ytelsen måles tidlig med en fil på 1000 rader, laget med `testdata/lag_testdata.py`. Nås ikke 3 sekunder, prøves først Web Worker for lesing og beregning (i `src/worker/`), deretter tiltakene i EXPERIENCE.md: `content-visibility: auto`, virtualisering og sammenslått visning.
+  - Ytelsen måles tidlig med en fil på 1000 rader, laget med `testdata/lag_testdata.py`. Lesing og beregning går i worker-en (AD-12), så målingen gjelder mest tegningen av tabellen. Nås ikke 3 sekunder, prøves tiltakene i EXPERIENCE.md: `content-visibility: auto`, virtualisering og sammenslått visning.
 
 ### AD-15: Excel inn og ut med SheetJS
 
@@ -360,11 +372,11 @@ Versjonene er sjekket 22.11.2026 og låses eksakt i `package.json`.
 | NFR-2 tester mot fasit | `tests/` | AD-16 |
 | NFR-3 kjørbar for sensor | README, `package.json` | AD-16, AD-17, AD-18 |
 | NFR-4 data blir i nettleseren | bygg, `vercel.json` | AD-1, AD-17 |
-| NFR-5 ytelse | `ui/resultattabell/`, måling med 1000 rader | AD-14 |
+| NFR-5 ytelse | `worker/`, `ui/resultattabell/`, måling med 1000 rader | AD-12, AD-14 |
 | NFR-6 Chrome, Edge og Firefox på PC | `e2e/` | AD-16, AD-17 |
 | NFR-7 språk | `tekster/` | AD-9 |
 | NFR-8 lesbarhet | `ui/` | AD-1, AD-14, konvensjonene |
-| NFR-9 robust feilhåndtering | `excel/les.ts`, `app/kjoring.ts`, feilgrensen i `ui/` | AD-5, AD-12 |
+| NFR-9 robust feilhåndtering | `excel/les.ts`, `worker/`, `app/kjoring.ts`, feilgrensen i `ui/` | AD-5, AD-12 |
 | NFR-10 lagring i nettleseren | `lagring/` | AD-10 |
 | NFR-11 kompatibilitet med Excel | `excel/`, testfilene fra Excel for Windows og Mac | AD-4, AD-15, AD-16 |
 
@@ -388,7 +400,7 @@ Rekkefølgen følger PRD §7.1, så trinn 1–3 kan være testet før kuttbeslut
 | 2 | Lesing i `excel/` og validering i `domene/`, med testene i `testdata/validering/` | 1 |
 | 3 | Struktur, netting og beregning, med fasittester for testeksempel 01–04 | 1 |
 | 4 | Eksepsjoner, med fasittester | 1 |
-| 5 | Styringen, tilstanden og rutingen | 1 |
+| 5 | Worker-en, styringen, tilstanden og rutingen | 1 |
 | 6 | Introduksjon, Ny kjøring, Resultat og Resultattabell med filteret «Vis bare kritiske deler». Ytelsesmåling med 1000 rader | 1 |
 | 7 | Forklaringspanelet | 2 |
 | 8 | Lagring, sammenligning, Lagrede kjøringer og eksport | 3 |
@@ -409,7 +421,6 @@ Når nr. 1 er flettet inn, kan nr. 2–4 og nr. 6 gjøres samtidig. UI-et kan by
 
 ## 10. Utsatt
 
-- **Web Worker:** når målingen med 1000 rader viser over 3 sekunder (AD-14). Da håndheves også tidsgrensen fullt ut (AD-5).
 - **IndexedDB:** først hvis hele kjøringer eller flere kjøringer per ferdigprodukt skal lagres. All lagring ligger i én fil, så et bytte endrer bare den.
 - **Virtualisering av tabellen:** først hvis målingen viser at det trengs.
 - **Engelsk tekst:** `tekster/` er forberedt, men bare norsk lages i v1.
@@ -422,3 +433,10 @@ Når nr. 1 er flettet inn, kan nr. 2–4 og nr. 6 gjøres samtidig. UI-et kan by
 |---|---|
 | EXPERIENCE.md | UI-system: vanlig HTML og CSS fra prototypen, ikke shadcn/ui, Radix og Tailwind (AD-1). Navigasjon: egen hash-adresse per visning, ikke samme adresse (AD-13). De fire visningene og den nye rekkefølgen i resultatet. |
 | PRD FR-3 | Regelen om tom rad midt i stykklisten (AD-15) og heltall lagret som tekst (AD-4) |
+
+## 12. Endringer
+
+| Dato | Endring | Berører |
+|---|---|---|
+| 22.11.2026 | Arkitekturen vedtatt av gruppen. | Hele dokumentet |
+| 22.11.2026 | Web Worker fra start, i stedet for først når målingen krever det. Lesing, validering og beregning kjører i `src/worker/`, og tidsgrensen på 30 sekunder håndheves med `terminate()`. Navigasjonen med egen hash-adresse per visning (AD-13) er bekreftet uendret. | Kapittel 1 og 2, AD-5, AD-12, AD-14, kapittel 6, 8 og 10 |
