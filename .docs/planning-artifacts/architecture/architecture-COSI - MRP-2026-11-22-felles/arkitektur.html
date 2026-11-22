@@ -78,6 +78,8 @@
   .mini.new{border:1.5px solid var(--amber)}
   .pill-new{background:var(--amber);color:#fff;font-size:10px;border-radius:4px;padding:0 5px;margin-left:4px;vertical-align:1px}
   .e.done{opacity:.75}
+  .e.yes .box2{background:var(--green);border-color:var(--green);color:#fff;font-size:10px;display:grid;place-items:center}
+  .ans{background:var(--green-soft);color:var(--green);font-weight:700;font-size:11px;border-radius:4px;padding:0 6px;margin-left:4px}
   .e.done .box2{background:var(--green);border-color:var(--green);color:#fff;font-size:10px;display:grid;place-items:center}
   footer{margin-top:12px;font-size:11px;color:var(--muted);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
   @media print{
@@ -104,7 +106,7 @@
   <div class="rule"><span class="dot" style="background:var(--brass-line)"></span><b>Valgt på forhånd:</b>&nbsp;React og SheetJS CE</div>
   <div class="rule"><span class="dot" style="background:var(--green)"></span><b>To av tre er like:</b>&nbsp;det valget gjelder</div>
   <div class="rule"><span class="dot" style="background:var(--amber)"></span><b>Alle tre ulike:</b>&nbsp;gruppen avgjør</div>
-  <div class="rule"><span class="dot" style="border:1.5px solid var(--edge)"></span><b>Bare ett forslag:</b>&nbsp;gruppen sier ja eller nei</div>
+  <div class="rule"><span class="dot" style="border:1.5px solid var(--edge)"></span><b>Bare ett forslag:</b>&nbsp;besvart 22.11</div>
   <div class="rule"><span class="src"><span class="C">C</span><span class="S">S</span><span class="I">I</span><span class="A">Alle</span></span>&nbsp;= hvem valget kommer fra</div>
 </div>
 
@@ -124,7 +126,7 @@
       <div class="box core"><b>Kjernen – ren TypeScript, ingen nettleser, ingen klokke</b>
         <div class="steps"><span>typer.ts</span><span>valider</span><span>struktur</span><span>netting</span><span>beregn</span><span>eksepsjoner</span><span>kapasitet</span><span>utdrag</span><span>sammenlign</span></div>
       </div>
-      <div class="box host"><span><b>Vercel</b> · bare statiske filer · ingen serverfunksjoner eller analyse</span><span>CSP: default-src 'self' · connect-src 'self'</span></div>
+      <div class="box host"><span><b>Vercel</b> · bare statiske filer · ingen serverfunksjoner eller analyse</span><span>Full, streng CSP · connect-src 'self' · testet</span></div>
     </div>
 
     <div class="dec">
@@ -185,19 +187,19 @@
       </table>
       <div class="two">
         <div class="mini new"><b>G-7 Navigasjon med fire visninger <span class="pill-new">NY</span></b>Flertallet valgte samme adresse da appen hadde to visninger. Med fire kan Carmens <code>#/resultat</code> passe bedre.</div>
-        <div class="mini"><b>G-6 Hvem bygger hva</b>Fordeling av arbeidet og hvem tester i Excel for Windows og Mac.</div>
+        <div class="mini"><b>G-6 Hvem bygger hva</b>Fordeling av arbeidet og hvem tester i Excel for Windows og Mac. Koordinator er avgjort: Idun.</div>
       </div>
     </section>
 
     <section class="tray">
-      <h2><span class="n">4</span>Ja eller nei? <small>– bare ett forslag tar stilling</small></h2>
+      <h2><span class="n">4</span>Besvart 22.11 <small>– punkter bare ett forslag tok stilling til</small></h2>
       <div class="list">
-        <div class="e"><span class="box2"></span>E-1 Heltall lagret som tekst («7») godtas som 7<b>C</b></div>
-        <div class="e"><span class="box2"></span>E-2 Én koordinator eier typer.ts<b>C</b></div>
-        <div class="e"><span class="box2"></span>E-3 oxlint, og test, lint og build grønne før fletting<b>C</b></div>
-        <div class="e"><span class="box2"></span>E-4 Eksakte versjoner i package.json<b>C</b></div>
-        <div class="e"><span class="box2"></span>E-5 React-feilgrense med norsk reservemelding<b>C</b></div>
-        <div class="e"><span class="box2"></span>E-6 Full, streng CSP med test<b>C</b></div>
+        <div class="e yes"><span class="box2">✓</span><span>E-1 Heltall lagret som tekst («7») godtas som 7 <span class="ans">Ja</span></span><b>FA-4</b></div>
+        <div class="e yes"><span class="box2">✓</span><span>E-2 Koordinator for typer.ts <span class="ans">Idun</span></span><b>FA-3</b></div>
+        <div class="e yes"><span class="box2">✓</span><span>E-3 oxlint, og test, lint og build grønne før fletting <span class="ans">Ja</span></span><b>FA-18</b></div>
+        <div class="e yes"><span class="box2">✓</span><span>E-4 Eksakte versjoner i package.json <span class="ans">Ja</span></span><b>FA-16</b></div>
+        <div class="e yes"><span class="box2">✓</span><span>E-5 React-feilgrense med norsk reservemelding <span class="ans">Ja</span></span><b>FA-5</b></div>
+        <div class="e yes"><span class="box2">✓</span><span>E-6 Full, streng CSP med test <span class="ans">Ja</span></span><b>FA-17</b></div>
         <div class="e done"><span class="box2">✓</span><span><s>E-7 «Statuslinje» i koden</s> · løst: ordbanken sier «Tallboks»</span><b>S</b></div>
       </div>
     </section>

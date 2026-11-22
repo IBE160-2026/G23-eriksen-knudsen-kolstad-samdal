@@ -20,6 +20,8 @@ sources:
 
 **Oppdatert 22.11 etter UX-avklaringene gruppen godkjente samme dag** (PRD §4.4, FR-16, FR-27 og ordbanken). Kritiske deler står først i resultatet, appen har en introduksjonsside og fire menyvalg, resultattabellen har filteret «Vis bare kritiske deler», og ukeplanen er fjernet. G-5 og E-7 er dermed avgjort (kapittel 8 og 9), og FA-10, FA-13 og FA-14 er utvidet.
 
+**E-1 til E-6 besvart 22.11 av Idun:** alle er godtatt, og Idun er koordinator for `typer.ts`. Svarene er ført inn i FA-3, FA-4, FA-5, FA-16, FA-17 og FA-18 (kapittel 9).
+
 ## 1. Slik er dokumentet laget
 
 | Regel | Hva det betyr her |
@@ -27,7 +29,7 @@ sources:
 | **Valgt på forhånd** | React og SheetJS CE |
 | **To av tre er like** | Det valget gjelder. Hver beslutning viser hvem valget kommer fra. |
 | **Alle tre er ulike** | Gruppen avgjør. Står i kapittel 8. |
-| **Bare ett forslag tar stilling** | Ikke tatt med. Står i kapittel 9, så gruppen kan si ja eller nei. |
+| **Bare ett forslag tar stilling** | Tatt med først når det er besvart. Svarene står i kapittel 9. |
 | **Avgjort av gruppen** | Gruppens vedtak i PRD-en og ordbanken går foran alle tre forslagene. |
 
 Merkingen bak hver beslutning: **Alle** = alle tre forslagene, **C** = Carmen, **S** = Sebastian, **I** = Idun.
@@ -47,7 +49,10 @@ Merkingen bak hver beslutning: **Alle** = alle tre forslagene, **C** = Carmen, *
 | Planlagte mottak | Hvert mottak holdes for seg og legges ikke sammen på forhånd | S + I |
 | Forklaringer (FR-18) | Grunnlaget ligger ferdig i resultatet | S + I |
 | Tester | Vitest (`npm test`) og noen Playwright-tester (`npm run test:e2e`) | Alle / C + I |
-| Publisering | Statisk på Vercel med CSP | Alle / C + I |
+| Kvalitet før fletting | oxlint, og test, lint og build grønne. Eksakte versjoner | E-3, E-4 |
+| Feil under tegning | React-feilgrense med norsk reservemelding | E-5 |
+| Publisering | Statisk på Vercel med full, streng CSP | Alle / C + I / E-6 |
+| Koordinator for `typer.ts` | Idun | E-2 |
 | Navn i koden | ASCII: æ, ø og å skrives ae, o og a | C + I |
 | Visninger | Introduksjon, Ny kjøring, Resultat og Lagrede kjøringer | Avgjort av gruppen 22.11 (PRD FR-27, ordbanken) |
 | Rekkefølgen i resultatet | Tallbokser, kritiske deler, bestillingsforslag, endringer, resultattabell, kapasitet. Ingen ukeplan | Avgjort av gruppen 22.11 (PRD §4.4) |
@@ -112,6 +117,7 @@ Hver beslutning har nummer (FA-1 osv.), kravene den gjelder, og grunnlaget.
   - **Story 0:** prosjektoppsett med Vite, React, TypeScript, Vitest, arkitekturtest, `vercel.json` og README med kommandoene.
   - **Story 1:** alle delte typer.
 - Senere endringer i en type skjer i en egen pull request som endrer `typer.ts` først. Ingen lager egne versjoner av delte typer.
+- **Koordinator: Idun** (E-2, besvart 22.11). Koordinatoren eier `typer.ts`. En endring i delte typer flettes bare når koordinatoren og minst én som bruker typene, har godkjent den.
 
 ### FA-4: Data-konvensjoner
 
@@ -122,6 +128,7 @@ Hver beslutning har nummer (FA-1 osv.), kravene den gjelder, og grunnlaget.
   - Uker er nummerert 1 til H. En serie per uke er en liste med lengde H, der plass `i` er uke `i + 1`. Det finnes aldri en uke 0 i resultatet. Forfalt mengde er et eget felt.
   - Alle mengder er heltall. Bare disponibel beholdning og forventet lagerbeholdning kan være negative.
   - **Planlagte mottak holdes som enkeltlinjer** med varenummer, uke, antall og Excel-rad, og legges ikke sammen på forhånd. Kontrolleres mot fasit 04 når beregningen bygges.
+  - **Heltall lagret som tekst godtas** (E-1, besvart 22.11). I et heltallsfelt godtas et tall som er et heltall, og en tekst som etter trimming bare er et valgfritt minustegn og sifre (`^-?[0-9]+$`), for eksempel «7» eller «007». Alt annet gir valideringsfeil: desimaltall (`30.5`, «30,5»), ord, tusenskilletegn («1 000»), plusstegn og tekst som «ca. 40». Etter tolkningen gjelder grensene i FR-3 som vanlig. Varenummer tolkes aldri som tall. Regelen får egne enhetstester og bør føres inn i FR-3.
 
 ### FA-5: Feil er verdier
 
@@ -132,6 +139,7 @@ Hver beslutning har nummer (FA-1 osv.), kravene den gjelder, og grunnlaget.
   - Excel-delen gir én kode for hver feil i hele filen (ikke en Excel-fil, tom fil, skadet fil). Hver kode får sin egen melding (NFR-9).
   - Valideringen samler alle feilene før den svarer, også etter FR-2-regelen om å hoppe over kontroller som avhenger av noe som mangler.
   - Styringen har den ene `try/catch` som gjør en uventet feil om til en norsk melding. Ved feil vises ingen resultat, og ingenting lagres.
+  - **React-feilgrense** (E-5, besvart 22.11): én feilgrense rundt visningene fanger feil under tegning, som `try/catch` i styringen ikke fanger. Den viser en norsk reservemelding og lar brukeren gå til Ny kjøring og laste opp på nytt uten å laste siden på nytt (NFR-9).
 
 ### FA-6: Én eier av stykklistestrukturen
 
@@ -250,6 +258,8 @@ Hver beslutning har nummer (FA-1 osv.), kravene den gjelder, og grunnlaget.
   - En test sjekker at malen og testeksempel 01 i `public/` er like filene i `testdata/` (FR-27).
   - `npm run test:e2e` kjører Playwright: opplasting av testeksempel 01, de tre filene i NFR-9 og blokkert lagring (NFR-10). Den er ikke med i `npm test`.
   - Testene ligger i `tests/` med samme mappestruktur som `src/` (S + I).
+  - **Eksakte versjoner** (E-4, besvart 22.11): alle avhengigheter i `package.json` har eksakt versjon, uten `^` og `~`. `package-lock.json` committes, og `npm ci` brukes. Arkitekturtesten sjekker at ingen versjon har `^` eller `~`.
+  - `npm run test:e2e` sjekker også at ingen side gir brudd på CSP-en (FA-17).
 
 ### FA-17: Statisk publisering uten datautgang
 
@@ -257,15 +267,21 @@ Hver beslutning har nummer (FA-1 osv.), kravene den gjelder, og grunnlaget.
 - **Gjelder:** NFR-3, NFR-4, NFR-6, §8.1
 - **Regel:**
   - `npm run build` lager statiske filer, og Vercel publiserer dem. Ingen serverfunksjoner, ingen Vercel Analytics eller Speed Insights, og ingen skript eller skrifter fra tredjepart.
-  - `vercel.json` setter en Content Security Policy med minst `default-src 'self'` og `connect-src 'self'`, så nettleseren selv stopper forsøk på å sende data ut.
+  - **Full CSP** (E-6, besvart 22.11). `vercel.json` setter denne Content Security Policy, så nettleseren selv stopper forsøk på å sende data ut:
+    `default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; worker-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'; frame-ancestors 'none'`
+  - `vite preview` bruker den samme CSP-en, og en test sjekker at de to er like. Da finner `npm run test:e2e` brudd før publisering.
+  - I Carmens forslag hadde `worker-src` også `blob:`. Det trengtes for read-excel-file. SheetJS trenger det ikke, så `blob:` er tatt ut av `worker-src`.
   - Miljøer: lokalt (`npm run dev`), forhåndsvisning på Vercel per branch, og produksjon fra `main`.
   - Ett byggflagg, `VITE_KAPASITET`, skjuler produksjonskapasiteten hvis trinn 4 kuttes, og i bygget til brukertesten.
   - Brukertesten 2.–7. desember bruker en egen branch `brukertest` som fryses den uka.
 
 ### FA-18: Arbeidsflyt
 
-- **Grunnlag:** branch og pull request: C + I. CI utsatt: S + I.
-- **Regel:** Én branch per story og pull request inn i `main`. Minst én annen i gruppen ser over før fletting. Automatiske kontroller på GitHub (CI) er utsatt, men kan legges til uten å endre noe her.
+- **Grunnlag:** branch og pull request: C + I. CI utsatt: S + I. Kontrollene før fletting: E-3, besvart 22.11.
+- **Regel:**
+  - Én branch per story og pull request inn i `main`. Minst én annen i gruppen ser over før fletting.
+  - **Grønne kontroller før fletting** (E-3): `npm test`, `npm run lint` og `npm run build` må være grønne. `npm run lint` kjører oxlint.
+  - Automatiske kontroller på GitHub (CI) er utsatt, men kan legges til uten å endre noe her.
 
 ## 5. Konvensjoner
 
@@ -276,11 +292,11 @@ Hver beslutning har nummer (FA-1 osv.), kravene den gjelder, og grunnlaget.
 | Rekkefølge | Deler følger stykklisten, og en felles del står der den står første gang (FR-16). Bestillingsforslag sorteres på frigivelsesuke og så stykklisterekkefølge. Eksepsjoner sorteres på stykklisterekkefølge, uke («–» først) og typen i rekkefølgen i PRD §4.3. | Alle |
 | Tall | Heltall uten desimaler, formatert med `Intl.NumberFormat('nb-NO')` i tekst-delen | Alle |
 | Tilgjengelighet | Markeringer har alltid farge og tekst eller symbol (NFR-8). Forklaringspanelet åpnes ved klikk, trykk eller Enter, aldri ved peking (FR-18). Ingen `alert()`. | Alle |
-| Kommandoer | `npm install`, `npm run dev`, `npm test`, `npm run build`, `npm run test:e2e`. De står i README (NFR-3). | C + I |
+| Kommandoer | `npm ci`, `npm run dev`, `npm test`, `npm run lint`, `npm run build`, `npm run test:e2e`. De står i README (NFR-3). | C + I, E-3, E-4 |
 
 ## 6. Teknologi og versjoner
 
-Versjonene er sjekket 22.11.2026.
+Versjonene er sjekket 22.11.2026 og låses eksakt i `package.json` (E-4).
 
 | Navn | Versjon | Grunnlag |
 |---|---|---|
@@ -292,6 +308,7 @@ Versjonene er sjekket 22.11.2026.
 | SheetJS Community Edition | 0.20.3 (fra cdn.sheetjs.com) | Valgt på forhånd |
 | Vitest | 5.1.1 | Alle |
 | @playwright/test | 1.65.1 | C + I |
+| oxlint | 1.94.0 | E-3 |
 | UI-komponenter og CSS | Avhenger av G-1 | Åpent |
 
 ## 7. Byggerekkefølge
@@ -328,7 +345,7 @@ Når nr. 1 er flettet inn, kan nr. 2–4 og nr. 6 gjøres samtidig. UI-et kan by
 | Nr. | Spørsmål | Merknad |
 |---|---|---|
 | ~~G-5~~ | ~~Rekkefølgen på resultatsiden, ukeplan og introduksjonsside (U5, U6, U14)~~ | **Avgjort av gruppen 22.11** og ført inn i PRD-en: kritiske deler først, introduksjonsside ved første besøk, ingen ukeplan. Se FA-13 og FA-14. |
-| G-6 | Hvem bygger hva | Fordelingen av nr. 2–10 i kapittel 7, og hvem som tester med Excel for Windows og for Mac (NFR-11) |
+| G-6 | Hvem bygger hva | Fordelingen av nr. 2–10 i kapittel 7, og hvem som tester med Excel for Windows og for Mac (NFR-11). Koordinator for `typer.ts` er avgjort: Idun (E-2). |
 
 **Bør vurderes på nytt etter 22.11:**
 
@@ -336,18 +353,18 @@ Når nr. 1 er flettet inn, kan nr. 2–4 og nr. 6 gjøres samtidig. UI-et kan by
 |---|---|---|
 | G-7 | Navigasjon med fire menyvalg | FA-13 følger flertallet (S + I): samme adresse for alle visningene. Da Sebastian og Idun skrev forslagene sine, hadde appen bare to visninger. Med fire menyvalg kan Carmens hash-adresser (`#/resultat` osv.) passe bedre, fordi en visning da kan bokmerkes. EXPERIENCE.md må uansett oppdateres med de nye visningene. |
 
-## 9. Bare ett forslag tar stilling (gruppen sier ja eller nei)
+## 9. Bare ett forslag tok stilling (besvart 22.11)
 
-De andre forslagene sier ingenting om disse punktene. De er derfor ikke tatt med i arkitekturen over.
+De andre forslagene sa ingenting om disse punktene. Idun gikk gjennom dem 22.11, og svarene er ført inn i beslutningene.
 
-| Nr. | Forslag | Fra | Merknad |
-|---|---|---|---|
-| E-1 | Heltall lagret som tekst («7») godtas som tallet 7 | C | Midlertidig regel hos Carmen. Bør føres inn i FR-3 med en test. |
-| E-2 | Én koordinator, valgt av gruppen, eier `typer.ts` og godkjenner endringer | C | Henger sammen med G-6 |
-| E-3 | oxlint for kodekontroll, og `npm test`, `npm run lint` og `npm run build` må være grønne før fletting | C | |
-| E-4 | Eksakte versjoner i `package.json` (uten `^` og `~`), sjekket av en test | C | |
-| E-5 | React-feilgrense rundt visningene med en norsk reservemelding | C | Fanger feil under tegning, som `try/catch` i styringen ikke fanger |
-| E-6 | Full CSP: `default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; worker-src 'self' blob:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'; frame-ancestors 'none'`, med en test for at den er lik i `vercel.json` og `vite preview` | C | Strengere enn minstekravet i FA-17 |
+| Nr. | Forslag | Fra | Svar | Ført inn i |
+|---|---|---|---|---|
+| E-1 | Heltall lagret som tekst («7») godtas som tallet 7 | C | **Ja** | FA-4. Bør også føres inn i FR-3. |
+| E-2 | Én koordinator eier `typer.ts` og godkjenner endringer | C | **Idun** | FA-3 |
+| E-3 | oxlint, og `npm test`, `npm run lint` og `npm run build` grønne før fletting | C | **Ja** | FA-18, kapittel 6 |
+| E-4 | Eksakte versjoner i `package.json`, sjekket av en test | C | **Ja** | FA-16, kapittel 6 |
+| E-5 | React-feilgrense med norsk reservemelding | C | **Ja** | FA-5 |
+| E-6 | Full, streng CSP med test | C | **Ja** | FA-17. `blob:` er tatt ut av `worker-src`, fordi bare read-excel-file trengte det. |
 | ~~E-7~~ | ~~Elementet øverst på resultatsiden heter `Statuslinje` i koden, aldri «Sammendrag»~~ | S | **Løst av ordbanken 22.11:** boksene øverst heter «Tallboks» (i koden `Tallboks`), og «sammendrag» er sammendraget av kritiske deler (FR-16). Raden med knapper heter «Seksjonsmeny». |
 
 ## 10. Utsatt
