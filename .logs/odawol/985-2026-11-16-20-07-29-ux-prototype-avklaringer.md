@@ -285,3 +285,32 @@ Alt er endret i `.docs/planning-artifacts/ux-designs/ux-avklaringer-2026-11-22/`
 
 ### Åpne punkter
 - U5 (ukeplanen fjernes) er Odas valg og må godkjennes av gruppen.
+
+## 2026-11-22 kl. 19:50 — Odawol
+
+### Oppgave
+Oda valgte A for U6: introduksjonssiden beholdes og vises første gang. Startsiden er «Ny kjøring».
+
+### Plan
+- Søkte etter «startside» og «introduksjon» i PRD-kopien, EXPERIENCE.md, DESIGN.md og ordbanken. Holdt introduksjonssiden atskilt fra introduksjonen til brukertesten (PRD §8.1 og §9 nr. 4).
+- EXPERIENCE.md ble tilpasset prototypen: Lagrede kjøringer og Veiledning er egne sider.
+
+### Resultat
+Alt er endret i `.docs/planning-artifacts/ux-designs/ux-avklaringer-2026-11-22/`.
+- `prd/prd.md`:
+  - FR-27: startsiden er menyvalget «Ny kjøring». Nytt avsnitt om introduksjonssiden og en ny testbar konsekvens: første besøk viser introduksjonssiden, og neste besøk viser startsiden.
+  - UJ-1: Kari ser introduksjonssiden først.
+- `prd/addendum.md`: linje 2026-11-22 i endringshistorikken, merket som forslag.
+- `ordbank.md`: «Introduksjonsside» og «Startside» er lagt inn som forslag.
+- `ux-carmen/EXPERIENCE.md`:
+  - skjermlisten (Introduksjonsside, Startside, Lagrede kjøringer, Veiledning)
+  - komponenten Lagrede kjøringer
+  - tilstandene for første og senere besøk og for ingen lagrede kjøringer
+  - UJ-1 trinn 1 og Slett i UJ-3
+- `ux-carmen/DESIGN.md`: komponentraden «Introduksjonsside», og «Kom i gang» som primærknapp.
+- `prototype/index.html`: teksten på introduksjonssiden er rettet etter U14 (først kritiske deler, så bestillingsforslag), og U6 er merket avklart.
+- `README.md` og `prototype/avvik-mot-prd.md` er oppdatert.
+- Testet med Playwright i Edge. Første besøk gir `#/intro` og andre besøk `#/start`. Ingen feil i konsollen.
+
+### Åpne punkter
+- U6 (introduksjonsside, startsiden er «Ny kjøring», og Lagrede kjøringer er en egen side) er Odas valg og må godkjennes av gruppen.
