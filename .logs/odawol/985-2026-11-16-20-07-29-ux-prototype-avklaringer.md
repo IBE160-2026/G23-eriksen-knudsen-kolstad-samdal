@@ -403,3 +403,32 @@ Oda bestemte U11 og U7:
 ### Åpne punkter
 - U11 og U7 er Odas valg og må godkjennes av gruppen.
 - Mørk modus gir mer å teste (kontrast i begge). Gruppen kan vurdere å nevne det i PRD-en, for eksempel i NFR-8.
+
+## 2026-11-22 kl. 20:17 — Odawol
+
+### Oppgave
+Oda gikk gjennom punktene som bare krever et valg:
+- **U1:** én lang side
+- **U4:** «Alle uker» høres bra ut. Hun spurte hva de andre dokumentene sier.
+- **U9:** la det stå som det er
+- **U10:** behold filteret og før det inn i de relevante dokumentene
+- **U12:** hun spurte hva «Sebastians kobling» betyr
+
+### Plan
+- U4: sammenlignet PRD-en (FR-17 og UJ-2), Carmens EXPERIENCE.md og Sebastians forslag. Alle unntatt Sebastians forslag («Uke 1») peker mot «Alle uker», så det ble ført inn.
+- U12: tok et skjermbilde av tabellen for hjul for å forklare punktet. Ingenting er endret for U12.
+
+### Resultat
+Alt er endret i `.docs/planning-artifacts/ux-designs/ux-avklaringer-2026-11-22/`.
+- `prd/prd.md` FR-16: nytt avsnitt om «Vis bare kritiske deler» (stykklisterekkefølgen beholdes, og eksporten endres ikke) og en ny konsekvens: testeksempel 01 viser bare 300-003–300-006. `prd/addendum.md` har fått en linje i endringshistorikken.
+- `ux-carmen/EXPERIENCE.md`:
+  - Resultat er én lang side (U1)
+  - ukefilteret starter på «Alle uker» (U4). `[ASSUMPTION]` er fjernet, og åpen beslutning 3 er besluttet.
+  - ny komponentrad «Filter for kritiske deler» (U10)
+- `prototype/index.html`: valgene for U1, U4 og U10 er fjernet fra Prototypevalg og har faste verdier, også der andre verdier var lagret. U1, U4, U9 og U10 er merket avklart.
+- `README.md` og `prototype/avvik-mot-prd.md` er oppdatert.
+- Testet med Playwright i Edge, med motsatte verdier lagret fra før. Resultatet er én lang side, filteret starter på «Alle uker», og «Vis bare kritiske deler» viser 300-003–300-006. Ingen feil i konsollen.
+
+### Åpne punkter
+- U1, U4, U9 og U10 er Odas valg og må godkjennes av gruppen.
+- U12 venter på Odas valg mellom Sebastians kobling (markør i den raden eksepsjonen gjelder) og Carmens egen rad «Eksepsjoner». Carmens EXPERIENCE.md og DESIGN.md beskriver i dag Carmens løsning som `[ASSUMPTION]`.
