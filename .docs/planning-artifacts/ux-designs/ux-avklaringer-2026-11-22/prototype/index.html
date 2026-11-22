@@ -16,7 +16,7 @@
   --rail:#FFFFFF;--rail-ink:#14202B;--rail-ink2:#596775;--rail-active:#E1EEF1;--rail-line:#D9DFE4;
   --hero:#E1EEF1;--hero-ink:#0B2F38;--hero-ink2:#2E5560;
   --sum:#0D5C6E;--sum-ink:#FFFFFF;--sum-ink2:#CFE6EC;--sum-hover:#0A4B5A;
-  --k-uke:#A7F3E4;--k-alle:#F6D9A8;--k-krit:#FFC2BB;--k-forf:#F7CBE0;
+  --k-uke:#A7F3E4;--k-alle:#F6D9A8;--k-krit:#FFC2BB;--k-forf:#FF8CC6;
   --proto:#FFF4C2;--proto-ink:#5C4700;--proto-line:#E6CF6E;
   --shadow:0 8px 28px rgb(20 32 43 / .16);--xg-ink:#FFFFFF;
 }
@@ -28,7 +28,7 @@
   --rail:#091014;--rail-ink:#E4E9ED;--rail-ink2:#98A6B2;--rail-active:#16313A;--rail-line:#1F2A31;
   --hero:#0C2A2E;--hero-ink:#E8F6F5;--hero-ink2:#A9C9C8;
   --sum:#0C2A2E;--sum-ink:#E8F6F5;--sum-ink2:#A9C9C8;--sum-hover:#11383D;
-  --k-uke:#5EEAD4;--k-alle:#E9C98F;--k-krit:#FF8C82;--k-forf:#E9A6C6;
+  --k-uke:#5EEAD4;--k-alle:#E9C98F;--k-krit:#FF8C82;--k-forf:#FF7AB8;
   --proto:#3A3214;--proto-ink:#F0D27A;--proto-line:#6B5A1E;
   --shadow:0 8px 28px rgb(0 0 0 / .5);--xg-ink:#0E1317;
 }
@@ -138,7 +138,8 @@ body.skjul-u .uchip{display:none}
 .sum.k4 b{font-size:40px;line-height:1;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
 .sum.k4 .lab{color:var(--sum-ink);font-size:14px;font-weight:600;display:inline-flex;gap:6px;align-items:center}
 .sum.k4 .exp{color:var(--sum-ink2);font-size:12.5px;line-height:1.45}
-.sum.k4 .k-uke b{color:var(--k-uke)}.sum.k4 .k-alle b{color:var(--k-alle)}.sum.k4 .k-krit b{color:var(--k-krit)}.sum.k4 .k-forf b{color:var(--k-forf)}
+/* 22.11: uke 1 og i alt er nøytrale. Bare tall som krever handling, har farge (SM-C3). */
+.sum.k4 .k-krit b{color:var(--k-krit)}.sum.k4 .k-forf b{color:var(--k-forf)}
 .sum.k4 .k-null b{color:var(--sum-ink)}
 .sum.k4 .dot{color:var(--k-krit);font-size:12px}
 .sum.k4 .xb{color:var(--xg-ink);font-size:12px}
@@ -346,18 +347,17 @@ table.mrp .selrow{color:var(--ink);font-weight:700}
     <a class="nav" href="#/lagret" data-v="lagret"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 3h10v14l-5-3-5 3z"/></svg>Lagrede kjøringer</a>
     <a class="nav" href="#/veiledning" data-v="veiledning"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="10" cy="10" r="7.5"/><path d="M10 9v5M10 6v.5"/></svg>Veiledning</a>
     <div class="grow"></div>
+    <button type="button" class="nav" data-act="tema" id="tema-knapp">Bytt til mørk</button>
     <div class="proto-box">
       <b>Prototype</b>
       <button type="button" data-act="valg">Prototypevalg</button>
-      <a href="#/ab">Eksepsjonstekst: A og B</a>
-      <a href="#/uavklart">Uavklarte spørsmål</a>
-      <button type="button" data-act="tema" id="tema-knapp">Bytt til mørk</button>
+      <a href="#/uavklart">Avklaringer 22.11</a>
     </div>
   </nav>
 
   <div class="main">
     <div class="protobar" role="note">
-      <span><b>Prototype 17.11, versjon 3 – ikke godkjent.</b> Ingen beregning: tallene er fra referanseberegningen bak fasitene (testeksempel 01, 02, 03 og 05). Gule merker «U» viser uavklarte spørsmål.</span>
+      <span><b>Prototype 22.11, versjon 4 – Odas avklaringer, ikke godkjent av gruppen.</b> Ingen beregning: tallene er fra referanseberegningen bak fasitene (testeksempel 01, 02, 03 og 05). Gule merker viser hva som er avklart.</span>
       <button type="button" data-act="valg">Prototypevalg</button>
     </div>
 
@@ -366,12 +366,12 @@ table.mrp .selrow{color:var(--ink);font-weight:700}
       <div class="hero">
         <div>
           <h1 id="h-intro" tabindex="-1">Hele produksjonsplanen. <span>Én Excel-mal.</span></h1>
-          <p>COSI - MRP regner ut hva du må bestille og produsere, hvor mye og når. Du fyller ut en fast Excel-mal og laster den opp. Appen viser bestillingsforslagene, hvilke deler som krever handling, og hvordan hvert tall er regnet ut.</p>
+          <p>COSI - MRP regner ut hva du må bestille og produsere, hvor mye og når. Du fyller ut en fast Excel-mal og laster den opp. Appen viser først hvilke deler som krever handling, så hva du bør bestille, og hvordan hvert tall er regnet ut.</p>
           <p>Filen blir i nettleseren din og sendes ikke til noen server.</p>
           <div class="cta">
             <a class="btn pri" href="#/start">Kom i gang <span aria-hidden="true">→</span></a>
           </div>
-          <p style="margin-top:14px"><button type="button" class="uchip" data-act="u" data-u="U6">U6 · introduksjonsside</button></p>
+          <p style="margin-top:14px"><button type="button" class="uchip" data-act="u" data-u="U6">U6 · avklart</button></p>
         </div>
       </div>
       <div class="steps3">
@@ -412,10 +412,10 @@ table.mrp .selrow{color:var(--ink);font-weight:700}
           <h2><span class="k">3</span>Velg hva du vil beregne, og beregn</h2>
           <div style="display:grid;grid-template-columns:minmax(0,1fr) auto;gap:18px;align-items:end">
             <fieldset class="radios">
-              <legend>Hva vil du beregne? <button type="button" class="uchip" data-act="u" data-u="U11">U11 · standardvalg</button></legend>
+              <legend>Hva vil du beregne? <button type="button" class="uchip" data-act="u" data-u="U11">U11 · avklart</button></legend>
               <label><input type="radio" name="valg" value="plan"><span>Bestillingsplan<small>Bestillingsforslag, kritiske deler og resultattabellen.</small></span></label>
-              <label><input type="radio" name="valg" value="kap"><span>Bare produksjonskapasitet<small>Hvor mange ferdigprodukter lageret og planlagte mottak rekker til, uke for uke. Kjøringen lagres ikke.</small></span></label>
-              <label><input type="radio" name="valg" value="begge"><span>Bestillingsplan og produksjonskapasitet<small>Bestillingsplanen, med produksjonskapasiteten i et eget panel nederst.</small></span></label>
+              <label><input type="radio" name="valg" value="kap"><span>Produksjonskapasitet<small>Hvor mange ferdigprodukter lageret og planlagte mottak rekker til, uke for uke. Kjøringen lagres ikke.</small></span></label>
+              <label><input type="radio" name="valg" value="begge"><span>Begge<small>Bestillingsplanen, med produksjonskapasiteten i et eget panel nederst.</small></span></label>
             </fieldset>
             <div style="display:flex;flex-direction:column;gap:8px;align-items:flex-end">
               <button type="button" class="btn pri" data-act="beregn" style="padding:10px 22px;font-size:15px">Beregn</button>
@@ -453,7 +453,6 @@ table.mrp .selrow{color:var(--ink);font-weight:700}
         <li><b>Bestillingsforslag:</b> hva du må bestille eller sette i produksjon, hvor mye og i hvilken uke. Velg en uke for å se bare den uka.</li>
         <li><b>Endringer:</b> hva som er nytt eller endret siden forrige kjøring for samme ferdigprodukt.</li>
         <li><b>Resultattabell:</b> hele utregningen per del og uke.</li>
-        <li><b>Ukeplan:</b> antall forslag og eksepsjoner per uke.</li>
       </ul>
       <h2>4. Se hvordan et tall er regnet ut</h2>
       <p>Klikk på et tall, et radnavn eller en del i resultattabellen. Forklaringen åpnes ved siden av tabellen og står til du trykker Lukk. Med tastaturet flytter du med piltastene, åpner med Enter og lukker med Esc. Velger du en kritisk del, går appen rett til eksepsjonen i tabellen.</p>
@@ -464,17 +463,10 @@ table.mrp .selrow{color:var(--ink);font-weight:700}
       <p style="margin-top:20px"><a class="btn pri" href="#/start">Til Ny kjøring</a></p>
     </section>
 
-    <!-- Eksepsjonstekst A/B -->
-    <section class="view" data-view="ab" hidden aria-labelledby="h-ab">
-      <h1 id="h-ab" tabindex="-1">Eksepsjonstekst: vanlig språk først eller offisielt typenavn først</h1>
-      <p class="lead">Samme eksepsjon vist på to måter. Opplysningene er de samme. Forskjellen er hva brukeren leser først. <button type="button" class="uchip" data-act="u" data-u="U2">U2 · uavklart</button></p>
-      <div id="abtab"></div>
-    </section>
-
-    <!-- Uavklarte spørsmål -->
+    <!-- Avklaringer 22.11 -->
     <section class="view" data-view="uavklart" hidden aria-labelledby="h-u">
-      <h1 id="h-u" tabindex="-1">Uavklarte spørsmål</h1>
-      <p class="lead">PRD-en og ordbanken er autoritative. Der de ikke avgjør et spørsmål, eller der gruppens ønsker går mot dem, står spørsmålet her i stedet for at prototypen finner på et krav eller et begrep. Valgene kan prøves under «Prototypevalg».</p>
+      <h1 id="h-u" tabindex="-1">Avklaringer 22.11</h1>
+      <p class="lead">Oda gikk gjennom alle de 16 spørsmålene i prototypen 22.11. Valgene er ført inn i kopiene av PRD-en, ordbanken og Carmens EXPERIENCE.md og DESIGN.md i arbeidsmappen <code>ux-avklaringer-2026-11-22</code>. Ingenting er godkjent av gruppen ennå, og originalene er ikke endret.</p>
       <div id="utab"></div>
     </section>
   </div>
@@ -505,12 +497,17 @@ const EXT = {
 const EXT_ORDER = Object.keys(EXT);
 
 /* ---------- Lagring (try/catch, prototypen virker uten) ---------- */
-const NS = "cosi-oda-proto-1711v3-";
+const NS = "cosi-oda-proto-2211avk-";
 function lsGet(k, d){ try{ const v = localStorage.getItem(NS+k); return v ? JSON.parse(v) : d; }catch(e){ return d; } }
 function lsSet(k, v){ try{ localStorage.setItem(NS+k, JSON.stringify(v)); return true; }catch(e){ return false; } }
 
-const DEF = {sammendrag:"carmen", rundeKnapper:true, menyLenker:false, rekkefolge:"kritiske", tema:"lys", eksTekst:"vanlig", sideModus:"lang", ukeStart:"alle", kritOrd:"kritiske", visUkeplan:true, kunKritFilter:true, valgStd:"plan", valideringsfeil:false, lagringBlokkert:false, visU:true};
+const DEF = {sammendrag:"carmen", rundeKnapper:true, menyLenker:false, rekkefolge:"kritiske", ingenKrit:false, tema:"lys", eksTekst:"offisiell", sideModus:"lang", ukeStart:"alle", kritOrd:"kritiske", visUkeplan:true, kunKritFilter:true, valgStd:"plan", valideringsfeil:false, lagringBlokkert:false, visU:true};
 let O = Object.assign({}, DEF, lsGet("valg", {}));
+O.sideModus = "lang"; O.ukeStart = "alle"; O.kunKritFilter = true; // U1, U4 og U10 avklart 22.11
+O.sammendrag = "carmen"; O.rundeKnapper = true; O.menyLenker = false; O.rekkefolge = "kritiske"; O.eksTekst = "offisiell"; // versjon 4: alle avklaringene 22.11 er faste
+O.valgStd = "plan"; // U11 avklart 22.11: Bestillingsplan er første valg og forhåndsvalgt
+O.kritOrd = "kritiske"; // U3 avklart 22.11: alltid «Kritiske deler» (PRD FR-13, FR-16, ordbanken)
+if(!lsGet("u2b", false)){ O.eksTekst = "offisiell"; lsSet("u2b", true); lsSet("valg", O); } // U2 avklart 22.11: B blir valgt én gang, også i nettlesere som har lagret A
 let S = {nr:null, valg:"plan", fil:"", tid:null, prev:null, sml:null, lagret:false, filter:"alle", kunKrit:false, sel:null, panel:false, ukeplanUke:1, aapne:{}, endrAlle:false, valgtFil:null, valgtEks:null, bekreft:null, eksportMelding:""};
 
 /* ---------- Hjelpere ---------- */
@@ -520,13 +517,13 @@ function esc(s){ return String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt
 function fmt(n){ if(n===null||n===undefined||n==="") return ""; const a = Math.abs(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, " "); return (n<0?"−":"")+a; }
 function fmtMinus(s){ return String(s).replace(/(^|\s)-(\d)/g, "$1−$2"); }
 function tid(d){ const p = n => String(n).padStart(2,"0"); return `${p(d.getDate())}.${p(d.getMonth()+1)}.${d.getFullYear()} kl. ${p(d.getHours())}:${p(d.getMinutes())}`; }
-function ex(){ return D[S.nr]; }
+function ex(){ const d = D[S.nr]; return O.ingenKrit && d ? Object.assign({}, d, {eksepsjoner:[]}) : d; } // U14: simulering uten kritiske deler
 function part(vn, data){ return (data||ex()).deler.find(p => p.vn===vn); }
 function besk(vn){ const p = part(vn) || (S.prev && D[S.prev.nr] && part(vn, D[S.prev.nr])); return p ? p.besk : ""; }
 function exFor(vn){ return ex().eksepsjoner.filter(e => e.vn===vn); }
 function critical(){ const s = new Set(ex().eksepsjoner.map(e => e.vn)); return ex().deler.filter(p => s.has(p.vn)); }
 function kritOrd(flertall){ return O.kritOrd==="kritiske" ? (flertall ? "Kritiske deler" : "Kritisk del") : "Krever oppfølging"; }
-function uchip(id, txt){ return `<button type="button" class="uchip" data-act="u" data-u="${id}">${id}${txt ? " · "+esc(txt) : ""}</button>`; }
+function uchip(id, txt){ return `<button type="button" class="uchip" data-act="u" data-u="${id}">${id} · avklart</button>`; }
 function xb(type){ const m = EXT[type]; return `<span class="xb ${m.cls}" aria-hidden="true">${m.g}</span>`; }
 function isProd(p){ return p.type !== KJOPT; }
 function critMark(vn){
@@ -589,21 +586,10 @@ function applyOpts(){
 }
 function saveOpts(){ lsSet("valg", O); }
 const VALG = [
-  {k:"sammendrag", t:"Sammendraget øverst i resultatet", o:[["carmen","Fire bokser (Carmen, Sebastians tips)","Bestillingsforslag i uke 1, bestillingsforslag i alt, kritiske deler og forslag med forfalt mengde hver for seg, med store tall og en kort forklaring."],["v2","Som i versjon 2","Tre bokser. Forfalt mengde står i boksen for uke 1."]]},
-  {k:"rundeKnapper", t:"Runde knapper for seksjonene", o:[[true,"Vis","Sebastians tips: én rund knapp per seksjon øverst. Knappene blir stående når du ruller, og viser hvor du er."],[false,"Skjul",""]]},
-  {k:"menyLenker", t:"Seksjonene som lenker i sidemenyen", o:[[false,"Skjul","Standard i versjon 3."],[true,"Vis","Som i versjon 2."]]},
-  {k:"tema", t:"Visuell retning", u:"U7", o:[["lys","Lys","Carmens lyse tokens (DESIGN.md)."],["mork","Mørk","Carmens mørke tokens og det mørke uttrykket fra Design B."]]},
-  {k:"sideModus", t:"Hva er «én resultatside»?", u:"U1", o:[["lang","A · Én lang side","Alle seksjoner åpne. Brukeren ruller."],["utvid","B · Én side med utvidbare seksjoner","Seksjonene kan lukkes og åpnes. Ukeplanen og veiledningen er lukket fra start."]]},
-  {k:"rekkefolge", t:"Rekkefølge i resultatet", u:"U14", o:[["kritiske","Kritiske deler først","Gruppens ønske: forslagene forstås ut fra de kritiske delene."],["prd","Bestillingsforslag først","Slik PRD §4.4 står nå."]]},
-  {k:"eksTekst", t:"Eksepsjonstekst", u:"U2", o:[["vanlig","A · Vanlig språk først","Carmens korte navn først, typenavnet fra ordbanken under."],["offisiell","B · Offisielt typenavn først","Typenavnet fra ordbanken først, klartekstlinjen under."]]},
-  {k:"kritOrd", t:"Ord for deler med eksepsjon", u:"U3", o:[["kritiske","Kritiske deler","PRD FR-13, FR-16 og ordbanken."],["oppfolging","Krever oppfølging","Carmens forslag. Ikke i ordbanken."]]},
-  {k:"ukeStart", t:"Ukefilteret starter på", u:"U4", o:[["alle","Alle uker","Viser alle forslag når resultatet åpnes."],["1","Uke 1","Viser bare forslagene for uke 1 når resultatet åpnes."]]},
-  {k:"visUkeplan", t:"Ukeplan nederst i resultatet", u:"U5", o:[[true,"Vis ukeplanen nederst",""],[false,"Skjul ukeplanen","Slik PRD FR-17 står nå."]]},
-  {k:"kunKritFilter", t:"Filteret «Vis bare kritiske deler» i tabellen", u:"U10", o:[[true,"Vis filteret","Sebastians forslag. Ikke i PRD-en."],[false,"Skjul filteret",""]]},
-  {k:"valgStd", t:"Standardvalg for beregning", u:"U11", o:[["plan","Bestillingsplan","Sebastians forslag."],["begge","Begge","Carmens forslag."]]},
   {k:"valideringsfeil", t:"Simuler valideringsfeil (UJ-4)", o:[[false,"Av",""],[true,"På","Beregn gir de tre feilene fra UJ-4, og ingenting beregnes."]]},
   {k:"lagringBlokkert", t:"Simuler at lagring er blokkert (NFR-10)", o:[[false,"Av",""],[true,"På","Kjøringen lagres ikke, og ingen sammenligning vises."]]},
-  {k:"visU", t:"Vis merker for uavklarte spørsmål", o:[[true,"På",""],[false,"Av",""]]}
+  {k:"ingenKrit", t:"Simuler at det ikke er noen kritiske deler (U14)", o:[[false,"Av",""],[true,"På","Eksepsjonene fjernes fra kjøringen, så du ser den korte meldingen i stedet for seksjonen Kritiske deler."]]},
+  {k:"visU", t:"Vis gule merker for avklaringene", o:[[true,"På","Et klikk på et merke viser avklaringen."],[false,"Av","Siden ser ut som appen."]]}
 ];
 function renderValg(){
   $("#valgform").innerHTML = VALG.map(v => `<fieldset><legend>${esc(v.t)} ${v.u ? uchip(v.u) : ""}</legend>${v.o.map(([val,lab,help]) =>
@@ -613,7 +599,7 @@ function openValg(){ renderValg(); $("#drawer").hidden = false; $("#drawer-bg").
 function closeValg(){ $("#drawer").hidden = true; $("#drawer-bg").hidden = true; }
 
 /* ---------- Ruting ---------- */
-function view(){ const h = location.hash.replace(/^#\//,""); return ["intro","start","resultat","lagret","veiledning","ab","uavklart"].includes(h) ? h : null; }
+function view(){ const h = location.hash.replace(/^#\//,""); return ["intro","start","resultat","lagret","veiledning","uavklart"].includes(h) ? h : null; }
 function route(){
   let v = view();
   if(!v){ v = lsGet("sett-intro", false) ? "start" : "intro"; history.replaceState(null, "", "#/"+v); }
@@ -623,7 +609,6 @@ function route(){
   if(v==="start") renderStart();
   if(v==="resultat") renderResultat();
   if(v==="lagret") renderLagret();
-  if(v==="ab") renderAB();
   if(v==="uavklart") renderU();
   renderSubnav();
   window.scrollTo(0,0);
@@ -709,7 +694,7 @@ function renderResultat(){
     const u1 = E.forslag.filter(f => f.uke===1), forf = E.forslag.filter(f => f.forfalt>0);
     const nEndr = S.sml ? S.sml.length : null;
     h += `<p class="forslagnote"><span aria-hidden="true">ⓘ</span>Dette er forslag fra planen. Ingenting er bestilt eller satt i produksjon ennå.</p>
-    <div class="sum${O.sammendrag==="carmen"?" k4":""}" aria-label="Sammendrag">${O.sammendrag==="carmen" ? sumCardsK4(crit) : sumCards(crit)}</div>
+    <div class="sum${O.sammendrag==="carmen"?" k4":""}" aria-label="Tallbokser">${O.sammendrag==="carmen" ? sumCardsK4(crit) : sumCards(crit)}</div>
     ${howto()}
     ${planSections(crit)}`;
   }
@@ -731,10 +716,13 @@ function restoreSel(){
 }
 function planOrder(){
   const o = O.rekkefolge==="prd" ? ["forslag","endringer","kritiske"] : ["kritiske","forslag","endringer"];
-  return o.concat(["tabell","ukeplan"]).filter(id => (id!=="endringer" || S.sml) && (id!=="ukeplan" || O.visUkeplan));
+  return o.concat(["tabell"]).filter(id => id!=="endringer" || S.sml); // U5: ukeplanen er fjernet 22.11 (FR-17)
 }
 function planSections(crit){
-  return planOrder().map((id, i) => { const n = i+1;
+  let n = 0;
+  return planOrder().map(id => {
+    if(id==="kritiske" && !crit.length) return secKritiskeKort(); // U14: bare en kort melding, uten nummer
+    n++;
     return id==="forslag" ? secForslag(n) : id==="endringer" ? secEndringer(n) : id==="kritiske" ? secKritiske(crit, n) : id==="tabell" ? secTabell(n) : secUkeplan(n); }).join("");
 }
 function sumCards(crit){
@@ -752,7 +740,7 @@ function sumCardsK4(crit){ // Versjon 3: Carmens fire bokser (samlet prototype 1
   const kort = (cls, s, tall, lab, exp) => `<a href="#" class="${cls}${tall===0?" k-null":""}" data-act="gaa" data-s="${s}"><b class="num">${tall}</b><span class="lab">${lab}</span><span class="exp">${exp}</span></a>`;
   const kritLab = O.kritOrd==="kritiske" ? (crit.length===1?"kritisk del":"kritiske deler") : "deler krever oppfølging";
   const c = {
-    kritiske: kort("k-krit","kritiske",crit.length,`<span class="dot" aria-hidden="true">●</span>${kritLab}`,"Deler der planen ikke går opp. Se hva du kan gjøre."),
+    kritiske: kort("k-krit","kritiske",crit.length,`<span class="dot" aria-hidden="true">●</span>${kritLab}`, crit.length ? "Deler der planen ikke går opp. Se hva du kan gjøre." : "Planen går opp for alle delene."),
     forslag: kort("k-uke","forslag",u1.length,"bestillingsforslag i uke 1","Dette må bestilles eller settes i produksjon denne uka.")
       + kort("k-alle","forslag",E.forslag.length,"bestillingsforslag i alt",`Alle ukene i planen, uke 1–${E.h}.`)
       + kort("k-forf","forslag",forf.length,`${xb("Bestilling forsinket")}forslag med forfalt mengde`,"Skulle vært bestilt før uke 1. Mengden er lagt i uke 1."),
@@ -769,7 +757,8 @@ function howto(){
     tabell: `<li><b>Resultattabellen</b> viser hele utregningen per del og uke. Klikk på et tall for å se hvordan det er regnet ut.</li>`,
     ukeplan: `<li><b>Ukeplanen</b> viser antall forslag og eksepsjoner uke for uke.</li>`
   };
-  return `<details class="howto" ${open?"open":""}><summary>Slik leser du resultatet</summary><ol>${planOrder().map(id => t[id]).join("")}</ol></details>`;
+  const ingen = !critical().length; // U14: uten kritiske deler er punktet unødvendig
+  return `<details class="howto" ${open?"open":""}><summary>Slik leser du resultatet</summary><ol>${planOrder().filter(id => !(ingen && id==="kritiske")).map(id => t[id]).join("")}</ol></details>`;
 }
 function secForslag(n){
   const E = ex(), wk = weeks();
@@ -811,6 +800,9 @@ function secEndringer(n){
   return `<section class="${secCls("endringer")}" id="s-endringer" aria-labelledby="h-endringer">${secHead("endringer",n,"Endringer siden forrige kjøring",`<span class="count">${prevT} → ${tid(S.tid)}</span>`, uchip("U9","plassering"))}
     <div class="sec-b" id="b-endringer">${inner}</div></section>`;
 }
+function secKritiskeKort(){
+  return `<p class="infobox" id="s-kritiske" style="margin-bottom:22px">Ingen ${O.kritOrd==="kritiske"?"kritiske deler":"deler krever oppfølging"}. Planen går opp for alle delene. ${uchip("U14","kort melding")}</p>`;
+}
 function secKritiske(crit, n){
   const body = crit.length ? `<div class="kd">${crit.map(p => {
       const es = exFor(p.vn).slice().sort((a,b) => (a.uke==="–"?0:a.uke) - (b.uke==="–"?0:b.uke));
@@ -819,7 +811,7 @@ function secKritiske(crit, n){
       return `<button type="button" class="kd-line ${EXT[es[0].type].cls}" data-act="tilex" data-vn="${p.vn}"><span class="part"><span class="vn">${p.vn}</span><b>${esc(p.besk)}</b><span class="muted" style="font-size:12.5px">${p.type==="Ferdigvare"?"Ferdigvare":isProd(p)?"Produseres selv":"Kjøpes inn"} · nivå ${p.niva}</span></span>
         <span class="kd-ex">${es.map(e => exHead(e)).join("")}<span class="fs">${fsTxt}</span></span><span class="go">Se forklaring →</span></button>`; }).join("")}</div>`
     : `<p class="infobox">Ingen ${O.kritOrd==="kritiske"?"kritiske deler":"deler krever oppfølging"}. Planen går opp for alle delene.</p>`;
-  return `<section class="${secCls("kritiske")}" id="s-kritiske" aria-labelledby="h-kritiske">${secHead("kritiske",n,kritOrd(true),`<span class="count">${crit.length}</span>`, uchip("U14","rekkefølge")+" "+uchip("U3","ordvalg")+" "+uchip("U2","eksepsjonstekst"))}
+  return `<section class="${secCls("kritiske")}" id="s-kritiske" aria-labelledby="h-kritiske">${secHead("kritiske",n,kritOrd(true),`<span class="count">${crit.length}</span>`, uchip("U14","rekkefølge")+" "+uchip("U3","avklart 22.11")+" "+uchip("U2","eksepsjonstekst"))}
     <div class="sec-b" id="b-kritiske"><p class="hint">Delene står i samme rekkefølge som i stykklisten. Velg en del for å gå til den i resultattabellen og lese forklaringen.</p>${body}</div></section>`;
 }
 function secTabell(n){
@@ -1104,51 +1096,29 @@ function renderLagret(){
 }
 
 /* ---------- A/B for eksepsjonstekst ---------- */
-function renderAB(){
-  const keep = S.nr;
-  const samples = [["01","300-003","Bestilling forsinket"],["01","300-004","Bruk av sikkerhetslager"],["01","300-005","Mottak forsinket"],["02","300-005","Kanseller mottak"],["01","300-006","Ledetid overskrider horisont"]];
-  let h = `<div class="ab"><div class="hd">Eksepsjon</div><div class="hd">A · Vanlig språk først</div><div class="hd">B · Offisielt typenavn først</div>`;
-  samples.forEach(([nr, vn, type]) => {
-    S.nr = nr; const e = ex().eksepsjoner.find(x => x.vn===vn && x.type===type);
-    h += `<div><b>${esc(type)}</b><div class="muted" style="font-size:12.5px">${vn} ${esc(besk(vn))}, testeksempel ${nr}</div></div>
-      <div><div class="kd-ex" style="margin-bottom:10px">${exHead(e,"vanlig")}</div><details><summary class="muted" style="font-size:13px;cursor:pointer">Slik ser det ut i forklaringspanelet</summary>${exCard(e,"vanlig")}</details></div>
-      <div><div class="kd-ex" style="margin-bottom:10px">${exHead(e,"offisiell")}</div><details><summary class="muted" style="font-size:13px;cursor:pointer">Slik ser det ut i forklaringspanelet</summary>${exCard(e,"offisiell")}</details></div>`;
-  });
-  S.nr = keep;
-  h += `</div><div class="prose" style="margin-top:18px">
-    <h2>Hva PRD-en og ordbanken sier</h2>
-    <ul><li>PRD §3 og §4.3: fem eksepsjonstyper med faste navn. «Eksepsjon» brukes også i appen.</li>
-    <li>Ordbanken (besluttet 2026-11-05, merknad 3): «Eksepsjon» overalt, også i appen, og forklaringene i appen gjør begrepet forståelig. Typenavnene står i tabellen Eksepsjoner.</li>
-    <li>FR-13: ordlyden i meldingen trenger ikke være lik fasiten, men opplysningene FR-9–FR-12 og FR-29 krever, skal med. Begge variantene har den samme meldingen.</li></ul>
-    <h2>Forskjellen</h2>
-    <ul><li><b>A</b> bruker Carmens korte navn (fra resultatkonseptene 15.11) som overskrift. De finnes ikke i ordbanken. Velges A, må gruppen avgjøre om de skal inn i ordbanken, og hvordan de forholder seg til beslutningen fra 2026-11-05.</li>
-    <li><b>B</b> følger ordbanken som den er nå, og legger en linje i klartekst under (Sebastians klartekstlinjer).</li>
-    <li>I begge står det offisielle typenavnet et sted, slik at brukertestens oppgave 2 («forklar en eksepsjon») kan knyttes til navnet.</li></ul>
-    <p>Bytt variant for hele prototypen under <button type="button" class="btn link" data-act="valg">Prototypevalg</button>.</p></div>`;
-  $("#abtab").innerHTML = h;
-}
-
-/* ---------- Uavklarte spørsmål ---------- */
+/* ---------- Avklaringer 22.11 ---------- */
 const U = [
-  ["U1","Hva inngår i «én resultatside»?","PRD §4.4 beskriver rekkefølgen (bestillingsforslag, sammendrag av kritiske deler, resultattabell). FR-34 krever at kapasiteten står «på samme side» når begge er valgt. PRD-en sier ikke om seksjoner kan lukkes, eller om informasjon kan utvides.","Ingen egne sider for resultatet. Valget «Hva er én resultatside?» viser A (én lang side) og B (utvidbare seksjoner). Forklaringen er et panel ved siden av tabellen i begge (FR-18), ikke en popup.","Prototypevalg"],
-  ["U2","Eksepsjonstekst: vanlig språk først eller offisielt typenavn først?","PRD §3 og §4.3 og ordbanken (merknad 3, 2026-11-05) gir fem faste typenavn som brukes i appen. De korte navnene i vanlig språk er Carmens og står ikke i ordbanken.","Begge variantene, side om side under «Eksepsjonstekst: A og B».","Prototypevalg"],
-  ["U3","«Kritiske deler» eller «Krever oppfølging»?","PRD FR-13 og FR-16 og ordbanken bruker «Kritisk del». «Krever oppfølging» finnes ikke i ordbanken.","«Kritiske deler» som standard. «Krever oppfølging» kan prøves.","Prototypevalg"],
-  ["U4","Starter ukefilteret på «Alle uker» eller «Uke 1»?","FR-17: brukeren kan filtrere på én uke, og uten filter vises alle forslag. UJ-2: Kari filtrerer selv på uke 1. Startvalget er ikke bestemt. Med «Uke 1» er det første forslaget for Rygg (uke 2), som er oppgave 3 i Sebastians forslag til brukertest, skjult når resultatet åpnes.","«Alle uker» som standard. «Uke 1» kan prøves.","Prototypevalg"],
-  ["U5","Ukeplanen og FR-17","FR-17: «Det er ingen egen ukevisning i tillegg til listen.» Gruppen vil beholde Carmens ukeplan lenger ned som et valgfritt tillegg. Det krever en endring i PRD-en eller en avklart tolkning.","Ukeplanen står nederst i resultatet, og den samlede lista gjelder. Den kan skjules.","Prototypevalg"],
-  ["U6","Introduksjonssiden","Siden finnes ikke i PRD-en. FR-27 sier at brukeren laster ned malen og leser veiledningen fra «appens startside». Hvilken side er startsiden når det finnes en introduksjonsside? Den må heller ikke forveksles med introduksjonen til brukertesten (PRD §9 nr. 4).","Introduksjonen vises første gang appen åpnes. Malen, testeksempel 01 og den korte veiledningen står på Ny kjøring, som åpnes ved senere besøk.","–"],
-  ["U7","Lys eller mørk visuell retning","PRD-en sier ingenting om farger utover NFR-8 (ikke farge alene). Carmens DESIGN.md har lys som standard og mørk som tokens. Demoen hennes er mørk.","Begge, med Carmens tokens. Bytt i sidemenyen eller under Prototypevalg.","Prototypevalg"],
-  ["U8","Ord i grensesnittet som ikke står i ordbanken","Ordbanken har ikke disse ordene: «Introduksjon» (som side), «Ny kjøring», «Resultat» (menyord), «Lagrede kjøringer», «Ukeplan», «Sammendrag» (FR-16 bruker ordet) og «Prototypevalg» (bare prototype). Ordbanken sier «Ikke bruk» om «resultatside» og «oversikt» for Resultattabell.","Prototypen bruker ordene fra Carmens meny, men skriver ikke «resultatside» eller «oversikt» i teksten. Ingen ord er lagt inn i ordbanken.","–"],
-  ["U9","Hvor står Endringer?","PRD-en sier ikke hvor før/etter-sammenligningen står. Carmen og Sebastian setter den rett etter Bestillingsforslag.","Rett etter Bestillingsforslag, bare når det finnes en tidligere kjøring.","–"],
-  ["U10","Filteret «Vis bare kritiske deler» i resultattabellen","Står ikke i PRD-en. Det er Sebastians forslag. FR-16: rekkefølgen fra stykklisten beholdes, og kritiske deler flyttes ikke øverst. Filteret beholder rekkefølgen.","Vises som standard og kan skjules.","Prototypevalg"],
-  ["U11","Standardvalg for «Hva vil du beregne?»","FR-30 gir tre valg, men ikke hvilket som er forhåndsvalgt. Carmen foreslår «Begge», Sebastian «Bestillingsplan». Brukertesten bruker bare trinn 1–2 (§8.1).","«Bestillingsplan» som standard. Kan endres.","Prototypevalg"],
-  ["U12","Hvor står eksepsjonsmarkøren i tabellen?","FR-15: cellen for uke og del fremheves med farge og symbol eller tekst, og eksepsjoner med uke «–» vises ved delens navn. PRD-en sier ikke hvilken av de seks radene som bærer markøren.","Sebastians kobling: Nettobehov for Bestilling forsinket, Bruk av sikkerhetslager og Mottak forsinket. Planlagte mottak for Kanseller mottak. Delen for Ledetid overskrider horisont. Carmens egen eksepsjonsrad er ikke prøvd.","–"],
-  ["U13","Ordlyden i eksepsjonsmeldingene","FR-13: ordlyden trenger ikke være lik fasiten, men opplysningene skal med. Fasitmeldingene bruker «uke 0» og «før horisonten».","Melding fra fasiten, med setningene «Hvorfor:» og klartekst ved siden av. Den endelige ordlyden er ikke bestemt.","–"],
-  ["U14","Kritiske deler før Bestillingsforslag","PRD §4.4: «Etter en vellykket kjøring ser brukeren først bestillingsforslagene (FR-17), deretter sammendraget av kritiske deler (FR-16) og så resultattabellen (FR-14).» Gruppen vil ha kritiske deler først, så forslagene forstås ut fra de kritiske delene. Det krever en endring i PRD §4.4.","Kritiske deler står først, og hver kritisk del viser sitt første bestillingsforslag. Bestillingsforslag først, som i PRD-en, kan prøves.","Prototypevalg"]
+  ["U14", "Rekkefølgen i resultatet", "Kritiske deler først, så Bestillingsforslag. Uten kritiske deler vises bare en kort melding.", "PRD §4.4, FR-16, UJ-1, UJ-2, addendum, EXPERIENCE.md"],
+  ["V3-a", "Tallbokser øverst", "Fire tallbokser. Bare kritiske deler (●) og forfalt mengde («!») har fargede tall, og rosa er gjort sterkere.", "EXPERIENCE.md, DESIGN.md, ordbanken (Tallboks). SM-C3 er ikke endret, fordi det gjelder tabellen."],
+  ["V3-b", "Seksjonsmeny", "Runde knapper i den faste linjen øverst. Seksjonene er ikke lenker i sidemenyen.", "EXPERIENCE.md, DESIGN.md, ordbanken (Seksjonsmeny)"],
+  ["U5", "Ukeplan", "Fjernet, fordi den bare ble fyll. FR-17 står uendret.", "EXPERIENCE.md, DESIGN.md, addendum (spørsmål 5 bekreftet)"],
+  ["U6", "Introduksjonsside og startside", "Introduksjonssiden vises første gang. Startsiden er Ny kjøring. Lagrede kjøringer og Veiledning er egne sider.", "PRD FR-27, UJ-1, addendum, EXPERIENCE.md, DESIGN.md, ordbanken (Introduksjonsside, Startside)"],
+  ["U2", "Eksepsjonstekst", "B: typenavnet fra ordbanken og uken først, så en setning i vanlig språk. Siden for A og B er fjernet.", "EXPERIENCE.md, DESIGN.md"],
+  ["U3", "Ord for deler med eksepsjon", "«Kritiske deler». «Krever oppfølging» brukes ikke.", "Ordbanken (Ikke bruk), PRD §4.4 og EXPERIENCE.md («krever handling»)"],
+  ["U8", "Ord som manglet i ordbanken", "Lagt inn: Frigivelsesuke, Bestillingsplan, Resultat, Lagret kjøring, Introduksjonsside, Startside, Tallboks, Seksjonsmeny og Eksepsjonsmarkør.", "Ordbanken. «Resultatside» er byttet til «Resultat» i EXPERIENCE.md og DESIGN.md."],
+  ["U11", "Hva vil du beregne?", "Bestillingsplan · Produksjonskapasitet · Begge. Bestillingsplan er forhåndsvalgt.", "EXPERIENCE.md"],
+  ["U7", "Lys og mørk", "Begge er med i v1. Lys er standard, og brukeren bytter nederst i sidemenyen.", "EXPERIENCE.md, DESIGN.md"],
+  ["U1", "Én lang side eller utvidbare seksjoner?", "Én lang side der alle seksjonene er åpne.", "EXPERIENCE.md"],
+  ["U4", "Ukefilteret ved start", "Alle uker", "EXPERIENCE.md"],
+  ["U9", "Hvor står Endringer?", "Rett etter Bestillingsforslag, bare når det finnes en tidligere kjøring.", "Ingen endring"],
+  ["U10", "Vis bare kritiske deler", "Beholdes. Rekkefølgen fra stykklisten beholdes, og eksporten endres ikke.", "PRD FR-16 (ny konsekvens), addendum, EXPERIENCE.md"],
+  ["U12", "Eksepsjonsmarkøren", "Sebastians kobling: Nettobehov, Planlagte mottak (Kanseller mottak) eller ved delens navn (Ledetid overskrider horisont). Ingen egen eksepsjonsrad.", "EXPERIENCE.md, DESIGN.md, ordbanken (Eksepsjonsmarkør)"],
+  ["U13", "Eksepsjonsmeldingene", "Variant B: typenavn og uke, én setning i vanlig språk, «Melding:» og «Hvorfor:».", "EXPERIENCE.md, DESIGN.md"]
 ];
 let uHl = null;
 function renderU(){
-  $("#utab").innerHTML = `<table class="utab"><thead><tr><th>Nr.</th><th>Spørsmål</th><th>Hva PRD-en og ordbanken sier</th><th>Hva prototypen viser</th><th>Prøv</th></tr></thead><tbody>${U.map(([id,q,prd,pr,try_]) =>
-    `<tr id="u-${id}" class="${uHl===id?"hl":""}"><td><b>${id}</b></td><td><b>${esc(q)}</b></td><td>${esc(prd)}</td><td>${esc(pr)}</td><td>${try_==="Prototypevalg"?`<button type="button" class="btn small" data-act="valg">Prototypevalg</button>`:"–"}</td></tr>`).join("")}</tbody></table>`;
+  $("#utab").innerHTML = `<table class="utab"><thead><tr><th>Nr.</th><th>Spørsmål</th><th>Valgt av Oda 22.11</th><th>Endret i kopiene</th><th>Status</th></tr></thead><tbody>${U.map(([id,q,valg,dok]) =>
+    `<tr id="u-${id}" class="${uHl===id?"hl":""}"><td style="white-space:nowrap"><b>${id}</b></td><td><b>${esc(q)}</b></td><td>${esc(valg)}</td><td>${esc(dok)}</td><td>Venter på gruppen</td></tr>`).join("")}</tbody></table>`;
   if(uHl){ const r = document.getElementById("u-"+uHl); r && r.scrollIntoView({block:"center"}); }
 }
 
@@ -1209,7 +1179,6 @@ function rerenderKeep(anchorSel){
 function rerenderView(){
   const v = view();
   if(v==="resultat") rerenderKeep("#kl");
-  else if(v==="ab") renderAB();
   else if(v==="uavklart") renderU();
   else if(v==="start") renderStart();
   renderSubnav();

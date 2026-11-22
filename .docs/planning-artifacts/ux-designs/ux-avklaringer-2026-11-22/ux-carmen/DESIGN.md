@@ -4,14 +4,14 @@ description: Nettbasert MRP-verktøy for små produksjonsbedrifter. Planleggeren
 status: utkast – må godkjennes av gruppen
 author: Carmen Kolstad
 created: 2026-11-12
-updated: 2026-11-12
+updated: 2026-11-22
 sources:
   - ../../prds/prd-COSI - MRP-2026-10-19/prd.md
   - ../../prds/prd-COSI - MRP-2026-10-19/addendum.md
   - ../../../ordbank.md
   - ../designforslag-2026-11-12.md
 colors:
-  # Lys modus er standard. Mørk modus (-dark) er med som tokens, men er ikke et v1-krav.
+  # Lys modus er standard. Mørk modus (-dark) er med i v1, og brukeren bytter selv (besluttet 22.11).
   surface-base: '#F4F6F7'
   surface-raised: '#FFFFFF'
   surface-sunken: '#EDF0F2'
@@ -52,6 +52,19 @@ colors:
   exc-horizon-soft-dark: '#241F40'
   change-new-dark: '#86CFA0'
   change-new-soft-dark: '#14301F'
+  # Tallboksene (besluttet 22.11, verdiene fra prototypen v3)
+  summary-bg: '#0D5C6E'
+  summary-hover: '#0A4B5A'
+  summary-ink: '#FFFFFF'
+  summary-ink2: '#CFE6EC'
+  summary-num-critical: '#FFC2BB'
+  summary-num-overdue: '#FF8CC6' # sterkere rosa 22.11, kontrast 3,5:1 mot summary-bg (stor tekst)
+  summary-bg-dark: '#0C2A2E'
+  summary-hover-dark: '#11383D'
+  summary-ink-dark: '#E8F6F5'
+  summary-ink2-dark: '#A9C9C8'
+  summary-num-critical-dark: '#FF8C82'
+  summary-num-overdue-dark: '#FF7AB8' # kontrast 6,3:1
 typography:
   display:
     fontFamily: 'IBM Plex Sans Condensed'
@@ -188,6 +201,18 @@ components:
     background: '{colors.surface-sunken}'
     foreground: '{colors.ink-secondary}'
     radius: '{rounded.sm}'
+  summary-boxes:
+    background: '{colors.summary-bg}'
+    foreground: '{colors.summary-ink}'
+    radius: 16px
+    number-size: 40px
+  section-button:
+    background: '{colors.surface-raised}'
+    foreground: '{colors.ink-secondary}'
+    border: '{colors.line}'
+    background-selected: '{colors.ink-primary}'
+    foreground-selected: '{colors.surface-base}'
+    radius: '{rounded.full}'
   validation-summary:
     background: '{colors.exc-critical-soft}'
     foreground: '{colors.exc-critical}'
@@ -198,9 +223,9 @@ components:
 
 ## Brand & Style
 
-COSI - MRP er planleggerens arbeidsbenk, ikke et dashbord. Brukeren er en innkjøper eller planlegger uten MRP-bakgrunn, som skal finne det som krever handling og forstå hvorfor (PRD SM-3). Uttrykket er presist og rolig: kjølige, nesten nøytrale flater, tall som står tett og rett, og ingen pynt.
+COSI - MRP er planleggerens arbeidsbenk, ikke et dashbord. Tallboksene øverst i resultatet er det eneste unntaket (besluttet 22.11). Brukeren er en innkjøper eller planlegger uten MRP-bakgrunn, som skal finne det som krever handling og forstå hvorfor (PRD SM-3). Uttrykket er presist og rolig: kjølige, nesten nøytrale flater, tall som står tett og rett, og ingen pynt.
 
-Bare to ting får farge. Petrol betyr «du kan gjøre noe her». De fem eksepsjonsfargene betyr «planen går ikke opp her». Alt annet er nøytralt. Det er slik mot-målet SM-C3 blir til design: tabellen skal ikke fylles med farger og symboler for å se informativ ut.
+Bare to ting får farge. Petrol betyr «du kan gjøre noe her». De fem eksepsjonsfargene betyr «planen går ikke opp her». Alt annet er nøytralt. Unntaket er tallboksene øverst i resultatet (besluttet 22.11): de står på en mørk petrolflate. Bare tallene som krever handling, har farge: kritiske deler og forfalt mengde, begge med symbol (● og «!»), så de ikke skilles med farge alene. Bestillingsforslag i uke 1 og i alt står i nøytral `summary-ink` (SM-C3). Det er slik mot-målet SM-C3 blir til design: tabellen skal ikke fylles med farger og symboler for å se informativ ut.
 
 Skriften er IBM Plex, laget for teknisk dokumentasjon og industri. Den har tydelige tall og en smal variant til overskrifter som tar lite plass over brede tabeller.
 
@@ -256,7 +281,7 @@ Regler:
 
 - Alle tall har like brede sifre (`font-variant-numeric: tabular-nums`), høyrejusteres og skrives med norsk tallformat (mellomrom som tusenskille, ekte minustegn «−»).
 - Overskrifter er smale (Condensed). Brødtekst og tabeller er vanlig bredde.
-- Ingen store tall i kort («hero numbers»), bortsett fra kapasitetstallet per uke i kapasitetspanelet.
+- Store tall bare i tallboksene øverst i resultatet (40 px, `summary-boxes`) og for kapasitetstallet per uke i kapasitetspanelet. Ellers ingen store tall i kort.
 - Reservefonter: `system-ui, -apple-system, "Segoe UI", sans-serif` og `ui-monospace, Menlo, monospace`.
 
 ## Layout & Spacing
@@ -264,7 +289,7 @@ Regler:
 Skala: 4 / 8 / 12 / 16 / 20 / 24 px (`{spacing.1}`–`{spacing.6}`). Søskengrupper legges ut med `gap`, ikke marger.
 
 - **Siden:** full bredde for PC (NFR-6). Appmeny og kjøringslinje over hele bredden. Innholdet har `{spacing.gutter}` på sidene.
-- **Resultatsiden:** én kolonne med seksjoner i fast rekkefølge (se EXPERIENCE.md). Når forklaringspanelet er åpent, blir arbeidsflaten to kolonner: tabellen tar resten, panelet er `{spacing.panel-width}` bredt og står fast til høyre mens brukeren blar. Panelet skyver tabellen til side og legger seg ikke over den.
+- **Resultat:** én kolonne med seksjoner i fast rekkefølge (se EXPERIENCE.md). Når forklaringspanelet er åpent, blir arbeidsflaten to kolonner: tabellen tar resten, panelet er `{spacing.panel-width}` bredt og står fast til høyre mens brukeren blar. Panelet skyver tabellen til side og legger seg ikke over den.
 - **Tabeller:** radhøyde `{spacing.row-height}`. Tynne skillelinjer og ingen sebrastriper. Delene skilles med en tykkere linje over delens hode. Radene i en del har bare tynne linjer.
 - **Faste kolonner (NFR-8):** delens hode og radnavnene står fast ved sidescroll, med ugjennomsiktig bakgrunn. Ukeoverskriften står fast ved loddrett rulling i tabellområdet.
 - **Smal skjerm** (under 900 px): panelet blir et ark nederst på skjermen (inntil 60 % av høyden). Tabellen ruller sideveis i sitt eget område. Mobil er ikke et mål (NFR-6), men siden skal ikke knekke.
@@ -275,42 +300,45 @@ Hierarki kommer fra flate og linje, ikke skygge. Paneler og tabeller står på `
 
 ## Shapes
 
-Små, presise hjørner: `{rounded.sm}` (3 px) for merkelapper, `{rounded.md}` (5 px) for knapper og meldingsbokser, `{rounded.lg}` (6 px) for tabellrammer og paneler, `{rounded.xl}` (10 px) for kapasitetspanelet og hele arbeidsflaten. `{rounded.full}` brukes bare på ukefilterets chips og antall-tellere i seksjonsmenyen.
+Små, presise hjørner: `{rounded.sm}` (3 px) for merkelapper, `{rounded.md}` (5 px) for knapper og meldingsbokser, `{rounded.lg}` (6 px) for tabellrammer og paneler, `{rounded.xl}` (10 px) for kapasitetspanelet og hele arbeidsflaten. `{rounded.full}` brukes bare på ukefilterets chips og de runde knappene i seksjonsmenyen. Tallboksene har 16 px hjørner rundt hele raden.
 
 ## Components
 
 | Komponent | Visuell spesifikasjon |
 |---|---|
-| Primærknapp | `{components.button-primary}`. Bare én per område: «Eksporter til Excel» i kjøringslinjen, «Velg fil» på startsiden, «Last opp rettet fil» ved valideringsfeil |
+| Primærknapp | `{components.button-primary}`. Bare én per område: «Eksporter til Excel» i kjøringslinjen, «Velg fil» på startsiden, «Kom i gang» på introduksjonssiden, «Last opp rettet fil» ved valideringsfeil |
+| Introduksjonsside | Én stor flate øverst med 12 px hjørner: lys `accent-soft` (mørk: `summary-bg-dark`). Overskrift i 40 px, der andre linje står i `accent`, så to korte avsnitt i `ink-secondary` og primærknappen «Kom i gang». Under står de tre stegene som nummererte bokser på `surface-raised` (besluttet 22.11) |
 | Sekundærknapp | `{components.button-secondary}`. «Last opp ny fil», «Lukk», «Slett» |
-| Appmeny | Logo (petrolfirkant med to streker) og «COSI-MRP» i `section`. Lenker i `body`, aktiv side på `surface-sunken` med fet tekst |
+| Appmeny | Logo (petrolfirkant med to streker) og «COSI-MRP» i `section`. Lenker i `body`, aktiv side på `surface-sunken` med fet tekst. Nederst står knappen «Bytt til mørk» / «Bytt til lys» med samme utseende som lenkene |
 | Kjøringslinje | Ferdigproduktets navn i `product`, varenummer i `code` ved siden av. Under: horisont, filnavn, tidspunkt og lagringsstatus i `label`-størrelse i `ink-secondary`. Knappene til høyre |
-| Seksjonsmeny | Tekstknapper med understrek i `accent` for aktiv seksjon. Antall i en grå teller. Telleren for kritiske deler bruker `exc-critical-soft` / `exc-critical` |
+| Seksjonsmeny | `{components.section-button}`. Runde knapper nederst i kjøringslinjen. Antallet står i liten skrift i knappen. Aktiv seksjon har mørk fylt bakgrunn og fet tekst. Antallet for kritiske deler står i `exc-critical` og i fet skrift (besluttet 22.11) |
+| Tallbokser | `{components.summary-boxes}`. Én rad med bokser på `summary-bg`, skilt med en tynn lys linje, med 16 px hjørner rundt hele raden. I hver boks står tallet (40 px, fet, like brede sifre), tittelen (14 px, halvfet, `summary-ink`) og én linje forklaring (12,5 px, `summary-ink2`). Bare tall som krever handling, har farge: `summary-num-critical` med «●» og `summary-num-overdue` med «!». Bestillingsforslag i uke 1 og i alt, endringer og alle tall som er 0, står i `summary-ink`. Ved peking blir boksen `summary-hover`, og fokusringen ligger inne i boksen (besluttet 22.11) |
 | Ukefilter | `{components.week-chip}`. «Alle uker» først, deretter «Uke 1» til «Uke H», hver med antall i `ink-secondary` |
 | Merke for forfalt mengde | `{components.overdue-tag}`. Tekst «! 50 forfalt». `[ASSUMPTION]` alternativ: «175 (50 forfalt)» i mengdekolonnen |
-| Eksepsjonsmerke | `exception-badge-*`: symbol i en liten firkant i eksepsjonsfargen, med navnet fra ordbanken ved siden av. I tabellen vises bare symbolet (20 × 20 px) |
+| Eksepsjonsmerke | `exception-badge-*`: symbol i en liten firkant i eksepsjonsfargen, med navnet fra ordbanken og uken ved siden av, for eksempel «Bestilling forsinket · uke 1». Setningen i vanlig språk står under merket i `body`, ikke i merket. I tabellen vises bare symbolet (20 × 20 px). Typenavnet står alltid først (besluttet 22.11) |
 | Kritisk-flagg | «● Kritisk» i `exc-critical`, i delens hode |
 | Delens hode | `{components.part-header}`: nivåmerkelapp (`0`, `.1`, `..2`) med tynn ramme, varenummer, beskrivelse i fet, så type, lager, SS, L og antall per overordnet del i `ink-secondary`. Innrykk 12 px per nivå |
 | Resultattabellcelle | `{components.result-table-cell}`. Valgt celle får 2 px innvendig ramme i `accent` og `accent-soft` bakgrunn. Radnavn og ukeoverskrift for valgt celle blir fete |
-| Eksepsjonsrad | `[ASSUMPTION]` Egen rad «Eksepsjoner» øverst i hver kritiske del, med symbolene i ukekolonnene. Radnavnet i `exc-critical`. Se åpne beslutninger |
-| Forklaringspanel | `{components.explanation-panel}`. Overskrift: del og uke i `label`, verdien i `section`. Utregningen som en tabell med to kolonner; siste linje (resultatet) på `accent-soft` og fet. Regelen i en grå boks. Eksepsjonsmeldinger i boks med eksepsjonens lyse bakgrunn |
+| Eksepsjonsmarkør | Symbolet (20 × 20 px, `exception-badge-*`) står til venstre for tallet i cellen eksepsjonen gjelder, og cellen får eksepsjonens lyse bakgrunn. Raden følger Sebastians kobling (se EXPERIENCE.md, Eksepsjonsmarkering): Nettobehov, Planlagte mottak, eller ved delens navn for Ledetid overskrider horisont. Ingen egen rad for eksepsjoner (besluttet 22.11) |
+| Forklaringspanel | `{components.explanation-panel}`. Overskrift: del og uke i `label`, verdien i `section`. Utregningen som en tabell med to kolonner; siste linje (resultatet) på `accent-soft` og fet. Regelen i en grå boks. Eksepsjonsmeldinger i boks med eksepsjonens lyse bakgrunn: eksepsjonsmerket med typenavn og uke øverst, så setningen i vanlig språk, så «Melding:» og «Hvorfor:» med fet ledetekst (besluttet 22.11) |
 | Kapasitetspanel | `{components.capacity-panel}`. Overskrift i `section`. Forklarende setning i grå boks. Kapasitetstallet i 16 px fet; begrensende del under tallet i 11,5 px `ink-secondary`, med `⧗` (ledetid, `exc-horizon`) eller `▤` (lager, `exc-warning`). `↑` i `change-new` når mottakene gir mer enn lageret |
 | Endringsmerke | `change-tag-new` (Nytt forslag, Ny eksepsjon, Ny del), `change-tag-changed` (Endret mengde), `change-tag-removed` (Fjernet, Borte – gjennomstreket). Mengde som «130 → 205» med pil i `ink-secondary` |
 | Valideringsoppsummering | `{components.validation-summary}`: rød boks med «✕» og overskrift. Feillisten under som vanlig tabell |
 | Opplastingssone | Stiplet ramme i `line`, 8 px hjørner, «Slipp Excel-malen her», «eller» og primærknappen «Velg fil». Under: «Filen blir i nettleseren din og sendes ikke til noen server.» |
 | Informasjonsboks | Hvit flate med ramme og «ⓘ». Brukes til «Første kjøring …» og lagringsstatus |
 
-→ Visuell referanse: [prototypen](../designforslag-2026-11-12-prototype.html) og [skjermbildet av resultatsiden](../designforslag-2026-11-12-resultatside.png). Dette dokumentet går foran ved avvik.
+→ Visuell referanse: [prototypen](../designforslag-2026-11-12-prototype.html) og [skjermbildet av Resultat](../designforslag-2026-11-12-resultatside.png). Dette dokumentet går foran ved avvik.
 
 ## Do's and Don'ts
 
 | Gjør | Ikke gjør |
 |---|---|
-| Farge pluss symbol eller tekst for hver eksepsjon og status (FR-15, NFR-8) | Farge alene, eller farge på tall bare for å pynte |
-| Petrol bare for det brukeren kan klikke på eller har valgt | Petrol som bakgrunn på store flater eller som dekor |
+| Farge pluss symbol eller tekst for hver eksepsjon og status (FR-15, NFR-8) | Farge alene, eller farge på tall bare for å pynte, også i tallboksene |
+| Petrol bare for det brukeren kan klikke på eller har valgt. Unntak: flaten bak tallboksene, der hver boks er en lenke | Petrol som bakgrunn på andre store flater eller som dekor |
 | Høyrejusterte tall med like brede sifre og norsk tallformat | Venstrejusterte tall eller proporsjonale sifre i tabeller |
 | Nuller i `ink-secondary` | Nuller i `line-faint` (for lav kontrast) |
 | Rolige flater, tynne linjer, ingen skygger | Kort med skygge rundt hver seksjon, sebrastriper, gradienter |
 | Samme fem eksepsjonsnavn som ordbanken | Egne korte navn eller forkortelser for eksepsjonstypene |
 | Kapasitetspanelet tydelig adskilt med ramme og overskrift (FR-34) | Samme utseende for kapasitet og bestillingsplan |
-| Mørk modus bare hvis gruppen tar det inn i v1 `[ASSUMPTION]` | Mørk modus som ekstra testbyrde før kjernen er ferdig |
+| Ukefilteret på bestillingsforslagene som eneste ukevisning (FR-17) | Egen ukeplan eller ukeoversikt ved siden av listen (fjernet 22.11, var bare fyll) |
+| Lys og mørk modus i v1, med lys som standard og en knapp nederst i appmenyen for å bytte (besluttet 22.11). Kontrasten kontrolleres i begge | Farger som bare er kontrollert i den ene modusen |
