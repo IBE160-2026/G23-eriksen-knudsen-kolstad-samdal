@@ -168,3 +168,34 @@ Oda ville gå gjennom UX-forslaget på `main` (prototype versjon 3) og avklaring
 
 ### Åpne punkter
 - Endringene i arbeidsmappen `ux-avklaringer-2026-11-22/` må føres over til originalene (PRD, ordbanken og EXPERIENCE.md/DESIGN.md) når gruppen har godkjent dem.
+
+## 2026-11-22 kl. 19:09 — Odawol
+
+### Oppgave
+Oda valgte U14: kritiske deler skal stå før bestillingsforslagene. Hensikten er at brukeren først ser det som krever oppfølging, og deretter hva som skal bestilles. Er det ingen kritiske deler, skal det bare stå en kort melding, ikke hele seksjonen. Endringene skulle gjøres i de relevante dokumentene i arbeidsmappen.
+
+### Plan
+- Fant stedene i PRD-kopien og Carmens EXPERIENCE.md som beskriver rekkefølgen (§4.4, FR-16, UJ-1, UJ-2, seksjonsmenyen, tomtilstanden og tabulatorrekkefølgen).
+- Gjorde endringene med et skript som stopper hvis en tekst ikke finnes nøyaktig én gang.
+- Ingen testeksempler mangler kritiske deler, så prototypen fikk et valg som simulerer det.
+
+### Resultat
+Alt er endret i `.docs/planning-artifacts/ux-designs/ux-avklaringer-2026-11-22/`. Originalene er ikke endret.
+- `prd/prd.md`:
+  - §4.4: kritiske deler først, så bestillingsforslag og så tabellen, med hensikten
+  - FR-16: sammendraget står før bestillingsforslagene, og uten kritiske deler vises bare en kort melding. To nye testbare konsekvenser.
+  - UJ-1 og UJ-2 har ny rekkefølge
+  - `updated` er satt til 2026-11-22
+- `prd/addendum.md`: linje for 2026-11-22 i endringshistorikken, merket som forslag fra Oda som gruppen ikke har godkjent.
+- `ux-carmen/EXPERIENCE.md`: rekkefølgen på resultatsiden, seksjonsmenyen, tomtilstanden (bare én kort melding), tabulatorrekkefølgen, UJ-1 og UJ-2.
+- `prototype/index.html`:
+  - Uten kritiske deler vises bare meldingen «Ingen kritiske deler. Planen går opp for alle delene.», uten nummer, overskrift eller liste.
+  - Boksen og «Slik leser du resultatet» er tilpasset.
+  - Nytt valg: «Simuler at det ikke er noen kritiske deler (U14)».
+- `README.md` (U14 avklart, venter på gruppen) og `prototype/avvik-mot-prd.md` er oppdatert.
+- Testet med Playwright i Edge med testeksempel 01, med og uten simulering. Rekkefølgen er Kritiske deler, Bestillingsforslag, Resultattabell og Ukeplan. Ingen feil i konsollen.
+- Ordbanken er ikke endret, fordi ingen nye begreper er tatt i bruk.
+
+### Åpne punkter
+- U14 er Odas valg og må godkjennes av gruppen før PRD-en og EXPERIENCE.md på `main` endres.
+- Simuleringen uten kritiske deler fjerner bare eksepsjonene. Boksen «forslag med forfalt mengde» viser fortsatt 2, selv om forfalt mengde ellers gir eksepsjonen «Bestilling forsinket». Det er en svakhet i prototypen, ikke i løsningen.
