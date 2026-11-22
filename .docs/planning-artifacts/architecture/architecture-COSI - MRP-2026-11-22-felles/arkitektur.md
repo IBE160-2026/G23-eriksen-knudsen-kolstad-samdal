@@ -20,7 +20,7 @@ sources:
 
 **Oppdatert 22.11 etter UX-avklaringene gruppen godkjente samme dag** (PRD §4.4, FR-16, FR-27 og ordbanken). Kritiske deler står først i resultatet, appen har en introduksjonsside og fire menyvalg, resultattabellen har filteret «Vis bare kritiske deler», og ukeplanen er fjernet. G-5 og E-7 er dermed avgjort (kapittel 8 og 9), og FA-10, FA-13 og FA-14 er utvidet.
 
-**E-1 til E-6 besvart 22.11 av Idun:** alle er godtatt, og Idun er koordinator for `typer.ts`. Svarene er ført inn i FA-3, FA-4, FA-5, FA-16, FA-17 og FA-18 (kapittel 9).
+**E-1 til E-6 avgjort av gruppen 22.11:** alle er godtatt, og Idun er koordinator for `typer.ts`. Svarene er ført inn i FA-3, FA-4, FA-5, FA-16, FA-17 og FA-18 (kapittel 9).
 
 ## 1. Slik er dokumentet laget
 
@@ -29,7 +29,7 @@ sources:
 | **Valgt på forhånd** | React og SheetJS CE |
 | **To av tre er like** | Det valget gjelder. Hver beslutning viser hvem valget kommer fra. |
 | **Alle tre er ulike** | Gruppen avgjør. Står i kapittel 8. |
-| **Bare ett forslag tar stilling** | Tatt med først når det er besvart. Svarene står i kapittel 9. |
+| **Bare ett forslag tar stilling** | Tatt med først når gruppen har avgjort det. Svarene står i kapittel 9. |
 | **Avgjort av gruppen** | Gruppens vedtak i PRD-en og ordbanken går foran alle tre forslagene. |
 
 Merkingen bak hver beslutning: **Alle** = alle tre forslagene, **C** = Carmen, **S** = Sebastian, **I** = Idun.
@@ -117,7 +117,7 @@ Hver beslutning har nummer (FA-1 osv.), kravene den gjelder, og grunnlaget.
   - **Story 0:** prosjektoppsett med Vite, React, TypeScript, Vitest, arkitekturtest, `vercel.json` og README med kommandoene.
   - **Story 1:** alle delte typer.
 - Senere endringer i en type skjer i en egen pull request som endrer `typer.ts` først. Ingen lager egne versjoner av delte typer.
-- **Koordinator: Idun** (E-2, besvart 22.11). Koordinatoren eier `typer.ts`. En endring i delte typer flettes bare når koordinatoren og minst én som bruker typene, har godkjent den.
+- **Koordinator: Idun** (E-2, avgjort av gruppen 22.11). Koordinatoren eier `typer.ts`. En endring i delte typer flettes bare når koordinatoren og minst én som bruker typene, har godkjent den.
 
 ### FA-4: Data-konvensjoner
 
@@ -128,7 +128,7 @@ Hver beslutning har nummer (FA-1 osv.), kravene den gjelder, og grunnlaget.
   - Uker er nummerert 1 til H. En serie per uke er en liste med lengde H, der plass `i` er uke `i + 1`. Det finnes aldri en uke 0 i resultatet. Forfalt mengde er et eget felt.
   - Alle mengder er heltall. Bare disponibel beholdning og forventet lagerbeholdning kan være negative.
   - **Planlagte mottak holdes som enkeltlinjer** med varenummer, uke, antall og Excel-rad, og legges ikke sammen på forhånd. Kontrolleres mot fasit 04 når beregningen bygges.
-  - **Heltall lagret som tekst godtas** (E-1, besvart 22.11). I et heltallsfelt godtas et tall som er et heltall, og en tekst som etter trimming bare er et valgfritt minustegn og sifre (`^-?[0-9]+$`), for eksempel «7» eller «007». Alt annet gir valideringsfeil: desimaltall (`30.5`, «30,5»), ord, tusenskilletegn («1 000»), plusstegn og tekst som «ca. 40». Etter tolkningen gjelder grensene i FR-3 som vanlig. Varenummer tolkes aldri som tall. Regelen får egne enhetstester og bør føres inn i FR-3.
+  - **Heltall lagret som tekst godtas** (E-1, avgjort av gruppen 22.11). I et heltallsfelt godtas et tall som er et heltall, og en tekst som etter trimming bare er et valgfritt minustegn og sifre (`^-?[0-9]+$`), for eksempel «7» eller «007». Alt annet gir valideringsfeil: desimaltall (`30.5`, «30,5»), ord, tusenskilletegn («1 000»), plusstegn og tekst som «ca. 40». Etter tolkningen gjelder grensene i FR-3 som vanlig. Varenummer tolkes aldri som tall. Regelen får egne enhetstester og bør føres inn i FR-3.
 
 ### FA-5: Feil er verdier
 
@@ -139,7 +139,7 @@ Hver beslutning har nummer (FA-1 osv.), kravene den gjelder, og grunnlaget.
   - Excel-delen gir én kode for hver feil i hele filen (ikke en Excel-fil, tom fil, skadet fil). Hver kode får sin egen melding (NFR-9).
   - Valideringen samler alle feilene før den svarer, også etter FR-2-regelen om å hoppe over kontroller som avhenger av noe som mangler.
   - Styringen har den ene `try/catch` som gjør en uventet feil om til en norsk melding. Ved feil vises ingen resultat, og ingenting lagres.
-  - **React-feilgrense** (E-5, besvart 22.11): én feilgrense rundt visningene fanger feil under tegning, som `try/catch` i styringen ikke fanger. Den viser en norsk reservemelding og lar brukeren gå til Ny kjøring og laste opp på nytt uten å laste siden på nytt (NFR-9).
+  - **React-feilgrense** (E-5, avgjort av gruppen 22.11): én feilgrense rundt visningene fanger feil under tegning, som `try/catch` i styringen ikke fanger. Den viser en norsk reservemelding og lar brukeren gå til Ny kjøring og laste opp på nytt uten å laste siden på nytt (NFR-9).
 
 ### FA-6: Én eier av stykklistestrukturen
 
@@ -258,7 +258,7 @@ Hver beslutning har nummer (FA-1 osv.), kravene den gjelder, og grunnlaget.
   - En test sjekker at malen og testeksempel 01 i `public/` er like filene i `testdata/` (FR-27).
   - `npm run test:e2e` kjører Playwright: opplasting av testeksempel 01, de tre filene i NFR-9 og blokkert lagring (NFR-10). Den er ikke med i `npm test`.
   - Testene ligger i `tests/` med samme mappestruktur som `src/` (S + I).
-  - **Eksakte versjoner** (E-4, besvart 22.11): alle avhengigheter i `package.json` har eksakt versjon, uten `^` og `~`. `package-lock.json` committes, og `npm ci` brukes. Arkitekturtesten sjekker at ingen versjon har `^` eller `~`.
+  - **Eksakte versjoner** (E-4, avgjort av gruppen 22.11): alle avhengigheter i `package.json` har eksakt versjon, uten `^` og `~`. `package-lock.json` committes, og `npm ci` brukes. Arkitekturtesten sjekker at ingen versjon har `^` eller `~`.
   - `npm run test:e2e` sjekker også at ingen side gir brudd på CSP-en (FA-17).
 
 ### FA-17: Statisk publisering uten datautgang
@@ -267,7 +267,7 @@ Hver beslutning har nummer (FA-1 osv.), kravene den gjelder, og grunnlaget.
 - **Gjelder:** NFR-3, NFR-4, NFR-6, §8.1
 - **Regel:**
   - `npm run build` lager statiske filer, og Vercel publiserer dem. Ingen serverfunksjoner, ingen Vercel Analytics eller Speed Insights, og ingen skript eller skrifter fra tredjepart.
-  - **Full CSP** (E-6, besvart 22.11). `vercel.json` setter denne Content Security Policy, så nettleseren selv stopper forsøk på å sende data ut:
+  - **Full CSP** (E-6, avgjort av gruppen 22.11). `vercel.json` setter denne Content Security Policy, så nettleseren selv stopper forsøk på å sende data ut:
     `default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; worker-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'; frame-ancestors 'none'`
   - `vite preview` bruker den samme CSP-en, og en test sjekker at de to er like. Da finner `npm run test:e2e` brudd før publisering.
   - I Carmens forslag hadde `worker-src` også `blob:`. Det trengtes for read-excel-file. SheetJS trenger det ikke, så `blob:` er tatt ut av `worker-src`.
@@ -277,7 +277,7 @@ Hver beslutning har nummer (FA-1 osv.), kravene den gjelder, og grunnlaget.
 
 ### FA-18: Arbeidsflyt
 
-- **Grunnlag:** branch og pull request: C + I. CI utsatt: S + I. Kontrollene før fletting: E-3, besvart 22.11.
+- **Grunnlag:** branch og pull request: C + I. CI utsatt: S + I. Kontrollene før fletting: E-3, avgjort av gruppen 22.11.
 - **Regel:**
   - Én branch per story og pull request inn i `main`. Minst én annen i gruppen ser over før fletting.
   - **Grønne kontroller før fletting** (E-3): `npm test`, `npm run lint` og `npm run build` må være grønne. `npm run lint` kjører oxlint.
@@ -353,9 +353,9 @@ Når nr. 1 er flettet inn, kan nr. 2–4 og nr. 6 gjøres samtidig. UI-et kan by
 |---|---|---|
 | G-7 | Navigasjon med fire menyvalg | FA-13 følger flertallet (S + I): samme adresse for alle visningene. Da Sebastian og Idun skrev forslagene sine, hadde appen bare to visninger. Med fire menyvalg kan Carmens hash-adresser (`#/resultat` osv.) passe bedre, fordi en visning da kan bokmerkes. EXPERIENCE.md må uansett oppdateres med de nye visningene. |
 
-## 9. Bare ett forslag tok stilling (besvart 22.11)
+## 9. Bare ett forslag tok stilling (avgjort av gruppen 22.11)
 
-De andre forslagene sa ingenting om disse punktene. Idun gikk gjennom dem 22.11, og svarene er ført inn i beslutningene.
+De andre forslagene sa ingenting om disse punktene. Gruppen avgjorde dem 22.11, og svarene er ført inn i beslutningene.
 
 | Nr. | Forslag | Fra | Svar | Ført inn i |
 |---|---|---|---|---|
