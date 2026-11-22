@@ -66,6 +66,19 @@
   .mini{background:var(--card);border:1px solid var(--border);border-radius:7px;padding:6px 8px;font-size:12px}
   .mini b{display:block}
   .note{font-size:11.5px;color:var(--muted);margin:6px 0 0}
+  .flowrow{display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin-bottom:8px}
+  .flowrow .lbl{font-size:11px;font-weight:700;color:var(--brass);text-transform:uppercase;letter-spacing:.4px;width:78px}
+  .vw{background:#3A4A3F;border:1px solid var(--top-divider,#56655A);border-radius:6px;padding:3px 8px;font-size:12px;font-weight:600;color:#fff}
+  .vw em{display:block;font-style:normal;font-weight:400;font-size:10.5px;color:var(--top-muted)}
+  .sec{background:var(--card);color:var(--ink);border-radius:5px;padding:2px 7px;font-size:11.5px;font-weight:600}
+  .sec.hi{background:var(--brass);color:#1F2620}
+  .ar{color:var(--brass)}
+  .facts{display:flex;flex-wrap:wrap;gap:6px}
+  .facts span{background:#3A4A3F;color:#D2DBD1;border-radius:999px;padding:2px 9px;font-size:11.5px}
+  .mini.new{border:1.5px solid var(--amber)}
+  .pill-new{background:var(--amber);color:#fff;font-size:10px;border-radius:4px;padding:0 5px;margin-left:4px;vertical-align:1px}
+  .e.done{opacity:.75}
+  .e.done .box2{background:var(--green);border-color:var(--green);color:#fff;font-size:10px;display:grid;place-items:center}
   footer{margin-top:12px;font-size:11px;color:var(--muted);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
   @media print{
     @page{size:A4 landscape;margin:7mm}
@@ -81,12 +94,13 @@
 <header>
   <div>
     <h1>Felles arkitektur for COSI - MRP</h1>
-    <p>Satt sammen fra forslagene til Carmen, Sebastian og Idun · 22.11.2026 · ved avvik gjelder PRD-en</p>
+    <p>Satt sammen fra forslagene til Carmen, Sebastian og Idun · oppdatert 22.11.2026 etter gruppens UX-vedtak · ved avvik gjelder PRD-en</p>
   </div>
   <span class="status">UTKAST – IKKE VEDTATT</span>
 </header>
 
 <div class="rules">
+  <div class="rule"><span class="dot" style="background:var(--top)"></span><b>Avgjort av gruppen:</b>&nbsp;går foran alt</div>
   <div class="rule"><span class="dot" style="background:var(--brass-line)"></span><b>Valgt på forhånd:</b>&nbsp;React og SheetJS CE</div>
   <div class="rule"><span class="dot" style="background:var(--green)"></span><b>To av tre er like:</b>&nbsp;det valget gjelder</div>
   <div class="rule"><span class="dot" style="background:var(--amber)"></span><b>Alle tre ulike:</b>&nbsp;gruppen avgjør</div>
@@ -100,7 +114,7 @@
   <section class="tray">
     <h2><span class="n">1</span>Arkitekturen <small>– alt skjer i brukerens nettleser</small></h2>
     <div class="arch">
-      <div class="box"><b>UI</b>React-visninger, tastatur og fokus<div class="tech">Context + useReducer · én status-region</div></div>
+      <div class="box"><b>UI</b>Fire visninger, tastatur og fokus<div class="tech">Context + useReducer · én status-region</div></div>
       <div class="box"><b>Styring</b>Én kjøring i fast rekkefølge<div class="tech">les → valider → beregn → sammenlign → lagre</div></div>
       <div class="box"><b>Lagring</b>Ett utdrag per ferdigprodukt<div class="tech">localStorage · try/catch</div></div>
       <div class="box"><b>Excel-delen</b>Leser .xlsx og skriver eksport<div class="tech">SheetJS CE 0.20.3 · bare her</div></div>
@@ -120,7 +134,7 @@
       <div class="d"><div class="k">Planlagte mottak</div><div class="v">Hvert mottak for seg – sjekk mot fasit 04</div><div class="src"><span class="S">S</span><span class="I">I</span></div></div>
       <div class="d"><div class="k">Struktur og netting</div><div class="v">Én eier av stykklisten, én netting</div><div class="src"><span class="S">S</span><span class="I">I</span></div></div>
       <div class="d"><div class="k">Forklaring (FR-18)</div><div class="v">Utregning ligger ferdig i resultatet</div><div class="src"><span class="S">S</span><span class="I">I</span></div></div>
-      <div class="d"><div class="k">Navigasjon</div><div class="v">Samme adresse, ett pushState</div><div class="src"><span class="S">S</span><span class="I">I</span></div></div>
+      <div class="d"><div class="k">Navigasjon</div><div class="v">Samme adresse, pushState per visning</div><div class="src"><span class="S">S</span><span class="I">I</span></div></div>
       <div class="d"><div class="k">Web Worker</div><div class="v">Først hvis 1000 rader tar over 3 s</div><div class="src"><span class="C">C</span><span class="S">S</span></div></div>
       <div class="d"><div class="k">Sammenligning</div><div class="v">Varenummer + uke + type · fast rekkefølge</div><div class="src"><span class="S">S</span><span class="I">I</span></div></div>
       <div class="d"><div class="k">Tester</div><div class="v">Arkitekturtest + Playwright (test:e2e)</div><div class="src"><span class="C">C</span><span class="I">I</span></div></div>
@@ -132,8 +146,30 @@
 
   <!-- HØYRE: åpne spørsmål -->
   <div style="display:grid;gap:14px;align-content:start">
+    <section class="tray" style="background:var(--top);color:var(--top-ink)">
+      <h2 style="color:#fff"><span class="n" style="background:var(--brass);color:var(--top)">2</span>Avgjort av gruppen 22.11 <small style="color:var(--top-muted)">– ført inn i PRD-en og ordbanken</small></h2>
+      <div class="flowrow"><span class="lbl">Visninger</span>
+        <span class="vw">Introduksjon<em>første besøk</em></span><span class="ar">→</span>
+        <span class="vw">Ny kjøring<em>startsiden</em></span><span class="ar">→</span>
+        <span class="vw">Resultat</span><span class="ar">·</span>
+        <span class="vw">Lagrede kjøringer</span></div>
+      <div class="flowrow"><span class="lbl">Resultatet</span>
+        <span class="sec">Tallbokser</span><span class="ar">→</span>
+        <span class="sec hi">Kritiske deler</span><span class="ar">→</span>
+        <span class="sec">Bestillingsforslag</span><span class="ar">→</span>
+        <span class="sec">Endringer</span><span class="ar">→</span>
+        <span class="sec">Resultattabell</span><span class="ar">→</span>
+        <span class="sec">Kapasitet</span></div>
+      <div class="facts">
+        <span>✓ Kritiske deler før bestillingsforslag</span>
+        <span>✓ Filter «Vis bare kritiske deler»</span>
+        <span>✓ Ingen ukeplan</span>
+        <span>✓ Ny nøkkel: cosi-mrp:intro-sett</span>
+      </div>
+    </section>
+
     <section class="tray">
-      <h2><span class="n">2</span>Gruppen må avgjøre <small>– alle tre er ulike</small></h2>
+      <h2><span class="n">3</span>Gruppen må avgjøre <small>– alle tre er ulike</small></h2>
       <table>
         <thead><tr><th></th><th>Spørsmål og alternativer</th></tr></thead>
         <tbody>
@@ -148,13 +184,13 @@
         </tbody>
       </table>
       <div class="two">
-        <div class="mini"><b>G-5 Resultatsiden</b>Rekkefølge, ukeplan og intro (U5, U6, U14). Må avgjøres før UI-et bygges.</div>
+        <div class="mini new"><b>G-7 Navigasjon med fire visninger <span class="pill-new">NY</span></b>Flertallet valgte samme adresse da appen hadde to visninger. Med fire kan Carmens <code>#/resultat</code> passe bedre.</div>
         <div class="mini"><b>G-6 Hvem bygger hva</b>Fordeling av arbeidet og hvem tester i Excel for Windows og Mac.</div>
       </div>
     </section>
 
     <section class="tray">
-      <h2><span class="n">3</span>Ja eller nei? <small>– bare ett forslag tar stilling</small></h2>
+      <h2><span class="n">4</span>Ja eller nei? <small>– bare ett forslag tar stilling</small></h2>
       <div class="list">
         <div class="e"><span class="box2"></span>E-1 Heltall lagret som tekst («7») godtas som 7<b>C</b></div>
         <div class="e"><span class="box2"></span>E-2 Én koordinator eier typer.ts<b>C</b></div>
@@ -162,7 +198,7 @@
         <div class="e"><span class="box2"></span>E-4 Eksakte versjoner i package.json<b>C</b></div>
         <div class="e"><span class="box2"></span>E-5 React-feilgrense med norsk reservemelding<b>C</b></div>
         <div class="e"><span class="box2"></span>E-6 Full, streng CSP med test<b>C</b></div>
-        <div class="e"><span class="box2"></span>E-7 «Statuslinje» i koden, aldri «Sammendrag»<b>S</b></div>
+        <div class="e done"><span class="box2">✓</span><span><s>E-7 «Statuslinje» i koden</s> · løst: ordbanken sier «Tallboks»</span><b>S</b></div>
       </div>
     </section>
   </div>

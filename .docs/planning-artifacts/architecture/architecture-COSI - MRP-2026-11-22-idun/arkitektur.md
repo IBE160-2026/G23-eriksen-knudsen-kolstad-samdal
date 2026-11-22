@@ -7,7 +7,7 @@ created: '2026-11-22'
 updated: '2026-11-22'
 binds: [FR-1–FR-34, NFR-1–NFR-11]
 sources:
-  - '.docs/planning-artifacts/prds/prd-COSI - MRP-2026-10-19/prd.md (final, 13.11)'
+  - '.docs/planning-artifacts/prds/prd-COSI - MRP-2026-10-19/prd.md (final, oppdatert 22.11)'
   - '.docs/planning-artifacts/prds/prd-COSI - MRP-2026-10-19/addendum.md (Innspill til arkitekturen)'
   - '.docs/planning-artifacts/prds/prd-COSI - MRP-2026-10-19/beslutninger-2026-11-05.md, -09.md, -13.md'
   - '.docs/planning-artifacts/ux-designs/ux-COSI - MRP-2026-11-13/EXPERIENCE.md og DESIGN.md'
@@ -18,7 +18,9 @@ sources:
 
 # Arkitekturforslag for COSI - MRP
 
-**Forslag fra Idun, ikke vedtatt av gruppen.** Dokumentet bygger på PRD-en (final 13.11), addendumet, UX-dokumentene og testdataene. Ved avvik gjelder PRD-en.
+**Forslag fra Idun, ikke vedtatt av gruppen.** Dokumentet bygger på PRD-en (final, oppdatert 22.11), addendumet, ordbanken, UX-dokumentene og testdataene. Ved avvik gjelder PRD-en.
+
+**Oppdatert 22.11 etter UX-avklaringene gruppen godkjente samme dag** (PRD §4.4, FR-16, FR-27 og ordbanken): kritiske deler står først i resultatet, appen har en introduksjonsside ved første besøk og fire menyvalg, resultattabellen har filteret «Vis bare kritiske deler», og ukeplanen er fjernet. Endret i AB-10, AB-14, AB-15 og kapittel 11.
 
 ## 1. Sammendrag
 
@@ -181,6 +183,8 @@ De viktigste typene:
   - Selv med 1000 deler og forslag i alle 12 uker blir utdraget noen hundre kB. Det gir plass til mange ferdigprodukter innenfor grensen på cirka 5 MB.
   - Er lagringen blokkert eller full, vises kjøringen som vanlig med meldingen om at den ikke er lagret. En lagret kjøring med ukjent `schemaVersjon` regnes som om den ikke finnes.
   - Sletting (FR-21) fjerner nøkkelen. En kjøring med bare produksjonskapasitet lagres ikke (FR-30).
+  - Siden «Lagrede kjøringer» lager listen ved å gå gjennom nøklene med prefikset `cosi-mrp:kjoring:`. Det finnes ingen egen indeks som kan komme i utakt.
+  - Den eneste andre nøkkelen er `cosi-mrp:intro-sett` (sann eller usann). Den sier om introduksjonssiden er vist i denne nettleseren (FR-27). Er lagringen blokkert, vises introduksjonssiden ved hvert besøk. Det er greit, fordi den alltid har en knapp videre til startsiden.
 - **Hvorfor ikke IndexedDB:** Utdraget er lite, og `localStorage` er enklere å bruke og å teste. Hele lagringen ligger i én fil, så et bytte senere endrer bare den.
 
 ### AB-11: Sammenligning i domenet
@@ -219,12 +223,14 @@ De viktigste typene:
 
 ### AB-14: Tilstand og navigasjon uten ruter
 
-- **Gjelder:** FR-1, FR-27, FR-30, EXPERIENCE › Adresse og historikk
+- **Gjelder:** FR-1, FR-19–FR-21, FR-27, FR-30, EXPERIENCE › Adresse og historikk
 - **Hindrer:** at hver visning har sin egen kopi av kjøringen, og at adressen og tilstanden går i utakt.
 - **Regel:**
-  - Tilstanden ligger i én React-kontekst med `useReducer`: hvilken visning som vises (startside eller resultatside), den viste kjøringen og statusmeldinger. Det brukes ikke noe eget tilstandsbibliotek eller ruter.
-  - Startsiden og resultatsiden har samme adresse. Når resultatet vises, legges ett historikkpunkt inn med `history.pushState`, så Tilbake går til startsiden. Reload gir alltid startsiden.
-  - Resultatet og filen finnes bare i minnet.
+  - Appen har fire visninger, med menyvalgene fra ordbanken: **Introduksjon** (introduksjonssiden), **Ny kjøring** (startsiden), **Resultat** og **Lagrede kjøringer** (FR-27, endret 22.11).
+  - Tilstanden ligger i én React-kontekst med `useReducer`: visningen, den viste kjøringen og statusmeldinger. Det brukes ikke noe eget tilstandsbibliotek eller ruter.
+  - Første besøk i en nettleser viser Introduksjon. Senere besøk og reload viser Ny kjøring. Det avgjøres av nøkkelen `cosi-mrp:intro-sett` (AB-10).
+  - Alle visningene har samme adresse. Hvert bytte av visning legger inn ett historikkpunkt med `history.pushState`, med visningen i `state`, så Tilbake og Frem i nettleseren går mellom visningene.
+  - Resultatet og filen finnes bare i minnet. Åpnes Resultat uten en kjøring i minnet, for eksempel etter reload, viser visningen en kort melding med lenke til Ny kjøring.
   - Én `role="status"`-region ligger i rotkomponenten og byttes aldri ut når visningen endres.
 
 ### AB-15: Resultattabell og ytelse
@@ -233,7 +239,8 @@ De viktigste typene:
 - **Hindrer:** en tabell som blir treg med 1000 deler, og tilgjengelighet som forsvinner ved optimalisering.
 - **Regel:**
   - Resultattabell er én `<table>` med én `<tbody>` per del, slik EXPERIENCE.md beskriver. Hver del er en egen React-komponent med `React.memo`, så bare delen som endres, tegnes på nytt når en celle velges.
-  - Valgt celle og tastaturfokus styres i tabellkomponenten, ikke i den globale tilstanden.
+  - Valgt celle, tastaturfokus og filteret «Vis bare kritiske deler» (FR-16, nytt 22.11) styres i visningen, ikke i den globale tilstanden. Filteret skjuler bare deler på skjermen. Det endrer ikke `Resultat` og ikke eksporten.
+  - Resultatet vises i denne rekkefølgen (PRD §4.4 og ordbanken, endret 22.11): tallboksene, kritiske deler, bestillingsforslag, endringer (når de finnes), resultattabellen og produksjonskapasiteten (når den er valgt). Uten kritiske deler vises bare en kort melding (FR-16). Det er ingen ukeplan.
   - Ytelsen måles tidlig med en fil på 1000 rader. Nås ikke 3 sekunder, prøves tiltakene i EXPERIENCE.md i rekkefølge: `content-visibility: auto`, så virtualisering, så sammenslått visning.
 
 ### AB-16: Excel inn og ut
@@ -315,7 +322,8 @@ TypeScript 7 er ny. Viser det seg at et verktøy ikke støtter den, brukes siste
     lagring/     lagrede-kjoringer.ts (eneste bruk av localStorage)
     worker/      beregning.worker.ts
     app/         kjoring.ts (rekkefølgen i AB-13), tilstand.tsx (kontekst og reducer)
-    ui/          startside/, resultatside/, resultattabell/, forklaringspanel/,
+    ui/          introduksjon/, ny-kjoring/, resultat/, lagrede-kjoringer/,
+                 resultattabell/, forklaringspanel/,
                  kapasitet/, felles/ (shadcn-komponenter)
     main.tsx
   public/        COSI-MRP-mal.xlsx, testeksempel-01.xlsx (kopiert fra testdata/ ved bygg)
@@ -334,12 +342,12 @@ TypeScript 7 er ny. Viser det seg at et verktøy ikke støtter den, brukes siste
 | FR-3–FR-4 kontroll av verdier, alle feil samlet | `domene/valider.ts`, `domene/struktur.ts`, `tekster/` | AB-5, AB-6, AB-9 |
 | FR-5–FR-8, FR-28 MRP-beregning | `domene/beregn.ts`, `domene/netting.ts` | AB-4, AB-6, AB-7 |
 | FR-9–FR-13, FR-29 eksepsjoner og kritiske deler | `domene/eksepsjoner.ts` | AB-7, AB-9 |
-| FR-14–FR-17 resultatsiden | `ui/resultatside/`, `ui/resultattabell/` | AB-8, AB-14, AB-15 |
+| FR-14–FR-17 resultatet, med filteret for kritiske deler | `ui/resultat/`, `ui/resultattabell/` | AB-8, AB-14, AB-15 |
 | FR-18 forklaringer | `domene/beregn.ts` (Utregning), `tekster/`, `ui/forklaringspanel/` | AB-8, AB-9 |
-| FR-19–FR-21 lagring og sammenligning | `domene/utdrag.ts`, `domene/sammenlign.ts`, `lagring/`, `app/kjoring.ts` | AB-10, AB-11, AB-13 |
+| FR-19–FR-21 lagring, sammenligning og Lagrede kjøringer | `domene/utdrag.ts`, `domene/sammenlign.ts`, `lagring/`, `app/kjoring.ts`, `ui/lagrede-kjoringer/` | AB-10, AB-11, AB-13, AB-14 |
 | FR-22–FR-23 eksport | `excel/eksport.ts` | AB-8, AB-11, AB-16 |
 | FR-24–FR-26 fast partistørrelse | innstilling i `domene/netting.ts` | AB-7 |
-| FR-27 veiledning og nedlasting | `ui/startside/`, `public/` | AB-18 |
+| FR-27 introduksjonsside, veiledning og nedlasting | `ui/introduksjon/`, `ui/ny-kjoring/`, `lagring/` (intro-nøkkelen), `public/` | AB-10, AB-14, AB-18 |
 | FR-30–FR-34 produksjonskapasitet | `domene/kapasitet.ts`, `ui/kapasitet/` | AB-7, AB-8, AB-13, AB-18 |
 | NFR-1 beregning skilt fra resten | `src/domene/` | AB-2 |
 | NFR-2 tester mot fasit | `tests/` | AB-17 |
@@ -364,9 +372,9 @@ Rekkefølgen følger trinnene i PRD §7.1, så trinn 1–3 kan være testet før
 | 3 | `domene/struktur.ts`, `netting.ts` og `beregn.ts` med fasittester for testeksempel 01–04 | 1 |
 | 4 | `domene/eksepsjoner.ts` med fasittester | 1 |
 | 5 | Worker, `app/kjoring.ts` og tilstanden | 1 |
-| 6 | Startsiden, resultatsiden og Resultattabell. Ytelsesmåling med 1000 rader | 1 |
+| 6 | Introduksjon, Ny kjøring, Resultat og Resultattabell med filteret «Vis bare kritiske deler». Ytelsesmåling med 1000 rader | 1 |
 | 7 | Forklaringspanelet | 2 |
-| 8 | Lagring, sammenligning og eksport | 3 |
+| 8 | Lagring, sammenligning, siden Lagrede kjøringer og eksport | 3 |
 | 9 | Produksjonskapasitet med fasittest for testeksempel 05 | 4 |
 | 10 | Fast partistørrelse | 5 |
 
@@ -395,4 +403,5 @@ Nr. 2–4 og nr. 6 kan gjøres samtidig av ulike personer når nr. 1 er flettet 
 1. **React eller et annet rammeverk.** Forslaget velger React fordi UX-dokumentene bygger på shadcn/ui. Velger gruppen noe annet, må EXPERIENCE.md endres.
 2. **Web Worker fra start.** Forslaget har worker-en med fra starten. Alternativet er å kjøre alt i hovedtråden og legge til worker-en bare hvis målingen krever det. Det er enklere, men statuslinja kan da fryse under beregningen.
 3. **Hvem bygger hva.** Fordelingen av nr. 2–10 i kapittel 8, og hvem som tester med Excel for Windows og for Mac.
-4. **Åpne UX-spørsmål som påvirker resultatsiden** (U5, U6 og U14 i avviksnotatet til prototype v3). Arkitekturen tåler alle utfallene, men UI-et må vite svaret før nr. 6.
+4. ~~**Åpne UX-spørsmål som påvirker resultatsiden** (U5, U6 og U14).~~ **Avgjort av gruppen 22.11** og ført inn i PRD-en: kritiske deler først, introduksjonsside ved første besøk, og ingen ukeplan. Arkitekturen er oppdatert i AB-10, AB-14 og AB-15.
+5. **Navigasjon med fire menyvalg.** Forslaget holder samme adresse for alle visningene (AB-14). Med fire menyvalg kan gruppen vurdere egne adresser per visning (for eksempel `#/resultat`), så en visning kan bokmerkes. EXPERIENCE.md må uansett oppdateres med de nye visningene.

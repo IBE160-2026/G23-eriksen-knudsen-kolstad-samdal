@@ -18,6 +18,8 @@ sources:
 
 **Utkast til gruppen, ikke vedtatt.** Arkitekturen er satt sammen fra de tre forslagene til Carmen, Sebastian og Idun. Ved avvik gjelder PRD-en.
 
+**Oppdatert 22.11 etter UX-avklaringene gruppen godkjente samme dag** (PRD §4.4, FR-16, FR-27 og ordbanken). Kritiske deler står først i resultatet, appen har en introduksjonsside og fire menyvalg, resultattabellen har filteret «Vis bare kritiske deler», og ukeplanen er fjernet. G-5 og E-7 er dermed avgjort (kapittel 8 og 9), og FA-10, FA-13 og FA-14 er utvidet.
+
 ## 1. Slik er dokumentet laget
 
 | Regel | Hva det betyr her |
@@ -26,6 +28,7 @@ sources:
 | **To av tre er like** | Det valget gjelder. Hver beslutning viser hvem valget kommer fra. |
 | **Alle tre er ulike** | Gruppen avgjør. Står i kapittel 8. |
 | **Bare ett forslag tar stilling** | Ikke tatt med. Står i kapittel 9, så gruppen kan si ja eller nei. |
+| **Avgjort av gruppen** | Gruppens vedtak i PRD-en og ordbanken går foran alle tre forslagene. |
 
 Merkingen bak hver beslutning: **Alle** = alle tre forslagene, **C** = Carmen, **S** = Sebastian, **I** = Idun.
 
@@ -46,7 +49,9 @@ Merkingen bak hver beslutning: **Alle** = alle tre forslagene, **C** = Carmen, *
 | Tester | Vitest (`npm test`) og noen Playwright-tester (`npm run test:e2e`) | Alle / C + I |
 | Publisering | Statisk på Vercel med CSP | Alle / C + I |
 | Navn i koden | ASCII: æ, ø og å skrives ae, o og a | C + I |
-| **Åpent** | UI-komponenter, hvor stykklisten slutter, mappestruktur, grenser for filstørrelse og tid, rekkefølgen på resultatsiden | Kapittel 8 |
+| Visninger | Introduksjon, Ny kjøring, Resultat og Lagrede kjøringer | Avgjort av gruppen 22.11 (PRD FR-27, ordbanken) |
+| Rekkefølgen i resultatet | Tallbokser, kritiske deler, bestillingsforslag, endringer, resultattabell, kapasitet. Ingen ukeplan | Avgjort av gruppen 22.11 (PRD §4.4) |
+| **Åpent** | UI-komponenter, hvor stykklisten slutter, mappestruktur, grenser for filstørrelse og tid | Kapittel 8 |
 
 ## 3. Oppbygging
 
@@ -171,6 +176,8 @@ Hver beslutning har nummer (FA-1 osv.), kravene den gjelder, og grunnlaget.
   - Utdraget har `schemaVersjon`, varenummer og navn på ferdigproduktet, tidspunkt, delene (varenummer, beskrivelse), bestillingsforslagene (varenummer, frigivelsesuke, mengde) og eksepsjonene (varenummer, uke, type). Excel-filen lagres aldri.
   - Er lagringen blokkert eller full, vises kjøringen som vanlig med en melding om at den ikke er lagret. Et utdrag med ukjent `schemaVersjon` regnes som om det ikke finnes.
   - Sletting (FR-21) fjerner nøkkelen. En kjøring med bare produksjonskapasitet lagres ikke (FR-30).
+  - Siden «Lagrede kjøringer» lager listen ved å gå gjennom nøklene med prefikset `cosi-mrp:kjoring:`. Det er ingen egen indeks (C + S).
+  - Den eneste andre nøkkelen er `cosi-mrp:intro-sett`, som sier om introduksjonssiden er vist i denne nettleseren (S, gjelder nå fordi gruppen valgte introduksjonsside 22.11). Er lagringen blokkert, vises introduksjonssiden ved hvert besøk.
 
 ### FA-11: Sammenligning i kjernen
 
@@ -195,25 +202,28 @@ Hver beslutning har nummer (FA-1 osv.), kravene den gjelder, og grunnlaget.
   6. Sammenlign med forrige utdrag (bare når bestillingsplanen er valgt).
   7. Lag én `Kjoring` med alt skjermen trenger.
   8. Lagre det nye utdraget (bare når bestillingsplanen er valgt og alt over gikk bra).
-  9. Gi `Kjoring` til tilstanden, så resultatsiden vises.
+  9. Gi `Kjoring` til tilstanden, så Resultat vises.
 
 ### FA-13: Tilstand og navigasjon
 
 - **Grunnlag:** Context og `useReducer`: C + I. Samme adresse og `pushState`: S + I.
-- **Gjelder:** FR-1, FR-27, FR-30, EXPERIENCE › Adresse og historikk
+- **Gjelder:** FR-1, FR-19–FR-21, FR-27, FR-30, EXPERIENCE › Adresse og historikk
 - **Regel:**
+  - Appen har fire visninger med menyvalgene fra ordbanken: **Introduksjon**, **Ny kjøring** (startsiden), **Resultat** og **Lagrede kjøringer** (PRD FR-27 og ordbanken, avgjort 22.11).
   - Felles tilstand ligger i React Context med `useReducer`: visningen, den viste kjøringen og statusmeldinger. Det brukes ikke noe tilstands- eller rutebibliotek.
-  - Startsiden og resultatsiden har samme adresse. Når resultatet vises, legges ett historikkpunkt inn med `history.pushState`, så Tilbake går til startsiden. Reload gir alltid startsiden.
-  - Resultatet og filen finnes bare i minnet.
+  - Første besøk i en nettleser viser Introduksjon. Senere besøk og reload viser Ny kjøring (FA-10, `cosi-mrp:intro-sett`).
+  - Alle visningene har samme adresse. Hvert bytte av visning legger inn ett historikkpunkt med `history.pushState`, med visningen i `state`, så Tilbake og Frem går mellom visningene.
+  - Resultatet og filen finnes bare i minnet. Åpnes Resultat uten en kjøring i minnet, for eksempel etter reload, vises en kort melding med lenke til Ny kjøring.
   - Én `role="status"`-region ligger i rotkomponenten og byttes aldri ut.
 
 ### FA-14: Resultattabell og ytelse
 
 - **Grunnlag:** memo per del og lokal tilstand: C + I. Tiltakene ved treghet: EXPERIENCE.md.
-- **Gjelder:** FR-14, FR-15, FR-18, NFR-5, NFR-8
+- **Gjelder:** FR-14–FR-18, NFR-5, NFR-8
 - **Regel:**
+  - Resultatet vises i denne rekkefølgen (PRD §4.4 og ordbanken, avgjort 22.11): tallboksene, kritiske deler, bestillingsforslag, endringer (når de finnes), resultattabellen og produksjonskapasiteten (når den er valgt). Uten kritiske deler vises bare en kort melding (FR-16). Det er ingen ukeplan.
   - Resultattabell er én semantisk `<table>` med én `<tbody>` per del. Hver del er memoisert, så bare delen som endres, tegnes på nytt.
-  - Valgt celle, ukefilter og åpent forklaringspanel er lokal tilstand i visningen, ikke felles tilstand.
+  - Valgt celle, ukefilter, filteret «Vis bare kritiske deler» (FR-16) og åpent forklaringspanel er lokal tilstand i visningen, ikke felles tilstand. Filteret skjuler bare deler på skjermen og endrer ikke `Resultat` eller eksporten.
   - Ytelsen måles tidlig med en fil på 1000 rader. Nås ikke 3 sekunder, prøves først Web Worker for lesing og beregning (C + S), deretter tiltakene i EXPERIENCE.md: `content-visibility: auto`, virtualisering, sammenslått visning.
 
 ### FA-15: Excel inn og ut med SheetJS
@@ -296,9 +306,9 @@ Rekkefølgen følger PRD §7.1, så trinn 1–3 kan være testet før kuttbeslut
 | 3 | Struktur, netting og beregning, med fasittester for testeksempel 01–04 | 1 |
 | 4 | Eksepsjoner, med fasittester | 1 |
 | 5 | Styringen og tilstanden | 1 |
-| 6 | Startsiden, resultatsiden og Resultattabell. Ytelsesmåling med 1000 rader | 1 |
+| 6 | Introduksjon, Ny kjøring, Resultat og Resultattabell med filteret «Vis bare kritiske deler». Ytelsesmåling med 1000 rader | 1 |
 | 7 | Forklaringspanelet | 2 |
-| 8 | Lagring, sammenligning og eksport | 3 |
+| 8 | Lagring, sammenligning, siden Lagrede kjøringer og eksport | 3 |
 | 9 | Produksjonskapasitet, med fasittest for testeksempel 05 | 4 |
 | 10 | Fast partistørrelse | 5 |
 
@@ -317,8 +327,14 @@ Når nr. 1 er flettet inn, kan nr. 2–4 og nr. 6 gjøres samtidig. UI-et kan by
 
 | Nr. | Spørsmål | Merknad |
 |---|---|---|
-| G-5 | Rekkefølgen på resultatsiden, ukeplan og introduksjonsside (U5, U6, U14) | Carmen og Idun lar gruppen avgjøre. Sebastian låser PRD-rekkefølgen uten ukeplan. Arkitekturen tåler alle utfallene, men UI-et må vite svaret før nr. 6. |
+| ~~G-5~~ | ~~Rekkefølgen på resultatsiden, ukeplan og introduksjonsside (U5, U6, U14)~~ | **Avgjort av gruppen 22.11** og ført inn i PRD-en: kritiske deler først, introduksjonsside ved første besøk, ingen ukeplan. Se FA-13 og FA-14. |
 | G-6 | Hvem bygger hva | Fordelingen av nr. 2–10 i kapittel 7, og hvem som tester med Excel for Windows og for Mac (NFR-11) |
+
+**Bør vurderes på nytt etter 22.11:**
+
+| Nr. | Spørsmål | Merknad |
+|---|---|---|
+| G-7 | Navigasjon med fire menyvalg | FA-13 følger flertallet (S + I): samme adresse for alle visningene. Da Sebastian og Idun skrev forslagene sine, hadde appen bare to visninger. Med fire menyvalg kan Carmens hash-adresser (`#/resultat` osv.) passe bedre, fordi en visning da kan bokmerkes. EXPERIENCE.md må uansett oppdateres med de nye visningene. |
 
 ## 9. Bare ett forslag tar stilling (gruppen sier ja eller nei)
 
@@ -332,7 +348,7 @@ De andre forslagene sier ingenting om disse punktene. De er derfor ikke tatt med
 | E-4 | Eksakte versjoner i `package.json` (uten `^` og `~`), sjekket av en test | C | |
 | E-5 | React-feilgrense rundt visningene med en norsk reservemelding | C | Fanger feil under tegning, som `try/catch` i styringen ikke fanger |
 | E-6 | Full CSP: `default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; worker-src 'self' blob:; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'; frame-ancestors 'none'`, med en test for at den er lik i `vercel.json` og `vite preview` | C | Strengere enn minstekravet i FA-17 |
-| E-7 | Elementet øverst på resultatsiden heter `Statuslinje` i koden, aldri «Sammendrag», som er FR-16 | S | Ordbanken |
+| ~~E-7~~ | ~~Elementet øverst på resultatsiden heter `Statuslinje` i koden, aldri «Sammendrag»~~ | S | **Løst av ordbanken 22.11:** boksene øverst heter «Tallboks» (i koden `Tallboks`), og «sammendrag» er sammendraget av kritiske deler (FR-16). Raden med knapper heter «Seksjonsmeny». |
 
 ## 10. Utsatt
 
