@@ -353,3 +353,24 @@ Oda valgte «Kritiske deler» for U3 og ba om at de relevante dokumentene ble op
 
 ### Åpne punkter
 - U3 («Kritiske deler») er Odas valg og må godkjennes av gruppen.
+
+## 2026-11-22 kl. 20:00 — Odawol
+
+### Oppgave
+Oda ba om at ordene fra U8 legges inn i ordbanken.
+
+### Plan
+- Satte hvert ord i riktig tabell i ordbanken og la inn synonymer under «Ikke bruk». Ord fra PRD-en ble merket med kravet. Nye UX-ord ble merket «Forslag fra Oda 22.11».
+- Søkte etter ord i kopiene som nå står under «Ikke bruk», og fant «resultatside» i EXPERIENCE.md og DESIGN.md.
+
+### Resultat
+- `ordbank.md` i arbeidsmappen:
+  - Frigivelsesuke (Beregning, FR-17)
+  - Bestillingsplan (App og test, FR-30)
+  - Resultat og Lagret kjøring (App og test, som forslag)
+  - Introduksjonsside, Startside, Tallboks og Seksjonsmeny var lagt inn tidligere i dag
+- `ux-carmen/EXPERIENCE.md` og `ux-carmen/DESIGN.md`: «Resultatside» og «resultatsiden» er byttet til «Resultat» og «siden Resultat». Filnavnene i lenkene er ikke endret.
+- `prototype/index.html` (U8 avklart), `README.md` og `prototype/avvik-mot-prd.md` er oppdatert.
+
+### Åpne punkter
+- U8 (de nye ordene i ordbanken) er Odas valg og må godkjennes av gruppen.
