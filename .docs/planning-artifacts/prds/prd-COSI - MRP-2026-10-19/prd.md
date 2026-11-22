@@ -153,9 +153,11 @@ Appen kontrollerer at filen har arkene Stykkliste, MPS og Planlagte mottak, med 
 
 Appen kontrollerer hver verdi etter disse reglene. Gjelder UJ-4.
 
+**Heltall lagret som tekst** (avgjort av gruppen 22.11). Der regelen sier «heltall», godtas et tall som er et heltall, og en tekst som etter trimming bare er et valgfritt minustegn og sifre, for eksempel «7» eller «007». Alt annet gir valideringsfeil, også desimaltall (1,5 eller «30,5»), ord («fem»), tusenskilletegn («1 000»), plusstegn og tekst som «ca. 40». Etter tolkningen gjelder grensene i tabellen som vanlig. Varenummer tolkes aldri som tall (NFR-11).
+
 | Ark | Felt | Regel |
 |---|---|---|
-| Stykkliste | Rader | Fra rad 2 og sammenhengende nedover, inntil 1000 rader. Minst én rad med nivå .1. |
+| Stykkliste | Rader | Fra rad 2 og sammenhengende nedover, inntil 1000 rader. Minst én rad med nivå .1. Stykklisten slutter ved første rad der både Nivå og Varenummer er tomme. Står det noe i malens kolonner under den raden, er det én feil på den tomme raden, og radene under leses ikke (avgjort av gruppen 22.11). |
 | Stykkliste | Nivå | 0, .1 eller ..2. Første rad er 0, og ingen andre rader er 0. Nivå ..2 står rett under .1 eller ..2. |
 | Stykkliste | Varenummer | Fylt ut. En del kan ikke stå under seg selv (samme varenummer som en overordnet del). |
 | Stykkliste | Beskrivelse | Fylt ut. Lik for alle rader med samme varenummer. |
@@ -178,6 +180,9 @@ Appen kontrollerer hver verdi etter disse reglene. Gjelder UJ-4.
 - En del som produseres selv og står to ganger, med de samme underdelene under begge forekomstene, er gyldig, og underdelene får samme bruttobehov som om de bare sto én gang.
 - Den samme delen med underdeler under bare én av forekomstene, den første eller en senere, er gyldig og gir samme resultat.
 - Står det et annet antall eller en annen underdel under andre forekomst, gir det én valideringsfeil som nevner varenummeret og begge radene.
+- `testdata/validering/V-S01.xlsx` (tom rad midt i stykklisten) gir nøyaktig én valideringsfeil, på rad 9.
+- Formlene i hjelpekolonnene og de tomme, formaterte radene i malen ned til rad 1001 regnes ikke som innhold under stykklisten.
+- Antall «7» lagret som tekst gir samme resultat som tallet 7. «fem» (V-S16), «tretti» (V-M04), 1,5 (V-S15) og 30,5 (V-M05) gir fortsatt hver sin valideringsfeil.
 
 #### FR-4: Vis alle valideringsfeil samlet
 
