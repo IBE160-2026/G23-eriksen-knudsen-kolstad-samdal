@@ -28,7 +28,7 @@ sources:
 - **Data:** alt skjer i brukerens nettleser. Ingen innlogging og ingen server for data (NFR-4). Filen forlater aldri maskinen. Siste vellykkede kjøring per ferdigprodukt lagres lokalt (FR-19, NFR-10). Ingen analyse eller måling fra tredjepart i v1.
 - **Omfang:** kjernen er trinn 1–3 i PRD §7.1. Produksjonskapasiteten (trinn 4) kuttes først, så resten av opplevelsen avhenger ikke av den. Skjermene for trinn 1–2 (resultattabellen, eksepsjonene, bestillingsforslagene og forklaringspanelet) må være klare før prøvetesten rundt 27. november.
 - **Språk:** all tekst på norsk bokmål, samlet slik at engelsk kan legges til (NFR-7). Begrepene følger ordbanken ordrett.
-- **UI-system:** ikke valgt. Avgjøres i arkitekturen. `[ASSUMPTION]` Sebastian foreslår shadcn/ui og Tailwind, med Radix for tastatur og ARIA, til alt utenom resultattabellen og forklaringspanelet, som bygges selv. Velges et bibliotek, gjelder DESIGN.md som lag oppå det, og dette dokumentet beskriver bare avvikene fra bibliotekets oppførsel.
+- **UI-system:** vanlig HTML og CSS fra UX-prototypen v3, skrevet om til React-komponenter, uten komponentbibliotek (ikke shadcn/ui, Radix eller Tailwind). Avgjort i arkitekturen 22.11 (AD-1). Dialoger, nedtrekkslister og radioknapper er vanlig HTML, med tastatur- og fokusoppførselen i dette dokumentet. Tokenene i DESIGN.md blir CSS-variabler.
 - **Visuell identitet:** [DESIGN.md](DESIGN.md). Visuell referanse: [prototypen v4](https://github.com/IBE160-2026/G23-eriksen-knudsen-kolstad-samdal/blob/Oda/Branch/.docs/planning-artifacts/ux-designs/ux-avklaringer-2026-11-22/prototype/index.html) (på `Oda/Branch`, last ned og åpne lokalt).
 
 ## Information Architecture
@@ -425,14 +425,14 @@ Utsatt fra v1. Gjenopptas bare ved behov.
 
 Bare spørsmål 1 og 2 må avgjøres snart. Ingen av spørsmålene stopper arkitekturen eller epics (PRD §9).
 
-Besluttet 22.11 og ikke lenger åpent: rekkefølgen (U14), én lang side (U1), ukefilteret starter på «Alle uker» (U4), ingen ukeplan (U5), introduksjonsside og startside (U6), lys og mørk (U7), ordene (U3, U8), Endringer etter bestillingsforslagene (U9), filteret for kritiske deler (U10), valg av beregning (U11), eksepsjonsmarkøren (U12), meldingene (U2, U13), tallboksene og seksjonsmenyen.
+Besluttet 22.11 og ikke lenger åpent: rekkefølgen (U14), én lang side (U1), ukefilteret starter på «Alle uker» (U4), ingen ukeplan (U5), introduksjonsside og startside (U6), lys og mørk (U7), ordene (U3, U8), Endringer etter bestillingsforslagene (U9), filteret for kritiske deler (U10), valg av beregning (U11), eksepsjonsmarkøren (U12), meldingene (U2, U13), tallboksene og seksjonsmenyen. Spørsmål 3 og 7 er avgjort i arkitekturen 22.11 (se tabellen).
 
 | # | Spørsmål | Forslag i dette utkastet | Frist | Ansvarlig | Kilde |
 |---|---|---|---|---|---|
 | 1 | Introduksjonen til brukertesten (PRD §9 nr. 4) | Sebastians tekst, tilpasset (se Brukertest). Den er kort, som gruppen bestemte 9.11 | **Før prøvetesten, rundt 27.11** | Gruppen | PRD §9 nr. 4 |
 | 2 | Prøvetest med et gruppemedlem (PRD §8.1) eller en person utenfor gruppen? | Følg PRD-en, eller endre §8.1 hvis gruppen vil ha en utenfor gruppen | **Før prøvetesten, rundt 27.11** | Gruppen | Sebastian mot PRD §8.1 |
-| 3 | Skriften: selvhostet (NFR-4) eller fra Google Fonts som i prototypen? | Selvhostet i appen. Prototypen kan beholde Google Fonts | Når appen bygges | Arkitekturen | DESIGN.md, Sebastian |
+| ~~3~~ | ~~Skriften: selvhostet (NFR-4) eller fra Google Fonts som i prototypen?~~ | **Avgjort i arkitekturen 22.11 (AD-1):** IBM Plex Sans, IBM Plex Sans Condensed og IBM Plex Mono selvhostes i appen via `@fontsource`. Prototypen kan beholde Google Fonts | Lukket | Arkitekturen | DESIGN.md, Sebastian |
 | 4 | Endelig ordlyd i meldingene (FR-13) | Tekstene over prøves i prøvetesten og språkvaskes etterpå | Etter prøvetesten | Gruppen | Sebastian, fasitene |
 | 5 | Diskret tegn i cellen for fremskyndet mottak og mottak med forfalt frigivelse | Prøves mot SM-C3 i prøvetesten | Etter prøvetesten eller brukertesten | Gruppen | Sebastian |
 | 6 | Ytelse ved 1000 rader | Mål først, så tiltakene i rekkefølge | Tidlig i utviklingen, før tabellstrukturen låses | Den som bygger | NFR-5 |
-| 7 | UI-bibliotek (shadcn/ui eller annet) | Avgjøres i arkitekturen | I arkitekturen | Arkitekturen | Sebastian, arkitektur |
+| ~~7~~ | ~~UI-bibliotek (shadcn/ui eller annet)~~ | **Avgjort i arkitekturen 22.11 (AD-1):** ingen komponentbibliotek. Vanlig HTML og CSS fra UX-prototypen v3, skrevet om til React-komponenter | Lukket | Arkitekturen | Sebastian, arkitektur |
