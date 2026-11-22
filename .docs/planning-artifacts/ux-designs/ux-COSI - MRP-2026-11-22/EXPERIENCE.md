@@ -1,6 +1,6 @@
 ---
 name: COSI - MRP
-status: utkast – sammenslått 22.11, må godkjennes av gruppen
+status: gjeldende – lagt på main 22.11 etter Odas godkjenning, med åpne spørsmål nederst i EXPERIENCE.md
 authors:
   - Carmen Kolstad (grunnlaget, 12.11)
   - Sebastian (resultattabell, tekster, tilgjengelighet og brukertest, 13.11)
@@ -11,8 +11,8 @@ sources:
   - ../../prds/prd-COSI - MRP-2026-10-19/prd.md
   - ../../prds/prd-COSI - MRP-2026-10-19/addendum.md
   - ../../../ordbank.md
-  - ../ux-avklaringer-2026-11-22/README.md (avklaringene U1–U14, V3-a og V3-b, godkjent av gruppen 22.11)
-  - ../ux-avklaringer-2026-11-22/prototype/index.html (prototypen v4)
+  - Oda/Branch: ux-designs/ux-avklaringer-2026-11-22/README.md (avklaringene U1–U14, V3-a og V3-b, godkjent av gruppen 22.11)
+  - Oda/Branch: ux-designs/ux-avklaringer-2026-11-22/prototype/index.html (prototypen v4)
   - Carmens EXPERIENCE.md 12.11 (Carmen/Branch, ux/ux-COSI - MRP-2026-11-12/)
   - Sebastians EXPERIENCE.md 14.11 (Sebastian/Branch, ux-designs/ux-COSI - MRP-2026-11-13/)
   - DESIGN.md
@@ -20,7 +20,7 @@ sources:
 
 # COSI - MRP – Experience
 
-> **Utkast – sammenslått 22.11, må godkjennes av gruppen.** Dette dokumentet slår sammen Carmens og Sebastians EXPERIENCE.md med avklaringene fra prototypene v1–v4. Hva som kommer fra hvem, og hvordan motstridende forslag er løst, står i [kilder.md](kilder.md). Visuelle valg står i [DESIGN.md](DESIGN.md), og tokennavn som `{colors.accent}` viser dit. Krav og begreper står i PRD-en og ordbanken og gjentas ikke her. PRD-en går foran alt. Dette dokumentet og DESIGN.md går foran prototypen ved avvik. `[ASSUMPTION]` markerer det gruppen ikke har bestemt. Se [Åpne designbeslutninger](#åpne-designbeslutninger) nederst.
+> **Gjeldende UX-dokument, lagt på `main` 22.11.** Spørsmålene som fortsatt er åpne, står nederst i EXPERIENCE.md. Dette dokumentet slår sammen Carmens og Sebastians EXPERIENCE.md med avklaringene fra prototypene v1–v4. Hva som kommer fra hvem, og hvordan motstridende forslag er løst, står i [kilder.md](kilder.md). Visuelle valg står i [DESIGN.md](DESIGN.md), og tokennavn som `{colors.accent}` viser dit. Krav og begreper står i PRD-en og ordbanken og gjentas ikke her. PRD-en går foran alt. Dette dokumentet og DESIGN.md går foran prototypen ved avvik. `[ASSUMPTION]` markerer det gruppen ikke har bestemt. Se [Åpne designbeslutninger](#åpne-designbeslutninger) nederst.
 
 ## Foundation
 
@@ -29,7 +29,7 @@ sources:
 - **Omfang:** kjernen er trinn 1–3 i PRD §7.1. Produksjonskapasiteten (trinn 4) kuttes først, så resten av opplevelsen avhenger ikke av den. Skjermene for trinn 1–2 (resultattabellen, eksepsjonene, bestillingsforslagene og forklaringspanelet) må være klare før prøvetesten rundt 27. november.
 - **Språk:** all tekst på norsk bokmål, samlet slik at engelsk kan legges til (NFR-7). Begrepene følger ordbanken ordrett.
 - **UI-system:** ikke valgt. Avgjøres i arkitekturen. `[ASSUMPTION]` Sebastian foreslår shadcn/ui og Tailwind, med Radix for tastatur og ARIA, til alt utenom resultattabellen og forklaringspanelet, som bygges selv. Velges et bibliotek, gjelder DESIGN.md som lag oppå det, og dette dokumentet beskriver bare avvikene fra bibliotekets oppførsel.
-- **Visuell identitet:** [DESIGN.md](DESIGN.md). Visuell referanse: [prototypen v4](../ux-avklaringer-2026-11-22/prototype/index.html).
+- **Visuell identitet:** [DESIGN.md](DESIGN.md). Visuell referanse: [prototypen v4](https://github.com/IBE160-2026/G23-eriksen-knudsen-kolstad-samdal/blob/Oda/Branch/.docs/planning-artifacts/ux-designs/ux-avklaringer-2026-11-22/prototype/index.html) (på `Oda/Branch`, last ned og åpne lokalt).
 
 ## Information Architecture
 
@@ -423,14 +423,16 @@ Utsatt fra v1. Gjenopptas bare ved behov.
 
 ## Åpne designbeslutninger
 
+Bare spørsmål 1 og 2 må avgjøres snart. Ingen av spørsmålene stopper arkitekturen eller epics (PRD §9).
+
 Besluttet 22.11 og ikke lenger åpent: rekkefølgen (U14), én lang side (U1), ukefilteret starter på «Alle uker» (U4), ingen ukeplan (U5), introduksjonsside og startside (U6), lys og mørk (U7), ordene (U3, U8), Endringer etter bestillingsforslagene (U9), filteret for kritiske deler (U10), valg av beregning (U11), eksepsjonsmarkøren (U12), meldingene (U2, U13), tallboksene og seksjonsmenyen.
 
-| # | Spørsmål | Forslag i dette utkastet | Kilde |
-|---|---|---|---|
-| 1 | Introduksjonen til brukertesten (PRD §9 nr. 4) | Sebastians tekst, tilpasset (se Brukertest) | PRD §9 nr. 4 |
-| 2 | Prøvetest med et gruppemedlem (PRD §8.1) eller en person utenfor gruppen? | Følg PRD-en, eller endre §8.1 hvis gruppen vil ha en utenfor gruppen | Sebastian mot PRD §8.1 |
-| 3 | Skriften: selvhostet (NFR-4) eller fra Google Fonts som i prototypen? | Selvhostet i appen. Prototypen kan beholde Google Fonts | DESIGN.md, Sebastian |
-| 4 | Endelig ordlyd i meldingene (FR-13) | Tekstene over prøves i prøvetesten og språkvaskes etterpå | Sebastian, fasitene |
-| 5 | Diskret tegn i cellen for fremskyndet mottak og mottak med forfalt frigivelse | Prøves mot SM-C3 i prøvetesten | Sebastian |
-| 6 | Ytelse ved 1000 rader | Mål først, så tiltakene i rekkefølge | NFR-5 |
-| 7 | UI-bibliotek (shadcn/ui eller annet) | Avgjøres i arkitekturen | Sebastian, arkitektur |
+| # | Spørsmål | Forslag i dette utkastet | Frist | Ansvarlig | Kilde |
+|---|---|---|---|---|---|
+| 1 | Introduksjonen til brukertesten (PRD §9 nr. 4) | Sebastians tekst, tilpasset (se Brukertest). Den er kort, som gruppen bestemte 9.11 | **Før prøvetesten, rundt 27.11** | Gruppen | PRD §9 nr. 4 |
+| 2 | Prøvetest med et gruppemedlem (PRD §8.1) eller en person utenfor gruppen? | Følg PRD-en, eller endre §8.1 hvis gruppen vil ha en utenfor gruppen | **Før prøvetesten, rundt 27.11** | Gruppen | Sebastian mot PRD §8.1 |
+| 3 | Skriften: selvhostet (NFR-4) eller fra Google Fonts som i prototypen? | Selvhostet i appen. Prototypen kan beholde Google Fonts | Når appen bygges | Arkitekturen | DESIGN.md, Sebastian |
+| 4 | Endelig ordlyd i meldingene (FR-13) | Tekstene over prøves i prøvetesten og språkvaskes etterpå | Etter prøvetesten | Gruppen | Sebastian, fasitene |
+| 5 | Diskret tegn i cellen for fremskyndet mottak og mottak med forfalt frigivelse | Prøves mot SM-C3 i prøvetesten | Etter prøvetesten eller brukertesten | Gruppen | Sebastian |
+| 6 | Ytelse ved 1000 rader | Mål først, så tiltakene i rekkefølge | Tidlig i utviklingen, før tabellstrukturen låses | Den som bygger | NFR-5 |
+| 7 | UI-bibliotek (shadcn/ui eller annet) | Avgjøres i arkitekturen | I arkitekturen | Arkitekturen | Sebastian, arkitektur |

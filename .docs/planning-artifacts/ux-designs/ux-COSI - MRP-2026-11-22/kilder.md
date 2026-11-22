@@ -1,6 +1,6 @@
 # Kilder og sammenslåing 22.11.2026
 
-Denne mappen har den sammenslåtte UX-en for COSI - MRP: [EXPERIENCE.md](EXPERIENCE.md) og [DESIGN.md](DESIGN.md). Den er laget for å kunne gå til `main` som gruppens felles UX-dokumenter. **Status:** utkast, må godkjennes av gruppen. Avklaringene fra 22.11 er godkjent. Det som må godkjennes nå, er selve sammenslåingen.
+Denne mappen har den sammenslåtte UX-en for COSI - MRP: [EXPERIENCE.md](EXPERIENCE.md) og [DESIGN.md](DESIGN.md). Dette er gruppens felles UX-dokumenter. **Status:** lagt på `main` 22.11 etter Odas godkjenning. Avklaringene fra 22.11 var godkjent av gruppen fra før.
 
 ## Kildene
 
@@ -54,10 +54,10 @@ Prototypene tok allerede inn noen av Sebastians momenter: faste venstrekolonner,
 
 ## Ordbanken
 
-Disse ordene fra dokumentene er lagt inn i `.docs/ordbank.md` som forslag: Appmeny, Kjøringslinje, Opplastingssone, Feiloppsummering, Delens felt, Eksepsjonsmerke, Forklaringspanel, Ukefilter og Statusmelding. Ordene fra 22.11 (Tallboks, Seksjonsmeny, Introduksjonsside, Startside, Resultat og flere) står der fra før.
+Disse ordene fra dokumentene er lagt inn i `.docs/ordbank.md` på `Oda/Branch` som forslag, men ikke på `main` ennå: Appmeny, Kjøringslinje, Opplastingssone, Feiloppsummering, Delens felt, Eksepsjonsmerke, Forklaringspanel, Ukefilter og Statusmelding. Ordene fra 22.11 (Tallboks, Seksjonsmeny, Introduksjonsside, Startside, Resultat og flere) står der fra før.
 
-## Før dokumentene går til `main`
+## Etter at dokumentene er lagt på `main`
 
-1. Gruppen godkjenner sammenslåingen, særlig valgene i tabellen over som ikke var en del av avklaringene 22.11.
-2. Prototypen v4 bør følge med til `main`, fordi dokumentene viser til den. I dag ligger bare v3 på `main`.
+1. Gruppen bør se over valgene i tabellen over som ikke var en del av avklaringene 22.11, og avgjøre spørsmål 1 og 2 nederst i EXPERIENCE.md før prøvetesten rundt 27.11.
+2. Prototypen v4 ligger på `Oda/Branch`, og dokumentene lenker dit ([prototypen v4](https://github.com/IBE160-2026/G23-eriksen-knudsen-kolstad-samdal/blob/Oda/Branch/.docs/planning-artifacts/ux-designs/ux-avklaringer-2026-11-22/prototype/index.html), [avklaringene 22.11](https://github.com/IBE160-2026/G23-eriksen-knudsen-kolstad-samdal/blob/Oda/Branch/.docs/planning-artifacts/ux-designs/ux-avklaringer-2026-11-22/README.md)). På `main` ligger bare v3.
 3. Carmens og Sebastians egne mapper blir historikk. Det er greit å la dem ligge på sine brancher.

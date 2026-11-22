@@ -1,7 +1,7 @@
 ---
 name: COSI - MRP
 description: Nettbasert MRP-verktøy for små produksjonsbedrifter. Planleggerens arbeidsbenk – rolige flater, tette tall, farge bare for handling og eksepsjoner.
-status: utkast – sammenslått 22.11, må godkjennes av gruppen
+status: gjeldende – lagt på main 22.11 etter Odas godkjenning, med åpne spørsmål nederst i EXPERIENCE.md
 authors:
   - Carmen Kolstad (grunnlaget og tokens, 12.11)
   - Sebastian (regler for tall, skrift, minste skjerm og tilgjengelighet, 13.11)
@@ -11,8 +11,8 @@ updated: 2026-11-22
 sources:
   - ../../prds/prd-COSI - MRP-2026-10-19/prd.md
   - ../../../ordbank.md
-  - ../ux-avklaringer-2026-11-22/README.md
-  - ../ux-avklaringer-2026-11-22/prototype/index.html (prototypen v4)
+  - Oda/Branch: ux-designs/ux-avklaringer-2026-11-22/README.md
+  - Oda/Branch: ux-designs/ux-avklaringer-2026-11-22/prototype/index.html (prototypen v4)
   - Carmens DESIGN.md 12.11 (Carmen/Branch, ux/ux-COSI - MRP-2026-11-12/)
   - Sebastians DESIGN.md 14.11 (Sebastian/Branch, ux-designs/ux-COSI - MRP-2026-11-13/)
   - EXPERIENCE.md
@@ -243,9 +243,9 @@ components:
 
 # COSI - MRP – Design
 
-> **Utkast – sammenslått 22.11, må godkjennes av gruppen.** Dette dokumentet bygger på Carmens DESIGN.md (12.11), med avklaringene fra prototypene v1–v4 (godkjent av gruppen 22.11) og det fra Sebastians DESIGN.md (13.11) som passer med Carmens visuelle retning. Prototypene v1–v4 er bygget på Carmens tokens, og derfor er det hennes farger og skrift som gjelder. Hva som kommer fra hvem, står i [kilder.md](kilder.md). Dette dokumentet og [EXPERIENCE.md](EXPERIENCE.md) går foran prototypen ved avvik. PRD-en går foran begge. `[ASSUMPTION]` markerer det gruppen ikke har bestemt.
+> **Gjeldende UX-dokument, lagt på `main` 22.11.** Spørsmålene som fortsatt er åpne, står nederst i EXPERIENCE.md. Dette dokumentet bygger på Carmens DESIGN.md (12.11), med avklaringene fra prototypene v1–v4 (godkjent av gruppen 22.11) og det fra Sebastians DESIGN.md (13.11) som passer med Carmens visuelle retning. Prototypene v1–v4 er bygget på Carmens tokens, og derfor er det hennes farger og skrift som gjelder. Hva som kommer fra hvem, står i [kilder.md](kilder.md). Dette dokumentet og [EXPERIENCE.md](EXPERIENCE.md) går foran prototypen ved avvik. PRD-en går foran begge. `[ASSUMPTION]` markerer det gruppen ikke har bestemt.
 >
-> Visuell referanse: [prototypen v4](../ux-avklaringer-2026-11-22/prototype/index.html).
+> Visuell referanse: [prototypen v4](https://github.com/IBE160-2026/G23-eriksen-knudsen-kolstad-samdal/blob/Oda/Branch/.docs/planning-artifacts/ux-designs/ux-avklaringer-2026-11-22/prototype/index.html) (på `Oda/Branch`, last ned og åpne lokalt).
 
 ## Brand & Style
 
