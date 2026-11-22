@@ -314,3 +314,23 @@ Alt er endret i `.docs/planning-artifacts/ux-designs/ux-avklaringer-2026-11-22/`
 
 ### Åpne punkter
 - U6 (introduksjonsside, startsiden er «Ny kjøring», og Lagrede kjøringer er en egen side) er Odas valg og må godkjennes av gruppen.
+
+## 2026-11-22 kl. 19:56 — Odawol
+
+### Oppgave
+Oda valgte B for U2: det offisielle typenavnet fra ordbanken står først i eksepsjonsteksten.
+
+### Plan
+- Kontrollerte at PRD-en og ordbanken allerede bruker de fem typenavnene, og at DESIGN.md forbyr egne korte navn. Bare UX-dokumentene og prototypen måtte endres.
+- Oda hadde prøvd valgene i Edge, og prototypen lagrer dem. Derfor fikk prototypen en engangsoverstyring, så B blir valgt også der A var lagret.
+
+### Resultat
+- `prototype/index.html`: B er standard. B blir også valgt én gang i nettlesere der A var lagret (nøkkelen `u2b`). Valget er merket «valgt av Oda 22.11», og U2 er merket avklart. A kan fortsatt sammenlignes på siden «Eksepsjonstekst: A og B».
+- `ux-carmen/EXPERIENCE.md`: regelen står i tabellen for ordlyd. Typenavnet og uken står først, og en setning i vanlig språk under.
+- `ux-carmen/DESIGN.md`: komponentraden Eksepsjonsmerke har fått den samme regelen.
+- `prd/prd.md` og `ordbank.md` er ikke endret.
+- `README.md` og `prototype/avvik-mot-prd.md` er oppdatert.
+- Testet med Playwright i Edge, med A lagret på forhånd. Den første kritiske delen viser «Bestilling forsinket · uke 1». Ingen feil i konsollen.
+
+### Åpne punkter
+- U2 (B: typenavnet først) er Odas valg og må godkjennes av gruppen.
