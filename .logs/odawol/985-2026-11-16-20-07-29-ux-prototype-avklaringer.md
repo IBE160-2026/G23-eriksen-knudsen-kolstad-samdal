@@ -432,3 +432,24 @@ Alt er endret i `.docs/planning-artifacts/ux-designs/ux-avklaringer-2026-11-22/`
 ### Åpne punkter
 - U1, U4, U9 og U10 er Odas valg og må godkjennes av gruppen.
 - U12 venter på Odas valg mellom Sebastians kobling (markør i den raden eksepsjonen gjelder) og Carmens egen rad «Eksepsjoner». Carmens EXPERIENCE.md og DESIGN.md beskriver i dag Carmens løsning som `[ASSUMPTION]`.
+
+## 2026-11-22 kl. 20:22 — Odawol
+
+### Oppgave
+Oda valgte «forslag B» for U13 og Sebastians kobling for eksepsjonsmarkøren (U12), og ba om at Carmens eksepsjonsrad oppdateres etter det.
+
+### Plan
+- U13 har ingen egen A/B i prototypen. «B» er tolket som variant B av eksepsjonsteksten, slik den vises i forklaringspanelet: typenavn og uke, én setning i vanlig språk, «Melding:» og «Hvorfor:». Tolkningen ble sagt til Oda.
+- Erstattet Carmens `[ASSUMPTION]` om en egen rad «Eksepsjoner» med Sebastians kobling, slik `markCell` i prototypen gjør det.
+
+### Resultat
+- `ux-carmen/EXPERIENCE.md`: komponentraden Eksepsjonsmarkering er skrevet om (Sebastians kobling, seks rader per del, og de fire delene i en melding), og åpen beslutning 1 er besluttet.
+- `ux-carmen/DESIGN.md`: raden «Eksepsjonsrad» er erstattet med «Eksepsjonsmarkør», og Forklaringspanel beskriver hvordan en melding er bygd opp.
+- `ordbank.md`: «Eksepsjonsmarkør» er lagt inn som forslag. Ikke bruk: eksepsjonsrad, varsel, flagg.
+- `prototype/index.html` (U12 og U13 avklart), `README.md` og `prototype/avvik-mot-prd.md` er oppdatert.
+- `prd/prd.md` er ikke endret, fordi FR-13 og FR-15 allerede gir rom for dette.
+- Testet med Playwright i Edge. Ingen feil i konsollen.
+- Alle de 16 punktene er nå avklart av Oda og venter på gruppen.
+
+### Åpne punkter
+- U12 og U13 er Odas valg og må godkjennes av gruppen. Oda må bekrefte at «B» for U13 betyr variant B av eksepsjonsteksten.
