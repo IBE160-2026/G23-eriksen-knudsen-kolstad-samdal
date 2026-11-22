@@ -453,3 +453,30 @@ Oda valgte «forslag B» for U13 og Sebastians kobling for eksepsjonsmarkøren (
 
 ### Åpne punkter
 - U12 og U13 er Odas valg og må godkjennes av gruppen. Oda må bekrefte at «B» for U13 betyr variant B av eksepsjonsteksten.
+
+## 2026-11-22 kl. 20:26 — Odawol
+
+### Oppgave
+Oda ba om en versjon som kan åpnes i nettleseren, med alle endringene fra avklaringene. Prototypevalg og «Uavklarte spørsmål» skulle oppdateres, og siden «Eksepsjonstekst: A og B» skulle fjernes.
+
+### Plan
+- Gjorde prototypen i arbeidsmappen om til versjon 4, i stedet for å lage en ny kopi. Den inneholdt allerede alle endringene fra i dag. Versjon 3 på `main` er ikke endret.
+- Gjorde endringene med et skript som stopper hvis en tekst ikke finnes nøyaktig én gang.
+
+### Resultat
+- `prototype/index.html` (versjon 4):
+  - **Prototypevalg:** bare simuleringene står igjen (valideringsfeil, blokkert lagring og ingen kritiske deler), og valget om å vise de gule merkene. Alle avklarte valg er faste, også der andre verdier var lagret.
+  - **A og B:** siden «Eksepsjonstekst: A og B» er fjernet, med lenke, seksjon, ruting og `renderAB`.
+  - **Avklaringer 22.11:** erstatter «Uavklarte spørsmål». Tabellen har alle 16 punktene med valg, hva som er endret i kopiene, og status «Venter på gruppen». De gule merkene sier «avklart».
+  - **Banneret:** «Prototype 22.11, versjon 4 – Odas avklaringer, ikke godkjent av gruppen.»
+- `prototype/README.md` er skrevet om for versjon 4. `README.md` i arbeidsmappen viser til den.
+- Testet med Playwright i Edge, med motsatte valg lagret fra før:
+  - testeksempel 02 → 03 gir Kritiske deler, Bestillingsforslag, Endringer og Resultattabell, med fem tallbokser
+  - eksepsjonen vises som «Bestilling forsinket · uke 1»
+  - 05 med Begge viser kapasiteten
+  - siden Avklaringer har 16 rader
+  - ingen feil i konsollen
+- Prototypen er åpnet i Edge.
+
+### Åpne punkter
+Ingen nye.
