@@ -199,3 +199,32 @@ Alt er endret i `.docs/planning-artifacts/ux-designs/ux-avklaringer-2026-11-22/`
 ### Åpne punkter
 - U14 er Odas valg og må godkjennes av gruppen før PRD-en og EXPERIENCE.md på `main` endres.
 - Simuleringen uten kritiske deler fjerner bare eksepsjonene. Boksen «forslag med forfalt mengde» viser fortsatt 2, selv om forfalt mengde ellers gir eksepsjonen «Bestilling forsinket». Det er en svakhet i prototypen, ikke i løsningen.
+
+## 2026-11-22 kl. 19:22 — Odawol
+
+### Oppgave
+Oda valgte fire bokser øverst i resultatet (V3-a) og runde knapper for seksjonene øverst (V3-b). Hun ville ha det ført inn i EXPERIENCE.md og andre relevante filer, og få vite hva SM-C3 sier hvis det må endres.
+
+### Plan
+- Sammenlignet med SM-C3 i PRD-kopien og med reglene i DESIGN.md.
+- Gjorde endringene med et skript som stopper hvis en tekst ikke finnes nøyaktig én gang. Hentet verdiene for farger og størrelser fra CSS-en i prototypen.
+
+### Resultat
+Alt er endret i `.docs/planning-artifacts/ux-designs/ux-avklaringer-2026-11-22/`.
+- **SM-C3** («Tabellen skal ikke fylles med farger og symboler for å se informativ ut …») gjelder tabellen, så PRD-en er ikke endret. Det er DESIGN.md som var i konflikt («ikke et dashbord», «ingen store tall i kort», «bare to ting får farge», «ikke petrol på store flater»).
+- `ux-carmen/EXPERIENCE.md`:
+  - Kjøringslinjen har seksjonsmenyen med runde knapper, og tallboksene er nytt punkt 2 på resultatsiden.
+  - Komponentradene Seksjonsmeny og Tallbokser, tabulatorrekkefølgen og smal skjerm er oppdatert.
+  - «Forkastet – dashbord» er endret til «Delvis tatt inn», og UJ-2 og UJ-3 er endret.
+- `ux-carmen/DESIGN.md`:
+  - tokens `summary-*` for lys og mørk, og komponentene `summary-boxes` og `section-button`
+  - unntak i Brand & Style, regelen om store tall, Shapes og Do's and Don'ts
+  - komponentradene Seksjonsmeny og Tallbokser
+- `ordbank.md`: «Tallboks» og «Seksjonsmeny» er lagt inn som forslag, og `updated` er satt til 2026-11-22. Dermed er kollisjonen med «Sammendrag» (FR-16) i U8 løst.
+- `prototype/index.html`: valgene er merket «valgt av Oda 22.11», og boksraden heter «Tallbokser» for skjermlesere.
+- `README.md` og `prototype/avvik-mot-prd.md` er oppdatert.
+- Testet på nytt med Playwright i Edge. Ingen feil i konsollen.
+
+### Åpne punkter
+- V3-a og V3-b er Odas valg og må godkjennes av gruppen.
+- Gruppen bør vurdere om tallene for uke 1 og i alt trenger egne farger i tallboksene, eller om bare kritiske deler og forfalt mengde skal ha farge (DESIGN.md, ånden i SM-C3).
