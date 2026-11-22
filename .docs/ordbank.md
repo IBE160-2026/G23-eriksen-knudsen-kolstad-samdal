@@ -2,7 +2,7 @@
 title: COSI - MRP Ordbank
 status: forslag
 created: 2026-10-21
-updated: 2026-11-20
+updated: 2026-11-22
 ---
 
 # Ordbank: COSI - MRP
@@ -87,7 +87,7 @@ Forslaget bygger på Excel-malen for flernivå stykkliste (Sebastian, 2026-10-23
 | Forventet lagerbeholdning (*projected on-hand*) | Disponibel beholdning + planlagt ordremottak − fremskyndede mottak som ennå ikke er kommet. Det er lagerbeholdningen resultattabellen viser (PRD FR-7). | forventet lager, forventet beholdning, beregnet lager |
 | Forfalt frigivelse | En planlagt ordrefrigivelse der t − L < 1. Den legges i uke 1 og blir bruttobehov i uke 1 for underkomponentene. | bestilling før planstart, uke 0 |
 | Bestillingsforslag | Det brukeren handler på: del, frigivelsesuke og mengde. | – |
-| Frigivelsesuke | Uken bestillingen eller produksjonsordren må sendes, det vil si uken for den planlagte ordrefrigivelsen. Ikke det samme som uken varene kommer. | bestillingsuke, leveringsuke |
+| Frigivelsesuke | Uken et bestillingsforslag må sendes til leverandøren eller settes i produksjon, altså uken med planlagt ordrefrigivelse (t − L). Varene kommer ledetiden senere. En forfalt frigivelse har frigivelsesuke 1 (PRD FR-17). Lagt inn 22.11. | bestillingsuke, ordreuke, startuke, leveringsuke |
 | Forfalt mengde | Den delen av et bestillingsforslag i uke 1 som egentlig skulle vært frigitt før horisonten (se *Forfalt frigivelse*). Vises i appen som mengden «175» med knappen «50 forfalt» etter, og hjelpeteksten «Forfalt: skulle vært bestilt før uke 1.» | forsinket mengde |
 | Bestillingsregel (*lot sizing rule*) | Regelen som gjør nettobehov om til planlagt ordremottak. | – |
 | Lot-for-lot (L4L) | Planlagt ordremottak = nettobehov. | – |
@@ -103,7 +103,8 @@ Forslaget bygger på Excel-malen for flernivå stykkliste (Sebastian, 2026-10-23
 | Mottak forsinket | Nettobehov > 0 og et planlagt mottak ligger i en senere uke. Mottaket regnes som fremskyndet til uken med nettobehovet, og det lages planlagt ordremottak bare for et eventuelt restbehov. Resultattabellen viser mottaket i uken det er lagt inn (PRD FR-6, FR-12, endret 2026-11-02). | – |
 | Kanseller mottak | Et planlagt mottak som ikke trengs noe sted i horisonten: delen får ikke noe nettobehov fra mottaksuken til uke H når mottaket tas bort og ingen andre mottak fremskyndes (PRD FR-29, ny 2026-11-02). | Utsett mottak (ikke en egen eksepsjon) |
 | Ledetid overskrider horisont | Ledetid fra ferdigproduktet ≥ H. Gjelder hele delen, uansett lager: planen er for kort til å vise behov som må bestilles nå (PRD FR-9, endret 2026-11-02). | Innkjøpstid overskrider horisont |
-| Kritisk del | En del med minst én eksepsjon. Markeres i resultattabellen, så brukeren raskt ser hvor det må handles. | kritisk komponent (se merknad 1) |
+| Eksepsjonsmarkør | Symbolet og fargen som viser en eksepsjon i resultattabellen (PRD FR-15). Står i cellen eksepsjonen gjelder: Nettobehov for Bestilling forsinket, Bruk av sikkerhetslager og Mottak forsinket, Planlagte mottak for Kanseller mottak, og ved delens navn for Ledetid overskrider horisont. Godkjent av gruppen 22.11. | eksepsjonsrad, varsel, flagg |
+| Kritisk del | En del med minst én eksepsjon. Markeres i resultattabellen, så brukeren raskt ser hvor det må handles. | kritisk komponent (se merknad 1), krever oppfølging (besluttet 22.11) |
 | Avvik | At planen ikke går opp for en del, f.eks. at lageret går under sikkerhetslager eller at en bestilling kommer for sent. Avvik gir eksepsjoner. | – |
 | Falsk positiv / falsk negativ | Feil i eksepsjonene: en eksepsjon uten avvik (falsk positiv), eller et avvik uten eksepsjon (falsk negativ). | – |
 
@@ -126,6 +127,9 @@ Forslaget bygger på Excel-malen for flernivå stykkliste (Sebastian, 2026-10-23
 | Validering | Kontrollen av at Excel-malen har riktig struktur, ingen tomme påkrevde celler og riktige datatyper før beregningen starter. Feil gir valideringsfeil. | – |
 | Kontroll | Kolonnen i Stykkliste som viser hva som mangler eller ikke stemmer i hver rad, før opplasting. | – |
 | Kjøring | Én beregning fra én opplastet Excel-mal. | beregning (om hele kjøringen) |
+| Bestillingsplan | Valget under «Hva vil du beregne?» som gir MRP-beregningen: bestillingsforslag, kritiske deler, resultattabell og før/etter-sammenligning (PRD §4.2–4.6, FR-30). Det andre valget er produksjonskapasitet, og brukeren kan velge begge. Også overskriften (h1) i resultatet, f.eks. «Bestillingsplan for 100-002 Kontorstol Basic». Lagt inn 22.11. | MRP-plan, innkjøpsplan, produksjonsplan (om bestillingsplanen) |
+| Resultat | Siden som viser én kjøring: tallboksene, kritiske deler, bestillingsforslag, endringer, resultattabellen og produksjonskapasiteten når den er valgt. Menyvalget heter «Resultat». Godkjent av gruppen 22.11. | resultatside, oversikt, dashbord |
+| Lagret kjøring | Den siste vellykkede kjøringen for et ferdigprodukt, som appen husker i nettleseren og sammenligner neste kjøring med (PRD FR-19–FR-21). Kjøringene står på siden «Lagrede kjøringer», der de kan slettes. Godkjent av gruppen 22.11. | historikk, arkiv, tidligere resultater |
 | Valideringsfeil | En feil i filen som appen finner, og som stopper beregningen. Oppgir ark, rad og årsak. | feilmelding |
 | Feil i hele fila | En feil som gjør at den opplastede fila ikke kan leses i det hele tatt, f.eks. ikke en Excel-fil, tom, skadet eller passordbeskyttet (PRD NFR-9). Vises som én melding, ikke i feiloppsummeringen. I koden: `Filfeil`. | – |
 | Resultattabell | MRP-tabellen per del og uke, med eksepsjonene markert. Én seksjon på resultatsiden. | MRP-tabell, resultatside (om tabellen), oversikt |
@@ -134,6 +138,10 @@ Forslaget bygger på Excel-malen for flernivå stykkliste (Sebastian, 2026-10-23
 | Fasit | Manuelt kontrollert forventet resultattabell og eksepsjonsliste for et testeksempel. | – |
 | Valideringstilfelle | En fil i `testdata/validering/` med nøyaktig én kjent valideringsfeil, eller ingen feil for gyldige grenseverdier. | feilfil |
 | Vercel | Tjenesten appen publiseres på, med en lenke som kan åpnes uten installasjon. Vercel leverer bare appens kode. Innlesing, validering, beregning og lagring av kjøringer skjer i brukerens nettleser (besluttet 2026-11-05). Står i PRD-addendumet, ikke i kravene: NFR-3 og NFR-4 beskriver atferden (endret 2026-11-13). | – |
+| Introduksjonsside | Siden som vises første gang appen åpnes i en nettleser. Den forteller kort hva appen gjør, viser de tre stegene og har en knapp videre til startsiden. Menyvalget heter «Introduksjon». Ikke det samme som introduksjonen til brukertesten (PRD §8.1). Godkjent av gruppen 22.11. | forside, landingsside, velkomstside |
+| Startside | Siden der brukeren laster ned malen og testeksempel 01, leser den korte veiledningen, velger hva som skal beregnes, og laster opp filen (PRD FR-27). Menyvalget heter «Ny kjøring». Åpnes direkte etter første besøk. Godkjent av gruppen 22.11. | hjemmeside, forside, opplastingsside |
+| Tallboks | En av boksene øverst i resultatet med et stort tall, en tittel og en kort forklaring. Det er fire: kritiske deler, bestillingsforslag i uke 1, bestillingsforslag i alt og forslag med forfalt mengde, pluss en for Endringer når den vises. Et klikk går til seksjonen. Godkjent av gruppen 22.11. | sammendrag (er sammendraget av kritiske deler, FR-16), kort, dashbord |
+| Seksjonsmeny | Raden med runde knapper i den faste linjen øverst i resultatet, én per seksjon. Et klikk går til seksjonen. Godkjent av gruppen 22.11. | faner, seksjonslenker, navigasjonsrad |
 | Lokal lagring | Nettleserens lagring på brukerens maskin, der appen husker siste kjøring per ferdigprodukt. Den opplastede Excel-filen lagres ikke (PRD FR-19, NFR-10). Hvilken lagring i nettleseren som brukes, velges i arkitekturen. | – |
 | Brukertest | Test der testpersoner løser de samme tre oppgavene i appen etter en kort introduksjon, hver for seg og uten veiledning. En oppgave er løst ved riktig svar innen 3 minutter. Holdes 2.–7. desember 2026 (PRD SM-3, §8.1). | brukstest, brukstesting, brukertesting |
 | Prøvetest | En prøve av brukertesten før testuka, for å se at introduksjonen og oppgavene fungerer. Teller ikke med i resultatet (PRD §8.1). | pilottest |
@@ -149,10 +157,8 @@ Begreper fra UX-steget (`ux-designs/ux-COSI - MRP-2026-11-13/`, DESIGN.md og EXP
 |---|---|---|
 | Startside | Siden før opplasting: kort veiledning, nedlasting av malen og testeksempel 01, opplasting og valget «Hva vil du beregne?» (PRD FR-27, FR-30). Valideringsfeil vises øverst her. | forside, landingsside |
 | Resultatside | Hele siden etter en vellykket kjøring. Har seksjonene Bestillingsforslag, Endringer, Kritiske deler, Resultattabell og Produksjonskapasitet i den rekkefølgen (PRD §4.4). Appen har bare denne ene siden for resultatene. | forside, dashbord, oversikt, resultattabell (om hele siden) |
-| Bestillingsplan | Resultatet av MRP-beregningen for ett ferdigprodukt: bestillingsforslag, kritiske deler og resultattabellen (PRD §4.2–4.6, FR-30). Et av valgene i radiogruppen, og overskriften (h1) på resultatsiden, f.eks. «Bestillingsplan for 100-002 Kontorstol Basic». | produksjonsplan (om bestillingsplanen) |
 | Toppfelt | Det mørke feltet øverst med appnavnet, ferdigproduktet, horisonten og handlingene (Eksporter til Excel, Last opp ny fil, Slett lagret kjøring). Blir stående når brukeren blar. | header, banner |
-| Navigasjonsrad | Raden under toppfeltet med ankerlenker til seksjonene på resultatsiden. Ser ut som navigasjon, men åpner ingen nye sider. | oppgavelinje, meny, faner |
-| Statuslinje | En kort tekstlinje med status. På resultatsiden står den rett under sidens overskrift (h1) og viser nøkkeltall som lenker, f.eks. «12 bestillingsforslag · 4 kritiske deler trenger handling». På startsiden viser den «Leser fila …» og «Beregner …» etter Beregn. | nøkkeltallskort, KPI-kort |
+| Statuslinje | En kort tekstlinje med status på startsiden, f.eks. «Leser fila …» og «Beregner …» etter Beregn. Nøkkeltallene i resultatet vises i tallboksene, ikke i en statuslinje (besluttet 22.11). | nøkkeltallskort, KPI-kort |
 | Brett | Den tonede flaten som rammer inn én seksjon med overskrift. Seksjonene skilles med toner, ikke streker (DESIGN.md). | panel (om seksjonen), boks |
 | Kort | Den lyse flaten inne i et brett, der innholdet står. | rubrikk, flis |
 | Stein | Den varme grunnflaten under brettene, den nederste av de tre lyse tonene stein, brett og kort (DESIGN.md, `background`). | – |
