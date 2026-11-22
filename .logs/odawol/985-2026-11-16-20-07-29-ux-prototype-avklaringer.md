@@ -374,3 +374,32 @@ Oda ba om at ordene fra U8 legges inn i ordbanken.
 
 ### Åpne punkter
 - U8 (de nye ordene i ordbanken) er Odas valg og må godkjennes av gruppen.
+
+## 2026-11-22 kl. 20:11 — Odawol
+
+### Oppgave
+Oda bestemte U11 og U7:
+- **U11:** Valgene under «Hva vil du beregne?» skal stå i rekkefølgen Bestillingsplan, Produksjonskapasitet og Begge, og Bestillingsplan skal være det første valget.
+- **U7:** Brukeren skal fortsatt kunne velge mellom lys og mørk visning.
+
+### Plan
+- Tolket «det første forslaget» slik at Bestillingsplan står først og er forhåndsvalgt. Det samsvarer med brukertesten (§8.1).
+- Flyttet knappen for lys og mørk ut av den gule prototypeboksen, fordi den nå er en del av appen.
+
+### Resultat
+- `prototype/index.html`:
+  - Valgene heter Bestillingsplan, Produksjonskapasitet og Begge, og Bestillingsplan er alltid forhåndsvalgt. Valget for standard er fjernet fra Prototypevalg.
+  - «Bytt til mørk» / «Bytt til lys» står nederst i sidemenyen.
+  - U7 og U11 er merket avklart.
+- `ux-carmen/EXPERIENCE.md`:
+  - komponenten «Valg av beregning» har ny rekkefølge
+  - ny komponentrad «Lys og mørk visning»
+  - åpen beslutning 8 (mørk modus i v1) er besluttet: ja
+- `ux-carmen/DESIGN.md`: kommentaren over fargetokenene, Appmeny og Do's and Don'ts sier at lys og mørk er med i v1, med lys som standard, og at kontrasten skal kontrolleres i begge.
+- `prd/prd.md` er ikke endret.
+- `README.md` og `prototype/avvik-mot-prd.md` er oppdatert.
+- Testet med Playwright i Edge, også med «Begge» lagret fra før. Bestillingsplan er forhåndsvalgt, rekkefølgen er riktig, og knappen bytter til mørk. Valget huskes når siden lastes på nytt. Ingen feil i konsollen.
+
+### Åpne punkter
+- U11 og U7 er Odas valg og må godkjennes av gruppen.
+- Mørk modus gir mer å teste (kontrast i begge). Gruppen kan vurdere å nevne det i PRD-en, for eksempel i NFR-8.

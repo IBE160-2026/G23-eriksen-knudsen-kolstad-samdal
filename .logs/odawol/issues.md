@@ -50,3 +50,4 @@
 - [ ] 2026-11-22 [ux-prototype-avklaringer](985-2026-11-16-20-07-29-ux-prototype-avklaringer.md) — U2 (B: typenavnet fra ordbanken først i eksepsjonsteksten) er Odas valg og må godkjennes av gruppen
 - [ ] 2026-11-22 [ux-prototype-avklaringer](985-2026-11-16-20-07-29-ux-prototype-avklaringer.md) — U3 («Kritiske deler», og «krever oppfølging» under «Ikke bruk» i ordbanken) er Odas valg og må godkjennes av gruppen
 - [ ] 2026-11-22 [ux-prototype-avklaringer](985-2026-11-16-20-07-29-ux-prototype-avklaringer.md) — U8 (Frigivelsesuke, Bestillingsplan, Resultat, Lagret kjøring, Introduksjonsside, Startside, Tallboks og Seksjonsmeny i ordbanken) må godkjennes av gruppen
+- [ ] 2026-11-22 [ux-prototype-avklaringer](985-2026-11-16-20-07-29-ux-prototype-avklaringer.md) — U11 (Bestillingsplan · Produksjonskapasitet · Begge, Bestillingsplan forhåndsvalgt) og U7 (lys og mørk i v1, lys standard) må godkjennes av gruppen. Vurder om mørk modus skal nevnes i PRD-en (NFR-8)
