@@ -2,7 +2,7 @@
 title: COSI - MRP PRD
 status: final
 created: 2026-10-19
-updated: 2026-11-13
+updated: 2026-11-22
 ---
 
 # PRD: COSI - MRP
@@ -43,10 +43,10 @@ Første versjon dekker ett ferdigprodukt med flernivå BOM (stykkliste) på innt
 ### 2.3 Viktige brukerreiser
 
 - **UJ-1. Kari tar i bruk COSI - MRP første gang.**
-  Kari er innkjøper i en liten møbelprodusent og har nettopp overtatt planleggingen etter en kollega som brukte sitt eget regneark. Hun åpner COSI - MRP og leser den korte veiledningen på startsiden. For å se hvordan et resultat ser ut, laster hun opp testeksempel 01 uten endringer og klikker på noen celler for å lese forklaringene. Så laster hun ned den tomme malen og fyller ut stykklisten for stolen med tall fra kollegaens regneark. Kontroll-kolonnen viser at ledetiden mangler på én rad, og hun retter det. Hun fyller ut prognostiserte behov og planlagte mottak og laster opp filen. Det finnes ingen tidligere kjøring for stolen, så appen viser bestillingsforslagene, de kritiske delene og tabellen uten sammenligning.
+  Kari er innkjøper i en liten møbelprodusent og har nettopp overtatt planleggingen etter en kollega som brukte sitt eget regneark. Hun åpner COSI - MRP for første gang og ser introduksjonssiden, som forteller kort hva appen gjør. Hun går videre til startsiden og leser den korte veiledningen. For å se hvordan et resultat ser ut, laster hun opp testeksempel 01 uten endringer og klikker på noen celler for å lese forklaringene. Så laster hun ned den tomme malen og fyller ut stykklisten for stolen med tall fra kollegaens regneark. Kontroll-kolonnen viser at ledetiden mangler på én rad, og hun retter det. Hun fyller ut prognostiserte behov og planlagte mottak og laster opp filen. Det finnes ingen tidligere kjøring for stolen, så appen viser de kritiske delene, bestillingsforslagene og tabellen uten sammenligning.
 
 - **UJ-2. Kari oppdaterer planen og ser hva hun må bestille.**
-  Kundene sender bestillinger og endrede behov alle dager, også i helgene, så Kari oppdaterer planen hver arbeidsdag. Hun har én fil per produkt og kopierer forrige ukes fil i stedet for å begynne på nytt. Noen deler, som skruesett, brukes i flere av stolene, og lageret for dem fordeler hun selv mellom filene. Hun endrer prognostiserte behov, lagerbeholdning og planlagte mottak og laster opp filen. Først ser hun på bestillingsforslagene. Når hun filtrerer på uke 1, ser hun at hun må bestille 175 hjul, og at 50 av dem er forfalte. Sammendraget viser fire kritiske deler. Hun velger gassfjær og ser at mottaket på 100 i uke 4 må fremskyndes til uke 3. Hun bestiller hjulene, ringer leverandøren av gassfjær og eksporterer resultatet til Excel. **Unntak:** Lurer hun på hvorfor nettobehovet for hjul er 50 i uke 1, klikker hun på cellen og leser forklaringen i panelet.
+  Kundene sender bestillinger og endrede behov alle dager, også i helgene, så Kari oppdaterer planen hver arbeidsdag. Hun har én fil per produkt og kopierer forrige ukes fil i stedet for å begynne på nytt. Noen deler, som skruesett, brukes i flere av stolene, og lageret for dem fordeler hun selv mellom filene. Hun endrer prognostiserte behov, lagerbeholdning og planlagte mottak og laster opp filen. Først ser hun at sammendraget viser fire kritiske deler. Hun velger gassfjær og ser at mottaket på 100 i uke 4 må fremskyndes til uke 3. Så går hun til bestillingsforslagene. Når hun filtrerer på uke 1, ser hun at hun må bestille 175 hjul, og at 50 av dem er forfalte. Hun bestiller hjulene, ringer leverandøren av gassfjær og eksporterer resultatet til Excel. **Unntak:** Lurer hun på hvorfor nettobehovet for hjul er 50 i uke 1, klikker hun på cellen og leser forklaringen i panelet.
 
 - **UJ-3. Kari ser hva en ny kundeordre betyr.**
   Tirsdag ettermiddag bestiller en kunde 15 flere Kontorstol Pro i uke 2. Kari endrer prognostiserte behov i uke 2 fra 30 til 45 og laster opp filen på nytt. Appen sammenligner med morgenens kjøring for Kontorstol Pro. Kari bruker sammenligningen til å kontrollere at endringen ga det hun ventet, og til å se etter nye problemer. Flere forslag i uke 1 har økt, blant annet hjul fra 130 til 205. Det er kommet et nytt forslag på 30 skruesett M6, og hjul har fått eksepsjonen «Bruk av sikkerhetslager». Mottaket på 40 rygger må nå fremskyndes til uke 2 i stedet for uke 3. Hun justerer bestillingene uten å regne selv. **Unntak:** Vil hun starte på nytt for et produkt, sletter hun den lagrede kjøringen for det, og neste opplasting vises uten sammenligning.
@@ -317,7 +317,7 @@ En del med minst én eksepsjon markeres som kritisk, uansett nivå.
 
 ### 4.4 Resultattabell
 
-**Beskrivelse:** Etter en vellykket kjøring ser brukeren først bestillingsforslagene (FR-17), deretter sammendraget av kritiske deler (FR-16) og så resultattabellen (FR-14). Alt skal være forståelig for en planlegger uten MRP-bakgrunn etter en kort introduksjon (SM-3), og hvert tall kan forklares (FR-18). Gjelder UJ-1 og UJ-2.
+**Beskrivelse:** Etter en vellykket kjøring ser brukeren først sammendraget av kritiske deler (FR-16), deretter bestillingsforslagene (FR-17) og så resultattabellen (FR-14). Slik ser brukeren først det som krever handling, og deretter hva som skal bestilles. Er det ingen kritiske deler, vises bare en kort melding om det (FR-16). Alt skal være forståelig for en planlegger uten MRP-bakgrunn etter en kort introduksjon (SM-3), og hvert tall kan forklares (FR-18). Gjelder UJ-1 og UJ-2.
 
 #### FR-14: Vis resultattabell per del
 
@@ -338,12 +338,15 @@ En celle for en uke og del med en eksepsjon fremheves, og meldingen åpnes ved k
 
 #### FR-16: Vis sammendrag av kritiske deler
 
-Appen viser et sammendrag over tabellen: antall kritiske deler og en liste over dem med eksepsjonstyper. Brukeren kan gå direkte fra sammendraget til delen i tabellen. Tabellen følger rekkefølgen i stykklisten. Kritiske deler markeres tydelig, men flyttes ikke øverst.
+Appen viser et sammendrag øverst i resultatet, før bestillingsforslagene (§4.4): antall kritiske deler og en liste over dem med eksepsjonstyper. Er det ingen kritiske deler, viser appen bare en kort melding om det, for eksempel «Ingen kritiske deler. Planen går opp for alle delene.», og ingen liste. Brukeren kan gå direkte fra sammendraget til delen i tabellen. Tabellen følger rekkefølgen i stykklisten. Kritiske deler markeres tydelig, men flyttes ikke øverst. Over tabellen kan brukeren velge «Vis bare kritiske deler». Da skjules de andre delene, og de kritiske delene står fortsatt i stykklisterekkefølge. Filteret endrer bare det som vises, ikke eksporten.
 
 **Konsekvenser (testbare):**
 - For testeksempel 01 viser sammendraget 4 kritiske deler: 300-003, 300-004, 300-005 og 300-006.
 - Delene i tabellen står i samme rekkefølge som i arket Stykkliste. En felles del står der den står første gang.
 - Velger brukeren en del i sammendraget, vises delens tabell.
+- Sammendraget står før bestillingsforslagene.
+- Med «Vis bare kritiske deler» viser tabellen for testeksempel 01 bare 300-003, 300-004, 300-005 og 300-006, i denne rekkefølgen.
+- En kjøring uten eksepsjoner viser bare den korte meldingen, og ingen liste over kritiske deler.
 
 #### FR-17: Vis bestillingsforslag
 
@@ -461,11 +464,14 @@ Resultattabellen og eksporten viser hvilken bestillingsregel som er brukt for hv
 
 #### FR-27: Last ned Excel-malen og testeksempelet
 
-Fra appens startside kan brukeren laste ned den tomme Excel-malen og testeksempel 01, og lese en kort veiledning: fyll ut malen, last opp, les tabellen. Veiledningen sier også at hver fil gjelder ett ferdigprodukt, og at lageret for deler som brukes i flere ferdigprodukter, må fordeles mellom filene (§6).
+Fra appens startside (menyvalget «Ny kjøring») kan brukeren laste ned den tomme Excel-malen og testeksempel 01, og lese en kort veiledning: fyll ut malen, last opp, les tabellen. Veiledningen sier også at hver fil gjelder ett ferdigprodukt, og at lageret for deler som brukes i flere ferdigprodukter, må fordeles mellom filene (§6).
+
+Første gang appen åpnes i en nettleser, vises en introduksjonsside i stedet for startsiden. Den forteller kort hva appen gjør, viser de tre stegene og har en knapp videre til startsiden. Ved senere besøk åpnes startsiden direkte. Introduksjonssiden kan alltid åpnes fra menyen. Den er ikke det samme som introduksjonen til brukertesten (§8.1).
 
 **Konsekvenser (testbare):**
 - Malen som lastes ned, er identisk med `testdata/COSI-MRP-mal.xlsx`.
 - Veiledningen nevner at hver fil gjelder ett ferdigprodukt, og hvordan deler som brukes i flere ferdigprodukter, håndteres.
+- Første besøk i en nettleser viser introduksjonssiden. Neste besøk i samme nettleser viser startsiden.
 
 ### 4.9 Produksjonskapasitet fra lager
 
