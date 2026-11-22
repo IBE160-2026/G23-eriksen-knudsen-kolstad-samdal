@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Arkitektur – COSI - MRP (vedtatt)</title>
+<style>
+  :root{
+    --bg:#EFEDE4; --card:#FBFAF5; --ink:#1D2420; --muted:#535E57; --band:#E4E2D6; --border:#DAD8CC; --edge:#74776B;
+    --top:#2C3A31; --top2:#3A4A3F; --top-ink:#EEF0E8; --top-muted:#B4C0B5; --brass:#C9A862; --brass-line:#8A6726;
+    --green:#2F5A43; --green-soft:#E3ECE0; --blue:#45586A; --blue-soft:#E3EAEE; --amber:#8A4F0B; --amber-soft:#F7E8D6;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:13.5px/1.4 "Segoe UI",Corbel,system-ui,sans-serif}
+  .page{max-width:1320px;margin:0 auto;padding:20px 24px 26px}
+  header{background:var(--top);color:var(--top-ink);border-radius:10px;padding:15px 22px;display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap}
+  header h1{margin:0;font-weight:300;font-size:27px}
+  header p{margin:4px 0 0;color:var(--top-muted);font-size:13px}
+  .status{background:var(--brass);color:#1F2620;font-weight:700;font-size:12px;border-radius:999px;padding:5px 14px;letter-spacing:.3px}
+  .stack{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}
+  .stack span{background:var(--card);border:1px solid var(--border);border-radius:999px;padding:4px 11px;font-size:12px}
+  .stack span b{font-weight:600}
+  .grid{display:grid;grid-template-columns:1.25fr 1fr;gap:16px;margin-top:14px}
+  .tray{background:var(--band);border-radius:10px;padding:12px 14px}
+  .tray.dark{background:var(--top);color:var(--top-ink)}
+  .tray h2{margin:0 0 10px;font-size:15px;font-weight:600;display:flex;align-items:center;gap:8px}
+  .tray.dark h2{color:#fff}
+  .tray h2 .n{background:var(--top);color:var(--brass);border-radius:50%;width:22px;height:22px;display:inline-grid;place-items:center;font-size:12px}
+  .tray.dark h2 .n{background:var(--brass);color:var(--top)}
+  .tray h2 small{font-weight:400;color:var(--muted);font-size:12px}
+  .tray.dark h2 small{color:var(--top-muted)}
+  .col{display:grid;gap:14px;align-content:start}
+
+  .arch{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+  .box{background:var(--card);border:1px solid var(--edge);border-radius:8px;padding:8px 10px;font-size:12px}
+  .box b{display:block;font-size:13px;margin-bottom:2px}
+  .box code,.dir{font-size:10.5px;font-weight:600;background:var(--band);border-radius:3px;padding:0 4px;color:var(--muted)}
+  .tech{font-size:11px;color:var(--muted)}
+  .core{grid-column:1/4;background:var(--green-soft);border-color:#9fbb9c}
+  .steps{display:flex;gap:4px;flex-wrap:wrap;margin-top:4px}
+  .steps span{background:var(--card);border:1px solid #b9cdb6;border-radius:5px;padding:1px 7px;font-size:11.5px}
+  .host{grid-column:1/4;background:var(--top);color:var(--top-muted);border:none;display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px}
+  .host b{color:#fff;display:inline}
+  .down{grid-column:1/4;text-align:center;color:var(--brass-line);font-weight:700;line-height:1;margin:-2px 0}
+
+  .rules{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:12px}
+  .r{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:7px 9px;font-size:12px}
+  .r .k{font-size:10.5px;color:var(--muted);font-weight:600;letter-spacing:.3px;text-transform:uppercase;display:flex;justify-content:space-between}
+  .r .k em{font-style:normal;color:var(--brass-line)}
+  .r .v{font-weight:600;font-size:12.5px;margin-top:1px}
+
+  .flowrow{display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin-bottom:9px}
+  .lbl{font-size:11px;font-weight:700;color:var(--brass);text-transform:uppercase;letter-spacing:.4px;width:78px}
+  .vw{background:var(--top2);border:1px solid #56655A;border-radius:6px;padding:3px 8px;font-size:12px;font-weight:600;color:#fff}
+  .vw em{display:block;font-style:normal;font-weight:400;font-size:10.5px;color:var(--brass);font-family:Consolas,monospace}
+  .sec{background:var(--card);color:var(--ink);border-radius:5px;padding:2px 7px;font-size:11.5px;font-weight:600}
+  .sec.hi{background:var(--brass);color:#1F2620}
+  .ar{color:var(--brass)}
+  .facts{display:flex;flex-wrap:wrap;gap:6px}
+  .facts span{background:var(--top2);color:#D2DBD1;border-radius:999px;padding:2px 9px;font-size:11.5px}
+
+  .list{display:grid;gap:5px}
+  .li{background:var(--card);border:1px solid var(--border);border-radius:7px;padding:6px 9px;font-size:12px;display:grid;grid-template-columns:auto 1fr;gap:9px;align-items:start}
+  .li .ic{width:20px;height:20px;border-radius:5px;display:grid;place-items:center;font-size:11px;font-weight:700;color:#fff;background:var(--green)}
+  .li b{display:block;font-size:12.5px}
+  .li code{font-size:11px;background:var(--band);border-radius:3px;padding:0 3px}
+  .roles{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+  .role{background:var(--card);border:1px solid var(--border);border-radius:7px;padding:6px 9px;font-size:12px}
+  .role .k{font-size:10.5px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.3px}
+  .role .v{font-weight:600}
+  .role.open{border:1.5px dashed var(--amber)}
+  .todo{margin-top:8px;background:var(--amber-soft);border:1px solid #e4c9a6;border-radius:7px;padding:6px 9px;font-size:12px}
+  .todo b{color:var(--amber)}
+  .build{display:flex;gap:4px;flex-wrap:wrap;margin-top:4px}
+  .build span{font-size:11.5px;border-radius:5px;padding:2px 7px;background:var(--card);border:1px solid var(--border)}
+  .build span i{font-style:normal;font-weight:700;color:var(--brass-line);margin-right:3px}
+  .build .t1{border-color:#9fbb9c;background:var(--green-soft)}
+  .build .t4{border-style:dashed}
+  footer{margin-top:12px;font-size:11px;color:var(--muted);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+  @media print{@page{size:A4 landscape;margin:7mm}body{background:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}.page{padding:0;max-width:none;zoom:.7}}
+  @media (max-width:1050px){.grid{grid-template-columns:1fr}.rules{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<div class="page">
+
+<header>
+  <div>
+    <h1>Arkitektur for COSI - MRP</h1>
+    <p>Én statisk nettapp · alt skjer i brukerens nettleser · ingen data sendes ut · ved avvik gjelder PRD-en og ordbanken</p>
+  </div>
+  <span class="status">VEDTATT AV GRUPPEN 22.11.2026</span>
+</header>
+
+<div class="stack">
+  <span><b>React</b> 19.3.1</span><span><b>Vite</b> 8.3.8</span><span><b>TypeScript</b> 7.0.2 strict</span>
+  <span><b>SheetJS CE</b> 0.20.3</span><span><b>Vitest</b> 5.1.1</span><span><b>Playwright</b> 1.65.1</span>
+  <span><b>oxlint</b> 1.94.0</span><span><b>Node</b> 24 LTS</span><span><b>Vercel</b> statisk</span>
+  <span>Ingen komponentbibliotek</span><span>Eksakte versjoner</span>
+</div>
+
+<div class="grid">
+
+  <section class="tray">
+    <h2><span class="n">1</span>Oppbygging <small>– seks deler, hver i sin mappe under src/</small></h2>
+    <div class="arch">
+      <div class="box"><b>UI <code>ui/</code></b>Vanlig HTML og CSS fra prototypen v3<div class="tech">fire visninger · hash-ruting · feilgrense</div></div>
+      <div class="box"><b>Styring <code>app/</code></b>Én kjøring i fast rekkefølge<div class="tech">les → valider → beregn → sammenlign → lagre</div></div>
+      <div class="box"><b>Lagring <code>lagring/</code></b>Ett utdrag per ferdigprodukt<div class="tech">localStorage · try/catch · intro-nøkkel</div></div>
+      <div class="box"><b>Excel-delen <code>excel/</code></b>Leser .xlsx og skriver eksport<div class="tech">SheetJS bare her · verdier, ikke formler</div></div>
+      <div class="box"><b>Tekster <code>tekster/</code></b>All norsk tekst og tallformat<div class="tech">kjernen gir bare koder</div></div>
+      <div class="box"><b>Tester <code>tests/</code> <code>e2e/</code></b>Vitest mot fasit · Playwright<div class="tech">npm test uten nett · arkitekturtest</div></div>
+      <div class="down">▼</div>
+      <div class="box core"><b>Kjernen <code>domene/</code> – ren TypeScript, ingen nettleser, ingen klokke</b>
+        <div class="steps"><span>typer.ts</span><span>valider</span><span>struktur</span><span>netting</span><span>beregn</span><span>eksepsjoner</span><span>kapasitet</span><span>utdrag</span><span>sammenlign</span></div>
+      </div>
+      <div class="box host"><span><b>Vercel</b> · bare statiske filer · ingen serverfunksjoner eller analyse</span><span>Streng CSP · connect-src 'self' · testet</span></div>
+    </div>
+
+    <div class="rules">
+      <div class="r"><div class="k">Datakontrakter <em>AD-3</em></div><div class="v">Story 0 oppsett, Story 1 typer.ts – før alt annet</div></div>
+      <div class="r"><div class="k">Data <em>AD-4</em></div><div class="v">Varenummer er tekst · heltall som tekst («7») godtas</div></div>
+      <div class="r"><div class="k">Feil <em>AD-5</em></div><div class="v">Feil er verdier · alle feil samlet · 30 s grense</div></div>
+      <div class="r"><div class="k">Beregning <em>AD-6–8</em></div><div class="v">Én struktur, én netting, alt ferdig i resultatet</div></div>
+      <div class="r"><div class="k">Planlagte mottak <em>AD-4</em></div><div class="v">Hvert mottak for seg – sjekkes mot fasit 04</div></div>
+      <div class="r"><div class="k">Lagring <em>AD-10</em></div><div class="v">Utdrag per ferdigprodukt, aldri Excel-filen</div></div>
+      <div class="r"><div class="k">Stykklisten <em>AD-15</em></div><div class="v">Slutter ved første tomme rad · innhold under = én feil</div></div>
+      <div class="r"><div class="k">Sammenligning <em>AD-11</em></div><div class="v">Varenummer + uke + type · fast rekkefølge</div></div>
+      <div class="r"><div class="k">Web Worker <em>AD-14</em></div><div class="v">Først hvis 1000 rader tar over 3 s</div></div>
+      <div class="r"><div class="k">Kvalitet <em>AD-18</em></div><div class="v">Test, lint og build grønne før fletting</div></div>
+      <div class="r"><div class="k">Publisering <em>AD-17</em></div><div class="v">VITE_KAPASITET · frossen brukertest-branch</div></div>
+      <div class="r"><div class="k">Navn i koden</div><div class="v">Ordbanken, ASCII: LagretKjoring</div></div>
+    </div>
+
+    <h2 style="margin:14px 0 6px"><span class="n">4</span>Byggerekkefølge <small>– trinn 1–3 testet før kuttbeslutningen 30.11</small></h2>
+    <div class="build">
+      <span><i>0</i>Oppsett</span><span><i>1</i>typer.ts</span>
+      <span class="t1"><i>2</i>Lesing + validering</span><span class="t1"><i>3</i>Beregning</span><span class="t1"><i>4</i>Eksepsjoner</span>
+      <span class="t1"><i>5</i>Styring + ruting</span><span class="t1"><i>6</i>Visningene + tabell</span>
+      <span><i>7</i>Forklaringer</span><span><i>8</i>Lagring, sammenligning, eksport</span>
+      <span class="t4"><i>9</i>Kapasitet</span><span class="t4"><i>10</i>Partistørrelse</span>
+    </div>
+  </section>
+
+  <div class="col">
+    <section class="tray dark">
+      <h2><span class="n">2</span>Visninger og resultat <small>– AD-13, AD-14</small></h2>
+      <div class="flowrow"><span class="lbl">Visninger</span>
+        <span class="vw">Introduksjon<em>#/introduksjon</em></span><span class="ar">→</span>
+        <span class="vw">Ny kjøring<em>#/ny-kjoring</em></span><span class="ar">→</span>
+        <span class="vw">Resultat<em>#/resultat</em></span>
+        <span class="vw">Lagrede kjøringer<em>#/lagrede-kjoringer</em></span></div>
+      <div class="flowrow"><span class="lbl">Resultatet</span>
+        <span class="sec">Tallbokser</span><span class="ar">→</span><span class="sec hi">Kritiske deler</span><span class="ar">→</span>
+        <span class="sec">Bestillingsforslag</span><span class="ar">→</span><span class="sec">Endringer</span><span class="ar">→</span>
+        <span class="sec">Resultattabell</span><span class="ar">→</span><span class="sec">Kapasitet</span></div>
+      <div class="facts">
+        <span>Intro første gang, så Ny kjøring</span>
+        <span>Tilbake/Frem følger adressene</span>
+        <span>Filter «Vis bare kritiske deler»</span>
+        <span>Ingen ukeplan</span>
+        <span>Seksjonsmeny ruller, endrer ikke ruten</span>
+      </div>
+    </section>
+
+    <section class="tray">
+      <h2><span class="n">3</span>Sikkerhet og tester <small>– AD-16, AD-17</small></h2>
+      <div class="list">
+        <div class="li"><span class="ic">✓</span><span><b>Streng CSP i vercel.json</b><code>default-src 'self'</code> <code>connect-src 'self'</code> <code>object-src 'none'</code> … lik i <code>vite preview</code>, testet</span></div>
+        <div class="li"><span class="ic">✓</span><span><b>npm test (Vitest)</b>Fasit 01–05, hver valideringsfil, arkitekturtest, malen i public/ lik testdata/</span></div>
+        <div class="li"><span class="ic">✓</span><span><b>npm run test:e2e (Playwright)</b>Testeksempel 01, NFR-9-filene, blokkert lagring, ingen CSP-brudd</span></div>
+        <div class="li"><span class="ic">✓</span><span><b>Excel for Windows og Mac</b>Testeksempel 01 og 02 lagret på nytt i begge gir samme resultat</span></div>
+      </div>
+    </section>
+
+    <section class="tray">
+      <h2><span class="n">5</span>Roller og ansvar</h2>
+      <div class="roles">
+        <div class="role"><div class="k">Koordinator for typer.ts</div><div class="v">Idun</div></div>
+        <div class="role"><div class="k">Fordeling av byggearbeidet</div><div class="v">Når epics og stories lages</div></div>
+        <div class="role"><div class="k">Tester i Excel for Mac</div><div class="v">Carmen og Idun</div></div>
+        <div class="role"><div class="k">Tester i Excel for Windows</div><div class="v">Sebastian og Oda</div></div>
+      </div>
+      <div class="todo"><b>Må oppdateres:</b> EXPERIENCE.md (UI uten shadcn/ui, hash-adresser, fire visninger) og PRD FR-3 (tom rad, heltall som tekst).</div>
+    </section>
+  </div>
+</div>
+
+<footer>
+  <span>Vedtatt av gruppen G23 22.11.2026 · bygger på PRD-en (final, 22.11), ordbanken, DESIGN.md, EXPERIENCE.md og testdata/</span>
+  <span>Alle regler: architecture-COSI - MRP-2026-11-22-vedtatt/arkitektur.md (AD-1–AD-18)</span>
+</footer>
+</div>
+</body>
+</html>

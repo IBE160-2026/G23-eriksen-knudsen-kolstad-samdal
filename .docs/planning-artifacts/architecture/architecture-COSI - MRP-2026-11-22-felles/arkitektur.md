@@ -1,8 +1,8 @@
 ---
-title: 'COSI - MRP: felles arkitektur (utkast)'
+title: 'COSI - MRP: felles arkitektur (sammenstilling, vedtatt)'
 type: architecture
-status: utkast til gruppen
-owner: 'Idun Samdal – sammenstilt fra tre forslag, ikke gruppevedtak'
+status: vedtatt – erstattet av architecture-COSI - MRP-2026-11-22-vedtatt/arkitektur.md
+owner: 'Sammenstilt fra tre forslag, vedtatt av gruppen 22.11'
 created: '2026-11-22'
 updated: '2026-11-22'
 binds: [FR-1–FR-34, NFR-1–NFR-11]
@@ -14,9 +14,9 @@ sources:
   - '.docs/planning-artifacts/prds/prd-COSI - MRP-2026-10-19/prd.md og addendum.md'
 ---
 
-# Felles arkitektur for COSI - MRP (utkast)
+# Felles arkitektur for COSI - MRP (sammenstilling)
 
-**Utkast til gruppen, ikke vedtatt.** Arkitekturen er satt sammen fra de tre forslagene til Carmen, Sebastian og Idun. Ved avvik gjelder PRD-en.
+**Vedtatt av gruppen 22.11.2026.** Dette er sammenstillingen som viser hvor hvert valg kom fra. Arkitekturen som gjelder, står samlet i [../architecture-COSI - MRP-2026-11-22-vedtatt/arkitektur.md](../architecture-COSI%20-%20MRP-2026-11-22-vedtatt/arkitektur.md). Arkitekturen er satt sammen fra de tre forslagene til Carmen, Sebastian og Idun. Ved avvik gjelder PRD-en.
 
 **Oppdatert 22.11 etter UX-avklaringene gruppen godkjente samme dag** (PRD §4.4, FR-16, FR-27 og ordbanken). Kritiske deler står først i resultatet, appen har en introduksjonsside og fire menyvalg, resultattabellen har filteret «Vis bare kritiske deler», og ukeplanen er fjernet. G-5 og E-7 er dermed avgjort (kapittel 8 og 9), og FA-10, FA-13 og FA-14 er utvidet.
 
