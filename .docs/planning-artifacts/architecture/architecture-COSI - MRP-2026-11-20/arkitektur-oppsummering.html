@@ -66,7 +66,7 @@ a{color:var(--primar)}
   <div class="merke">G23 · IBE160 · arkitektur</div>
   <h1>Slik bygger vi COSI - MRP</h1>
   <p>Kort oppsummering av arkitekturen før vi deler opp arbeidet. Selve byggekontrakten er <code>ARCHITECTURE-SPINE.md</code> i samme mappe. Den går foran denne siden hvis de er uenige.</p>
-  <div class="meta">Utkast 20.11.2026 · Sebastian med Claude (Party Mode med Winston, Amelia og Sally) · gjennomgått av tre uavhengige kontrollører</div>
+  <div class="meta">Utkast 20.11.2026, oppdatert 22.11 etter gruppas UX-avklaringer · Sebastian med Claude (Party Mode med Winston, Amelia og Sally) · gjennomgått av tre uavhengige kontrollører</div>
 </div></header>
 
 <main class="inn">
@@ -132,7 +132,7 @@ a{color:var(--primar)}
     <div class="regel"><span class="id">AD-8</span><b>Én sammenligning</b><p>Skjermen og eksporten viser de samme linjene, i samme rekkefølge som arket Sammenligning i fasit 03.</p></div>
     <div class="regel"><span class="id">AD-9</span><b>Nettingen finnes én gang</b><p>Kapasiteten og fast partistørrelse bruker samme beregningssteg med valg, ikke en kopi.</p></div>
     <div class="regel"><span class="id">AD-11</span><b>Testene er uavhengige</b><p><code>lag_testdata.py</code> kopieres aldri inn i appen. Testene leser fasit-filene og sammenligner tall, koder og rekkefølge, ikke ordlyd.</p></div>
-    <div class="regel"><span class="id">AD-13</span><b>Odas v3 med PRD-valgene</b><p>Bestillingsforslag først, offisielt typenavn først, ukefilter på Uke 1, ingen ukeplan, ingen Prototypevalg. Vanlige HTML-kontroller i stedet for shadcn/Radix.</p></div>
+    <div class="regel"><span class="id">AD-13</span><b>Odas v3 med PRD-valgene</b><p>Kritiske deler først, offisielt typenavn først, ukefilter på Uke 1, ingen ukeplan, ingen Prototypevalg. Vanlige HTML-kontroller i stedet for shadcn/Radix.</p></div>
     <div class="regel"><span class="id">AD-16</span><b>Én rekkefølge for en kjøring</b><p>Les, valider, hent forrige, beregn, sammenlign, og lagre til slutt. Feiler noe, lagres ingenting.</p></div>
   </div></div>
 </section>
@@ -171,5 +171,5 @@ a{color:var(--primar)}
   </div>
 </section>
 
-<footer>Kilder: PRD final 13.11, addendum, EXPERIENCE.md og DESIGN.md (final 14.11), Odas prototype v3 og avviksliste, ordbanken. Begrunnelsene for hvert valg står i <code>.memlog.md</code> i arkitekturmappa.</footer>
+<footer>Kilder: PRD final (oppdatert 22.11), addendum, EXPERIENCE.md og DESIGN.md (final 14.11), Odas prototype v3 og avviksliste, ordbanken. Begrunnelsene for hvert valg står i <code>.memlog.md</code> i arkitekturmappa.</footer>
 </main>
