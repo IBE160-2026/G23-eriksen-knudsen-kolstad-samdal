@@ -78,6 +78,11 @@
   .mini.new{border:1.5px solid var(--amber)}
   .pill-new{background:var(--amber);color:#fff;font-size:10px;border-radius:4px;padding:0 5px;margin-left:4px;vertical-align:1px}
   .e.done{opacity:.75}
+  .gnum.ok{background:var(--green)}
+  code.dir{font-size:10.5px;font-weight:600;background:var(--band);border-radius:3px;padding:0 4px;margin-left:3px;color:var(--muted)}
+  .src .G{background:var(--top)}
+  .who{display:inline-block;border-radius:5px;padding:1px 7px;font-size:11px;font-weight:600;white-space:nowrap;background:var(--band)}
+  td code{font-size:11px;background:var(--band);border-radius:3px;padding:0 3px}
   .e.yes .box2{background:var(--green);border-color:var(--green);color:#fff;font-size:10px;display:grid;place-items:center}
   .ans{background:var(--green-soft);color:var(--green);font-weight:700;font-size:11px;border-radius:4px;padding:0 6px;margin-left:4px}
   .e.done .box2{background:var(--green);border-color:var(--green);color:#fff;font-size:10px;display:grid;place-items:center}
@@ -105,7 +110,7 @@
   <div class="rule"><span class="dot" style="background:var(--top)"></span><b>Avgjort av gruppen:</b>&nbsp;går foran alt</div>
   <div class="rule"><span class="dot" style="background:var(--brass-line)"></span><b>Valgt på forhånd:</b>&nbsp;React og SheetJS CE</div>
   <div class="rule"><span class="dot" style="background:var(--green)"></span><b>To av tre er like:</b>&nbsp;det valget gjelder</div>
-  <div class="rule"><span class="dot" style="background:var(--amber)"></span><b>Alle tre ulike:</b>&nbsp;gruppen avgjør</div>
+  <div class="rule"><span class="dot" style="background:var(--amber)"></span><b>Alle tre ulike:</b>&nbsp;avgjort av gruppen 22.11</div>
   <div class="rule"><span class="dot" style="border:1.5px solid var(--edge)"></span><b>Bare ett forslag:</b>&nbsp;avgjort av gruppen 22.11</div>
   <div class="rule"><span class="src"><span class="C">C</span><span class="S">S</span><span class="I">I</span><span class="A">Alle</span></span>&nbsp;= hvem valget kommer fra</div>
 </div>
@@ -116,14 +121,14 @@
   <section class="tray">
     <h2><span class="n">1</span>Arkitekturen <small>– alt skjer i brukerens nettleser</small></h2>
     <div class="arch">
-      <div class="box"><b>UI</b>Fire visninger, tastatur og fokus<div class="tech">Context + useReducer · én status-region</div></div>
-      <div class="box"><b>Styring</b>Én kjøring i fast rekkefølge<div class="tech">les → valider → beregn → sammenlign → lagre</div></div>
-      <div class="box"><b>Lagring</b>Ett utdrag per ferdigprodukt<div class="tech">localStorage · try/catch</div></div>
-      <div class="box"><b>Excel-delen</b>Leser .xlsx og skriver eksport<div class="tech">SheetJS CE 0.20.3 · bare her</div></div>
-      <div class="box"><b>Tekster</b>All norsk tekst og tallformat<div class="tech">kjernen gir bare koder</div></div>
+      <div class="box"><b>UI <code class="dir">ui/</code></b>Vanlig HTML og CSS fra Odas v3<div class="tech">fire visninger · hash-ruting · status-region</div></div>
+      <div class="box"><b>Styring <code class="dir">app/</code></b>Én kjøring i fast rekkefølge<div class="tech">les → valider → beregn → sammenlign → lagre</div></div>
+      <div class="box"><b>Lagring <code class="dir">lagring/</code></b>Ett utdrag per ferdigprodukt<div class="tech">localStorage · try/catch</div></div>
+      <div class="box"><b>Excel-delen <code class="dir">excel/</code></b>Leser .xlsx og skriver eksport<div class="tech">SheetJS CE 0.20.3 · bare her</div></div>
+      <div class="box"><b>Tekster <code class="dir">tekster/</code></b>All norsk tekst og tallformat<div class="tech">kjernen gir bare koder</div></div>
       <div class="box"><b>Tester</b>Vitest mot fasit · Playwright<div class="tech">npm test uten nett</div></div>
       <div class="downarrow">▼</div>
-      <div class="box core"><b>Kjernen – ren TypeScript, ingen nettleser, ingen klokke</b>
+      <div class="box core"><b>Kjernen <code class="dir">domene/</code> – ren TypeScript, ingen nettleser, ingen klokke</b>
         <div class="steps"><span>typer.ts</span><span>valider</span><span>struktur</span><span>netting</span><span>beregn</span><span>eksepsjoner</span><span>kapasitet</span><span>utdrag</span><span>sammenlign</span></div>
       </div>
       <div class="box host"><span><b>Vercel</b> · bare statiske filer · ingen serverfunksjoner eller analyse</span><span>Full, streng CSP · connect-src 'self' · testet</span></div>
@@ -136,7 +141,7 @@
       <div class="d"><div class="k">Planlagte mottak</div><div class="v">Hvert mottak for seg – sjekk mot fasit 04</div><div class="src"><span class="S">S</span><span class="I">I</span></div></div>
       <div class="d"><div class="k">Struktur og netting</div><div class="v">Én eier av stykklisten, én netting</div><div class="src"><span class="S">S</span><span class="I">I</span></div></div>
       <div class="d"><div class="k">Forklaring (FR-18)</div><div class="v">Utregning ligger ferdig i resultatet</div><div class="src"><span class="S">S</span><span class="I">I</span></div></div>
-      <div class="d"><div class="k">Navigasjon</div><div class="v">Samme adresse, pushState per visning</div><div class="src"><span class="S">S</span><span class="I">I</span></div></div>
+      <div class="d"><div class="k">Navigasjon</div><div class="v">Egen hash-adresse per visning</div><div class="src"><span class="G">G-7</span><span class="C">C</span></div></div>
       <div class="d"><div class="k">Web Worker</div><div class="v">Først hvis 1000 rader tar over 3 s</div><div class="src"><span class="C">C</span><span class="S">S</span></div></div>
       <div class="d"><div class="k">Sammenligning</div><div class="v">Varenummer + uke + type · fast rekkefølge</div><div class="src"><span class="S">S</span><span class="I">I</span></div></div>
       <div class="d"><div class="k">Tester</div><div class="v">Arkitekturtest + Playwright (test:e2e)</div><div class="src"><span class="C">C</span><span class="I">I</span></div></div>
@@ -171,23 +176,21 @@
     </section>
 
     <section class="tray">
-      <h2><span class="n">3</span>Gruppen må avgjøre <small>– alle tre er ulike</small></h2>
+      <h2><span class="n">3</span>Avgjort av hele gruppen 22.11 <small>– der forslagene var ulike</small></h2>
       <table>
-        <thead><tr><th></th><th>Spørsmål og alternativer</th></tr></thead>
+        <thead><tr><th></th><th>Spørsmål → valgt</th><th>Fra</th></tr></thead>
         <tbody>
-          <tr><td><span class="gnum">G-1</span></td><td><span class="q"><b>UI-komponenter</b></span>
-            <span class="opt oc">C: ingen bibliotek</span> <span class="opt os">S: vanlig HTML, porter Odas v3</span> <span class="opt oi">I: shadcn/ui + Tailwind</span></td></tr>
-          <tr><td><span class="gnum">G-2</span></td><td><span class="q"><b>Hvor stykklisten slutter</b></span>
-            <span class="opt oc">C: siste rad med verdi</span> <span class="opt os">S: tomme rader hoppes over</span> <span class="opt oi">I: første tomme rad</span></td></tr>
-          <tr><td><span class="gnum">G-3</span></td><td><span class="q"><b>Mappestruktur og navn</b></span>
-            <span class="opt oc">C: kjerne/ inn/ flyt/ …</span> <span class="opt os">S: core/ shell/ …</span> <span class="opt oi">I: domene/ excel/ app/ …</span></td></tr>
-          <tr><td><span class="gnum">G-4</span></td><td><span class="q"><b>Grenser for fil og tid</b></span>
-            <span class="opt oc">C: 10 MB / 15 s</span> <span class="opt os">S: ingen</span> <span class="opt oi">I: 30 s</span></td></tr>
+          <tr><td><span class="gnum ok">G-1</span></td><td><span class="q"><b>UI-komponenter</b></span>Vanlig HTML og CSS fra Odas prototype v3, uten komponentbibliotek</td><td><span class="who os">Sebastian</span></td></tr>
+          <tr><td><span class="gnum ok">G-2</span></td><td><span class="q"><b>Hvor stykklisten slutter</b></span>Første tomme rad. Innhold under gir én feil – testet med V-S01 mot PRD FR-3</td><td><span class="who oi">Idun</span></td></tr>
+          <tr><td><span class="gnum ok">G-3</span></td><td><span class="q"><b>Mappestruktur</b></span><code>domene/ tekster/ excel/ lagring/ app/ ui/</code></td><td><span class="who oi">Idun</span></td></tr>
+          <tr><td><span class="gnum ok">G-4</span></td><td><span class="q"><b>Grense for tid</b></span>30 sekunder, ingen grense for filstørrelse</td><td><span class="who oi">Idun</span></td></tr>
+          <tr><td><span class="gnum ok">G-6</span></td><td><span class="q"><b>Excel-testing (NFR-11)</b></span>Mac: Carmen og Idun · Windows: Sebastian og Oda</td><td><span class="who">Gruppen</span></td></tr>
+          <tr><td><span class="gnum ok">G-7</span></td><td><span class="q"><b>Navigasjon</b></span>Egen hash-adresse per visning: <code>#/introduksjon</code> <code>#/ny-kjoring</code> <code>#/resultat</code> <code>#/lagrede-kjoringer</code></td><td><span class="who oc">Carmen</span></td></tr>
         </tbody>
       </table>
       <div class="two">
-        <div class="mini new"><b>G-7 Navigasjon med fire visninger <span class="pill-new">NY</span></b>Flertallet valgte samme adresse da appen hadde to visninger. Med fire kan Carmens <code>#/resultat</code> passe bedre.</div>
-        <div class="mini"><b>G-6 Hvem bygger hva</b>Fordeling av arbeidet og hvem tester i Excel for Windows og Mac. Koordinator er avgjort: Idun.</div>
+        <div class="mini new"><b>Står igjen <span class="pill-new">G-6</span></b>Hvem bygger hva: fordelingen av nr. 2–10 i byggerekkefølgen.</div>
+        <div class="mini"><b>Må oppdateres</b>EXPERIENCE.md (G-1, G-7, fire visninger) og PRD FR-3 (G-2, E-1).</div>
       </div>
     </section>
 

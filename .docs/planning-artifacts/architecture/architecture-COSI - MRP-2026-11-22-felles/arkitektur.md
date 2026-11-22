@@ -22,13 +22,15 @@ sources:
 
 **E-1 til E-6 avgjort av gruppen 22.11:** alle er godtatt, og Idun er koordinator for `typer.ts`. Svarene er ført inn i FA-3, FA-4, FA-5, FA-16, FA-17 og FA-18 (kapittel 9).
 
+**G-1 til G-7 avgjort av hele gruppen 22.11** (kapittel 8): UI-et lages med vanlig HTML og CSS fra Odas prototype v3 (G-1). Stykklisten slutter ved første tomme rad, og innhold under den gir én feil (G-2). Mappene er Iduns (G-3), og tidsgrensen er 30 sekunder (G-4). Excel-testene er fordelt (G-6), og hver visning får sin egen hash-adresse (G-7). Ført inn i kapittel 3, FA-1, FA-5, FA-13, FA-15 og FA-16. Bare fordelingen av byggearbeidet i G-6 står igjen.
+
 ## 1. Slik er dokumentet laget
 
 | Regel | Hva det betyr her |
 |---|---|
 | **Valgt på forhånd** | React og SheetJS CE |
 | **To av tre er like** | Det valget gjelder. Hver beslutning viser hvem valget kommer fra. |
-| **Alle tre er ulike** | Gruppen avgjør. Står i kapittel 8. |
+| **Alle tre er ulike** | Avgjort av gruppen 22.11. Står i kapittel 8. |
 | **Bare ett forslag tar stilling** | Tatt med først når gruppen har avgjort det. Svarene står i kapittel 9. |
 | **Avgjort av gruppen** | Gruppens vedtak i PRD-en og ordbanken går foran alle tre forslagene. |
 
@@ -43,7 +45,9 @@ Merkingen bak hver beslutning: **Alle** = alle tre forslagene, **C** = Carmen, *
 | Excel | SheetJS CE 0.20.3 | Valgt på forhånd (S + I) |
 | Oppbygging | Ren beregningskjerne med tynt skall | Alle |
 | Web Worker | Ikke i starten. Legges til hvis målingen med 1000 rader viser over 3 sekunder | C + S |
-| Navigasjon | Samme adresse for alle visninger, ett historikkpunkt med `pushState` | S + I |
+| Navigasjon | Egen hash-adresse per visning (`#/resultat` osv.), skrevet selv | G-7 (C) |
+| UI-komponenter | Vanlig HTML og CSS fra Odas prototype v3, uten komponentbibliotek | G-1 (S) |
+| Mapper | `domene/`, `tekster/`, `excel/`, `lagring/`, `app/`, `ui/` | G-3 (I) |
 | Tilstand | React Context med `useReducer`, uten eget bibliotek | C + I |
 | Lagring | `localStorage`, ett lite utdrag per ferdigprodukt, synkront grensesnitt | Alle / S + I |
 | Planlagte mottak | Hvert mottak holdes for seg og legges ikke sammen på forhånd | S + I |
@@ -56,11 +60,14 @@ Merkingen bak hver beslutning: **Alle** = alle tre forslagene, **C** = Carmen, *
 | Navn i koden | ASCII: æ, ø og å skrives ae, o og a | C + I |
 | Visninger | Introduksjon, Ny kjøring, Resultat og Lagrede kjøringer | Avgjort av gruppen 22.11 (PRD FR-27, ordbanken) |
 | Rekkefølgen i resultatet | Tallbokser, kritiske deler, bestillingsforslag, endringer, resultattabell, kapasitet. Ingen ukeplan | Avgjort av gruppen 22.11 (PRD §4.4) |
-| **Åpent** | UI-komponenter, hvor stykklisten slutter, mappestruktur, grenser for filstørrelse og tid | Kapittel 8 |
+| Slutten av stykklisten | Første rad der Nivå og Varenummer er tomme. Innhold under gir én valideringsfeil (V-S01) | G-2 (I) |
+| Tidsgrense | 30 sekunder for lesing og beregning. Ingen grense for filstørrelse | G-4 (I) |
+| Excel-testing (NFR-11) | Mac: Carmen og Idun. Windows: Sebastian og Oda | G-6 |
+| **Åpent** | Hvem bygger hva (resten av G-6) | Kapittel 8 |
 
 ## 3. Oppbygging
 
-Appen har fire deler. Navnene på mappene avgjøres av gruppen (G-3), så her brukes navnet på delen.
+Appen har seks deler i hver sin mappe under `src/` (G-3, avgjort av gruppen 22.11). Teksten bruker navnet på delen, og tabellen viser mappen.
 
 ```text
  Brukerens nettleser (alt skjer her)
@@ -80,14 +87,35 @@ Appen har fire deler. Navnene på mappene avgjøres av gruppen (G-3), så her br
  └─────────────┘
 ```
 
-| Del | Ansvar | Kan bruke |
-|---|---|---|
-| Kjernen | Typer, validering, stykklistestruktur, MRP-beregning, eksepsjoner, kapasitet, utdrag og sammenligning | Bare seg selv |
-| Tekster | All norsk tekst og tallformatering | Typer fra kjernen |
-| Excel-delen | Lese `.xlsx` til rådata og skrive eksportfilen | Kjernen, tekster, SheetJS |
-| Lagring | Lese, skrive og slette lagrede kjøringer | Typer fra kjernen |
-| Styring | Kjøre én kjøring fra fil til resultat i fast rekkefølge | Kjernen, Excel-delen, lagring |
-| UI | React-komponenter, visninger, tastatur og fokus | Styring, tekster, typer fra kjernen |
+| Del | Mappe | Ansvar | Kan bruke |
+|---|---|---|---|
+| Kjernen | `src/domene/` | Typer, validering, stykklistestruktur, MRP-beregning, eksepsjoner, kapasitet, utdrag og sammenligning | Bare seg selv |
+| Tekster | `src/tekster/` | All norsk tekst og tallformatering | Typer fra kjernen |
+| Excel-delen | `src/excel/` | Lese `.xlsx` til rådata og skrive eksportfilen | Kjernen, tekster, SheetJS |
+| Lagring | `src/lagring/` | Lese, skrive og slette lagrede kjøringer og intro-nøkkelen | Typer fra kjernen |
+| Styring | `src/app/` | Kjøre én kjøring fra fil til resultat i fast rekkefølge, og holde tilstanden | Kjernen, Excel-delen, lagring |
+| UI | `src/ui/` | React-komponenter, visninger, hash-ruting, tastatur og fokus | Styring, tekster, typer fra kjernen |
+
+Iduns forslag hadde også `src/worker/`. Den lages først når Web Worker innføres (FA-14).
+
+```text
+/
+  src/
+    domene/      typer.ts, valider.ts, struktur.ts, netting.ts, beregn.ts,
+                 eksepsjoner.ts, kapasitet.ts, utdrag.ts, sammenlign.ts
+    tekster/     nb.ts (all norsk tekst og formatering)
+    excel/       les.ts (xlsx → rådata eller filfeil), eksport.ts
+    lagring/     lagrede-kjoringer.ts (eneste bruk av localStorage)
+    app/         kjoring.ts (rekkefølgen i FA-12), tilstand.tsx
+    ui/          ruter.ts, introduksjon/, ny-kjoring/, resultat/, lagrede-kjoringer/,
+                 resultattabell/, forklaringspanel/, kapasitet/, felles/
+    main.tsx
+  public/        COSI-MRP-mal.xlsx, testeksempel-01.xlsx (like filene i testdata/)
+  tests/         samme mappestruktur som src/, pluss fasit/, validering/, arkitektur.test.ts
+  e2e/           Playwright
+  testdata/      malen, testeksemplene, fasitene, validering/, lag_testdata.py
+  vercel.json    CSP og andre sikkerhetshoder
+```
 
 ## 4. Beslutninger
 
@@ -95,9 +123,15 @@ Hver beslutning har nummer (FA-1 osv.), kravene den gjelder, og grunnlaget.
 
 ### FA-1: React, Vite og TypeScript
 
-- **Grunnlag:** valgt på forhånd (C + I). Vite og TypeScript: alle.
-- **Gjelder:** NFR-3, NFR-6, FR-14–FR-18
-- **Regel:** Prosjektet starter fra Vite-malen `react-ts`. TypeScript kjøres med `strict`. Skriften Source Sans 3 (DESIGN.md) ligger i bygget og hentes ikke fra Google eller andre (NFR-4).
+- **Grunnlag:** valgt på forhånd (C + I). Vite og TypeScript: alle. UI-komponenter: G-1, avgjort av gruppen 22.11 (S).
+- **Gjelder:** NFR-3, NFR-6, NFR-8, FR-14–FR-18, FR-27
+- **Regel:**
+  - Prosjektet starter fra Vite-malen `react-ts`. TypeScript kjøres med `strict`. Skriften Source Sans 3 (DESIGN.md) ligger i bygget og hentes ikke fra Google eller andre (NFR-4).
+  - **UI-et lages med vanlig HTML og CSS fra Odas prototype v3** (`ux-prototype-2026-11-17-v3/index.html`), skrevet om til React-komponenter. Prototypefilene endres ikke.
+  - Det brukes **ikke noe komponentbibliotek** (ikke shadcn/ui, Radix eller Tailwind). Dialoger, nedtrekkslister og radioknapper er vanlig HTML (`<dialog>`, `<select>`, `<fieldset>` med radioknapper), med tastatur- og fokusoppførselen i EXPERIENCE.md.
+  - **Disse delene av prototypen tas ikke med:** panelet Prototypevalg, prototypens egen ruting (erstattes av FA-13), mørk modus (bare lys i v1) og prototypens nøkler i `localStorage`.
+  - Der prototypen og PRD-en eller ordbanken er ulike, gjelder PRD-en og ordbanken. Det gjelder for eksempel rekkefølgen i resultatet (FA-14) og navnene «Tallboks» og «Seksjonsmeny».
+  - EXPERIENCE.md sier shadcn/ui, Radix og Tailwind, og må oppdateres med dette valget.
 
 ### FA-2: Ren kjerne og faste lag
 
@@ -139,6 +173,7 @@ Hver beslutning har nummer (FA-1 osv.), kravene den gjelder, og grunnlaget.
   - Excel-delen gir én kode for hver feil i hele filen (ikke en Excel-fil, tom fil, skadet fil). Hver kode får sin egen melding (NFR-9).
   - Valideringen samler alle feilene før den svarer, også etter FR-2-regelen om å hoppe over kontroller som avhenger av noe som mangler.
   - Styringen har den ene `try/catch` som gjør en uventet feil om til en norsk melding. Ved feil vises ingen resultat, og ingenting lagres.
+  - **Tidsgrense på 30 sekunder** (G-4, avgjort av gruppen 22.11): tar lesing og beregning mer enn 30 sekunder, gir det «uventet feil», og brukeren kan laste opp en ny fil (NFR-9). Det er ingen grense for filstørrelse. Grensen kan bare håndheves helt når lesingen og beregningen kjører i en Web Worker, fordi hovedtråden ikke kan avbryte SheetJS midt i en fil. Til worker-en innføres (FA-14), måler styringen tiden og gir feilen når arbeidet er ferdig.
   - **React-feilgrense** (E-5, avgjort av gruppen 22.11): én feilgrense rundt visningene fanger feil under tegning, som `try/catch` i styringen ikke fanger. Den viser en norsk reservemelding og lar brukeren gå til Ny kjøring og laste opp på nytt uten å laste siden på nytt (NFR-9).
 
 ### FA-6: Én eier av stykklistestrukturen
@@ -214,14 +249,18 @@ Hver beslutning har nummer (FA-1 osv.), kravene den gjelder, og grunnlaget.
 
 ### FA-13: Tilstand og navigasjon
 
-- **Grunnlag:** Context og `useReducer`: C + I. Samme adresse og `pushState`: S + I.
+- **Grunnlag:** Context og `useReducer`: C + I. Hash-ruting: G-7, avgjort av gruppen 22.11 (C).
 - **Gjelder:** FR-1, FR-19–FR-21, FR-27, FR-30, EXPERIENCE › Adresse og historikk
 - **Regel:**
   - Appen har fire visninger med menyvalgene fra ordbanken: **Introduksjon**, **Ny kjøring** (startsiden), **Resultat** og **Lagrede kjøringer** (PRD FR-27 og ordbanken, avgjort 22.11).
-  - Felles tilstand ligger i React Context med `useReducer`: visningen, den viste kjøringen og statusmeldinger. Det brukes ikke noe tilstands- eller rutebibliotek.
-  - Første besøk i en nettleser viser Introduksjon. Senere besøk og reload viser Ny kjøring (FA-10, `cosi-mrp:intro-sett`).
-  - Alle visningene har samme adresse. Hvert bytte av visning legger inn ett historikkpunkt med `history.pushState`, med visningen i `state`, så Tilbake og Frem går mellom visningene.
-  - Resultatet og filen finnes bare i minnet. Åpnes Resultat uten en kjøring i minnet, for eksempel etter reload, vises en kort melding med lenke til Ny kjøring.
+  - Felles tilstand ligger i React Context med `useReducer`: den viste kjøringen og statusmeldinger. Det brukes ikke noe tilstands- eller rutebibliotek.
+  - **Hver visning har sin egen hash-adresse** i ASCII: `#/introduksjon`, `#/ny-kjoring`, `#/resultat` og `#/lagrede-kjoringer`. Rutingen skrives selv. Den lytter på `hashchange`, og rutetabellen ligger i `ui/ruter.ts`. Tilbake og Frem i nettleseren følger adressene, og en visning kan bokmerkes.
+  - Uten adresse eller med en ukjent adresse går appen til `#/introduksjon` første gang i en nettleser og ellers til `#/ny-kjoring` (FA-10, `cosi-mrp:intro-sett`).
+  - Etter en vellykket kjøring setter styringen adressen til `#/resultat`.
+  - Resultatet og filen finnes bare i minnet. Åpnes `#/resultat` uten en kjøring i minnet, for eksempel etter reload eller fra et bokmerke, vises en kort melding med lenke til Ny kjøring.
+  - Lokal tilstand som filtre, valgt celle og åpent panel legges ikke i adressen.
+  - Seksjonsmenyen på Resultat ruller til seksjonen med `scrollIntoView` og bruker ikke `href="#…"`, fordi det ville endret ruten.
+  - EXPERIENCE.md sier at startsiden og resultatsiden har samme adresse, og må oppdateres med dette valget.
   - Én `role="status"`-region ligger i rotkomponenten og byttes aldri ut.
 
 ### FA-14: Resultattabell og ytelse
@@ -242,6 +281,11 @@ Hver beslutning har nummer (FA-1 osv.), kravene den gjelder, og grunnlaget.
   - Bare Excel-delen importerer SheetJS (og en hjelpefunksjon i testene som leser fasitfilene).
   - SheetJS installeres fra `https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz`, aldri med `npm i xlsx`. Pakken på npm er en gammel versjon med kjente sikkerhetshull.
   - Ark og kolonner finnes etter navn, ikke plass (S + I). Excel-delen leser lagrede verdier og aldri formler. Hver rad får sitt Excel-radnummer.
+  - **Hvor stykklisten slutter** (G-2, avgjort av gruppen 22.11, I): stykklisten slutter ved første rad der både Nivå og Varenummer er tomme, slik addendumet sier.
+    - Excel-delen leser likevel videre i malens kolonner A–H til og med rad 1001 og tar med om det står noe under den tomme raden.
+    - Står det innhold under, gir valideringen **én** feil på den tomme raden (FR-3: «Fra rad 2 og sammenhengende nedover»). Radene under leses ikke inn.
+    - Formlene i hjelpekolonnene telles ikke som innhold.
+    - Slik gir `testdata/validering/V-S01.xlsx` nøyaktig én feil på rad 9, slik `testdata/validering/README.md` krever.
   - Arkene Veiledning og Veien videre, Kontroll-kolonnen og hjelpekolonnene leses ikke (alle).
   - Excel-delen avgjør aldri om noe er feil. Det gjør valideringen i kjernen (alle).
   - Eksporten bygger arbeidsboka fra `Kjoring`, med arket Sammenligning når det finnes (FR-22, FR-23).
@@ -253,7 +297,8 @@ Hver beslutning har nummer (FA-1 osv.), kravene den gjelder, og grunnlaget.
 - **Regel:**
   - `testdata/lag_testdata.py` importeres, oversettes eller kopieres aldri inn i appen. Det kan brukes til å lage inndatafiler, for eksempel filen med 1000 rader.
   - Fasittestene leser `testdata/*-fasit.xlsx` og kjører samme vei som appen. Tall, eksepsjoner (varenummer, uke, type), valideringsfeil (ark, rad, felt, kode) og linjene i sammenligningen sammenlignes. Ordlyden sammenlignes ikke.
-  - Hver fil i `testdata/validering/` har sin egen test.
+  - Hver fil i `testdata/validering/` har sin egen test, med antall feil og stedet fra `testdata/validering/README.md`. `V-S01.xlsx` (tom rad midt i stykklisten) skal gi nøyaktig én feil på rad 9 (G-2).
+  - **Excel for Windows og Mac** (NFR-11, G-6): testeksempel 01 og 02 åpnes og lagres på nytt i Excel for Mac av Carmen og Idun, og i Excel for Windows av Sebastian og Oda. Filene legges inn som egne testfiler og skal gi samme resultat som de opprinnelige. Eksportfilen åpnes i Excel på begge.
   - `npm test` kjører alt i Vitest, inkludert arkitekturtesten, uten nett, nøkler eller kontoer.
   - En test sjekker at malen og testeksempel 01 i `public/` er like filene i `testdata/` (FR-27).
   - `npm run test:e2e` kjører Playwright: opplasting av testeksempel 01, de tre filene i NFR-9 og blokkert lagring (NFR-10). Den er ikke med i `npm test`.
@@ -309,7 +354,8 @@ Versjonene er sjekket 22.11.2026 og låses eksakt i `package.json` (E-4).
 | Vitest | 5.1.1 | Alle |
 | @playwright/test | 1.65.1 | C + I |
 | oxlint | 1.94.0 | E-3 |
-| UI-komponenter og CSS | Avhenger av G-1 | Åpent |
+| UI-komponenter og CSS | Ingen bibliotek. Vanlig HTML og CSS fra Odas prototype v3 | G-1 |
+| @fontsource/source-sans-3 | 5.3.1 | FA-1 (skrift i bygget) |
 
 ## 7. Byggerekkefølge
 
@@ -331,27 +377,29 @@ Rekkefølgen følger PRD §7.1, så trinn 1–3 kan være testet før kuttbeslut
 
 Når nr. 1 er flettet inn, kan nr. 2–4 og nr. 6 gjøres samtidig. UI-et kan bygges mot eksempeldata hentet fra fasit 01.
 
-## 8. Gruppen må avgjøre (alle tre forslagene er ulike)
+## 8. Gruppens avgjørelser 22.11 (der forslagene var ulike)
 
-| Nr. | Spørsmål | Carmen | Sebastian | Idun | Påvirker |
-|---|---|---|---|---|---|
-| G-1 | UI-komponenter | Ingen bibliotek | Vanlig HTML, og HTML og CSS fra Odas v3 portes | shadcn/ui og Tailwind, slik EXPERIENCE.md sier | Hele UI-et. Velges noe annet enn shadcn/ui, må EXPERIENCE.md endres. |
-| G-2 | Hvor stykklisten slutter | Siste rad med verdi, så en tom rad midt i gir feil | Helt tomme rader hoppes over | Første rad der Nivå og Varenummer er tomme (addendumet) | Valideringen og testene. Bør føres inn i FR-3. |
-| G-3 | Mappestruktur og navn på delene | `kjerne/`, `inn/`, `lagring/`, `eksport/`, `tekster/`, `flyt/`, `ui/` | `core/`, `shell/`, `tekster/`, `ui/` | `domene/`, `tekster/`, `excel/`, `lagring/`, `worker/`, `app/`, `ui/` | Story 0 og arkitekturtesten. Delene i kapittel 3 er like. Bare inndelingen og navnene er ulike. |
-| G-4 | Grenser for filstørrelse og tid | Over 10 MB eller 15 sekunders innlesing avvises | Ingen | 30 sekunder (knyttet til Web Worker) | NFR-9 |
+Alle avgjørelsene her er godkjent av hele gruppen 22.11.
 
-**Avgjøres også av gruppen (to forslag sier det):**
+| Nr. | Spørsmål | Carmen | Sebastian | Idun | **Avgjort** | Ført inn i |
+|---|---|---|---|---|---|---|
+| G-1 | UI-komponenter | Ingen bibliotek | Vanlig HTML, og HTML og CSS fra Odas v3 portes | shadcn/ui og Tailwind | **Sebastians**: vanlig HTML og CSS fra Odas v3 | FA-1 |
+| G-2 | Hvor stykklisten slutter | Siste rad med verdi | Helt tomme rader hoppes over | Første rad der Nivå og Varenummer er tomme (addendumet) | **Iduns**, med en valideringstest mot PRD-en: innhold under den tomme raden gir én feil (V-S01) | FA-15, FA-16 |
+| G-3 | Mappestruktur og navn | `kjerne/`, `inn/`, `flyt/` … | `core/`, `shell/` … | `domene/`, `excel/`, `app/` … | **Iduns**, uten `worker/` til worker-en innføres | Kapittel 3 |
+| G-4 | Grenser for filstørrelse og tid | 10 MB / 15 s | Ingen | 30 s | **Iduns**: 30 sekunder, ingen grense for størrelse | FA-5 |
+| ~~G-5~~ | Resultatsiden (U5, U6, U14) | | | | **Avgjort i PRD-en 22.11**: kritiske deler først, introduksjonsside, ingen ukeplan | FA-13, FA-14 |
+| G-6 | Hvem tester med Excel (NFR-11) | | | | **Mac: Carmen og Idun. Windows: Sebastian og Oda** | FA-16 |
+| G-7 | Navigasjon med fire visninger | Hash-adresser | Samme adresse | Samme adresse | **Carmens**: egen hash-adresse per visning | FA-13 |
 
-| Nr. | Spørsmål | Merknad |
-|---|---|---|
-| ~~G-5~~ | ~~Rekkefølgen på resultatsiden, ukeplan og introduksjonsside (U5, U6, U14)~~ | **Avgjort av gruppen 22.11** og ført inn i PRD-en: kritiske deler først, introduksjonsside ved første besøk, ingen ukeplan. Se FA-13 og FA-14. |
-| G-6 | Hvem bygger hva | Fordelingen av nr. 2–10 i kapittel 7, og hvem som tester med Excel for Windows og for Mac (NFR-11). Koordinator for `typer.ts` er avgjort: Idun (E-2). |
-
-**Bør vurderes på nytt etter 22.11:**
+**Står igjen:**
 
 | Nr. | Spørsmål | Merknad |
 |---|---|---|
-| G-7 | Navigasjon med fire menyvalg | FA-13 følger flertallet (S + I): samme adresse for alle visningene. Da Sebastian og Idun skrev forslagene sine, hadde appen bare to visninger. Med fire menyvalg kan Carmens hash-adresser (`#/resultat` osv.) passe bedre, fordi en visning da kan bokmerkes. EXPERIENCE.md må uansett oppdateres med de nye visningene. |
+| G-6 | Hvem bygger hva | Fordelingen av nr. 2–10 i kapittel 7. Testing med Excel og koordinator for `typer.ts` (Idun) er avgjort. |
+
+**Dokumenter som må oppdateres etter avgjørelsene:**
+- **EXPERIENCE.md:** shadcn/ui, Radix og Tailwind (G-1), samme adresse for alle visninger (G-7), og de fire visningene fra 22.11.
+- **PRD FR-3:** regelen om tom rad (G-2) og heltall lagret som tekst (E-1) bør stå i kravet.
 
 ## 9. Bare ett forslag tok stilling (avgjort av gruppen 22.11)
 
