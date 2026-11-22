@@ -10,7 +10,7 @@ Hente det siste fra GitHub og merge `main` inn i `Sebastian/Branch`, slik at gre
 - `git merge origin/main` og løs konfliktene.
 
 ### Resultat
-- Merge-commit `2df41ad` på `Sebastian/Branch`. Den er ikke pushet.
+- Merge-commit `2df41ad` på `Sebastian/Branch`, pushet til `origin` (`bce4ffb..7fddb85`).
 - Fra `main`: vedtatt arkitektur 22.11 (`architecture-COSI - MRP-2026-11-22-vedtatt/`, `bc2615d`), felles `DESIGN.md`, `EXPERIENCE.md` og `kilder.md` (`ux-COSI - MRP-2026-11-22/`, PR #17) og ni UI-ord i ordbanken (PR #18).
 - Konflikten i `.docs/ordbank.md` gjaldt raden Seksjonsmeny. Versjonen fra `main` ble beholdt, så «navigasjonsrad» står nå under «Ikke bruk» for Appmeny og ikke for Seksjonsmeny. De nye radene fra `main` (Appmeny til Statusmelding) er med.
 
