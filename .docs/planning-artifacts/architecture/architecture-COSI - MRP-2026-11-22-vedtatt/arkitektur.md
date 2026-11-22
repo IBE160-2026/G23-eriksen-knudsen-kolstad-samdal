@@ -10,7 +10,7 @@ sources:
   - '.docs/planning-artifacts/prds/prd-COSI - MRP-2026-10-19/prd.md (final, oppdatert 22.11)'
   - '.docs/planning-artifacts/prds/prd-COSI - MRP-2026-10-19/addendum.md'
   - '.docs/ordbank.md (oppdatert 22.11)'
-  - '.docs/planning-artifacts/ux-designs/ux-COSI - MRP-2026-11-13/DESIGN.md og EXPERIENCE.md'
+  - '.docs/planning-artifacts/ux-designs/ux-COSI - MRP-2026-11-22/DESIGN.md og EXPERIENCE.md (felles, 22.11)'
   - '.docs/planning-artifacts/ux-designs/ux-prototype-2026-11-17-v3/'
   - 'testdata/'
 ---
@@ -30,7 +30,8 @@ COSI - MRP er én statisk nettapp som kjører helt i brukerens nettleser. Vercel
 | UI | Vanlig HTML og CSS fra UX-prototypen v3, skrevet om til React-komponenter. Ingen komponentbibliotek |
 | Excel | SheetJS Community Edition 0.20.3, bare i Excel-delen |
 | Oppbygging | Ren beregningskjerne uten nettleser-API, med et tynt skall rundt |
-| Visninger | Introduksjon, Ny kjøring, Resultat og Lagrede kjøringer, hver med sin egen hash-adresse |
+| Visninger | Introduksjon, Ny kjøring, Resultat, Lagrede kjøringer og Veiledning, hver med sin egen hash-adresse |
+| Visning | Lys og mørk, valgt av brukeren og husket i nettleseren |
 | Tilstand | React Context med `useReducer`, uten eget bibliotek |
 | Lagring | `localStorage`, ett lite utdrag per ferdigprodukt |
 | Web Worker | Fra start: lesing, validering og beregning kjører i en Web Worker, så siden aldri fryser |
@@ -71,7 +72,7 @@ COSI - MRP er én statisk nettapp som kjører helt i brukerens nettleser. Vercel
 | Kjernen | `src/domene/` | Typer, validering, stykklistestruktur, MRP-beregning, eksepsjoner, kapasitet, utdrag og sammenligning | Bare `src/domene/` |
 | Tekster | `src/tekster/` | All norsk tekst og tallformatering | Typer fra `domene/` |
 | Excel-delen | `src/excel/` | Lese `.xlsx` til rådata, og skrive eksportfilen | `domene/`, `tekster/`, SheetJS |
-| Lagring | `src/lagring/` | Lese, skrive, liste og slette lagrede kjøringer, og intro-nøkkelen | Typer fra `domene/` |
+| Lagring | `src/lagring/` | Lese, skrive, liste og slette lagrede kjøringer, og nøklene for introduksjonen og visningen | Typer fra `domene/` |
 | Worker | `src/worker/` | Kjøre lesing, validering og beregning utenfor hovedtråden | `domene/`, `excel/` |
 | Styring | `src/app/` | Starte worker-en, holde tidsgrensen, sammenligne, lagre og holde felles tilstand | `domene/`, `excel/` (bare eksport), `lagring/`, `tekster/`, `worker/` |
 | UI | `src/ui/` | React-komponenter, visninger, ruting, tastatur og fokus | `app/`, `tekster/`, typer fra `domene/` |
@@ -90,7 +91,7 @@ En arkitekturtest i Vitest leser importene i `src/` og feiler hvis en del import
     lagring/     lagrede-kjoringer.ts (eneste bruk av localStorage)
     worker/      beregning.worker.ts, meldinger.ts (typene for meldingene inn og ut)
     app/         kjoring.ts (rekkefølgen i AD-12), tilstand.tsx
-    ui/          ruter.ts, introduksjon/, ny-kjoring/, resultat/, lagrede-kjoringer/,
+    ui/          ruter.ts, appmeny/, introduksjon/, ny-kjoring/, resultat/, lagrede-kjoringer/, veiledning/,
                  resultattabell/, forklaringspanel/, kapasitet/, felles/
     main.tsx
   public/        COSI-MRP-mal.xlsx, testeksempel-01.xlsx (like filene i testdata/)
@@ -110,10 +111,11 @@ Hver beslutning har nummer (AD-1 osv.), kravene den gjelder, og regelen.
 - **Regel:**
   - Prosjektet starter fra Vite-malen `react-ts`. TypeScript kjøres med `strict`.
   - UI-et lages med vanlig HTML og CSS fra UX-prototypen (`ux-prototype-2026-11-17-v3/index.html`), skrevet om til React-komponenter. Prototypefilene endres ikke.
+  - **UX-dokumentene gjelder** (`ux-designs/ux-COSI - MRP-2026-11-22/`): DESIGN.md for farger, skrift og avstander, og EXPERIENCE.md for sider, tilstander og oppførsel. Tokenene i DESIGN.md blir CSS-variabler i én fil, `ui/felles/tokens.css`. Der prototypen og UX-dokumentene, PRD-en eller ordbanken er ulike, gjelder dokumentene, for eksempel rekkefølgen i resultatet (AD-14) og navnene «Tallboks», «Seksjonsmeny», «Kjøringslinje» og «Appmeny».
   - Det brukes ikke noe komponentbibliotek. Dialoger, nedtrekkslister og radioknapper er vanlig HTML (`<dialog>`, `<select>`, `<fieldset>` med radioknapper), med tastatur- og fokusoppførselen i EXPERIENCE.md.
-  - Fra prototypen tas ikke med: panelet Prototypevalg, prototypens egen ruting (erstattes av AD-13), mørk modus (bare lys i v1) og prototypens nøkler i `localStorage`.
-  - Der prototypen og PRD-en eller ordbanken er ulike, gjelder PRD-en og ordbanken, for eksempel rekkefølgen i resultatet (AD-14) og navnene «Tallboks» og «Seksjonsmeny».
-  - Skriften Source Sans 3 (DESIGN.md) ligger i bygget via `@fontsource` og hentes aldri fra Google eller andre (NFR-4).
+  - Fra prototypen tas ikke med: panelet Prototypevalg, prototypens egen ruting (erstattes av AD-13) og prototypens nøkler i `localStorage`.
+  - **Lys og mørk visning** (DESIGN.md og EXPERIENCE.md, avgjort 22.11): lys er standard, og brukeren bytter med knappen nederst i appmenyen. Begge visningene bruker de samme CSS-variablene, og den mørke settes med `data-visning="mork"` på `<html>`. Valget lagres i nettleseren (AD-10) og leses før siden tegnes første gang, så siden ikke blinker i feil visning. Kontrasten kontrolleres i begge visningene.
+  - **Skriftene** IBM Plex Sans, IBM Plex Sans Condensed og IBM Plex Mono (DESIGN.md) ligger i bygget via `@fontsource` og hentes aldri fra Google Fonts eller andre (NFR-4).
 
 ### AD-2: Ren kjerne og faste deler
 
@@ -208,8 +210,10 @@ De viktigste typene:
   - Nøkkelen er `cosi-mrp:kjoring:<varenummer på nivå 0>`. Det lagres én kjøring per ferdigprodukt, og en ny erstatter den gamle.
   - Utdraget har `schemaVersjon`, varenummer og navn på ferdigproduktet, tidspunkt, delene (varenummer, beskrivelse), bestillingsforslagene (varenummer, frigivelsesuke, mengde) og eksepsjonene (varenummer, uke, type). Excel-filen og resultattabellen lagres aldri.
   - Siden Lagrede kjøringer lager listen ved å gå gjennom nøklene med prefikset `cosi-mrp:kjoring:`. Det er ingen egen indeks.
-  - Den eneste andre nøkkelen er `cosi-mrp:intro-sett`, som sier om introduksjonssiden er vist i denne nettleseren.
-  - Er lagringen blokkert eller full, vises kjøringen som vanlig med en melding om at den ikke er lagret, og introduksjonssiden vises ved hvert besøk. Et utdrag med ukjent `schemaVersjon` regnes som om det ikke finnes.
+  - I tillegg finnes bare to nøkler, og ingen av dem inneholder varenummer eller andre produktdata:
+    - `cosi-mrp:intro-sett` sier om introduksjonssiden er vist i denne nettleseren.
+    - `cosi-mrp:visning` er `lys` eller `mork` (AD-1). Mangler den, er visningen lys.
+  - Er lagringen blokkert eller full, vises kjøringen som vanlig med en melding om at den ikke er lagret. Introduksjonssiden vises ved hvert besøk, og valget av lys eller mørk visning gjelder til siden lukkes. Et utdrag med ukjent `schemaVersjon` regnes som om det ikke finnes.
   - Sletting (FR-21) fjerner nøkkelen. En kjøring med bare produksjonskapasitet lagres ikke (FR-30).
 
 ### AD-11: Sammenligning i kjernen
@@ -245,7 +249,7 @@ De viktigste typene:
 
 - **Gjelder:** FR-1, FR-19–FR-21, FR-27, FR-30
 - **Regel:**
-  - Appen har fire visninger med menyvalgene fra ordbanken, og hver har sin egen hash-adresse i ASCII:
+  - Appen har fem visninger, som nås fra appmenyen til venstre (EXPERIENCE.md). Hver har sin egen hash-adresse i ASCII:
 
     | Visning | Adresse |
     |---|---|
@@ -253,6 +257,7 @@ De viktigste typene:
     | Ny kjøring (startsiden) | `#/ny-kjoring` |
     | Resultat | `#/resultat` |
     | Lagrede kjøringer | `#/lagrede-kjoringer` |
+    | Veiledning (hvordan nettsiden brukes) | `#/veiledning` |
 
   - Rutingen skrives selv uten bibliotek. Den lytter på `hashchange`, og rutetabellen ligger i `ui/ruter.ts`. Tilbake og Frem i nettleseren følger adressene, og en visning kan bokmerkes.
   - Uten adresse eller med en ukjent adresse går appen til `#/introduksjon` første gang i en nettleser, og ellers til `#/ny-kjoring` (AD-10, `cosi-mrp:intro-sett`).
@@ -266,7 +271,7 @@ De viktigste typene:
 
 - **Gjelder:** FR-14–FR-18, NFR-5, NFR-8
 - **Regel:**
-  - Resultatet vises i denne rekkefølgen (PRD §4.4 og ordbanken): tallboksene, kritiske deler, bestillingsforslag, endringer (når de finnes), resultattabellen og produksjonskapasiteten (når den er valgt). Uten kritiske deler vises bare en kort melding (FR-16). Det er ingen ukeplan.
+  - Resultatet vises i denne rekkefølgen (PRD §4.4 og EXPERIENCE.md): kjøringslinjen med seksjonsmenyen, tallboksene, «Slik leser du resultatet», kritiske deler, bestillingsforslag, endringer (når de finnes), resultattabellen og produksjonskapasiteten (når den er valgt). Uten kritiske deler vises bare en kort melding (FR-16). Med bare produksjonskapasitet vises bare kjøringslinjen og kapasiteten (FR-30). Det er ingen ukeplan.
   - Resultattabell er én semantisk `<table>` med én `<tbody>` per del. Hver del er memoisert, så bare delen som endres, tegnes på nytt.
   - Valgt celle, ukefilter, filteret «Vis bare kritiske deler» (FR-16) og åpent forklaringspanel er lokal tilstand i visningen. Filteret skjuler bare deler på skjermen og endrer ikke `Resultat` eller eksporten.
   - Ytelsen måles tidlig med en fil på 1000 rader, laget med `testdata/lag_testdata.py`. Lesing og beregning går i worker-en (AD-12), så målingen gjelder mest tegningen av tabellen. Nås ikke 3 sekunder, prøves tiltakene i EXPERIENCE.md: `content-visibility: auto`, virtualisering og sammenslått visning.
@@ -331,7 +336,7 @@ De viktigste typene:
 | Rekkefølge | Deler følger stykklisten, og en felles del står der den står første gang (FR-16). Bestillingsforslag sorteres på frigivelsesuke og så stykklisterekkefølge. Eksepsjoner sorteres på stykklisterekkefølge, uke («–» først) og typen i rekkefølgen i PRD §4.3. |
 | Tall | Heltall uten desimaler, formatert med `Intl.NumberFormat('nb-NO')` i `tekster/` |
 | Tilgjengelighet | Markeringer har alltid farge og tekst eller symbol (NFR-8). Forklaringspanelet åpnes ved klikk, trykk eller Enter, aldri ved peking (FR-18). Ingen `alert()`. |
-| Ord i grensesnittet | Ordbanken gjelder, blant annet Tallboks, Seksjonsmeny, Resultat, Lagret kjøring, Introduksjonsside og Startside. |
+| Ord i grensesnittet | Ordbanken gjelder, blant annet Appmeny, Kjøringslinje, Tallboks, Seksjonsmeny, Resultat, Lagret kjøring, Introduksjonsside, Startside og Opplastingssone. |
 | Kommandoer | `npm ci`, `npm run dev`, `npm test`, `npm run lint`, `npm run build`, `npm run test:e2e`. De står i README (NFR-3). |
 
 ## 5. Teknologi og versjoner
@@ -346,7 +351,7 @@ Versjonene er sjekket 22.11.2026 og låses eksakt i `package.json`.
 | React og react-dom | 19.3.1 |
 | @vitejs/plugin-react | 6.3.0 |
 | SheetJS Community Edition | 0.20.3 (fra cdn.sheetjs.com) |
-| @fontsource/source-sans-3 | 5.3.1 |
+| @fontsource/ibm-plex-sans, -sans-condensed og -mono | 5.3.0 |
 | Vitest | 5.1.1 |
 | @playwright/test | 1.65.1 |
 | oxlint | 1.94.0 |
@@ -366,7 +371,7 @@ Versjonene er sjekket 22.11.2026 og låses eksakt i `package.json`.
 | FR-19–FR-21 lagring, sammenligning og Lagrede kjøringer | `domene/utdrag.ts`, `domene/sammenlign.ts`, `lagring/`, `app/kjoring.ts`, `ui/lagrede-kjoringer/` | AD-10, AD-11, AD-12, AD-13 |
 | FR-22–FR-23 eksport | `excel/eksport.ts` | AD-8, AD-11, AD-15 |
 | FR-24–FR-26 fast partistørrelse | innstilling i `domene/netting.ts` | AD-7 |
-| FR-27 introduksjonsside, veiledning og nedlasting | `ui/introduksjon/`, `ui/ny-kjoring/`, `lagring/`, `public/` | AD-10, AD-13, AD-17 |
+| FR-27 introduksjonsside, veiledning og nedlasting | `ui/introduksjon/`, `ui/ny-kjoring/`, `ui/veiledning/`, `lagring/`, `public/` | AD-10, AD-13, AD-17 |
 | FR-30–FR-34 produksjonskapasitet | `domene/kapasitet.ts`, `ui/kapasitet/` | AD-7, AD-8, AD-12, AD-17 |
 | NFR-1 beregning skilt fra resten | `src/domene/` | AD-2 |
 | NFR-2 tester mot fasit | `tests/` | AD-16 |
@@ -401,7 +406,7 @@ Rekkefølgen følger PRD §7.1, så trinn 1–3 kan være testet før kuttbeslut
 | 3 | Struktur, netting og beregning, med fasittester for testeksempel 01–04 | 1 |
 | 4 | Eksepsjoner, med fasittester | 1 |
 | 5 | Worker-en, styringen, tilstanden og rutingen | 1 |
-| 6 | Introduksjon, Ny kjøring, Resultat og Resultattabell med filteret «Vis bare kritiske deler». Ytelsesmåling med 1000 rader | 1 |
+| 6 | Appmenyen med lys og mørk visning, Introduksjon, Ny kjøring, Veiledning, Resultat og Resultattabell med filteret «Vis bare kritiske deler». Ytelsesmåling med 1000 rader | 1 |
 | 7 | Forklaringspanelet | 2 |
 | 8 | Lagring, sammenligning, Lagrede kjøringer og eksport | 3 |
 | 9 | Produksjonskapasitet, med fasittest for testeksempel 05 | 4 |
@@ -431,7 +436,8 @@ Når nr. 1 er flettet inn, kan nr. 2–4 og nr. 6 gjøres samtidig. UI-et kan by
 
 | Dokument | Hva |
 |---|---|
-| EXPERIENCE.md | UI-system: vanlig HTML og CSS fra prototypen, ikke shadcn/ui, Radix og Tailwind (AD-1). Navigasjon: egen hash-adresse per visning, ikke samme adresse (AD-13). De fire visningene og den nye rekkefølgen i resultatet. |
+| EXPERIENCE.md | Spørsmål 7 (UI-bibliotek) og 3 (skriften) kan lukkes: arkitekturen har valgt vanlig HTML og CSS uten bibliotek (AD-1) og selvhostet IBM Plex (AD-1). |
+| Ordbanken | De ni UI-ordene fra 22.11 (Appmeny, Kjøringslinje, Opplastingssone, Feiloppsummering, Delens felt, Eksepsjonsmerke, Forklaringspanel, Ukefilter, Statusmelding) står som forslag og bør godkjennes av gruppen. |
 | PRD FR-3 | Regelen om tom rad midt i stykklisten (AD-15) og heltall lagret som tekst (AD-4) |
 
 ## 12. Endringer
@@ -440,3 +446,4 @@ Når nr. 1 er flettet inn, kan nr. 2–4 og nr. 6 gjøres samtidig. UI-et kan by
 |---|---|---|
 | 22.11.2026 | Arkitekturen vedtatt av gruppen. | Hele dokumentet |
 | 22.11.2026 | Web Worker fra start, i stedet for først når målingen krever det. Lesing, validering og beregning kjører i `src/worker/`, og tidsgrensen på 30 sekunder håndheves med `terminate()`. Navigasjonen med egen hash-adresse per visning (AD-13) er bekreftet uendret. | Kapittel 1 og 2, AD-5, AD-12, AD-14, kapittel 6, 8 og 10 |
+| 22.11.2026 | Tilpasset de felles UX-dokumentene (`ux-COSI - MRP-2026-11-22`): femte visning Veiledning (`#/veiledning`) og appmeny, lys og mørk visning med nøkkelen `cosi-mrp:visning`, seksjonen «Slik leser du resultatet» og kjøringslinjen i resultatet, skriftene IBM Plex i stedet for Source Sans 3, og tokenene i DESIGN.md som CSS-variabler. | Kapittel 1, 2, 4, 5, 6, 8 og 11, AD-1, AD-10, AD-13, AD-14 |

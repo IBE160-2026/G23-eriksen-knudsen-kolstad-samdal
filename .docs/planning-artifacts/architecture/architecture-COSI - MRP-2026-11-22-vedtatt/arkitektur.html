@@ -95,7 +95,7 @@
 <div class="stack">
   <span><b>React</b> 19.3.1</span><span><b>Vite</b> 8.3.8</span><span><b>TypeScript</b> 7.0.2 strict</span>
   <span><b>SheetJS CE</b> 0.20.3</span><span><b>Vitest</b> 5.1.1</span><span><b>Playwright</b> 1.65.1</span>
-  <span><b>oxlint</b> 1.94.0</span><span><b>Node</b> 24 LTS</span><span><b>Web Worker</b> fra start</span><span><b>Vercel</b> statisk</span>
+  <span><b>oxlint</b> 1.94.0</span><span><b>Node</b> 24 LTS</span><span><b>Web Worker</b> fra start</span><span><b>IBM Plex</b> selvhostet</span><span><b>Vercel</b> statisk</span>
   <span>Ingen komponentbibliotek</span><span>Eksakte versjoner</span>
 </div>
 
@@ -104,9 +104,9 @@
   <section class="tray">
     <h2><span class="n">1</span>Oppbygging <small>– sju deler, hver i sin mappe under src/</small></h2>
     <div class="arch">
-      <div class="box"><b>UI <code>ui/</code></b>Vanlig HTML og CSS fra prototypen v3<div class="tech">fire visninger · hash-ruting · feilgrense</div></div>
+      <div class="box"><b>UI <code>ui/</code></b>Vanlig HTML og CSS fra prototypen v3<div class="tech">fem visninger · hash-ruting · lys og mørk</div></div>
       <div class="box"><b>Styring <code>app/</code></b>Én kjøring i fast rekkefølge<div class="tech">les → valider → beregn → sammenlign → lagre</div></div>
-      <div class="box"><b>Lagring <code>lagring/</code></b>Ett utdrag per ferdigprodukt<div class="tech">localStorage · try/catch · intro-nøkkel</div></div>
+      <div class="box"><b>Lagring <code>lagring/</code></b>Ett utdrag per ferdigprodukt<div class="tech">localStorage · try/catch · intro og visning</div></div>
       <div class="box"><b>Excel-delen <code>excel/</code></b>Leser .xlsx og skriver eksport<div class="tech">SheetJS bare her · lesing kjører i worker-en</div></div>
       <div class="box"><b>Tekster <code>tekster/</code></b>All norsk tekst og tallformat<div class="tech">kjernen gir bare koder</div></div>
       <div class="box"><b>Tester <code>tests/</code> <code>e2e/</code></b>Vitest mot fasit · Playwright<div class="tech">npm test uten nett · arkitekturtest</div></div>
@@ -149,13 +149,14 @@
         <span class="vw">Introduksjon<em>#/introduksjon</em></span><span class="ar">→</span>
         <span class="vw">Ny kjøring<em>#/ny-kjoring</em></span><span class="ar">→</span>
         <span class="vw">Resultat<em>#/resultat</em></span>
-        <span class="vw">Lagrede kjøringer<em>#/lagrede-kjoringer</em></span></div>
+        <span class="vw">Lagrede kjøringer<em>#/lagrede-kjoringer</em></span>
+        <span class="vw">Veiledning<em>#/veiledning</em></span></div>
       <div class="flowrow"><span class="lbl">Resultatet</span>
-        <span class="sec">Tallbokser</span><span class="ar">→</span><span class="sec hi">Kritiske deler</span><span class="ar">→</span>
+        <span class="sec">Kjøringslinje</span><span class="ar">→</span><span class="sec">Tallbokser</span><span class="ar">→</span><span class="sec">Slik leser du</span><span class="ar">→</span><span class="sec hi">Kritiske deler</span><span class="ar">→</span>
         <span class="sec">Bestillingsforslag</span><span class="ar">→</span><span class="sec">Endringer</span><span class="ar">→</span>
         <span class="sec">Resultattabell</span><span class="ar">→</span><span class="sec">Kapasitet</span></div>
       <div class="facts">
-        <span>Intro første gang, så Ny kjøring</span>
+        <span>Appmeny til venstre</span><span>Lys og mørk, huskes i nettleseren</span><span>Intro første gang, så Ny kjøring</span>
         <span>Tilbake/Frem følger adressene</span>
         <span>Filter «Vis bare kritiske deler»</span>
         <span>Ingen ukeplan</span>
@@ -181,13 +182,13 @@
         <div class="role"><div class="k">Tester i Excel for Mac</div><div class="v">Carmen og Idun</div></div>
         <div class="role"><div class="k">Tester i Excel for Windows</div><div class="v">Sebastian og Oda</div></div>
       </div>
-      <div class="todo"><b>Må oppdateres:</b> EXPERIENCE.md (UI uten shadcn/ui, hash-adresser, fire visninger) og PRD FR-3 (tom rad, heltall som tekst).</div>
+      <div class="todo"><b>Gjenstår:</b> PRD FR-3 (tom rad, heltall som tekst) · lukk spørsmål 3 og 7 i EXPERIENCE.md · godkjenn de ni nye UI-ordene i ordbanken.</div>
     </section>
   </div>
 </div>
 
 <footer>
-  <span>Vedtatt av gruppen G23 22.11.2026 · bygger på PRD-en (final, 22.11), ordbanken, DESIGN.md, EXPERIENCE.md og testdata/</span>
+  <span>Vedtatt av gruppen G23 22.11.2026 · bygger på PRD-en (final, 22.11), ordbanken, de felles DESIGN.md og EXPERIENCE.md (22.11) og testdata/</span>
   <span>Alle regler: architecture-COSI - MRP-2026-11-22-vedtatt/arkitektur.md (AD-1–AD-18)</span>
 </footer>
 </div>
