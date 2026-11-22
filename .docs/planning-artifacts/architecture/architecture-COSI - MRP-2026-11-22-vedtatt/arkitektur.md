@@ -432,13 +432,15 @@ Når nr. 1 er flettet inn, kan nr. 2–4 og nr. 6 gjøres samtidig. UI-et kan by
 - **CI på GitHub:** kan legges til senere (AD-18).
 - **Flere ferdigprodukter samlet, hva-om-scenarier og mer enn tre nivåer:** utenfor v1 (PRD §7.2). Lagringsnøkkelen per ferdigprodukt (AD-10) må endres når flere produkter planlegges samlet.
 
-## 11. Dokumenter som må oppdateres
+## 11. Dokumenter som er oppdatert etter arkitekturen
+
+Alle ble oppdatert 22.11, etter gruppens ja.
 
 | Dokument | Hva |
 |---|---|
-| EXPERIENCE.md | Spørsmål 7 (UI-bibliotek) og 3 (skriften) kan lukkes: arkitekturen har valgt vanlig HTML og CSS uten bibliotek (AD-1) og selvhostet IBM Plex (AD-1). |
-| Ordbanken | De ni UI-ordene fra 22.11 (Appmeny, Kjøringslinje, Opplastingssone, Feiloppsummering, Delens felt, Eksepsjonsmerke, Forklaringspanel, Ukefilter, Statusmelding) står som forslag og bør godkjennes av gruppen. |
-| PRD FR-3 | Regelen om tom rad midt i stykklisten (AD-15) og heltall lagret som tekst (AD-4) |
+| PRD FR-3 og addendum | Regelen om tom rad midt i stykklisten (AD-15) og heltall lagret som tekst (AD-4), med nye testbare konsekvenser |
+| EXPERIENCE.md (`ux-COSI - MRP-2026-11-22`) | UI-systemet er ført inn (AD-1), og spørsmål 3 (skriften) og 7 (UI-bibliotek) er lukket |
+| Ordbanken | De ni UI-ordene fra 22.11 (Appmeny, Kjøringslinje, Opplastingssone, Feiloppsummering, Delens felt, Eksepsjonsmerke, Forklaringspanel, Ukefilter, Statusmelding) er godkjent |
 
 ## 12. Endringer
 
@@ -447,3 +449,4 @@ Når nr. 1 er flettet inn, kan nr. 2–4 og nr. 6 gjøres samtidig. UI-et kan by
 | 22.11.2026 | Arkitekturen vedtatt av gruppen. | Hele dokumentet |
 | 22.11.2026 | Web Worker fra start, i stedet for først når målingen krever det. Lesing, validering og beregning kjører i `src/worker/`, og tidsgrensen på 30 sekunder håndheves med `terminate()`. Navigasjonen med egen hash-adresse per visning (AD-13) er bekreftet uendret. | Kapittel 1 og 2, AD-5, AD-12, AD-14, kapittel 6, 8 og 10 |
 | 22.11.2026 | Tilpasset de felles UX-dokumentene (`ux-COSI - MRP-2026-11-22`): femte visning Veiledning (`#/veiledning`) og appmeny, lys og mørk visning med nøkkelen `cosi-mrp:visning`, seksjonen «Slik leser du resultatet» og kjøringslinjen i resultatet, skriftene IBM Plex i stedet for Source Sans 3, og tokenene i DESIGN.md som CSS-variabler. | Kapittel 1, 2, 4, 5, 6, 8 og 11, AD-1, AD-10, AD-13, AD-14 |
+| 22.11.2026 | PRD FR-3, EXPERIENCE.md og ordbanken oppdatert etter arkitekturen (kapittel 11). | Kapittel 11 |

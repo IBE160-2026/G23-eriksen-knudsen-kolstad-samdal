@@ -125,6 +125,7 @@ Reglene i FR-6–FR-13, FR-28 og FR-29 er sjekket mot ASCM Supply Chain Dictiona
 - **2026-11-22 (godkjent av gruppen 22.11):** Rekkefølgen i resultatet er endret (U14 i UX-prototypen). Kritiske deler står først og bestillingsforslagene etter, så brukeren ser først det som krever handling, og deretter hva som skal bestilles. Uten kritiske deler vises bare en kort melding. Endret i §4.4, FR-16, UJ-1 og UJ-2.
 - **2026-11-22 (godkjent av gruppen 22.11):** Introduksjonsside og startside (U6 i UX-prototypen). Første besøk viser en introduksjonsside. Startsiden er «Ny kjøring», med nedlasting av malen og den korte veiledningen. Endret i FR-27 (ny konsekvens) og UJ-1.
 - **2026-11-22 (godkjent av gruppen 22.11):** Filteret «Vis bare kritiske deler» i resultattabellen (U10 i UX-prototypen, Sebastians forslag). Endret i FR-16, med en ny konsekvens.
+- **2026-11-22 (godkjent av gruppen 22.11):** To regler i FR-3 fra arkitekturen (AD-4 og AD-15). Stykklisten slutter ved første rad der både Nivå og Varenummer er tomme, og innhold under den gir én feil på den tomme raden, som `V-S01.xlsx` krever. Heltall lagret som tekst («7») godtas, mens desimaltall, ord og annen tekst fortsatt gir feil. Nye konsekvenser i FR-3.
 
 ## Lukkede spørsmål (fra PRD §9)
 
