@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="nb">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Felles arkitektur – COSI - MRP (utkast)</title>
+<style>
+  :root{
+    --bg:#EFEDE4; --card:#FBFAF5; --ink:#1D2420; --muted:#535E57; --band:#E4E2D6; --border:#DAD8CC; --edge:#74776B;
+    --top:#2C3A31; --top-ink:#EEF0E8; --top-muted:#B4C0B5; --brass:#C9A862; --brass-line:#8A6726;
+    --green:#2F5A43; --green-soft:#E3ECE0; --blue:#45586A; --blue-soft:#E3EAEE; --amber:#8A4F0B; --amber-soft:#F7E8D6;
+    --red:#A0302A; --red-soft:#F6E2DE; --plum:#7E2F55; --plum-soft:#F2E2EA;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:13.5px/1.4 "Segoe UI",Corbel,system-ui,sans-serif}
+  .page{max-width:1320px;margin:0 auto;padding:20px 24px 26px}
+  header{background:var(--top);color:var(--top-ink);border-radius:10px;padding:15px 22px;display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap}
+  header h1{margin:0;font-weight:300;font-size:26px}
+  header p{margin:4px 0 0;color:var(--top-muted);font-size:13px}
+  .status{background:var(--brass);color:#1F2620;font-weight:700;font-size:12px;border-radius:999px;padding:4px 12px;letter-spacing:.3px}
+  .rules{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+  .rule{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:6px 10px;font-size:12px;display:flex;align-items:center;gap:8px}
+  .dot{width:12px;height:12px;border-radius:3px;flex:none}
+  .grid{display:grid;grid-template-columns:1.25fr 1fr;gap:16px;margin-top:14px}
+  .tray{background:var(--band);border-radius:10px;padding:12px 14px}
+  .tray h2{margin:0 0 10px;font-size:15px;font-weight:600;display:flex;align-items:center;gap:8px}
+  .tray h2 .n{background:var(--top);color:var(--brass);border-radius:50%;width:22px;height:22px;display:inline-grid;place-items:center;font-size:12px}
+  .tray h2 small{font-weight:400;color:var(--muted);font-size:12px}
+
+  /* lag-diagram */
+  .arch{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;align-items:stretch}
+  .box{background:var(--card);border:1px solid var(--edge);border-radius:8px;padding:8px 10px;font-size:12px}
+  .box b{display:block;font-size:13px;margin-bottom:2px}
+  .box.core{grid-column:1/4;background:var(--green-soft);border-color:#9fbb9c}
+  .box.core .steps{display:flex;gap:4px;flex-wrap:wrap;margin-top:4px}
+  .box.core .steps span{background:var(--card);border:1px solid #b9cdb6;border-radius:5px;padding:1px 7px;font-size:11.5px}
+  .box.host{grid-column:1/4;background:var(--top);color:var(--top-muted);border:none;display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px}
+  .box.host b{color:#fff;display:inline}
+  .downarrow{grid-column:1/4;text-align:center;color:var(--brass-line);font-weight:700;line-height:1;margin:-2px 0}
+  .tech{font-size:11px;color:var(--muted)}
+
+  /* beslutningskort */
+  .dec{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:12px}
+  .d{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:7px 9px;font-size:12px;position:relative}
+  .d .k{font-size:10.5px;color:var(--muted);font-weight:600;letter-spacing:.3px;text-transform:uppercase}
+  .d .v{font-weight:600;font-size:12.5px;margin:1px 0 3px}
+  .src{display:flex;gap:3px}
+  .src span{font-size:10px;font-weight:700;border-radius:4px;padding:0 5px;color:#fff}
+  .src .C{background:var(--plum)} .src .S{background:var(--blue)} .src .I{background:var(--green)} .src .A{background:var(--edge)} .src .F{background:var(--brass-line)}
+
+  /* åpne */
+  table{width:100%;border-collapse:separate;border-spacing:0 5px;font-size:11.8px}
+  th{font-size:11px;text-align:left;color:var(--muted);font-weight:600;padding:0 6px}
+  td{background:var(--card);padding:6px 7px;vertical-align:top}
+  td:first-child{border-radius:6px 0 0 6px;font-weight:600;white-space:nowrap}
+  td:last-child{border-radius:0 6px 6px 0}
+  td .q{display:block;font-size:12.5px}
+  .opt{display:inline-block;border-radius:5px;padding:1px 6px;margin:1px 0}
+  .oc{background:var(--plum-soft)} .os{background:var(--blue-soft)} .oi{background:var(--green-soft)}
+  .gnum{display:inline-grid;place-items:center;background:var(--amber);color:#fff;border-radius:5px;font-size:11px;font-weight:700;padding:1px 6px}
+  .list{display:grid;gap:5px}
+  .e{background:var(--card);border:1px solid var(--border);border-radius:7px;padding:5px 8px;font-size:12px;display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:center}
+  .e .box2{width:14px;height:14px;border:1.5px solid var(--edge);border-radius:3px}
+  .e b{font-size:11px;color:var(--muted);font-weight:600}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+  .mini{background:var(--card);border:1px solid var(--border);border-radius:7px;padding:6px 8px;font-size:12px}
+  .mini b{display:block}
+  .note{font-size:11.5px;color:var(--muted);margin:6px 0 0}
+  footer{margin-top:12px;font-size:11px;color:var(--muted);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+  @media print{
+    @page{size:A4 landscape;margin:7mm}
+    body{background:#fff;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    .page{padding:0;max-width:none;zoom:.7}
+  }
+  @media (max-width:1050px){.grid{grid-template-columns:1fr}.dec{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<div class="page">
+
+<header>
+  <div>
+    <h1>Felles arkitektur for COSI - MRP</h1>
+    <p>Satt sammen fra forslagene til Carmen, Sebastian og Idun · 22.11.2026 · ved avvik gjelder PRD-en</p>
+  </div>
+  <span class="status">UTKAST – IKKE VEDTATT</span>
+</header>
+
+<div class="rules">
+  <div class="rule"><span class="dot" style="background:var(--brass-line)"></span><b>Valgt på forhånd:</b>&nbsp;React og SheetJS CE</div>
+  <div class="rule"><span class="dot" style="background:var(--green)"></span><b>To av tre er like:</b>&nbsp;det valget gjelder</div>
+  <div class="rule"><span class="dot" style="background:var(--amber)"></span><b>Alle tre ulike:</b>&nbsp;gruppen avgjør</div>
+  <div class="rule"><span class="dot" style="border:1.5px solid var(--edge)"></span><b>Bare ett forslag:</b>&nbsp;gruppen sier ja eller nei</div>
+  <div class="rule"><span class="src"><span class="C">C</span><span class="S">S</span><span class="I">I</span><span class="A">Alle</span></span>&nbsp;= hvem valget kommer fra</div>
+</div>
+
+<div class="grid">
+
+  <!-- VENSTRE: arkitekturen -->
+  <section class="tray">
+    <h2><span class="n">1</span>Arkitekturen <small>– alt skjer i brukerens nettleser</small></h2>
+    <div class="arch">
+      <div class="box"><b>UI</b>React-visninger, tastatur og fokus<div class="tech">Context + useReducer · én status-region</div></div>
+      <div class="box"><b>Styring</b>Én kjøring i fast rekkefølge<div class="tech">les → valider → beregn → sammenlign → lagre</div></div>
+      <div class="box"><b>Lagring</b>Ett utdrag per ferdigprodukt<div class="tech">localStorage · try/catch</div></div>
+      <div class="box"><b>Excel-delen</b>Leser .xlsx og skriver eksport<div class="tech">SheetJS CE 0.20.3 · bare her</div></div>
+      <div class="box"><b>Tekster</b>All norsk tekst og tallformat<div class="tech">kjernen gir bare koder</div></div>
+      <div class="box"><b>Tester</b>Vitest mot fasit · Playwright<div class="tech">npm test uten nett</div></div>
+      <div class="downarrow">▼</div>
+      <div class="box core"><b>Kjernen – ren TypeScript, ingen nettleser, ingen klokke</b>
+        <div class="steps"><span>typer.ts</span><span>valider</span><span>struktur</span><span>netting</span><span>beregn</span><span>eksepsjoner</span><span>kapasitet</span><span>utdrag</span><span>sammenlign</span></div>
+      </div>
+      <div class="box host"><span><b>Vercel</b> · bare statiske filer · ingen serverfunksjoner eller analyse</span><span>CSP: default-src 'self' · connect-src 'self'</span></div>
+    </div>
+
+    <div class="dec">
+      <div class="d"><div class="k">Rammeverk</div><div class="v">React 19 + Vite 8 + TypeScript 7</div><div class="src"><span class="F">Valgt</span><span class="C">C</span><span class="I">I</span></div></div>
+      <div class="d"><div class="k">Excel</div><div class="v">SheetJS CE fra cdn.sheetjs.com</div><div class="src"><span class="F">Valgt</span><span class="S">S</span><span class="I">I</span></div></div>
+      <div class="d"><div class="k">Datakontrakter</div><div class="v">Story 0 oppsett, Story 1 typer.ts først</div><div class="src"><span class="C">C</span><span class="I">I</span></div></div>
+      <div class="d"><div class="k">Planlagte mottak</div><div class="v">Hvert mottak for seg – sjekk mot fasit 04</div><div class="src"><span class="S">S</span><span class="I">I</span></div></div>
+      <div class="d"><div class="k">Struktur og netting</div><div class="v">Én eier av stykklisten, én netting</div><div class="src"><span class="S">S</span><span class="I">I</span></div></div>
+      <div class="d"><div class="k">Forklaring (FR-18)</div><div class="v">Utregning ligger ferdig i resultatet</div><div class="src"><span class="S">S</span><span class="I">I</span></div></div>
+      <div class="d"><div class="k">Navigasjon</div><div class="v">Samme adresse, ett pushState</div><div class="src"><span class="S">S</span><span class="I">I</span></div></div>
+      <div class="d"><div class="k">Web Worker</div><div class="v">Først hvis 1000 rader tar over 3 s</div><div class="src"><span class="C">C</span><span class="S">S</span></div></div>
+      <div class="d"><div class="k">Sammenligning</div><div class="v">Varenummer + uke + type · fast rekkefølge</div><div class="src"><span class="S">S</span><span class="I">I</span></div></div>
+      <div class="d"><div class="k">Tester</div><div class="v">Arkitekturtest + Playwright (test:e2e)</div><div class="src"><span class="C">C</span><span class="I">I</span></div></div>
+      <div class="d"><div class="k">Navn i koden</div><div class="v">ASCII uten æøå: LagretKjoring</div><div class="src"><span class="C">C</span><span class="I">I</span></div></div>
+      <div class="d"><div class="k">Publisering</div><div class="v">VITE_KAPASITET · frossen brukertest-branch</div><div class="src"><span class="S">S</span><span class="I">I</span></div></div>
+    </div>
+    <p class="note">18 beslutninger (FA-1–FA-18) står med regler og kravnumre i arkitektur.md.</p>
+  </section>
+
+  <!-- HØYRE: åpne spørsmål -->
+  <div style="display:grid;gap:14px;align-content:start">
+    <section class="tray">
+      <h2><span class="n">2</span>Gruppen må avgjøre <small>– alle tre er ulike</small></h2>
+      <table>
+        <thead><tr><th></th><th>Spørsmål og alternativer</th></tr></thead>
+        <tbody>
+          <tr><td><span class="gnum">G-1</span></td><td><span class="q"><b>UI-komponenter</b></span>
+            <span class="opt oc">C: ingen bibliotek</span> <span class="opt os">S: vanlig HTML, porter Odas v3</span> <span class="opt oi">I: shadcn/ui + Tailwind</span></td></tr>
+          <tr><td><span class="gnum">G-2</span></td><td><span class="q"><b>Hvor stykklisten slutter</b></span>
+            <span class="opt oc">C: siste rad med verdi</span> <span class="opt os">S: tomme rader hoppes over</span> <span class="opt oi">I: første tomme rad</span></td></tr>
+          <tr><td><span class="gnum">G-3</span></td><td><span class="q"><b>Mappestruktur og navn</b></span>
+            <span class="opt oc">C: kjerne/ inn/ flyt/ …</span> <span class="opt os">S: core/ shell/ …</span> <span class="opt oi">I: domene/ excel/ app/ …</span></td></tr>
+          <tr><td><span class="gnum">G-4</span></td><td><span class="q"><b>Grenser for fil og tid</b></span>
+            <span class="opt oc">C: 10 MB / 15 s</span> <span class="opt os">S: ingen</span> <span class="opt oi">I: 30 s</span></td></tr>
+        </tbody>
+      </table>
+      <div class="two">
+        <div class="mini"><b>G-5 Resultatsiden</b>Rekkefølge, ukeplan og intro (U5, U6, U14). Må avgjøres før UI-et bygges.</div>
+        <div class="mini"><b>G-6 Hvem bygger hva</b>Fordeling av arbeidet og hvem tester i Excel for Windows og Mac.</div>
+      </div>
+    </section>
+
+    <section class="tray">
+      <h2><span class="n">3</span>Ja eller nei? <small>– bare ett forslag tar stilling</small></h2>
+      <div class="list">
+        <div class="e"><span class="box2"></span>E-1 Heltall lagret som tekst («7») godtas som 7<b>C</b></div>
+        <div class="e"><span class="box2"></span>E-2 Én koordinator eier typer.ts<b>C</b></div>
+        <div class="e"><span class="box2"></span>E-3 oxlint, og test, lint og build grønne før fletting<b>C</b></div>
+        <div class="e"><span class="box2"></span>E-4 Eksakte versjoner i package.json<b>C</b></div>
+        <div class="e"><span class="box2"></span>E-5 React-feilgrense med norsk reservemelding<b>C</b></div>
+        <div class="e"><span class="box2"></span>E-6 Full, streng CSP med test<b>C</b></div>
+        <div class="e"><span class="box2"></span>E-7 «Statuslinje» i koden, aldri «Sammendrag»<b>S</b></div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<footer>
+  <span>Kilder: Carmen/Branch (21.11), Sebastian/Branch (20.11), Idun/Branch (22.11) og sammenligningen 22.11.</span>
+  <span>Alle detaljer: architecture-COSI - MRP-2026-11-22-felles/arkitektur.md</span>
+</footer>
+</div>
+</body>
+</html>
