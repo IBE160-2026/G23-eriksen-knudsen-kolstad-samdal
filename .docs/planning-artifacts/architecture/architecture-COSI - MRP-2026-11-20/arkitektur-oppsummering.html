@@ -140,20 +140,21 @@ a{color:var(--primar)}
 <section class="brett"><h2>Rekkefølgen i resultatet <small>fast, ikke et valg</small></h2>
   <div class="flate">
     <ol class="rekke">
+      <li>Tallboksene</li>
+      <li>Kritiske deler, eller bare en kort melding når det ikke finnes noen</li>
       <li>Bestillingsforslag, med ukefilteret på Uke 1</li>
       <li>Endringer, når det finnes en lagret kjøring</li>
-      <li>Kritiske deler</li>
-      <li>Resultattabell</li>
+      <li>Resultattabell, med filteret «Vis bare kritiske deler» (gjelder ikke eksporten)</li>
       <li>Produksjonskapasitet, når den er valgt</li>
     </ol>
-    <p>Feltet øverst heter <b>Statuslinje</b> i koden, ikke «Sammendrag». Det ordet er lista over kritiske deler (FR-16).</p>
+    <p>Boksene øverst heter <b>Tallboks</b> i koden, og knapperaden heter <b>Seksjonsmeny</b>. Ingen av dem heter «Sammendrag». Det ordet er lista over kritiske deler (FR-16). Rekkefølgen ble endret etter gruppas UX-avklaringer 22.11.</p>
   </div>
 </section>
 
-<section class="brett"><h2>Gruppa må avgjøre <small>hindrer ikke at vi starter</small></h2>
+<section class="brett"><h2>Avgjort av gruppa <small>22.11</small></h2>
   <div class="flate apent">
-    <div><b>Introduksjonsside eller startside (U6)</b><p>Odas v3 har en egen introduksjonsside. FR-27 og UJ-1 sier startsiden. Arkitekturen tåler begge.</p></div>
-    <div><b>Statuslinje: fire bokser eller én tekstlinje</b><p>Ordbanken sier tekstlinje og «ikke KPI-kort». Er de fargede tallene i strid med SM-C3?</p></div>
+    <div class="avgjort"><b>Introduksjonsside (U6)</b><p>Første besøk viser introduksjonssiden, senere åpnes «Ny kjøring» direkte (FR-27). Appen husker det med nøkkelen <code>cosi-mrp:intro-sett</code>.</p></div>
+    <div class="avgjort"><b>Tallbokser, ikke tekstlinje (SM-C3)</b><p>Resultatet starter med fire tallbokser, pluss én for Endringer når den vises. Hvert klikk går til seksjonen.</p></div>
     <div class="avgjort"><b>Standardvalg for beregning (U11)</b><p>Bestillingsplan er forhåndsvalgt. EXPERIENCE.md og Odas v3 sier det samme, så vi regner det som avgjort med mindre noen protesterer.</p></div>
   </div>
 </section>
@@ -161,7 +162,7 @@ a{color:var(--primar)}
 <section class="brett"><h2>Hva som skjer nå</h2>
   <div class="flate">
     <ol class="rekke">
-      <li>Gruppa leser denne siden og svarer på de to åpne punktene.</li>
+      <li>Gruppa leser denne siden.</li>
       <li>Epics og stories lages fra PRD-en og arkitekturen (<code>bmad-create-epics-and-stories</code>).</li>
       <li>Første story: prosjektoppsett og <code>typer.ts</code>. Den merges før noen andre starter.</li>
       <li>Deretter kan kjernen, Excel-lesingen og skjermene bygges parallelt.</li>

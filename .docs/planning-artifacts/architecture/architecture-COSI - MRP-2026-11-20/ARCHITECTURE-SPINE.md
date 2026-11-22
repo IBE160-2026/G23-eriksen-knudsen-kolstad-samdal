@@ -7,7 +7,7 @@ paradigm: 'functional core, imperative shell (pipes-and-filters pipeline)'
 scope: 'COSI - MRP v1: browser-only MRP web app, FR-1–FR-34, NFR-1–NFR-11'
 status: final
 created: '2026-11-20'
-updated: '2026-11-20'
+updated: '2026-11-22'
 binds: [FR-1, FR-2, FR-3, FR-4, FR-5, FR-6, FR-7, FR-8, FR-9, FR-10, FR-11, FR-12, FR-13, FR-14, FR-15, FR-16, FR-17, FR-18, FR-19, FR-20, FR-21, FR-22, FR-23, FR-24, FR-25, FR-26, FR-27, FR-28, FR-29, FR-30, FR-31, FR-32, FR-33, FR-34, NFR-1, NFR-2, NFR-3, NFR-4, NFR-5, NFR-6, NFR-7, NFR-8, NFR-9, NFR-10, NFR-11]
 sources:
   - '.docs/planning-artifacts/prds/prd-COSI - MRP-2026-10-19/prd.md'
@@ -125,8 +125,8 @@ flowchart TD
 - **Rule:**
   - Only `shell/lagring/lagret-kjoring-lager.ts` touches `localStorage`. It stores one `LagretKjøring` per finished product under `cosi-mrp:kjoring:<varenummer nivå 0>`.
   - A `LagretKjøring` holds `schemaVersjon`, varenummer and name of the finished product, timestamp, the parts (varenummer, beskrivelse), the bestillingsforslag (varenummer, frigivelsesuke, mengde) and the exceptions (varenummer, uke, type). That is under about 150 kB per product, roughly 30 products within 5 MB.
-  - Deletion (FR-21) calls `removeItem` on that key. If a list view of stored runs is kept, it enumerates the `cosi-mrp:kjoring:` prefix.
-  - The only other key allowed is `cosi-mrp:intro-sett` (boolean), and only if the group chooses an intro page (U6). If the key is missing, the intro is shown.
+  - Deletion (FR-21) calls `removeItem` on that key. The Lagrede kjøringer view lists stored runs by enumerating the `cosi-mrp:kjoring:` prefix.
+  - The only other key allowed is `cosi-mrp:intro-sett` (boolean), for the introduksjonsside (FR-27, approved by the group 22.11). If the key is missing, the intro is shown. Leaving the intro for the start page sets it.
   - Every storage call is wrapped. If storage is blocked or full, the status is "ikke lagret" and the run still shows. A stored run with an unknown `schemaVersjon` is treated as absent.
   - The prototype's `lagret`, `valg` and `sett-intro` keys are not ported.
 
@@ -184,17 +184,19 @@ flowchart TD
 
 ### AD-13 — UI port of Oda's v3 with PRD defaults
 
-- **Binds:** FR-14–FR-18, FR-27, FR-30, FR-34, NFR-8
+- **Binds:** FR-14–FR-18, FR-27, FR-30, FR-34, NFR-8, PRD §4.4
 - **Prevents:** builders porting the prototype's toggles or non-PRD defaults, pulling in different component libraries, or inventing their own layout.
 - **Rule:** the Svelte UI is ported from `ux-prototype-2026-11-17-v3/index.html`, reusing its HTML and CSS. The prototype files themselves are not edited.
   - **Fixed choices, not settings:**
-    - Result order: Bestillingsforslag → Endringer (when present) → Kritiske deler → Resultattabell → Produksjonskapasitet (when chosen).
+    - Result order (PRD §4.4, approved 22.11): Tallbokser → Kritiske deler → Bestillingsforslag → Endringer (when present) → Resultattabell → Produksjonskapasitet (when chosen). The Seksjonsmeny follows the same order.
+    - With no critical parts, the Kritiske deler section shows only the short message from FR-16 and no list.
+    - «Vis bare kritiske deler» above the Resultattabell starts off. It is UI view state that filters on `Resultat.kritiskeDeler`, keeps Stykkliste order, and never reaches `eksport.ts` (FR-16).
     - Exception labels show the official type name first.
     - The week filter starts on Uke 1.
     - There is no Ukeplan.
     - Bestillingsplan is preselected in the radio group.
   - **Not ported:** the Prototypevalg panel, the hash router, the light/dark toggle (light only in v1) and the prototype's `localStorage` keys.
-  - **Naming:** the element at the top of the result page is called `Statuslinje` in code and in accessible names, never "Sammendrag", which is FR-16's list of critical parts.
+  - **Naming:** the boxes at the top of the result are `Tallboks` (four, plus one for Endringer when present), and the row of section buttons is `Seksjonsmeny`, in code and in accessible names. Neither is called "Sammendrag", which is FR-16's list of critical parts. Every count in a Tallboks is read from `Resultat` or `Sammenligning`, never recounted in the UI (AD-5). `Statuslinje` is only the start page's progress text.
   - **Interactive primitives:** native HTML (`<dialog>`, `<select>`, `fieldset` with radio buttons), with the keyboard and focus behaviour in EXPERIENCE. This replaces EXPERIENCE's shadcn/ui + Tailwind + Radix choice. No headless component library is used.
 
 ### AD-14 — View state, history and announcements
@@ -203,7 +205,7 @@ flowchart TD
 - **Prevents:** hash or path routes in some views and store state in others, results surviving a reload in one view only, and lost screen-reader announcements.
 - **Rule:**
   - One Svelte store holds the current view and the in-memory `Kjøring`. The URL never encodes the view.
-  - **Views:** start and resultat, plus intro and lagrede kjøringer only if U6 keeps them.
+  - **Views:** intro (menu «Introduksjon»), start (menu «Ny kjøring»), resultat (menu «Resultat») and lagrede kjøringer (menu «Lagrede kjøringer»). The first view is intro if `cosi-mrp:intro-sett` is missing (AD-7), otherwise start.
   - **History:** showing the result calls `history.pushState` once. `popstate` moves the store to start (Back) or back to the in-memory result (Forward). A reload always returns to start.
   - The result and the uploaded file live only in memory.
   - One `role="status"` live region sits in the root component and is never re-mounted when views swap.
@@ -314,7 +316,6 @@ flowchart LR
 
 - **Web Worker for the pipeline.** v1 runs on the main thread. If the NFR-5 measurement misses 3 s, a Worker comes before any table virtualisation.
 - **Component breakdown inside `ui/`.** It follows the prototype's sections, and stories decide the split.
-- **Intro page vs. FR-27 start page (U6), and the Statuslinje form (four boxes vs. a text line, SM-C3).** These are group UX decisions. AD-7, AD-13 and AD-14 already hold either outcome.
 - **Capacity with fixed lot size.** Capacity stays lot-for-lot until trinn 5 is built. It is decided then, as an AD-9 option.
 - **English text.** `tekster/` is the seam (AD-6). Not built in v1.
 - **CI.** `npm test` locally is the contract (NFR-2). A GitHub Action can be added without changing anything here.
