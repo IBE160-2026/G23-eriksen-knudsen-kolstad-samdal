@@ -246,3 +246,22 @@ Oda godtok anbefalingen: i tallboksene skal bare tallene som krever handling, ha
 
 ### Åpne punkter
 Ingen nye.
+
+## 2026-11-22 kl. 19:31 — Odawol
+
+### Oppgave
+Oda så tallboksene i Edge og ville ha en sterkere rosa. Hun spurte også om de relevante dokumentene er oppdatert, så gruppen kan gå videre.
+
+### Plan
+- Det første forsøket på å åpne prototypen i Edge feilet, fordi `#/start` ble lagt på filstien. Den ble åpnet på nytt med `file:///`-adressen.
+- Valgte ny rosa ut fra kontrasten mot petrolflaten: minst 3:1, siden tallet er stor tekst (40 px, fet).
+- Søkte etter rester av «Sammendrag» og gamle beskrivelser i kopiene.
+
+### Resultat
+- Rosa for forfalt mengde: lys `#F7CBE0` → `#FF8CC6` (3,5:1 mot `#0D5C6E`), mørk `#E9A6C6` → `#FF7AB8` (6,3:1 mot `#0C2A2E`). Endret i `prototype/index.html` og som token i `ux-carmen/DESIGN.md`.
+- `prototype/avvik-mot-prd.md`: raden om «Sammendrag» (U8) er merket løst med «Tallbokser».
+- `README.md` er oppdatert. U14, V3-a og V3-b står som «Avklart av Oda 22.11. Venter på gruppen.» De andre punktene er åpne.
+- Testet på nytt i Edge. Ingen feil i konsollen.
+
+### Åpne punkter
+Ingen nye.
