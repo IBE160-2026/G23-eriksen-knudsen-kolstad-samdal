@@ -78,3 +78,26 @@ Sebastian ba om en ren branch med endringene og en PR inn i Carmens branch for S
 ### Åpne punkter
 - Carmen ser over og fletter PR #22 inn i `story/1.1-prosjektoppsett`, og Idun og gruppen godkjenner endringene (står allerede i issues).
 - Arbeidsmappen `C:/IBE160/G23-story-1.1-avklaringer` fjernes med `git worktree remove` når PR #22 er flettet.
+
+## 2026-11-23 kl. 17:40 — Sebastian
+
+### Oppgave
+Sebastian godkjente PR #22, #20 og #21 og ba om at de ble flettet til main i riktig rekkefølge, etter en gjennomgang og med tillatelse før fletting. Raden for avklaringene i arkitektur kap. 12 skulle endres til «godkjent av Sebastian».
+
+### Plan
+- Gjennomgang: status, Vercel og prøvefletting av main + #22 + #20 + #21 i arbeidsmappen.
+- Rekkefølge: #22 inn i `story/1.1-prosjektoppsett` → #20 til main → målbranch for #21 byttes til main, main flettes inn i `story/1.2-delte-typer` med konflikten løst → #21 til main. Merge commits, ikke squash. Ingen brancher slettet.
+
+### Resultat
+- **Funn i gjennomgangen:** én konflikt i arkitektur kap. 12, der #21 (PASSORDBESKYTTET) og #22 begge la til en rad 23.11. Ingen hadde godkjent #20 og #22 på GitHub, og #21 var et utkast med målbranch `story/1.1-prosjektoppsett`. Prøveflettingen var grønn: `npm test` 58/58, lint, build og `test:e2e` 6/6.
+- 6154eae: raden i kap. 12 sier «godkjent av Sebastian 23.11.2026» (PR #20 og #22).
+- PR #22 flettet inn i `story/1.1-prosjektoppsett` (10757c0).
+- PR #20 godkjent av Sebastian og flettet til main (ea73bf0).
+- PR #21: målbranch byttet til main, main flettet inn i `story/1.2-delte-typer` med begge radene i kap. 12 beholdt (233492e, pushet), merket klar, godkjent av Sebastian og flettet til main (89fed18).
+- **Kontroll på main 89fed18** (ren `npm ci`, Node 26.7.0, npm 12.2.2): `npm test` 58/58, lint og build exit 0, `test:e2e` 6/6. Vercel-status på main: success.
+- Lukket fra issues: Carmen fletter PR #22, godkjenning av avklaringene og av `allow-remote=root`.
+
+### Åpne punkter
+- `Sebastian/Branch` har fortsatt de samme endringene ukommittert i arbeidskopien. De ligger nå i main og bør forkastes før main flettes inn i branchen.
+- Arbeidsmappen `C:/IBE160/G23-story-1.1-avklaringer` (står på main i detached HEAD) og den lokale prøvebranchen `proeve/samlet` kan fjernes. Branchene `story/1.1-prosjektoppsett`, `story/1.1-avklaringer` og `story/1.2-delte-typer` er flettet og kan slettes på GitHub.
+- Idun og gruppen har ikke sett over #22 selv. Raden i kap. 12 sier at Sebastian godkjente.
