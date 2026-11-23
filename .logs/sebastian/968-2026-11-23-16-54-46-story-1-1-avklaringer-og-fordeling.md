@@ -26,3 +26,35 @@ Word-dokument med melding og tabell: `C:\Users\sebas\Personlig mappe\Epic 1 - fo
 - Idun (punkt 1–3, og 4 sammen med gruppen) og gruppen (punkt 5) avgjør de fem avklaringene fra Story 1.1. Deretter alle endringene i én branch og én PR.
 - Gruppen godtar fordelingen og rekkefølgen i Epic 1. Deretter føres den inn i arkitektur kap. 7 og 8, i samme PR som avklaringene.
 - Sebastians maskin har Node 26.7.0, så `npm ci` stopper på Story 1.1 til `engines` er endret (punkt 2) eller Node 24 er installert.
+
+## 2026-11-23 kl. 17:17 — Sebastian
+
+### Oppgave
+Sebastian ba om å hente Story 1.1 fra Carmens branch til `Sebastian/Branch`, gjennomføre de fem anbefalingene fra forrige seksjon og oppdatere de andre dokumentene samtidig.
+
+### Plan
+- Flette `origin/story/1.1-prosjektoppsett` (PR #20, ffcc70c) inn i `Sebastian/Branch`. «Åpne avklaringer» står i beskrivelsen til PR #20, ikke på `Carmen/Branch`.
+- Endre kode og tester, kjøre `npm ci`, `test`, `lint`, `build` og `test:e2e`, og deretter arkitekturen, `epics.md`, README og ordbanken.
+
+### Resultat
+- Story 1.1 er flettet inn i `Sebastian/Branch` (7a7ed0a).
+- **Kode og tester** (ikke committet):
+  - `package.json` og `package-lock.json`: `engines.node` er `^22.12.0 || ^24.0.0 || ^26.0.0`.
+  - `.npmrc`: `allow-remote=root`. Dette er nytt: npm 12 (installert globalt på denne maskinen, 12.2.2) har `allow-remote=none` som standard og stoppet `npm ci` på SheetJS fra cdn.sheetjs.com med `EALLOWREMOTE`. Med `root` godtas bare nettadresser som står i `package.json`. Node 26.7 leveres med npm 11.19.0, der standarden er `all`.
+  - `vercel.json`: `X-Content-Type-Options: nosniff` og `Referrer-Policy: no-referrer`. Kommentaren i `vite.config.ts` er oppdatert.
+  - `tests/csp.test.ts`: tester at `vercel.json` har nøyaktig CSP-en og de to hodene, og at `vite preview` sender de samme.
+  - `e2e/csp-vakt.ts` (ny): felles fixture med `auto: true` som feiler hver e2e-test ved `securitypolicyviolation`, konsollfeil og unntak. Valget `forventerCspBrudd` slår den av for testen med `connect-src`.
+  - `e2e/oppstart.spec.ts`: bruker vakten, sjekker at nettleseren mottar alle hodene fra `vercel.json`, og har en selvtest med `test.fail()` som viser at vakten stopper en inline-stil. Uten `test.fail()` feilet den med «style-src-elem: inline» i begge nettleserne.
+  - `tests/hjelpere/arkitekturregler.ts`: `SHEETJS_UNNTAK` har også `tests/hjelpere/lag-arbeidsbok.ts`. `tests/arkitektur.test.ts` tester at en annen hjelper fortsatt gir brudd.
+- **Dokumenter:**
+  - `arkitektur.md`: kap. 2 (`vercel.json`), AD-15 (to testhjelpere, og hva som må testes med filer fra Excel), AD-17 (hodene, HSTS fra Vercel, ingen CSP på dev, CSP-vakten), AD-18 (`test:e2e` når `ui/`, `worker/` eller `excel/` endres, og `.npmrc`), kap. 5 (Node og typepakkene) og en rad i kap. 12 merket «til godkjenning hos Idun og gruppen».
+  - `epics.md`: tekniske føringer (versjoner, Excel-delen, tester, publisering, arbeidsflyt), Story 1.1 (engines, `.npmrc`, SheetJS-unntaket, hodene, CSP-vakten), Story 1.3 (Node 24 på Vercel og HSTS) og Story 1.5 (ny Gitt-blokk for `lag-arbeidsbok.ts` og filer fra Excel).
+  - README: forutsetningene for Node, `preview` med hodene, `test:e2e` før fletting, og at dev ikke har CSP.
+  - Ordbanken: CSP, E2e og HSTS under Forkortelser, og Sikkerhetshode og CSP-vakt under App og test. `updated` er 2026-11-23.
+- **Kontroll** (Node 26.7.0, npm 12.2.2, ren `npm ci`): `npm test` 37/37, `npm run lint` exit 0, `npm run build` exit 0, `npm run test:e2e` 6/6 (Chromium og Firefox). Selvtesten vises som ✘ i listen, men telles som bestått, fordi den skal feile.
+- Endringene er ikke committet. Arbeidet ligger på `Sebastian/Branch`, som ikke kan flettes til main i sin helhet.
+
+### Åpne punkter
+- Endringene må inn i PR #20 eller en egen PR fra en ren branch fra `story/1.1-prosjektoppsett`, ikke via `Sebastian/Branch`. Avklar med Carmen.
+- Idun og gruppen godkjenner endringene (kap. 12 er merket «til godkjenning»), også `allow-remote=root`, som ikke var blant de fem punktene.
+- Ordbanken på `Sebastian/Branch` er eldre enn den på main. De fem nye ordene må føres inn i main-versjonen når endringene flyttes.
