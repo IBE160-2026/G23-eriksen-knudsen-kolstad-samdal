@@ -2,7 +2,7 @@
 title: COSI - MRP PRD
 status: final
 created: 2026-10-19
-updated: 2026-11-22
+updated: 2026-11-23
 ---
 
 # PRD: COSI - MRP
@@ -77,7 +77,7 @@ Ordlisten definerer begrepene. Reglene for dem står i kravene det vises til.
 - **Ferdigprodukt** – Delen på nivå 0, med type Ferdigvare. Ett per fil.
 - **Type** – Ferdigvare, Komponent (Kjøpes inn) eller Komponent (Produseres selv) (FR-3).
 - **Felles del** – En del som står flere steder i stykklisten, for eksempel skruer i både sete og rygg (FR-3, FR-28).
-- **Lavnivåkode** – Det laveste nivået (største nivåtall) en del står på i stykklisten (FR-28).
+- **Lavnivåkode** – Det laveste nivået en del står på i stykklisten: lengste vei ned fra ferdigproduktet gjennom delene den står under (FR-28). I vanlige stykklister er det største nivåtall delen står på.
 - **Prognostiserte behov (MPS)** – Antall ferdigprodukter som trengs per uke. Fylles ut i arket MPS.
 - **Horisont (H)** – Antall uker med prognostiserte behov, fylt ut sammenhengende fra uke 1 (FR-3).
 - **Uke (t)** – Én periode i horisonten, nummerert 1 til H.
@@ -213,6 +213,7 @@ En del som står flere steder i stykklisten, beregnes én gang, med samlet brutt
 - Skruesett M6 brukt 4 per sete og 2 per rygg får bruttobehov(t) = 4 × frigivelse sete(t) + 2 × frigivelse rygg(t), i én tabell.
 - En del som står både på nivå .1 og ..2, beregnes etter alle delene på nivå .1, med behov fra begge.
 - Lagerbeholdningen til en felles del brukes bare én gang, ikke én gang per forekomst.
+- Står samme del flere ganger rett under samme overordnede del, legges antallene sammen. 200-012 Armlene står to ganger rett under 100-003 i testeksempel 04, så bruttobehovet er 2 × frigivelsene til 100-003. Underdelene regnes derimot én gang: 300-024 Armlenepute har bruttobehov 1 × frigivelsene til 200-012, ikke 2 ×.
 
 #### FR-6: Beregn disponibel beholdning og nettobehov
 

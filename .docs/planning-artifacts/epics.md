@@ -609,7 +609,7 @@ slik at valideringen, beregningen, eksepsjonene og kapasiteten bruker de samme o
 
 **Gitt** en del
 **Når** strukturen er bygd
-**Så** har den overordnede deler med antall, lavnivåkode (største nivåtall delen står på), ledetid fra ferdigproduktet (lengste sti, FR-9) og antall per ferdigprodukt (produktet av antallene langs stien, summert over alle stedene delen står, FR-31)
+**Så** har den overordnede deler med antall, lavnivåkode (lengste vei fra ferdigproduktet, så en del alltid kommer etter delene den står under, FR-28; i vanlige stykklister det samme som største nivåtall delen står på), ledetid fra ferdigproduktet (lengste sti, FR-9) og antall per ferdigprodukt (produktet av antallene langs stien, summert over alle stedene delen står, FR-31)
 **Og** en del med underdeler under flere forekomster har underdelene per forekomst, så valideringen kan sammenligne dem (FR-3)
 **Og** underdeler som står likt under flere forekomster, eller bare under én, regnes én gang (FR-3, FR-28)
 
