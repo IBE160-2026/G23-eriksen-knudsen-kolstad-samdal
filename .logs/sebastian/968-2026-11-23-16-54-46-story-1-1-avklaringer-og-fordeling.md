@@ -58,3 +58,23 @@ Sebastian ba om å hente Story 1.1 fra Carmens branch til `Sebastian/Branch`, gj
 - Endringene må inn i PR #20 eller en egen PR fra en ren branch fra `story/1.1-prosjektoppsett`, ikke via `Sebastian/Branch`. Avklar med Carmen.
 - Idun og gruppen godkjenner endringene (kap. 12 er merket «til godkjenning»), også `allow-remote=root`, som ikke var blant de fem punktene.
 - Ordbanken på `Sebastian/Branch` er eldre enn den på main. De fem nye ordene må føres inn i main-versjonen når endringene flyttes.
+
+## 2026-11-23 kl. 17:23 — Sebastian
+
+### Oppgave
+Sebastian ba om en ren branch med endringene og en PR inn i Carmens branch for Story 1.1.
+
+### Plan
+- Egen arbeidsmappe (`git worktree`) i `C:/IBE160/G23-story-1.1-avklaringer` på den nye branchen `story/1.1-avklaringer`, laget fra `origin/story/1.1-prosjektoppsett`.
+- Endringene fra `Sebastian/Branch` lagt inn som patch, unntatt ordbanken. De fem ordene ble ført inn i main-versjonen av ordbanken i stedet.
+
+### Resultat
+- Commit aeb139d på `story/1.1-avklaringer` (14 filer), pushet.
+- PR #22 inn i `story/1.1-prosjektoppsett`: https://github.com/IBE160-2026/G23-eriksen-knudsen-kolstad-samdal/pull/22
+- Kontroll i den rene branchen (Node 26.7.0, npm 12.2.2, ren `npm ci`): `npm test` 37/37, lint og build exit 0, `test:e2e` 6/6.
+- Lukket fra issues: flytte endringene til en ren branch, og de fem ordene i main-versjonen av ordbanken.
+- De samme endringene ligger fortsatt ukommittert i arbeidskopien på `Sebastian/Branch`.
+
+### Åpne punkter
+- Carmen ser over og fletter PR #22 inn i `story/1.1-prosjektoppsett`, og Idun og gruppen godkjenner endringene (står allerede i issues).
+- Arbeidsmappen `C:/IBE160/G23-story-1.1-avklaringer` fjernes med `git worktree remove` når PR #22 er flettet.
