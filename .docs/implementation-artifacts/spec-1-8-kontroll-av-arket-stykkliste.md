@@ -58,7 +58,7 @@ context:
 
 ## Code Map
 
-- `src/domene/typer.ts` -- `RaaArk` (med `tomRadMedInnholdUnder`), `Valideringsfeil`, `Feilsted`, `VALIDERINGSKODER` (Stykkliste-kodene, linje 174–219). Endres ikke.
+- `src/domene/typer.ts` -- `RaaArk` (med `tomRadMedInnholdUnder`), `Valideringsfeil`, `Feilsted`, `VALIDERINGSKODER` (Stykkliste-kodene, linje 162–207). Endres ikke.
 - `src/domene/valider-stykkliste.ts` -- ny: `validerStykkliste(ark): Valideringsfeil[]`
 - `src/domene/heltall.ts` -- ny (åpent spørsmål 2): `tolkHeltall(verdi: Celleverdi)`
 - `src/domene/struktur.ts` -- fra Story 1.7, brukes til underdelene
