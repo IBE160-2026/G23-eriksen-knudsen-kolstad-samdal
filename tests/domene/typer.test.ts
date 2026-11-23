@@ -122,9 +122,8 @@ describe('typene (kontrolleres av tsc)', () => {
     expectTypeOf<Kjoring['sammenligning']>().toBeNullable()
   })
 
-  // UAVKLART: testen viser forslaget slik det er nå. Velger gruppen alternativ C eller D for
-  // «Borte»-meldinger (se typer.ts), skal testen endres sammen med typen.
-  it('FORSLAG inntil gruppen har avgjort: en BORTE-linje har bare det utdraget har (AD-10, AD-11)', () => {
+  // Godkjent 23.11.2026: meldingen på en «Borte»-linje er typenavnet, laget i tekster/ (se typer.ts).
+  it('en BORTE-linje har bare det utdraget har, og meldingen er typenavnet (AD-10, AD-11)', () => {
     type Borte = Extract<Sammenligningslinje, { endring: 'BORTE' }>
     expectTypeOf<Borte>().not.toHaveProperty('melding')
     expectTypeOf<Borte>().not.toHaveProperty('eksepsjon')
@@ -175,7 +174,7 @@ describe('kodelistene', () => {
 })
 
 // Antall feil per fil og hvilken regel filen tester, står i testdata/validering/README.md (dokumentert).
-// FORSLAG: navnene på kodene og hvordan reglene er delt i koder, er ikke godkjent av Idun ennå.
+// Navnene på kodene og hvordan reglene er delt i koder, er godkjent av koordinatoren 23.11.2026.
 describe('valideringskodene dekker testdata/validering/', () => {
   // Hvilken kode hver valideringsfil skal gi, ut fra regelen i testdata/validering/README.md.
   const KODE_PER_FIL: Record<string, Valideringskode[]> = {
@@ -342,8 +341,7 @@ describe('eksemplene fra fasitfilene kan skrives med typene', () => {
     expect(KJORING_01.resultat.kritiskeDeler).toEqual(['300-003', '300-004', '300-005', '300-006'])
   })
 
-  // FORSLAG: formen på RaaArk (tomRadMedInnholdUnder) og HoppetOverKontroll er ikke godkjent av Idun ennå.
-  it('FORSLAG: rådata for V-S01 merker den tomme raden, og V-F01 gir én feil og én kontroll som er hoppet over', () => {
+  it('rådata for V-S01 merker den tomme raden, og V-F01 gir én feil og én kontroll som er hoppet over', () => {
     expect(RAA_V_S01.stykkliste.tomRadMedInnholdUnder).toBe(9)
     expect(VALIDERING_V_F01.feil).toHaveLength(1)
     expect(VALIDERING_V_F01.hoppetOver[0]).toEqual({

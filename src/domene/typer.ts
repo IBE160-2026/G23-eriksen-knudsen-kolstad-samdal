@@ -16,36 +16,29 @@
 // Kjernen gir koder og tall, aldri ferdig tekst (AD-9). All tekst lages i src/tekster/.
 //
 // ---------------------------------------------------------------------------
-// Hva som er vedtatt, og hva som er forslag
+// Godkjent av koordinatoren (Idun) 23.11.2026
 // ---------------------------------------------------------------------------
-// Vedtatt (PRD, arkitektur AD-3–AD-11 og epics.md, Story 1.2): de 14 typene og innholdet i dem
-// slik dokumentene beskriver det, eksepsjonskodene (AD-9), endringskodene (AD-11), feltene i
-// LagretKjoring (AD-10) og tallene i Utregning (AD-8).
-//
-// UAVKLART: krever en beslutning fra gruppen eller en endring i arkitekturen.
-//   - Koden PASSORDBESKYTTET (ikke ført inn i arkitektur kap. 12).
-//   - Meldingen på «Borte»-linjer i eksporten (se Sammenligningslinje).
-//   - Navnet Utfall, og om UventetFeil står her eller i worker/meldinger.ts.
-//   - Tidspunkt som ISO 8601-tekst eller tall, og navnene på Lagringsstatus.
-//
-// FORSLAG: tekniske valg i Story 1.2 som Idun må godkjenne. De endrer ingen krav.
+// Typene bygger på PRD-en, arkitekturen (AD-3–AD-11) og epics.md (Story 1.2). Disse valgene i
+// Story 1.2 er godkjent:
+//   - Filfeilkoden PASSORDBESKYTTET. Ført inn i arkitekturen (AD-5 og kap. 12).
+//   - «Borte»-linjer i sammenligningen og eksporten viser bare typenavnet til eksepsjonen, laget i
+//     tekster/. Utdraget (AD-10) endres ikke.
+//   - Navnet Utfall. UventetFeil står her, fordi både worker-en og styringen bruker den.
+//   - Tidspunkt er ISO 8601-tekst. Navnene i Lagringsstatus.
 //   - Navnene på de 40 valideringskodene, og at hver del av en regel har sin egen kode.
 //   - Kodene i Delstype og Bestillingsforslag.art (i stedet for teksten fra Excel).
 //   - Formen på RaaArk: ett felt per ark, kolonnebokstav i overskrifter, alleArk og tomRadMedInnholdUnder.
 //   - Feilsted, feltene varenummer og andreRader i Valideringsfeil, HoppetOverKontroll og Valideringsresultat.
 //   - forfaltMengde er 0 (ikke null) når ingenting er forfalt.
 //   - beskrivelse og delstype på alle eksepsjoner (så teksten kan lages fra eksepsjonen alene, AD-9),
-//     og sikkerhetslager i MOTTAK_FORSINKET (står i fasitmeldingene, ikke i FR-12).
-//   - To felt i Utregning som ikke står ordrett i AD-8: prognostiserteBehov og fremskyndetIkkeKommet.
-//
-// Ingen av punktene er ført inn i arkitektur.md eller ordbanken.
+//     og sikkerhetslager i MOTTAK_FORSINKET (står i fasitmeldingene).
+//   - To felt i Utregning i tillegg til AD-8: prognostiserteBehov og fremskyndetIkkeKommet.
 
 // ===========================================================================
 // Felles
 // ===========================================================================
 
 /** Svar som kan feile (AD-5). Ingen funksjon kaster unntak for feil i brukerens data. */
-// UAVKLART: navnet «Utfall» er et forslag. Arkitekturen beskriver bare formen.
 export type Utfall<T, F> = { ok: true; verdi: T } | { ok: false; feil: F }
 
 /** En lagret verdi i en celle, slik Excel-delen leser den (AD-15: verdier, aldri formler). */
@@ -81,7 +74,6 @@ export type Nivaa = '0' | '.1' | '..2'
  * Typen til en del (FR-3), som kode (AD-9). Teksten i Excel og i appen lages i tekster/:
  * FERDIGVARE = «Ferdigvare», KJOPES_INN = «Komponent (Kjøpes inn)»,
  * PRODUSERES_SELV = «Komponent (Produseres selv)».
- * FORSLAG: kodene og navnene.
  */
 export const DELSTYPER = ['FERDIGVARE', 'KJOPES_INN', 'PRODUSERES_SELV'] as const
 export type Delstype = (typeof DELSTYPER)[number]
@@ -114,7 +106,6 @@ export type RaaArkInnhold<K extends Kolonnenavn> = {
 /**
  * Hele filen slik Excel-delen leste den (AD-3, AD-15). Et ark som mangler, er null.
  * Excel-delen avgjør aldri om en verdi er feil. Det gjør valideringen.
- * FORSLAG: formen (ett felt per ark, kolonnebokstav i overskrifter, alleArk og tomRadMedInnholdUnder).
  */
 export type RaaArk = {
   filnavn: string
@@ -140,10 +131,8 @@ export type RaaArk = {
 
 /**
  * Kodene for feil i hele filen. Hver kode får sin egen melding (NFR-9, EXPERIENCE.md › Feil i hele filen).
- * AD-5 nevner tre: ikke en Excel-fil, tom fil og skadet fil. FR-1 gir «ikke .xlsx».
- *
- * UAVKLART: PASSORDBESKYTTET er ny i Story 1.2 og er ikke ført inn i arkitektur kap. 12 ennå.
- * Gruppen eller Idun må godkjenne den. Navnene på alle fem kodene er forslag.
+ * FR-1 gir «ikke .xlsx», og AD-5 gir resten. PASSORDBESKYTTET kom til i Story 1.2 og er ført inn
+ * i arkitekturen (AD-5 og kap. 12, 23.11.2026).
  */
 export const FILFEILKODER = ['IKKE_XLSX', 'TOM_FIL', 'SKADET_FIL', 'IKKE_EXCEL', 'PASSORDBESKYTTET'] as const
 export type Filfeilkode = (typeof FILFEILKODER)[number]
@@ -151,7 +140,7 @@ export type Filfeil = { kode: Filfeilkode }
 
 /**
  * En uventet feil i lesing, validering eller beregning (AD-5, AD-12). Gir ingen resultat og ingen lagring.
- * UAVKLART: om typen skal stå her eller i worker/meldinger.ts (Story 1.10).
+ * Står her, fordi både worker-en (Story 1.10) og styringen bruker den.
  */
 export type UventetFeil = { kode: 'UVENTET_FEIL' }
 
@@ -163,7 +152,6 @@ export type UventetFeil = { kode: 'UVENTET_FEIL' }
  * Én kode per regel i FR-2 og FR-3. Kodene følger tabellen i FR-3 og testdata/validering/README.md.
  * Der regelen har flere deler (for eksempel «fylt ut første gang, tom de neste»), har hver del sin kode,
  * så tekster/ kan gi en presis melding (AD-9).
- * FORSLAG: navnene på kodene og inndelingen. Reglene er de vedtatte i FR-2 og FR-3.
  */
 export const VALIDERINGSKODER = [
   // FR-2: malens struktur
@@ -231,7 +219,7 @@ export const VALIDERINGSKODER = [
 ] as const
 export type Valideringskode = (typeof VALIDERINGSKODER)[number]
 
-/** Hvor en valideringsfeil er. Valideringsfilenes README bruker celle, rad, uke eller hele arket. FORSLAG: formen. */
+/** Hvor en valideringsfeil er. Valideringsfilenes README bruker celle, rad, uke eller hele arket. */
 export type Feilsted =
   | { type: 'CELLE'; celle: string; excelRad: number } // for eksempel D9
   | { type: 'RAD'; excelRad: number } // for eksempel V-S01, rad 9
@@ -248,20 +236,20 @@ export type Valideringsfeil = {
   felt: Kolonnenavn | 'Rader' | 'Underdeler' | 'Ark'
   /** Verdien i cellen, når feilen gjelder en verdi. */
   verdi?: Celleverdi
-  /** Varenummeret feilen gjelder, når regelen handler om et varenummer (for eksempel V-S11, V-S20, V-S22). FORSLAG. */
+  /** Varenummeret feilen gjelder, når regelen handler om et varenummer (for eksempel V-S11, V-S20, V-S22). */
   varenummer?: string
-  /** Andre rader feilen gjelder, for eksempel begge forekomstene i V-S22 (FR-3). FORSLAG. */
+  /** Andre rader feilen gjelder, for eksempel begge forekomstene i V-S22 (FR-3). */
   andreRader?: number[]
 }
 
-/** En kontroll som er hoppet over fordi et ark eller en kolonne mangler (FR-2, Story 1.6). FORSLAG: formen. */
+/** En kontroll som er hoppet over fordi et ark eller en kolonne mangler (FR-2, Story 1.6). */
 export type HoppetOverKontroll = {
   ark: Arknavn
   felt: Kolonnenavn
   fordi: { kode: 'ARK_MANGLER'; ark: Arknavn } | { kode: 'OVERSKRIFT_MANGLER'; ark: Arknavn; felt: Kolonnenavn }
 }
 
-/** Svaret fra valideringen når filen har feil (FR-2, FR-4, Story 1.6). FORSLAG: egen type for feil og kontroller som er hoppet over. */
+/** Svaret fra valideringen når filen har feil (FR-2, FR-4, Story 1.6). */
 export type Valideringsresultat = {
   feil: Valideringsfeil[]
   hoppetOver: HoppetOverKontroll[]
@@ -361,7 +349,7 @@ export type Utregning = {
   /** Planlagte mottak i uken, uten mottak som alt er fremskyndet til en tidligere uke (FR-6). */
   planlagteMottak: number
   bruttobehov: number
-  /** Ferdigproduktet: prognostiserte behov i uken. Ellers null (FR-5). FORSLAG: står ikke ordrett i AD-8. */
+  /** Ferdigproduktet: prognostiserte behov i uken. Ellers null (FR-5). Tillegg til AD-8. */
   prognostiserteBehov: number | null
   /** Bruttobehovet fordelt på overordnede deler: frigivelse × antall (FR-5, FR-18, FR-28). */
   bruttobehovFra: { varenummer: string; frigivelse: number; antall: number }[]
@@ -371,9 +359,9 @@ export type Utregning = {
   nettobehov: number
   /** Mottak som er fremskyndet til denne uken, med uken de er lagt inn i (FR-6). */
   fremskyndedeMottak: { mottaksuke: number; antall: number; excelRad: number }[]
-  /** Fremskyndede mottak som er regnet med, men ikke er kommet ennå (FR-6, FR-7). FORSLAG: står ikke ordrett i AD-8. */
+  /** Fremskyndede mottak som er regnet med, men ikke er kommet ennå (FR-6, FR-7). Tillegg til AD-8. */
   fremskyndetIkkeKommet: number
-  /** Den delen av planlagt ordremottak som skulle vært frigitt før uke 1 (FR-8). 0 når ingenting er forfalt (FORSLAG). */
+  /** Den delen av planlagt ordremottak som skulle vært frigitt før uke 1 (FR-8). 0 når ingenting er forfalt. */
   forfaltMengde: number
 }
 
@@ -387,7 +375,7 @@ export type DelResultat = {
   nettobehov: number[]
   planlagteOrdremottak: number[]
   planlagteOrdrefrigivelser: number[]
-  /** Forfalt mengde som er lagt i frigivelsen i uke 1 (FR-8, AD-4). 0 når ingenting er forfalt (FORSLAG). */
+  /** Forfalt mengde som er lagt i frigivelsen i uke 1 (FR-8, AD-4). 0 når ingenting er forfalt. */
   forfaltMengde: number
   /** Én per uke, lengde H. */
   utregning: Utregning[]
@@ -401,9 +389,9 @@ export type Bestillingsforslag = {
   beskrivelse: string
   frigivelsesuke: number
   mengde: number
-  /** 0 når ingenting er forfalt (FORSLAG). */
+  /** 0 når ingenting er forfalt. */
   forfaltMengde: number
-  /** Innkjøp for Komponent (Kjøpes inn). Produksjonsordre for Ferdigvare og Komponent (Produseres selv) (FR-17). FORSLAG: kodene. */
+  /** Innkjøp for Komponent (Kjøpes inn). Produksjonsordre for Ferdigvare og Komponent (Produseres selv) (FR-17). */
   art: 'INNKJOP' | 'PRODUKSJONSORDRE'
 }
 
@@ -421,7 +409,7 @@ export const EKSEPSJONSKODER = [
 ] as const
 export type Eksepsjonskode = (typeof EKSEPSJONSKODER)[number]
 
-/** Felles for alle eksepsjonene. Beskrivelse og type trengs for at teksten kan lages fra eksepsjonen alene (AD-9). FORSLAG. */
+/** Felles for alle eksepsjonene. Beskrivelse og type trengs for at teksten kan lages fra eksepsjonen alene (AD-9). */
 type EksepsjonFelles = {
   varenummer: string
   beskrivelse: string
@@ -476,7 +464,7 @@ export type Eksepsjon =
       excelRad: number
       /** Disponibel beholdning før mottaket er fremskyndet (FR-10, FR-12). */
       disponibelForFremskynding: number
-      /** FORSLAG: står i fasitmeldingene («under sikkerhetslager 10»), men ikke i FR-12. */
+      /** Står i fasitmeldingene («under sikkerhetslager 10»), i tillegg til FR-12. */
       sikkerhetslager: number
     })
   | (EksepsjonFelles & {
@@ -549,7 +537,7 @@ export type Kapasitet = {
 export type LagretKjoring = {
   schemaVersjon: 1
   ferdigprodukt: DelNavn
-  /** Tidspunktet for kjøringen som ISO 8601-tekst. UAVKLART: tekst eller tall. */
+  /** Tidspunktet for kjøringen som ISO 8601-tekst. */
   tidspunkt: string
   deler: DelNavn[]
   bestillingsforslag: { varenummer: string; frigivelsesuke: number; mengde: number }[]
@@ -587,16 +575,9 @@ export type Sammenligningslinje =
       varenummer: string
       uke: number | null
       kode: Eksepsjonskode
-      // UAVKLART: meldingen på «Borte»-linjer i eksporten. Ikke avgjort her.
-      // Dokumentert: FR-20 (eksepsjoner kan være «nye eller borte»), FR-23 (arket Sammenligning
-      // «bygd opp som» i fasit 03, der «Borte»-linjene har en melding), AD-10 (utdraget lagrer bare
-      // varenummer, uke og type) og AD-16 (ordlyden sammenlignes ikke).
-      // Alternativene gruppen kan velge mellom:
-      //   A. Tom melding. Typene er ferdige.
-      //   B. Bare typenavnet, laget i tekster/. Typene er ferdige.
-      //   C. Lagre opplysningene om eksepsjonen i utdraget. Endrer AD-10, krever ny schemaVersjon,
-      //      og LagretKjoring og denne linjen må få feltene.
-      //   D. Lagre den ferdige meldingen i utdraget. Endrer AD-10, og teksten låses ved lagring.
+      // Meldingen på en «Borte»-linje er bare typenavnet til eksepsjonen, laget i tekster/
+      // (godkjent av koordinatoren 23.11.2026). Utdraget lagrer bare varenummer, uke og type
+      // (AD-10), og testene sammenligner ikke ordlyden (AD-16).
     }
   | { gruppe: 'DEL'; endring: 'NY' | 'FJERNET'; varenummer: string; beskrivelse: string }
 
@@ -610,7 +591,6 @@ export type Sammenligning = { linjer: Sammenligningslinje[] }
 /**
  * Om utdraget ble lagret (AD-10, FR-30). Er lagringen blokkert eller full, vises kjøringen med en melding.
  * En kjøring med bare produksjonskapasitet lagres ikke.
- * UAVKLART: navnene på kodene er forslag.
  */
 export type Lagringsstatus = 'LAGRET' | 'IKKE_LAGRET_BLOKKERT' | 'IKKE_LAGRET_FULL' | 'IKKE_LAGRET_BARE_KAPASITET'
 
@@ -618,7 +598,7 @@ export type Lagringsstatus = 'LAGRET' | 'IKKE_LAGRET_BLOKKERT' | 'IKKE_LAGRET_FU
 export type Kjoring = {
   valg: Valg
   filnavn: string
-  /** Settes i styringen, ikke i kjernen (AD-2). ISO 8601-tekst. UAVKLART: tekst eller tall. */
+  /** Settes i styringen, ikke i kjernen (AD-2). ISO 8601-tekst. */
   tidspunkt: string
   ferdigprodukt: DelNavn
   horisont: number
