@@ -110,7 +110,7 @@ Dette dokumentet deler kravene i PRD-en, UX-dokumentene og arkitekturen inn i ep
 
 - **Startmal:** prosjektet starter fra Vite-malen `react-ts` med TypeScript `strict` (AD-1). Story 0 er prosjektoppsett: Vite, React, TypeScript, Vitest, oxlint, arkitekturtest, `vercel.json` og README med kommandoene (AD-3).
 - **Story 1 er alle delte typer** i `src/domene/typer.ts` (`RaaArk`, `Inndata`, `Struktur`, `DelResultat`, `Utregning`, `Resultat`, `Eksepsjon`, `Valideringsfeil`, `Kapasitet`, `LagretKjoring`, `Sammenligning`, `Kjoring`). Story 0 og 1 flettes inn i `main` før annet arbeid som bruker typene, starter. Idun er koordinator og eier `typer.ts`. Endringer i delte typer skjer i egen PR som godkjennes av koordinatoren og minst én bruker av typene (AD-3, kap. 7).
-- **Eksakte versjoner** (kap. 5): Node 24 LTS, TypeScript 7.0.2, Vite 8.3.8, React/react-dom 19.3.1, @vitejs/plugin-react 6.3.0, SheetJS CE 0.20.3, @fontsource/ibm-plex-* 5.3.0, Vitest 5.1.1, @playwright/test 1.65.1, oxlint 1.94.0. Ingen `^` eller `~`, `package-lock.json` committes, `npm ci` brukes, og arkitekturtesten sjekker versjonene (AD-18).
+- **Eksakte versjoner** (kap. 5): Node 24 LTS (`engines` godtar også 22.12+ og 26), TypeScript 7.0.2, Vite 8.3.8, React/react-dom 19.3.1, @vitejs/plugin-react 6.3.0, SheetJS CE 0.20.3, @fontsource/ibm-plex-* 5.3.0, Vitest 5.1.1, @playwright/test 1.65.1, oxlint 1.94.0, og bare til utvikling @types/react og @types/react-dom 19.3.0 og @types/node 24.19.2. Ingen `^` eller `~`, `package-lock.json` committes, `npm ci` brukes, og arkitekturtesten sjekker versjonene. `.npmrc` har `engine-strict=true` og `allow-remote=root` (AD-18).
 - **SheetJS** installeres fra `https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz`, aldri `npm i xlsx` (AD-15).
 
 **Oppbygging og grenser**
@@ -132,16 +132,16 @@ Dette dokumentet deler kravene i PRD-en, UX-dokumentene og arkitekturen inn i ep
 - **Sammenligning i kjernen** (AD-11): `domene/sammenlign.ts` sammenligner to utdrag. Gruppene Bestillingsforslag, Eksepsjoner, Deler i fast rekkefølge som i fasit 03. Kodene `NY`, `ENDRET_MENGDE`, `FJERNET`, `BORTE`. Skjerm og eksport bruker samme rekkefølge.
 - **Ruting og tilstand** (AD-13): fem visninger med hash-adresser `#/introduksjon`, `#/ny-kjoring`, `#/resultat`, `#/lagrede-kjoringer`, `#/veiledning`. Egen ruting på `hashchange` i `ui/ruter.ts`. Ukjent adresse går til introduksjonen første gang, ellers Ny kjøring. Felles tilstand i React Context med `useReducer`. `#/resultat` uten kjøring i minnet viser melding med lenke til Ny kjøring. Seksjonsmenyen bruker `scrollIntoView`. Én `role="status"`-region i rotkomponenten.
 - **Resultatet og tabellen** (AD-14): fast rekkefølge (kjøringslinje med seksjonsmeny, tallbokser, «Slik leser du resultatet», kritiske deler, bestillingsforslag, endringer, resultattabell, produksjonskapasitet). Én semantisk `<table>` med én memoisert `<tbody>` per del. Filtre, valgt celle og panel er lokal tilstand.
-- **Excel-delen** (AD-15): bare `src/excel/` importerer SheetJS (pluss testhjelperen for fasitene). Ark og kolonner etter navn. Lagrede verdier, aldri formler. Excel-radnummer per rad. Leser kolonne A–H til rad 1001 for å se innhold under en tom rad. Avgjør aldri om noe er feil. Eksporten bygges fra `Kjoring`.
+- **Excel-delen** (AD-15): bare `src/excel/` importerer SheetJS (pluss testhjelperne `tests/hjelpere/fasit-leser.ts` og `tests/hjelpere/lag-arbeidsbok.ts`). Ark og kolonner etter navn. Lagrede verdier, aldri formler. Excel-radnummer per rad. Leser kolonne A–H til rad 1001 for å se innhold under en tom rad. Avgjør aldri om noe er feil. Eksporten bygges fra `Kjoring`.
 
 **Tester, publisering og arbeidsflyt**
 
-- **Tester** (AD-16): fasittester leser `testdata/*-fasit.xlsx` og går samme vei som appen. Sammenligner tall per del, uke og rad, eksepsjoner, valideringsfeil og sammenligningslinjer, ikke ordlyd. Én test per fil i `testdata/validering/`. Test som sjekker at `public/` har samme mal og testeksempel 01 som `testdata/`. `npm test` (Vitest, uten nett) og `npm run test:e2e` (Playwright i Chromium og Firefox: testeksempel 01, NFR-9-filene, blokkert lagring, ny fil uten omlasting, ingen CSP-brudd). `lag_testdata.py` importeres aldri i appen.
+- **Tester** (AD-16): fasittester leser `testdata/*-fasit.xlsx` og går samme vei som appen. Sammenligner tall per del, uke og rad, eksepsjoner, valideringsfeil og sammenligningslinjer, ikke ordlyd. Én test per fil i `testdata/validering/`. Test som sjekker at `public/` har samme mal og testeksempel 01 som `testdata/`. `npm test` (Vitest, uten nett) og `npm run test:e2e` (Playwright i Chromium og Firefox: testeksempel 01, NFR-9-filene, blokkert lagring, ny fil uten omlasting, ingen CSP-brudd). Alle e2e-testene bruker vakten i `e2e/csp-vakt.ts`, som feiler ved CSP-brudd, konsollfeil og unntak. `lag_testdata.py` importeres aldri i appen.
 - **Excel for Windows og Mac** (AD-16, kap. 7): testeksempel 01 og 02 åpnes og lagres i Excel for Mac (Carmen og Idun) og Windows (Sebastian og Oda), legges inn som testfiler og skal gi samme resultat. Eksportfilen åpnes i begge.
 - **Ytelsesfil** (AD-14, addendum): `testdata/ytelse-1000.xlsx` lages med `lag_testdata.py` (finnes ikke ennå), og ytelsen måles tidlig, før tabellstrukturen låses.
-- **Statisk publisering** (AD-17): `npm run build` gir statiske filer på Vercel. Ingen serverfunksjoner, ingen Analytics eller Speed Insights, ingen tredjeparts skript eller skrifter. `vercel.json` setter CSP-en fra AD-17, og `vite preview` bruker den samme (test sjekker at de er like). Miljøer: lokalt, forhåndsvisning per branch, produksjon fra `main`. Vercel-oppsett: Node 24, toolbar av på forhåndsvisninger (issues 2026-11-20).
+- **Statisk publisering** (AD-17): `npm run build` gir statiske filer på Vercel. Ingen serverfunksjoner, ingen Analytics eller Speed Insights, ingen tredjeparts skript eller skrifter. `vercel.json` setter CSP-en, `X-Content-Type-Options: nosniff` og `Referrer-Policy: no-referrer` fra AD-17, og `vite preview` bruker de samme (test sjekker at de er like). HSTS sender Vercel selv. `npm run dev` har ingen CSP. Miljøer: lokalt, forhåndsvisning per branch, produksjon fra `main`. Vercel-oppsett: Node 24, toolbar av på forhåndsvisninger (issues 2026-11-20).
 - **Byggflagg og brukertest** (AD-17): `VITE_KAPASITET` skjuler produksjonskapasiteten hvis trinn 4 kuttes og i brukertestbygget. Brukertesten 2.–7.12 bruker branchen `brukertest`, frosset den uka, med fast alias.
-- **Arbeidsflyt** (AD-18): én branch per story og PR inn i `main`, minst én annen i gruppen ser over. `npm test`, `npm run lint` og `npm run build` grønne før fletting. CI er utsatt.
+- **Arbeidsflyt** (AD-18): én branch per story og PR inn i `main`, minst én annen i gruppen ser over. `npm test`, `npm run lint` og `npm run build` grønne før fletting, og `npm run test:e2e` når storyen endrer `ui/`, `worker/` eller `excel/`. CI er utsatt.
 - **Skrifter** (AD-1): IBM Plex Sans, Sans Condensed og Mono via `@fontsource`, aldri fra Google Fonts.
 - **Navn i koden** (kap. 4): norske fagord fra ordbanken i ASCII (æ, ø, å → ae, o, a). `kebab-case.ts`, `PascalCase.tsx`. Nye fagord legges først inn i ordbanken.
 - **Byggerekkefølge** (kap. 8): 0 oppsett → 1 typer → 2 lesing og validering → 3 struktur, netting og beregning med fasit 01–04 → 4 eksepsjoner → 5 worker, styring, tilstand og ruting → 6 UI trinn 1 og ytelsesmåling → 7 forklaringspanel → 8 lagring, sammenligning, Lagrede kjøringer og eksport → 9 kapasitet med fasit 05 → 10 fast partistørrelse. Etter nr. 1 kan nr. 2–4 og 6 gå samtidig. UI kan bygges mot eksempeldata fra fasit 01.
@@ -359,7 +359,8 @@ slik at alle kan begynne på sin story med samme verktøy, og ingen kan bryte gr
 **Gitt** et repo med `testdata/`
 **Når** prosjektet settes opp fra Vite-malen `react-ts`
 **Så** finnes mappestrukturen fra arkitektur kap. 2 (`src/domene/`, `tekster/`, `excel/`, `lagring/`, `worker/`, `app/`, `ui/`, `public/`, `tests/`, `e2e/`)
-**Og** TypeScript kjører med `strict`, og `package.json` har `engines` med Node 24
+**Og** TypeScript kjører med `strict`, og `package.json` har `engines` med Node 22.12+, 24 og 26 (`^22.12.0 || ^24.0.0 || ^26.0.0`)
+**Og** `.npmrc` har `engine-strict=true` og `allow-remote=root`, så bare SheetJS kan installeres fra en nettadresse (AD-18)
 
 **Gitt** `package.json`
 **Når** avhengighetene installeres
@@ -377,12 +378,14 @@ slik at alle kan begynne på sin story med samme verktøy, og ingen kan bryte gr
 **Når** en fil i `src/` importerer noe tabellen i arkitektur kap. 2 ikke tillater, eller en avhengighet har `^` eller `~`
 **Så** feiler `npm test` med en melding som sier hvilken fil og hvilken regel
 **Og** testen feiler hvis en fil i `src/domene/` bruker `window`, `document`, `localStorage`, `Date.now`, `new Date()` eller `Math.random` (AD-2)
-**Og** testen feiler hvis noe utenfor `src/excel/` importerer SheetJS, unntatt testhjelperen for fasitfilene (AD-15)
+**Og** testen feiler hvis noe utenfor `src/excel/` importerer SheetJS, unntatt testhjelperne `tests/hjelpere/fasit-leser.ts` og `tests/hjelpere/lag-arbeidsbok.ts` (AD-15)
 
 **Gitt** `vercel.json`
 **Når** den leses
 **Så** setter den nøyaktig Content Security Policy fra AD-17, så nettleseren selv stopper forsøk på å sende data ut (NFR-4)
-**Og** `vite preview` bruker samme CSP, og en test feiler hvis de to er ulike
+**Og** den setter `X-Content-Type-Options: nosniff` og `Referrer-Policy: no-referrer`, og ingen andre hoder (AD-17)
+**Og** `vite preview` bruker samme CSP og samme hoder, og en test feiler hvis de er ulike
+**Og** alle e2e-testene bruker vakten i `e2e/csp-vakt.ts`, som feiler testen ved brudd på CSP-en, konsollfeil og unntak, og en test viser at vakten virker (AD-17)
 
 **Gitt** `public/COSI-MRP-mal.xlsx` og `public/testeksempel-01.xlsx`
 **Når** testene kjører
@@ -470,7 +473,8 @@ slik at jeg finner fram uten installasjon.
 **Gitt** prosjektet på Vercel
 **Når** en branch pushes og `main` oppdateres
 **Så** får branchen en forhåndsvisning, og `main` publiseres til produksjon som statiske filer (AD-17)
-**Og** Vercel bruker Node 24, Analytics og Speed Insights er av, og toolbaren er av på forhåndsvisningene
+**Og** Vercel bruker Node 24 (se byggeloggen, og lås 24 i prosjektinnstillingene hvis Vercel velger en annen), Analytics og Speed Insights er av, og toolbaren er av på forhåndsvisningene
+**Og** Vercel sender `Strict-Transport-Security` på forhåndsvisningen og i produksjon, i tillegg til hodene fra `vercel.json` (AD-17)
 **Og** en Playwright-test åpner alle fem visningene i Chromium og Firefox uten brudd på CSP-en
 
 ### Story 1.4: Introduksjonsside, startside og Veiledning
@@ -544,6 +548,11 @@ slik at jeg vet om jeg må lagre filen på nytt før noe kan kontrolleres.
 **Når** de leses
 **Så** gir alle `RaaArk` uten filfeil
 **Og** Excel-delen avgjør aldri om en verdi er feil. Det gjør valideringen
+
+**Gitt** testhjelperen `tests/hjelpere/lag-arbeidsbok.ts`, som bare skriver arbeidsbøker med SheetJS (AD-15)
+**Når** testene trenger små tilfeller for logikken, for eksempel varenummer og nivå lagret som tall, innhold under en tom rad, et ark eller en overskrift som mangler, eller kolonner i en annen rekkefølge
+**Så** lager testen arbeidsboka med hjelperen og gir bytene til `excel/les.ts` som en opplastet fil
+**Og** formler med lagret verdi, hjelpekolonnene, Kontroll-kolonnen, passordbeskyttet, skadet og tom fil testes med filer lagret fra Excel i `testdata/`, ikke med arbeidsbøker laget av SheetJS (NFR-11, AD-16)
 
 ### Story 1.6: Kontroll av malens struktur
 
