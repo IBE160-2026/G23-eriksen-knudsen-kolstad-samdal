@@ -20,3 +20,19 @@ Sebastian ba om at `Sebastian/Branch` skulle bli mest mulig lik main før han st
 ### Åpne punkter
 - Main mangler loggene dine fra 13.–23.11 og Impeccable 4.9.0. Kan tas inn i main med en egen PR hvis branchen skal bli helt lik.
 - `technology.md` (Pytagoras-siden, ikke COSI) ligger fortsatt i main og bør slettes der med en PR.
+
+## 2026-11-23 kl. 18:05 — Sebastian
+
+### Oppgave
+Sebastian ba om en PR til main med loggene og Impeccable 4.9.0, så `Sebastian/Branch` og main blir like.
+
+### Plan
+- Branchen `Sebastian/logger-og-impeccable` fra main, med `.logs/sebastian/` og Impeccable-filene i `.claude/` hentet fra `Sebastian/Branch`.
+
+### Resultat
+- PR #23: https://github.com/IBE160-2026/G23-eriksen-knudsen-kolstad-samdal/pull/23 (37 filer: 9 nye logger, 3 logger og `issues.md` oppdatert, 24 filer for Impeccable). Diffen mot `Sebastian/Branch` var tom.
+- Denne loggseksjonen er committet både på `Sebastian/Branch` og i PR-branchen, så de er like etter flettingen.
+- Lukket fra issues: loggene og Impeccable til main (PR laget).
+
+### Åpne punkter
+- Noen andre i gruppen ser over PR #23 før fletting (AD-18).
