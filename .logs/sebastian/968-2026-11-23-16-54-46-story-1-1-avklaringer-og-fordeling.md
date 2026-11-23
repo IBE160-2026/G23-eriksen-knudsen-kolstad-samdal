@@ -101,3 +101,23 @@ Sebastian godkjente PR #22, #20 og #21 og ba om at de ble flettet til main i rik
 - `Sebastian/Branch` har fortsatt de samme endringene ukommittert i arbeidskopien. De ligger nå i main og bør forkastes før main flettes inn i branchen.
 - Arbeidsmappen `C:/IBE160/G23-story-1.1-avklaringer` (står på main i detached HEAD) og den lokale prøvebranchen `proeve/samlet` kan fjernes. Branchene `story/1.1-prosjektoppsett`, `story/1.1-avklaringer` og `story/1.2-delte-typer` er flettet og kan slettes på GitHub.
 - Idun og gruppen har ikke sett over #22 selv. Raden i kap. 12 sier at Sebastian godkjente.
+
+## 2026-11-23 kl. 17:45 — Sebastian
+
+### Oppgave
+Sebastian ba om å rydde opp etter flettingen og pushe.
+
+### Plan
+- Kontrollere at de ukommitterte endringene på `Sebastian/Branch` ligger i main før de forkastes.
+- Fjerne arbeidsmappen og de lokale branchene, kontrollere at story-branchene er flettet i main og ikke har åpne PR-er, og slette dem på GitHub.
+
+### Resultat
+- Endringene i arbeidskopien var like main, unntatt arkitekturen (der main er nyere, med «godkjent av Sebastian» og Story 1.2) og ordbanken (eldre på `Sebastian/Branch`, de fem ordene står i main). De er forkastet med `git restore .`, og `e2e/csp-vakt.ts` er slettet. Arbeidskopien er ren.
+- Arbeidsmappen `C:/IBE160/G23-story-1.1-avklaringer` er fjernet med `git worktree remove`.
+- De lokale branchene `proeve/samlet`, `story/1.1-avklaringer` og `story/1.2-delte-typer` er slettet.
+- `story/1.1-prosjektoppsett`, `story/1.1-avklaringer` og `story/1.2-delte-typer` er kontrollert flettet i main, uten åpne PR-er, og slettet på GitHub.
+- Lukket fra issues: begge oppryddingspunktene.
+
+### Åpne punkter
+- `Sebastian/Branch` har Story 1.1 (fra flettingen 7a7ed0a), men ikke Story 1.2 eller main etter 23.11. Den har også den eldre ordbanken og UX- og arkitekturfilene fra før vedtaket, så main bør ikke flettes inn uten å se på konfliktene. Det står allerede i issues fra 23.11.
+- `git worktree list` viser fortsatt en eldre arbeidsmappe, `carmen-wt`, i scratchpad-mappen til en tidligere økt. Den er ikke laget i denne økten og er ikke rørt.
