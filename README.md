@@ -22,7 +22,7 @@ Alt skjer i brukerens nettleser. Appen publiseres på Vercel, men ingen data sen
 
 ## Kom i gang
 
-**Forutsetninger:** [Node.js 24](https://nodejs.org/) (LTS) og Git. Appen trenger ingen API-nøkler, betalte kontoer eller tjenester som gruppen driver (PRD NFR-3).
+**Forutsetninger:** [Node.js](https://nodejs.org/) 24 eller 26 (LTS), eller 22.12 eller nyere i 22-serien, og Git. Prosjektet bygges og testes på Node 24. Node 23 og 25 støttes ikke av Vitest, og `npm ci` stopper på dem. Appen trenger ingen API-nøkler, betalte kontoer eller tjenester som gruppen driver (PRD NFR-3).
 
 **Installasjon:**
 
@@ -39,10 +39,10 @@ npx playwright install chromium firefox   # én gang: nettleserne til testene i 
 | `npm test` | Kjører alle testene i Vitest, også arkitekturtesten. Trenger ikke nett, nøkler eller kontoer (PRD NFR-2) |
 | `npm run lint` | Kontrollerer koden med oxlint. Advarsler gir også feil |
 | `npm run build` | Kontrollerer typene og lager de statiske filene i `dist/` |
-| `npm run preview` | Viser bygget fra `dist/` lokalt, med den samme Content Security Policy som `vercel.json` setter |
+| `npm run preview` | Viser bygget fra `dist/` lokalt, med den samme Content Security Policy og de samme sikkerhetshodene som `vercel.json` setter |
 | `npm run test:e2e` | Bygger appen og kjører testene i nettleser (Playwright) i Chromium og Firefox. Er ikke med i `npm test` |
 
-`npm test`, `npm run lint` og `npm run build` må være grønne før en pull request flettes (arkitektur AD-18). Lenken til appen på Vercel kommer når publiseringen er satt opp (Story 1.3).
+`npm test`, `npm run lint` og `npm run build` må være grønne før en pull request flettes. Endrer storyen `src/ui/`, `src/worker/` eller `src/excel/`, må også `npm run test:e2e` være grønn (arkitektur AD-18). `npm run dev` har ingen CSP, fordi utviklingsserveren trenger inline-skript, så brudd på CSP-en viser seg først i `npm run test:e2e`, der alle testene feiler ved brudd. Lenken til appen på Vercel kommer når publiseringen er satt opp (Story 1.3).
 
 **Avhengigheter** har eksakte versjoner, uten `^` og `~`, og `package-lock.json` ligger i repoet. Bruk `npm ci`, ikke `npm install`, når du bare skal kjøre prosjektet. SheetJS installeres fra `cdn.sheetjs.com`, ikke fra npm (arkitektur AD-15).
 

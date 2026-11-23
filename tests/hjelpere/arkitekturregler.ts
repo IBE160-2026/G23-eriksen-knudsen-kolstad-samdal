@@ -45,8 +45,9 @@ export const REGLER: Record<Del, Regel> = {
   main: { deler: { ui: 'alt' }, pakker: ['react', 'react-dom', ...SKRIFTER] },
 }
 
-// Unntaket i AD-15: testhjelperen som leser fasitfilene, kan bruke SheetJS.
-export const SHEETJS_UNNTAK = ['tests/hjelpere/fasit-leser.ts']
+// Unntakene i AD-15: testhjelperen som leser fasitfilene, og testhjelperen som lager
+// små arbeidsbøker til testene, kan bruke SheetJS. Ingen andre filer i tests/ eller e2e/.
+export const SHEETJS_UNNTAK = ['tests/hjelpere/fasit-leser.ts', 'tests/hjelpere/lag-arbeidsbok.ts']
 
 const FORBUDT_I_DOMENE: { navn: string; monster: RegExp }[] = [
   { navn: 'window', monster: /\bwindow\b/ },
@@ -187,7 +188,7 @@ export function sjekkRenKjerne(fil: Fil): Brudd[] {
   }))
 }
 
-// Gjelder også tests/ og e2e/: bare src/excel/ og testhjelperen for fasitfilene bruker SheetJS.
+// Gjelder også tests/ og e2e/: bare src/excel/ og de to testhjelperne i SHEETJS_UNNTAK bruker SheetJS.
 export function sjekkSheetJs(fil: Fil): Brudd[] {
   if (fil.sti.startsWith('src/')) return [] // dekkes av sjekkImporter
   if (SHEETJS_UNNTAK.includes(fil.sti)) return []

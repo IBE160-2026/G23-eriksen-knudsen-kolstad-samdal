@@ -98,7 +98,7 @@ En arkitekturtest i Vitest leser importene i `src/` og feiler hvis en del import
   tests/         samme mappestruktur som src/, pluss fasit/, validering/, arkitektur.test.ts
   e2e/           Playwright
   testdata/      malen, testeksemplene, fasitene, validering/, lag_testdata.py
-  vercel.json    CSP og andre sikkerhetshoder
+  vercel.json    CSP, X-Content-Type-Options og Referrer-Policy (AD-17)
 ```
 
 ## 3. Beslutninger
@@ -166,7 +166,7 @@ De viktigste typene:
 - **Gjelder:** FR-1, FR-4, FR-19, NFR-9
 - **Regel:**
   - Excel-delen og valideringen gir svar som `{ ok: true, verdi }` eller `{ ok: false, feil }`, og kaster ikke unntak for feil i brukerens data.
-  - Excel-delen gir én kode for hver feil i hele filen: ikke en Excel-fil, tom fil og skadet fil. Hver kode får sin egen melding (NFR-9).
+  - Excel-delen gir én kode for hver feil i hele filen: ikke `.xlsx` (FR-1), tom fil, skadet fil, ikke en Excel-fil og passordbeskyttet fil (`IKKE_XLSX`, `TOM_FIL`, `SKADET_FIL`, `IKKE_EXCEL`, `PASSORDBESKYTTET`). Hver kode får sin egen melding (NFR-9, EXPERIENCE.md › Feil i hele filen).
   - Valideringen samler alle feilene før den svarer, også etter FR-2-regelen om å hoppe over kontroller som avhenger av noe som mangler.
   - Worker-en fanger alle uventede feil i lesing, validering og beregning og svarer med koden `UVENTET_FEIL`. Den sender aldri et halvt resultat.
   - Styringen gjør en uventet feil om til en norsk melding. Det gjelder svar med `UVENTET_FEIL`, en worker som krasjer (`error` eller `messageerror`), og feil i sammenligning og lagring. Ved feil vises ingen resultat, og ingenting lagres.
@@ -280,7 +280,8 @@ De viktigste typene:
 
 - **Gjelder:** FR-1, FR-2, FR-3, FR-22, FR-23, FR-27, NFR-11
 - **Regel:**
-  - Bare `src/excel/` importerer SheetJS, i tillegg til en hjelpefunksjon i testene som leser fasitfilene.
+  - Bare `src/excel/` importerer SheetJS, i tillegg til to testhjelpere: `tests/hjelpere/fasit-leser.ts`, som leser fasitfilene, og `tests/hjelpere/lag-arbeidsbok.ts`, som bare skriver små arbeidsbøker til testene. Ingen andre filer i `tests/` eller `e2e/`.
+  - Arbeidsbøker laget med SheetJS tester logikken i lesingen. Formler med lagret verdi, hjelpekolonnene, Kontroll-kolonnen, passordbeskyttede, skadede og tomme filer testes med filer lagret fra Excel i `testdata/` (NFR-11, AD-16).
   - SheetJS installeres fra `https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz`, aldri med `npm i xlsx`. Pakken på npm er en gammel versjon med kjente sikkerhetshull.
   - Ark og kolonner finnes etter navn, ikke plass. Excel-delen leser lagrede verdier og aldri formler. Hver rad får sitt Excel-radnummer.
   - Arkene Veiledning og Veien videre, Kontroll-kolonnen og hjelpekolonnene leses ikke.
@@ -313,7 +314,9 @@ De viktigste typene:
 
     `default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; worker-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'; frame-ancestors 'none'`
 
-  - `vite preview` bruker den samme CSP-en, og en test sjekker at de to er like.
+  - `vercel.json` setter også `X-Content-Type-Options: nosniff` og `Referrer-Policy: no-referrer`. HSTS sender Vercel selv, og det kontrolleres i Story 1.3. `X-Frame-Options` trengs ikke, fordi `frame-ancestors 'none'` gjør det samme.
+  - `vite preview` bruker den samme CSP-en og de samme hodene, og en test sjekker at de er like.
+  - `npm run dev` har ingen CSP, fordi utviklingsserveren trenger inline-skript og -stiler. Alle e2e-testene bruker vakten i `e2e/csp-vakt.ts`, som feiler testen ved brudd på CSP-en, konsollfeil og unntak som ikke fanges.
   - Miljøer: lokalt (`npm run dev`), forhåndsvisning på Vercel per branch, og produksjon fra `main`.
   - Ett byggflagg, `VITE_KAPASITET`, skjuler produksjonskapasiteten hvis trinn 4 kuttes, og i bygget til brukertesten.
   - Brukertesten 2.–7. desember bruker en egen branch `brukertest`, som fryses den uka.
@@ -323,8 +326,9 @@ De viktigste typene:
 - **Gjelder:** NFR-2, NFR-3
 - **Regel:**
   - Én branch per story og pull request inn i `main`. Minst én annen i gruppen ser over før fletting.
-  - `npm test`, `npm run lint` (oxlint) og `npm run build` må være grønne før fletting.
+  - `npm test`, `npm run lint` (oxlint) og `npm run build` må være grønne før fletting. Endrer storyen `src/ui/`, `src/worker/` eller `src/excel/`, må også `npm run test:e2e` være grønn.
   - Alle avhengigheter i `package.json` har eksakt versjon, uten `^` og `~`. `package-lock.json` committes, og `npm ci` brukes. Arkitekturtesten sjekker at ingen versjon har `^` eller `~`.
+  - `.npmrc` har `engine-strict=true`, så `npm ci` stopper på en Node-versjon utenfor `engines`, og `allow-remote=root`, så bare nettadresser som står i `package.json` (SheetJS) kan installeres. npm 12 stopper nettadresser som standard.
   - Automatiske kontroller på GitHub (CI) er utsatt, men kan legges til uten å endre noe her.
 
 ## 4. Konvensjoner
@@ -345,7 +349,7 @@ Versjonene er sjekket 22.11.2026 og låses eksakt i `package.json`.
 
 | Navn | Versjon |
 |---|---|
-| Node.js | 24 LTS (i `engines` og på Vercel) |
+| Node.js | 24 LTS: versjonen vi bygger og tester på, og den Vercel bruker. `engines` er `^22.12.0 \|\| ^24.0.0 \|\| ^26.0.0`, fordi Vitest ikke støtter 23 og 25 |
 | TypeScript | 7.0.2 |
 | Vite | 8.3.8 |
 | React og react-dom | 19.3.1 |
@@ -353,6 +357,8 @@ Versjonene er sjekket 22.11.2026 og låses eksakt i `package.json`.
 | SheetJS Community Edition | 0.20.3 (fra cdn.sheetjs.com) |
 | @fontsource/ibm-plex-sans, -sans-condensed og -mono | 5.3.0 |
 | Vitest | 5.1.1 |
+| @types/react og @types/react-dom | 19.3.0 (bare utvikling) |
+| @types/node | 24.19.2 (bare utvikling) |
 | @playwright/test | 1.65.1 |
 | oxlint | 1.94.0 |
 | UI-komponenter og CSS | Ingen bibliotek. Vanlig HTML og CSS fra UX-prototypen v3 |
@@ -450,3 +456,5 @@ Alle ble oppdatert 22.11, etter gruppens ja.
 | 22.11.2026 | Web Worker fra start, i stedet for først når målingen krever det. Lesing, validering og beregning kjører i `src/worker/`, og tidsgrensen på 30 sekunder håndheves med `terminate()`. Navigasjonen med egen hash-adresse per visning (AD-13) er bekreftet uendret. | Kapittel 1 og 2, AD-5, AD-12, AD-14, kapittel 6, 8 og 10 |
 | 22.11.2026 | Tilpasset de felles UX-dokumentene (`ux-COSI - MRP-2026-11-22`): femte visning Veiledning (`#/veiledning`) og appmeny, lys og mørk visning med nøkkelen `cosi-mrp:visning`, seksjonen «Slik leser du resultatet» og kjøringslinjen i resultatet, skriftene IBM Plex i stedet for Source Sans 3, og tokenene i DESIGN.md som CSS-variabler. | Kapittel 1, 2, 4, 5, 6, 8 og 11, AD-1, AD-10, AD-13, AD-14 |
 | 22.11.2026 | PRD FR-3, EXPERIENCE.md og ordbanken oppdatert etter arkitekturen (kapittel 11). | Kapittel 11 |
+| 23.11.2026 | De fem åpne avklaringene fra Story 1.1 (PR #20 og #22), godkjent av Sebastian 23.11.2026: typepakkene står i kap. 5. `engines` godtar Node 22.12+, 24 og 26, og `.npmrc` har `allow-remote=root`. Alle e2e-tester bruker CSP-vakten, og `test:e2e` kreves før fletting når `ui/`, `worker/` eller `excel/` endres. `vercel.json` setter også `nosniff` og `Referrer-Policy`. SheetJS-unntaket i testene gjelder også `tests/hjelpere/lag-arbeidsbok.ts`. | Kapittel 2 og 5, AD-15, AD-17, AD-18 |
+| 23.11.2026 | Ny filfeilkode `PASSORDBESKYTTET` for passordbeskyttet fil, og alle fem kodene for feil i hele filen er listet i AD-5 (Story 1.2, godkjent av koordinatoren). | AD-5 |
