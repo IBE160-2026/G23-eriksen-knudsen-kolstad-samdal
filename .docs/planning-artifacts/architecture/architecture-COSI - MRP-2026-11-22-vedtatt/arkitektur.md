@@ -166,7 +166,7 @@ De viktigste typene:
 - **Gjelder:** FR-1, FR-4, FR-19, NFR-9
 - **Regel:**
   - Excel-delen og valideringen gir svar som `{ ok: true, verdi }` eller `{ ok: false, feil }`, og kaster ikke unntak for feil i brukerens data.
-  - Excel-delen gir én kode for hver feil i hele filen: ikke en Excel-fil, tom fil og skadet fil. Hver kode får sin egen melding (NFR-9).
+  - Excel-delen gir én kode for hver feil i hele filen: ikke `.xlsx` (FR-1), tom fil, skadet fil, ikke en Excel-fil og passordbeskyttet fil (`IKKE_XLSX`, `TOM_FIL`, `SKADET_FIL`, `IKKE_EXCEL`, `PASSORDBESKYTTET`). Hver kode får sin egen melding (NFR-9, EXPERIENCE.md › Feil i hele filen).
   - Valideringen samler alle feilene før den svarer, også etter FR-2-regelen om å hoppe over kontroller som avhenger av noe som mangler.
   - Worker-en fanger alle uventede feil i lesing, validering og beregning og svarer med koden `UVENTET_FEIL`. Den sender aldri et halvt resultat.
   - Styringen gjør en uventet feil om til en norsk melding. Det gjelder svar med `UVENTET_FEIL`, en worker som krasjer (`error` eller `messageerror`), og feil i sammenligning og lagring. Ved feil vises ingen resultat, og ingenting lagres.
@@ -457,3 +457,4 @@ Alle ble oppdatert 22.11, etter gruppens ja.
 | 22.11.2026 | Tilpasset de felles UX-dokumentene (`ux-COSI - MRP-2026-11-22`): femte visning Veiledning (`#/veiledning`) og appmeny, lys og mørk visning med nøkkelen `cosi-mrp:visning`, seksjonen «Slik leser du resultatet» og kjøringslinjen i resultatet, skriftene IBM Plex i stedet for Source Sans 3, og tokenene i DESIGN.md som CSS-variabler. | Kapittel 1, 2, 4, 5, 6, 8 og 11, AD-1, AD-10, AD-13, AD-14 |
 | 22.11.2026 | PRD FR-3, EXPERIENCE.md og ordbanken oppdatert etter arkitekturen (kapittel 11). | Kapittel 11 |
 | 23.11.2026 | De fem åpne avklaringene fra Story 1.1 (PR #20 og #22), godkjent av Sebastian 23.11.2026: typepakkene står i kap. 5. `engines` godtar Node 22.12+, 24 og 26, og `.npmrc` har `allow-remote=root`. Alle e2e-tester bruker CSP-vakten, og `test:e2e` kreves før fletting når `ui/`, `worker/` eller `excel/` endres. `vercel.json` setter også `nosniff` og `Referrer-Policy`. SheetJS-unntaket i testene gjelder også `tests/hjelpere/lag-arbeidsbok.ts`. | Kapittel 2 og 5, AD-15, AD-17, AD-18 |
+| 23.11.2026 | Ny filfeilkode `PASSORDBESKYTTET` for passordbeskyttet fil, og alle fem kodene for feil i hele filen er listet i AD-5 (Story 1.2, godkjent av koordinatoren). | AD-5 |
