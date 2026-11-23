@@ -145,8 +145,10 @@ describe('reglene oppdager brudd', () => {
     expect(sjekkImporter({ sti: 'src/ui/Eksport.tsx', innhold: "import { writeFile } from 'xlsx'" })).toHaveLength(1)
   })
 
-  it('SheetJS i tests/ er bare lov i testhjelperen for fasitfilene', () => {
+  it('SheetJS i tests/ er bare lov i de to testhjelperne fra AD-15', () => {
     expect(sjekkSheetJs({ sti: 'tests/hjelpere/fasit-leser.ts', innhold: "import * as XLSX from 'xlsx'" })).toEqual([])
+    expect(sjekkSheetJs({ sti: 'tests/hjelpere/lag-arbeidsbok.ts', innhold: "import * as XLSX from 'xlsx'" })).toEqual([])
+    expect(sjekkSheetJs({ sti: 'tests/hjelpere/annen-hjelper.ts', innhold: "import * as XLSX from 'xlsx'" })).toHaveLength(1)
     expect(sjekkSheetJs({ sti: 'tests/domene/beregn.test.ts', innhold: "import * as XLSX from 'xlsx'" })).toHaveLength(1)
   })
 
