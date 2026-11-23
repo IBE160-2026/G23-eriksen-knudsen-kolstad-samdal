@@ -22,14 +22,29 @@ Alt skjer i brukerens nettleser. Appen publiseres på Vercel, men ingen data sen
 
 ## Kom i gang
 
-*Kommer når appen er laget.* Her skal det stå:
+**Forutsetninger:** [Node.js](https://nodejs.org/) 24 eller 26 (LTS), eller 22.12 eller nyere i 22-serien, og Git. Prosjektet bygges og testes på Node 24. Node 23 og 25 støttes ikke av Vitest, og `npm ci` stopper på dem. Appen trenger ingen API-nøkler, betalte kontoer eller tjenester som gruppen driver (PRD NFR-3).
 
-- **Forutsetninger:** hvilke programmer og versjoner som trengs
-- **Installasjon:** kommandoene, steg for steg
-- **Kjøring:** hvordan appen startes lokalt, og lenken til appen på Vercel
-- **Tester:** hvordan alle testene kjøres med én kommando (PRD NFR-2)
+**Installasjon:**
 
-Appen skal kunne kjøres uten API-nøkler, betalte kontoer eller tjenester som gruppen driver (PRD NFR-3).
+```sh
+npm ci                                    # installerer de låste versjonene fra package-lock.json
+npx playwright install chromium firefox   # én gang: nettleserne til testene i nettleser
+```
+
+**Kommandoer:**
+
+| Kommando | Hva den gjør |
+|---|---|
+| `npm run dev` | Starter appen lokalt på http://localhost:5173 |
+| `npm test` | Kjører alle testene i Vitest, også arkitekturtesten. Trenger ikke nett, nøkler eller kontoer (PRD NFR-2) |
+| `npm run lint` | Kontrollerer koden med oxlint. Advarsler gir også feil |
+| `npm run build` | Kontrollerer typene og lager de statiske filene i `dist/` |
+| `npm run preview` | Viser bygget fra `dist/` lokalt, med den samme Content Security Policy og de samme sikkerhetshodene som `vercel.json` setter |
+| `npm run test:e2e` | Bygger appen og kjører testene i nettleser (Playwright) i Chromium og Firefox. Er ikke med i `npm test` |
+
+`npm test`, `npm run lint` og `npm run build` må være grønne før en pull request flettes. Endrer storyen `src/ui/`, `src/worker/` eller `src/excel/`, må også `npm run test:e2e` være grønn (arkitektur AD-18). `npm run dev` har ingen CSP, fordi utviklingsserveren trenger inline-skript, så brudd på CSP-en viser seg først i `npm run test:e2e`, der alle testene feiler ved brudd. Lenken til appen på Vercel kommer når publiseringen er satt opp (Story 1.3).
+
+**Avhengigheter** har eksakte versjoner, uten `^` og `~`, og `package-lock.json` ligger i repoet. Bruk `npm ci`, ikke `npm install`, når du bare skal kjøre prosjektet. SheetJS installeres fra `cdn.sheetjs.com`, ikke fra npm (arkitektur AD-15).
 
 ## Testdata
 
@@ -65,13 +80,25 @@ Skriptet kontrollerer først at hvert testeksempel gir de eksepsjonene og den ka
 │       ├── briefs/             product brief, addendum og faglærers tilbakemelding
 │       ├── prds/               PRD, addendum, beslutninger og kvalitetssikring
 │       └── research/           research om MRP-reglene, med kilder
+├── src/                        koden til appen (arkitektur kap. 2)
+│   ├── domene/                 kjernen: typer, validering, beregning, eksepsjoner, sammenligning
+│   ├── tekster/                all norsk tekst (nb.ts)
+│   ├── excel/                  lesing og eksport med SheetJS
+│   ├── lagring/                lagrede kjøringer i nettleseren
+│   ├── worker/                 kjøringen i en Web Worker
+│   ├── app/                    styring av kjøringen og felles tilstand
+│   └── ui/                     React-komponentene
+├── public/                     Excel-malen og testeksempel 01, like filene i testdata/
+├── tests/                      Vitest, med samme mapper som src/, og arkitekturtesten
+├── e2e/                        Playwright-testene
+├── vercel.json                 Content Security Policy for Vercel
 ├── testdata/                   Excel-mal, testeksempler, fasiter og valideringsfiler
 ├── .logs/<bruker>/             sesjonslogger fra arbeidet med KI, og åpne punkter (issues.md)
 ├── .claude/skills/             BMAD-ferdighetene og sesjonslogg-ferdigheten
 └── _bmad/                      oppsett og skript for BMAD
 ```
 
-Koden til appen kommer i egne mapper når arkitekturen er bestemt.
+Hvilke mapper som kan importere fra hvilke, står i arkitekturen (`.docs/planning-artifacts/architecture/architecture-COSI - MRP-2026-11-22-vedtatt/arkitektur.md`, kapittel 2). Arkitekturtesten i `tests/arkitektur.test.ts` feiler hvis en fil bryter reglene.
 
 ## Planlegging og prosess
 

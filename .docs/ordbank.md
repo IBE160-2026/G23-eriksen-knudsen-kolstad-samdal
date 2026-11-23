@@ -2,7 +2,7 @@
 title: COSI - MRP Ordbank
 status: forslag
 created: 2026-10-21
-updated: 2026-11-22
+updated: 2026-11-23
 ---
 
 # Ordbank: COSI - MRP
@@ -18,8 +18,11 @@ Forslaget bygger på Excel-malen for flernivå stykkliste (Sebastian, 2026-10-23
 | BMAD | – | Metoden og verktøysettet vi planlegger med: product brief → PRD → arkitektur → epics og stories. |
 | BOM | Bill of Materials | Stykkliste. Se *Stykkliste*. |
 | COSI - MRP | – | Navnet på verktøyet vi lager. Står også som ordmerke i toppfeltet. |
+| CSP | Content Security Policy | Sikkerhetshode som sier hvor siden kan hente skript, stiler og filer fra og sende data til. Nettleseren stopper alt annet. Står i `vercel.json` (arkitektur AD-17). Lagt inn 23.11. |
+| E2e | End-to-end | Test som kjører hele appen i en ekte nettleser (Playwright), fra opplasting til resultat. Kommandoen er `npm run test:e2e`. Lagt inn 23.11. |
 | ERP | Enterprise Resource Planning | Stort, integrert forretningssystem som dekker blant annet økonomi, lager, innkjøp og produksjon. MRP er bare én del av et ERP-system. |
 | H | Horisont | Se *Horisont*. |
+| HSTS | HTTP Strict Transport Security | Sikkerhetshode som sier at nettleseren bare skal bruke HTTPS mot appen. Vercel sender det selv (arkitektur AD-17). Lagt inn 23.11. |
 | IBE160 | – | Emnet ved Høgskolen i Molde som prosjektet er en del av. |
 | L | Ledetid | Se *Ledetid*. |
 | L4L | Lot-for-lot | Se *Lot-for-lot*. |
@@ -155,6 +158,8 @@ Forslaget bygger på Excel-malen for flernivå stykkliste (Sebastian, 2026-10-23
 | Prøvetest | En prøve av brukertesten før testuka, for å se at introduksjonen og oppgavene fungerer. Teller ikke med i resultatet (PRD §8.1). | pilottest |
 | Testperson | En person som deltar i brukertesten. Trenger ikke ha brukt appen før. 4–8 i alt, 1–2 per gruppemedlem (PRD §8.1). | testbruker |
 | Testleder | Gruppemedlemmet som gjennomfører brukertesten med en testperson. Kan hjelpe med tekniske problemer, men ikke med oppgavene (PRD §8.1). | – |
+| Sikkerhetshode | Et HTTP-hode som ber nettleseren beskytte siden, for eksempel CSP, `X-Content-Type-Options` og `Referrer-Policy` i `vercel.json` (arkitektur AD-17). Lagt inn 23.11. | sikkerhetsheader |
+| CSP-vakt | Den felles kontrollen i `e2e/csp-vakt.ts` som får hver e2e-test til å feile ved brudd på CSP-en, konsollfeil og unntak (arkitektur AD-17). Lagt inn 23.11. | – |
 | Grensetilfelle (*edge case*) | Testtilfelle i ytterkanten av det normale, f.eks. behov i uke 1, eller ledetid lik eller lengre enn horisonten. | – |
 
 ## Brukergrensesnitt
