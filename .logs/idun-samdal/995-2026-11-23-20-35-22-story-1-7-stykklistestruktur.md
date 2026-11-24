@@ -24,3 +24,26 @@ Idun ba om hjelp til å starte på Story 1.7 (`domene/struktur.ts`) i sin egen b
 
 ### Åpne punkter
 - Stykklister der to deler står under hverandre (A under B og B under A) er gyldige etter FR-3 slik regelen står, men gir ingen beregningsrekkefølge. `byggStruktur` hopper over kanten og stopper, men valideringen (Story 1.8) bør avvise slike filer med en egen kode. Det krever en endring i `typer.ts` og dermed egen PR.
+
+## 2026-11-24 kl. 17:55 — Idun-Samdal
+
+### Oppgave
+Pull request for Story 1.7 (#26) ble åpnet, og Sebastian la inn en gjennomgang. Idun ba om å sjekke kommentarene og rette det som hørte til i PR-en.
+
+### Plan
+- Rette testvakten, legge til manglende tester og rette dokumentene på branchen `story/1.7-stykklistestruktur`.
+- Svare Sebastian på PR-en, og føre punktene som hører til Story 1.8 inn i `issues.md`.
+
+### Resultat
+- Branchen `story/1.7-stykklistestruktur` er pushet med to nye commits, `dc2756d` (tester) og `7ea4d9f` (dokumenter). `struktur.ts` er uendret.
+- Testvakten leter nå etter bygging av `Struktur` i stedet for feltnavnet. Fire nye tester dekker lengste sti fra en senere overordnet del, lik ledetid, underdeler bare under en senere forekomst og rekkefølgen på alle testeksemplene. To midlertidige brudd i koden ble fanget av hver sin test.
+- AD-6, rekkefølgen i endringsloggen og ordbanken er rettet.
+- `npm test` (127 grønne), `npm run lint` og `npm run build` er grønne.
+- Svar til Sebastian: https://github.com/IBE160-2026/G23-eriksen-knudsen-kolstad-samdal/pull/26#issuecomment-7138302302. Idun sjekket også Story 1.6 (PR #25) og la inn to kommentarer der.
+- Vitest feilet med «Cannot read properties of undefined (reading 'config')» når shellet gikk inn i mappen med `/c/Users/…`. Med `c:/Users/…` virker alt. Forskjellen er stor/liten bokstav i stasjonsbokstaven.
+
+### Åpne punkter
+- Story 1.8 må hoppe over underdelsreglene når antall er ugyldig, ellers kan en rad uten antall (`V-S13`) gi to feil, siden tomt antall blir 0 i `Forekomst.underdeler`.
+- Hva som er «like» underdeler må avklares i FR-3 før 1.8: `byggStruktur` regner `[X:1, X:1]` likt med `[X:2]`, mens `lag_testdata.py` sammenligner listene som de står.
+- Avgjør om sløyfer skal rapporteres av `Struktur` (krever endring i `typer.ts`) eller av en ny valideringskode i 1.8.
+- Kommentaren i `typer.ts:323` sier «største nivåtall» og må rettes i egen PR.
