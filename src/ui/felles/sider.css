@@ -1,0 +1,183 @@
+/*
+ * Introduksjon, Ny kjøring og Veiledning (Story 1.4, DESIGN.md › Components og Layout & Spacing).
+ * Farger, skrift, avstander og hjørner kommer fra variablene i tokens.css. Mål uten token i
+ * DESIGN.md (40 px-overskriften og 12 px-hjørnene på introflaten) står som tall. CSS står bare i filer (CSP, AD-17).
+ */
+
+/* --- Knapper (components.button-primary og button-secondary) ----------------- */
+
+.knapp {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px var(--spacing-3);
+  border: 1px solid var(--line);
+  border-radius: var(--rounded-md);
+  background: var(--surface-raised);
+  color: var(--ink-primary);
+  font-size: var(--typography-body-size);
+  font-weight: 600;
+  line-height: 1.3;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.knapp:hover {
+  border-color: var(--accent);
+}
+
+.knapp-primaer {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-ink);
+}
+
+.knapp-primaer:hover {
+  background: var(--summary-hover);
+  border-color: var(--summary-hover);
+}
+
+.knapp-rad {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-2);
+}
+
+/* --- Felles for sidene ------------------------------------------------------- */
+
+.ingress {
+  max-width: 72ch;
+  color: var(--ink-secondary);
+}
+
+/* Nummerert liste uten tallene fra nettleseren: tallet står i en petrolfirkant foran overskriften. */
+.steg-rad,
+.startkort {
+  display: grid;
+  gap: var(--spacing-gutter);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: steg;
+}
+
+.steg-boks,
+.kort {
+  counter-increment: steg;
+  background: var(--surface-raised);
+  border: 1px solid var(--line);
+  border-radius: var(--rounded-lg);
+  padding: var(--spacing-5);
+}
+
+.steg-boks h2,
+.kort h2 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: var(--spacing-2);
+}
+
+.steg-boks h2::before,
+.kort h2::before {
+  content: counter(steg);
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 26px;
+  height: 26px;
+  border-radius: var(--rounded-md);
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-family: var(--font-sans);
+  font-size: var(--typography-label-size);
+  font-weight: 700;
+  line-height: 1;
+}
+
+/* --- Introduksjon (UX-DR6) ---------------------------------------------------- */
+
+.intro-flate {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--spacing-4);
+  padding: 40px;
+  border-radius: 12px;
+  background: var(--accent-soft);
+}
+
+.intro-overskrift {
+  font-size: 40px;
+  line-height: 1.08;
+}
+
+.intro-overskrift-linje2 {
+  display: block;
+  color: var(--accent);
+}
+
+.intro-avsnitt {
+  max-width: 52ch;
+  color: var(--ink-secondary);
+}
+
+.steg-rad {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.steg-boks p {
+  color: var(--ink-secondary);
+}
+
+/* --- Ny kjøring (UX-DR7) -------------------------------------------------------- */
+
+.startkort {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.kort-bred {
+  grid-column: 1 / -1;
+}
+
+.kort-tekst {
+  margin-bottom: var(--spacing-3);
+  color: var(--ink-secondary);
+}
+
+/* --- Veiledning (UX-DR31) -------------------------------------------------------- */
+
+.tekstside {
+  max-width: 80ch;
+}
+
+.tekstdel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+  margin-top: var(--spacing-2);
+}
+
+.tekstdel ul {
+  margin: 0;
+  padding-left: var(--spacing-5);
+}
+
+/* --- Smal skjerm (under 900 px): én kolonne ------------------------------------- */
+
+@media (max-width: 899.98px) {
+  .steg-rad,
+  .startkort {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .intro-flate {
+    padding: var(--spacing-6);
+  }
+
+  /* 40 px gir ordet «produksjonsplanen.» mer enn 240 px ved 320 px bredde, og siden ville rullet sideveis. */
+  .intro-overskrift {
+    font-size: clamp(26px, 9vw, 40px);
+    overflow-wrap: anywhere;
+  }
+}
