@@ -2,7 +2,7 @@
 title: COSI - MRP Ordbank
 status: forslag
 created: 2026-10-21
-updated: 2026-11-23
+updated: 2026-11-24
 ---
 
 # Ordbank: COSI - MRP
@@ -80,7 +80,7 @@ Forslaget bygger på Excel-malen for flernivå stykkliste (Sebastian, 2026-10-23
 | Offset | Tidsforskyvning bakover med ledetiden: en ordre som må være mottatt i uke 6 med ledetid 2, må frigis i uke 4. | – |
 | Ledetid fra ferdigproduktet | For en del: den største summen av L langs en sti i stykklisten fra ferdigproduktet ned til og med delen. Brukes i «Ledetid overskrider horisont» (PRD FR-9). Ikke det samme som kumulativ ledetid, som regnes nedover fra delen. | ledetid fra toppen |
 | Kumulativ ledetid (*cumulative lead time*) | Den lengste summen av ledetider langs en sti fra delen ned gjennom stykklisten: delens egen L pluss den største kumulative ledetiden blant underkomponentene. For en del uten underkomponenter er den lik L. Kilde: ASCM Dictionary, 18. utg., s. 47. | samlet ledetid, stablet ledetid, kritisk sti |
-| Lavnivåkode (*low-level code*) | Det laveste nivået en del står på i stykklisten. Nettobehovet for delen beregnes først når alle bruttobehov ned til dette nivået er beregnet, så en felles del beregnes én gang. Kilde: ASCM Dictionary, 18. utg., s. 109. | laveste nivå (alene) |
+| Lavnivåkode (*low-level code*) | Det laveste nivået en del står på i stykklisten, regnet som lengste vei ned fra ferdigproduktet (i vanlige stykklister det største nivåtallet). Nettobehovet for delen beregnes først når alle bruttobehov ned til dette nivået er beregnet, så en felles del beregnes én gang. Kilde: ASCM Dictionary, 18. utg., s. 109. | laveste nivå (alene) |
 | Omplanleggingsantakelse (*rescheduling assumption*) | MRP antar at et planlagt mottak kan fremskyndes lettere enn en ny ordre kan frigis og mottas. Planlagt ordremottak lages derfor først når alle planlagte mottak er brukt. Kilde: ASCM Dictionary, 18. utg., s. 164. Se research om MRP-regler (2026-11-02). | – |
 | Omplanleggingshorisont (*rescheduling horizon*) | Grense for hvor langt fram i horisonten et planlagt mottak kan fremskyndes fra. Ikke med i v1, der et mottak kan fremskyndes fra hvilken som helst senere uke (PRD FR-6, §7.2). | – |
 | Frysing (*time fence*) | En periode nærmest i tid der planen ikke endres automatisk. Ikke med i v1, fordi appen gjør én kjøring om gangen (PRD addendum). | – |
@@ -129,11 +129,13 @@ Forslaget bygger på Excel-malen for flernivå stykkliste (Sebastian, 2026-10-23
 | Parse | Å lese og tolke en fil (her Excel-malen) så appen kan bruke dataene. | – |
 | Validering | Kontrollen av at Excel-malen har riktig struktur, ingen tomme påkrevde celler og riktige datatyper før beregningen starter. Feil gir valideringsfeil. | – |
 | Kontroll | Kolonnen i Stykkliste som viser hva som mangler eller ikke stemmer i hver rad, før opplasting. | – |
+| Hjelpekolonne | En skjult kolonne til høyre i et ark i Excel-malen, med lister og formler som nedtrekkslistene og Kontroll bruker (kolonnene Z–AD i Stykkliste). Appen leser dem ikke (PRD FR-2, arkitektur AD-15). Lagt inn 24.11. | skjult kolonne, listekolonne |
 | Kjøring | Én beregning fra én opplastet Excel-mal. | beregning (om hele kjøringen) |
 | Bestillingsplan | Valget under «Hva vil du beregne?» som gir MRP-beregningen: bestillingsforslag, kritiske deler, resultattabell og før/etter-sammenligning (PRD §4.2–4.6, FR-30). Det andre valget er produksjonskapasitet, og brukeren kan velge begge. Lagt inn 22.11. | MRP-plan, innkjøpsplan |
 | Resultat | Siden som viser én kjøring: tallboksene, kritiske deler, bestillingsforslag, endringer, resultattabellen og produksjonskapasiteten når den er valgt. Menyvalget heter «Resultat». Godkjent av gruppen 22.11. | resultatside, oversikt, dashbord |
 | Lagret kjøring | Den siste vellykkede kjøringen for et ferdigprodukt, som appen husker i nettleseren og sammenligner neste kjøring med (PRD FR-19–FR-21). Kjøringene står på siden «Lagrede kjøringer», der de kan slettes. Godkjent av gruppen 22.11. | historikk, arkiv, tidligere resultater |
 | Valideringsfeil | En feil i filen som appen finner, og som stopper beregningen. Oppgir ark, rad og årsak. | feilmelding |
+| Filfeil | En feil i hele filen, så appen ikke kan lese den: ikke .xlsx, tom fil, skadet fil, ikke en Excel-fil eller passordbeskyttet (PRD FR-1, NFR-9, arkitektur AD-5). Gir én melding i opplastingssonen, ikke en liste over valideringsfeil. Koden står i `Filfeil` i `src/domene/typer.ts`. Lagt inn 24.11. | lesefeil, filvalideringsfeil |
 | Resultattabell | MRP-tabellen per del og uke, med eksepsjonene markert. Én seksjon på resultatsiden. | MRP-tabell, resultatside (om tabellen), oversikt |
 | Før/etter-sammenligning | Forskjellen i bestillingsforslag og eksepsjoner mellom forrige og ny kjøring for samme ferdigprodukt. Appen husker siste kjøring per ferdigprodukt (PRD FR-19, besluttet 2026-11-05). | – |
 | Testeksempel | Et utfylt datasett med fasit, i `testdata/` (01–05). | øvingseksempel (slettet, se merknad 4) |
