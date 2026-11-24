@@ -26,7 +26,7 @@ Start Story 1.6 (kontroll av malens struktur) med `bmad-build`, når alt var kla
   - **5 rettet:** en test for en fil med et gammelt ark ved siden av Stykkliste, en strengere type for `hoppesOver`, «Strukturfeil» i ordbanken og to kontroller i testhjelperen.
   - **1 utsatt:** avhengighetene inne i Stykkliste, se `deferred-work.md`.
   - **Resten avvist,** med begrunnelse i spesifikasjonen.
-- `npm test` (176 tester), lint og bygg er grønne. Commit `8061b12` på `story/1.6-kontroll-struktur`, lokalt og ikke pushet.
+- `npm test` (176 tester), lint og bygg er grønne. Commit `8061b12` på `story/1.6-kontroll-struktur`. Grenen er pushet til origin, men har ingen PR ennå (venter på at PR #24 for 1.5 blir flettet).
 
 ### Åpne punkter
 - Story 1.8 (Idun) må avgjøre hvilke Stykkliste-regler som hoppes over når overskriften Nivå eller Varenummer mangler. `HoppetOverKontroll` har bare (ark, felt), så delregler krever en endring i `typer.ts`. Se `deferred-work.md`.
