@@ -3,7 +3,7 @@
 ## 2026-11-24 kl. 17:39 — Sebastian
 
 ### Oppgave
-Sebastian ba om en review av PR #26 (Idun, Story 1.7: `src/domene/struktur.ts` med `byggStruktur`, tester og dokumentrettelser om lavnivåkode som lengste vei).
+Sebastian ba om en review av PR #26, og deretter om å legge funnene inn som kommentar på PR-en (Idun, Story 1.7: `src/domene/struktur.ts` med `byggStruktur`, tester og dokumentrettelser om lavnivåkode som lengste vei).
 
 ### Plan
 - `bmad-review` med lensene adversarial, edge-case-hunter og verification-gap. De redaksjonelle lensene ble ikke kjørt, siden innholdet er en kodediff.
@@ -22,5 +22,7 @@ Sebastian ba om en review av PR #26 (Idun, Story 1.7: `src/domene/struktur.ts` m
 - `slaaSammenUnderdeler` summerer like underdeler innenfor en forekomst, mens `lag_testdata.py` sammenligner rå lister. «Likt» i FR-3 er ikke avklart.
 Hele funnlista i JSON lå i scratchpad (`pr26-review.json`).
 
+Funnene er senere lagt inn som én review-kommentar (COMMENTED, ikke godkjenning eller endringskrav) på PR #26, gruppert i tester, kontrakten mot Story 1.8, dokumenter og mindre punkter.
+
 ### Åpne punkter
-- Gi Idun review-funnene på PR #26 (kommentar på PR-en eller direkte).
+Ingen. Idun har fått funnene som review-kommentar på PR #26.
