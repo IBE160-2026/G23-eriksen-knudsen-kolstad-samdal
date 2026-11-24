@@ -107,6 +107,11 @@
   background: var(--accent-soft);
 }
 
+/* DESIGN.md › Components › Introduksjonsside: lys accent-soft, mørk summary-bg-dark (summary-bg i mørk visning). */
+:root[data-visning='mork'] .intro-flate {
+  background: var(--summary-bg);
+}
+
 .intro-overskrift {
   font-size: 40px;
   line-height: 1.08;

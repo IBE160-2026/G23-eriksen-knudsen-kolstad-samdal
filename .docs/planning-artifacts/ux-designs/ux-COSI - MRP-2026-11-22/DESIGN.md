@@ -28,7 +28,7 @@ colors:
   accent: '#0D5C6E'
   accent-ink: '#FFFFFF'
   accent-soft: '#E1EEF1'
-  # Hover på primærknappen. Egen farge, fordi summary-hover gir 1,4:1 under accent-ink i mørk visning (Story 1.13).
+  # Hover på primærknappen. Egen farge, fordi summary-hover gir 1,4:1 under accent-ink i mørk visning (Story 1.13, godkjent av Idun 24.11.2026).
   accent-hover: '#0A4B5A'
   exc-critical: '#B3261E'
   exc-critical-soft: '#FCEBEA'
