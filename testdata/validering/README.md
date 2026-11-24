@@ -4,6 +4,8 @@ Filene her tester valideringen før beregningen (PRD FR-1–FR-4). De lages av `
 
 V-F07–F09 tester robust feilhåndtering (PRD NFR-9): en skadet `.xlsx`-fil, en tom fil på 0 byte og en tekstfil, alle med endelsen `.xlsx`. Hver av dem skal gi en forståelig melding på norsk, ikke en liste over valideringsfeil. Appen skal ikke stoppe eller henge, ingen beregning gjøres, og den lagrede kjøringen endres ikke. Etterpå skal testeksempel 01 kunne lastes opp og gi riktig resultat uten at siden lastes på nytt.
 
+V-F10 og V-G05 må være lagret fra Excel og lages ikke av `lag_testdata.py`. De lages av `testdata/lag_excelfiler.ps1` med Excel for Windows (COM), fra testeksempel 02. V-F10 er lagret med passordet «cosi» og skal avvises som passordbeskyttet (NFR-9). V-G05 har en formel i en tallcelle og lagrede formelverdier i Kontroll-kolonnen og hjelpekolonnene, og skal gi 0 feil. `lag_testdata.py --alle` sletter V-filer den ikke kjenner, så kjør `lag_excelfiler.ps1` på nytt etterpå.
+
 Kolonnen «Feil» er antall valideringsfeil appen skal vise. Sted er cellen eller raden feilen gjelder. Ordlyden i feilmeldingen bestemmer appen, men den skal oppgi ark, rad eller celle, felt og årsak (FR-4).
 
 Antagelser:
@@ -60,9 +62,11 @@ Antagelser:
 | `V-F07.xlsx` | Skadet .xlsx-fil: testeksempel 02 kuttet på midten | avvist | – | – | Fil | NFR-9: forståelig melding, ingen beregning, ny fil kan lastes opp |
 | `V-F08.xlsx` | Tom fil (0 byte) med endelsen .xlsx | avvist | – | – | Fil | NFR-9: forståelig melding, ingen beregning, ny fil kan lastes opp |
 | `V-F09.xlsx` | Tekstfil med endelsen .xlsx | avvist | – | – | Fil | NFR-9: forståelig melding, ingen beregning, ny fil kan lastes opp |
+| `V-F10.xlsx` | Passordbeskyttet .xlsx-fil: testeksempel 02 lagret fra Excel med passordet «cosi» | avvist | – | – | Fil | NFR-9: forståelig melding, ingen beregning, ny fil kan lastes opp |
 | `V-F05.xlsx` | Tre feil på tre ark | 3 | Stykkliste, MPS, Planlagte mottak | D9, uke 3, B2 | Antall, Antall per uke, Uke | FR-4: alle feilene vises samlet (3 feil) |
 | `V-F06.xlsx` | Strukturfeil og verdifeil i samme fil: overskriften «Ledetid (uker)» mangler, og et mottak har antall 0 | 2 | Stykkliste, Planlagte mottak | H1, C3 | Overskrift, Antall | FR-2 og FR-4: verdier som ikke avhenger av kolonnen som mangler, kontrolleres likevel (2 feil) |
 | `V-G01.xlsx` | Gyldig: horisont 8 uker | 0 | – | – | – | FR-3: grenseverdi, ingen feil |
 | `V-G02.xlsx` | Gyldig: horisont 12 uker | 0 | – | – | – | FR-3: grenseverdi, ingen feil |
 | `V-G03.xlsx` | Gyldig: tomt ark Planlagte mottak | 0 | – | – | – | FR-3: tomt ark er gyldig, ingen feil |
 | `V-G04.xlsx` | Gyldig: del med underdeler to ganger, likt og bare første gang | 0 | – | – | – | FR-3: underdeler like eller bare første gang, ingen feil |
+| `V-G05.xlsx` | Gyldig: testeksempel 02 lagret fra Excel, med formelen =200+200 i F5 (var 400) og lagrede verdier i Kontroll-kolonnen og hjelpekolonnene | 0 | – | – | – | NFR-11 og AD-15: appen leser lagrede verdier, ikke formler, og leser ikke Kontroll-kolonnen eller hjelpekolonnene, ingen feil |

@@ -225,6 +225,7 @@ describe('valideringskodene dekker testdata/validering/', () => {
     'V-G02': [],
     'V-G03': [],
     'V-G04': [],
+    'V-G05': [], // lagret fra Excel med en formel i F5 (Story 1.5)
   }
 
   // Filfeil, ikke valideringsfeil (NFR-9).
@@ -233,6 +234,7 @@ describe('valideringskodene dekker testdata/validering/', () => {
     'V-F07': 'SKADET_FIL',
     'V-F08': 'TOM_FIL',
     'V-F09': 'IKKE_EXCEL',
+    'V-F10': 'PASSORDBESKYTTET', // lagret fra Excel med passord (Story 1.5)
   }
 
   // Kodene for regler i FR-3 som ingen valideringsfil tester ennå.
