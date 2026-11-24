@@ -64,6 +64,7 @@ Forslaget bygger på Excel-malen for flernivå stykkliste (Sebastian, 2026-10-23
 | Uke (t) | Én periode, nummerert 1 til H. | periode |
 | Uke 1 | Første uke i horisonten. | planstart |
 | Horisont (H, *planning horizon*) | Antall sammenhengende utfylte uker i Prognostiserte behov fra uke 1. 8–12. | planhorisont, planleggingshorisont |
+| Hull | En uke som er tom i Prognostiserte behov, med en utfylt uke etter seg. Horisonten slutter før hullet, og hver utfylt uke etter det gir en valideringsfeil (PRD FR-3, koden `MPS_UKE_ETTER_HULL`, Story 1.9). Lagt inn 24.11. | tom uke (om feilen), mellomrom, gap |
 
 ## Beregning (per del og uke)
 
@@ -134,6 +135,7 @@ Forslaget bygger på Excel-malen for flernivå stykkliste (Sebastian, 2026-10-23
 | Lagret kjøring | Den siste vellykkede kjøringen for et ferdigprodukt, som appen husker i nettleseren og sammenligner neste kjøring med (PRD FR-19–FR-21). Kjøringene står på siden «Lagrede kjøringer», der de kan slettes. Godkjent av gruppen 22.11. | historikk, arkiv, tidligere resultater |
 | Valideringsfeil | En feil i filen som appen finner, og som stopper beregningen. Oppgir ark, rad og årsak. | feilmelding |
 | Strukturfeil | En valideringsfeil i malens struktur: et ark som mangler, en kolonneoverskrift som mangler eller er feilstavet, eller en fil etter den gamle malen (PRD FR-2, kodene `ARK_MANGLER`, `OVERSKRIFT_MANGLER` og `GAMMEL_MAL`, Story 1.6). Vises først i feiloppsummeringen, under «Filen følger ikke malen», sammen med kontrollene som er hoppet over. Lagt inn 24.11. | malfeil, formatfeil |
+| Følgefeil | En valideringsfeil som bare kommer av en annen feil, for eksempel at ukene i Planlagte mottak er utenfor en horisont som selv er ugyldig. Appen gir ikke følgefeil: kontroller som avhenger av noe som mangler eller er ugyldig, hoppes over (PRD FR-2, Story 1.6 og 1.9). Lagt inn 24.11. | etterfølgende feil, avledet feil, konsekvensfeil |
 | Filfeil | En feil i hele filen, så appen ikke kan lese den: ikke .xlsx, tom fil, skadet fil, ikke en Excel-fil eller passordbeskyttet (PRD FR-1, NFR-9, arkitektur AD-5). Gir én melding i opplastingssonen, ikke en liste over valideringsfeil. Koden står i `Filfeil` i `src/domene/typer.ts`. Lagt inn 24.11. | lesefeil, filvalideringsfeil |
 | Resultattabell | MRP-tabellen per del og uke, med eksepsjonene markert. | MRP-tabell, resultatside, oversikt |
 | Før/etter-sammenligning | Forskjellen i bestillingsforslag og eksepsjoner mellom forrige og ny kjøring for samme ferdigprodukt. Appen husker siste kjøring per ferdigprodukt (PRD FR-19, besluttet 2026-11-05). | – |
