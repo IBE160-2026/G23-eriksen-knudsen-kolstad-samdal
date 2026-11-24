@@ -8,6 +8,7 @@ import { join, relative, sep } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { byggStruktur } from '../../src/domene/struktur.ts'
 import type { Delstype, Nivaa, Stykklisterad } from '../../src/domene/typer.ts'
+import { fjernKommentarer } from '../hjelpere/arkitekturregler.ts'
 
 const F: Delstype = 'FERDIGVARE'
 const K: Delstype = 'KJOPES_INN'
@@ -158,6 +159,20 @@ describe('byggStruktur: forekomster og underdeler (FR-3, FR-28)', () => {
     expect(del(TESTEKSEMPEL_04, '200-013').overordnede).toEqual([{ varenummer: '100-003', antall: 2 }])
   })
 
+  it('underdeler som bare står under en senere forekomst, regnes også én gang (FR-3: «den første eller en senere»)', () => {
+    const s = rader([
+      ['0', 'FP', 'Ferdigprodukt', null, F, 0, 0, 1],
+      ['.1', 'A', 'Fotkryss', 1, P, 0, 0, 2],
+      ['.1', 'A', 'Fotkryss', 1, P, null, null, null],
+      ['..2', 'B', 'Hjul', 5, K, 0, 0, 1],
+    ])
+    const a = del(s, 'A')
+    expect(a.forekomster.map((f) => f.underdeler.length)).toEqual([0, 1])
+    expect(del(s, 'B').overordnede).toEqual([{ varenummer: 'A', antall: 5 }])
+    // A står to ganger under ferdigproduktet, så 2 × 5 Hjul per ferdigprodukt.
+    expect(del(s, 'B').antallPerFerdigprodukt).toBe(10)
+  })
+
   it('en del står under begge delene over (300-022 nevner Sete og Rygg)', () => {
     expect(del(TESTEKSEMPEL_04, '300-022').overordnede).toEqual([
       { varenummer: '200-010', antall: 4 },
@@ -191,6 +206,17 @@ describe('byggStruktur: lavnivåkode og beregningsrekkefølge (AD-6)', () => {
     const rekkefolge = byggStruktur(TESTEKSEMPEL_04).beregningsrekkefolge
     for (const v of ['200-010', '200-011', '200-012', '200-013']) {
       expect(rekkefolge.indexOf(v)).toBeLessThan(rekkefolge.indexOf('300-023'))
+    }
+  })
+
+  it('en overordnet del står før underdelene i beregningsrekkefølgen i alle testeksemplene', () => {
+    for (const stykkliste of [TESTEKSEMPEL_01, TESTEKSEMPEL_02, TESTEKSEMPEL_04]) {
+      const s = byggStruktur(stykkliste)
+      for (const d of s.deler) {
+        for (const o of d.overordnede) {
+          expect(s.beregningsrekkefolge.indexOf(o.varenummer)).toBeLessThan(s.beregningsrekkefolge.indexOf(d.varenummer))
+        }
+      }
     }
   })
 
@@ -239,6 +265,20 @@ describe('byggStruktur: ledetid fra ferdigproduktet (FR-9)', () => {
     expect(skrue.ledetidFraFerdigproduktet).toBe(12)
     expect(skrue.stiForLedetid).toEqual(['100-003', '200-010', '300-022'])
     expect(del(TESTEKSEMPEL_04, '300-021').ledetidFraFerdigproduktet).toBe(11)
+  })
+
+  it('ledetiden kan komme fra en senere overordnet del enn den første (300-023 i testeksempel 04)', () => {
+    // 300-023 står under ferdigproduktet (1 + 1 = 2) og under Sete (1 + 4 + 1 = 6). Sete står etter i listen,
+    // men gir den lengste stien.
+    const brakett = del(TESTEKSEMPEL_04, '300-023')
+    expect(brakett.ledetidFraFerdigproduktet).toBe(6)
+    expect(brakett.stiForLedetid).toEqual(['100-003', '200-010', '300-023'])
+  })
+
+  it('ved lik ledetid beholdes den første stien (300-002 i testeksempel 02, 3 uker via begge)', () => {
+    const skrue = del(TESTEKSEMPEL_02, '300-002')
+    expect(skrue.ledetidFraFerdigproduktet).toBe(3)
+    expect(skrue.stiForLedetid).toEqual(['100-001', '200-001', '300-002'])
   })
 
   it('300-005 Gassfjær i testeksempel 02 har ledetid 1 + 12 = 13', () => {
@@ -292,6 +332,22 @@ describe('byggStruktur: kantene', () => {
   })
 })
 
+// Vakten for AD-6: bare struktur.ts bygger `Struktur`. Den leter etter at noen bygger en Struktur
+// (typet variabel, `as`, `satisfies` eller en funksjon med returtypen Struktur), ikke etter feltnavnet,
+// så det å lese `beregningsrekkefolge` eller destrukturere en Struktur gir ikke treff.
+// Vakten fanger ikke en Struktur bygd med spread eller en uttypet objektliteral som sendes rett til en
+// funksjon. Vil vi ha full sikkerhet, må Struktur gjøres nominell i typer.ts (egen PR, AD-3).
+export function finnStrukturKonstruksjon(kode: string): string[] {
+  const ren = fjernKommentarer(kode)
+  const monstre: [string, RegExp][] = [
+    ['as Struktur', /\bas\s+Struktur\b/],
+    ['satisfies Struktur', /\bsatisfies\s+Struktur\b/],
+    ['const x: Struktur = {', /:\s*Struktur\s*=\s*\{/],
+    ['funksjon med returtype Struktur', /\)\s*:\s*Struktur\s*(\{|=>)/],
+  ]
+  return monstre.filter(([, monster]) => monster.test(ren)).map(([navn]) => navn)
+}
+
 describe('byggStruktur: ingen andre bygger Struktur (AD-6)', () => {
   const ROT = join(import.meta.dirname, '..', '..')
 
@@ -303,11 +359,26 @@ describe('byggStruktur: ingen andre bygger Struktur (AD-6)', () => {
     })
   }
 
-  it('bare struktur.ts lager `beregningsrekkefolge`, og typene står i typer.ts', () => {
-    const treff = kildefiler(join(ROT, 'src'))
-      .filter((sti) => /\bberegningsrekkefolge\s*[:,}]/.test(readFileSync(sti, 'utf8').replace(/\/\/.*$/gm, '')))
+  it('ingen fil i src/ bygger Struktur, bortsett fra struktur.ts (og typer.ts, som bare har typen)', () => {
+    const brudd = kildefiler(join(ROT, 'src'))
       .map((sti) => relative(ROT, sti).split(sep).join('/'))
-      .sort()
-    expect(treff).toEqual(['src/domene/struktur.ts', 'src/domene/typer.ts'])
+      .filter((sti) => sti !== 'src/domene/struktur.ts' && sti !== 'src/domene/typer.ts')
+      .flatMap((sti) =>
+        finnStrukturKonstruksjon(readFileSync(join(ROT, sti), 'utf8')).map((hva) => `${sti}: ${hva}`),
+      )
+    expect(brudd, `Bare src/domene/struktur.ts bygger Struktur (AD-6):\n${brudd.join('\n')}`).toEqual([])
+  })
+
+  it('vakten finner bygging, men ikke lesing eller destrukturering', () => {
+    expect(finnStrukturKonstruksjon('const s: Struktur = { deler: [], beregningsrekkefolge: [] }')).not.toEqual([])
+    expect(finnStrukturKonstruksjon('return { deler: [], beregningsrekkefolge: [] } as Struktur')).not.toEqual([])
+    expect(finnStrukturKonstruksjon('const s = {} satisfies Struktur')).not.toEqual([])
+    expect(finnStrukturKonstruksjon('function lag(rader: Stykklisterad[]): Struktur {\n  return x\n}')).not.toEqual([])
+    expect(finnStrukturKonstruksjon('const lag = (rader: Stykklisterad[]): Struktur => x')).not.toEqual([])
+
+    expect(finnStrukturKonstruksjon('const { deler, beregningsrekkefolge } = struktur')).toEqual([])
+    expect(finnStrukturKonstruksjon('for (const v of struktur.beregningsrekkefolge) { bruk(v) }')).toEqual([])
+    expect(finnStrukturKonstruksjon('function beregn(struktur: Struktur, h: number) { return struktur.deler }')).toEqual([])
+    expect(finnStrukturKonstruksjon('// const s: Struktur = {}\n/* x as Struktur */')).toEqual([])
   })
 })
