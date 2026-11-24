@@ -36,6 +36,11 @@ Start Story 1.9 (kontroll av MPS og Planlagte mottak) med `bmad-build`.
 - Etter at Idun hadde godkjent, ble PR #25 (Story 1.6) flettet til `main` (`717e751`). Grenen for 1.9 er pushet, og [PR #28](https://github.com/IBE160-2026/G23-eriksen-knudsen-kolstad-samdal/pull/28) er opprettet med Carmen som reviewer. Beskrivelsen har fire punkter hun skal svare på, blant annet om `valider()` passer til worker-en i 1.10.
 - Mens 1.9 ble implementert, la en annen Claude-økt i samme mappe tre loggcommits for PR #26 (Story 1.7, Idun) på denne grenen (`408adbb`, `d75d526`, `ed8092c`). De gjelder bare `.logs/` og blir med i PR-en for 1.9.
 
+- Carmen kommenterte PR #28 med fire spørsmål før godkjenning. Sebastian fulgte anbefalingen:
+  - Punkt 4 (uke 0 og negative uker slapp gjennom når horisonten var ugyldig) er rettet i `ba47857`, med en ny test. Testene (293), lint og bygg er grønne.
+  - Punkt 1–3 (plassholderen for 1.8, kolonnen Uke og flere feil ved et hull) er besvart i en kommentar på PR-en. De er med vilje eller beholdes.
+  - Forslaget om å nevne uken som mangler ved et hull, tas sammen med punktet om H i meldingen.
+
 ### Åpne punkter
 - Idun må vite at `valider()` har en plassholder for Stykkliste-reglene som 1.8 bytter ut, og at sikkerhetsnettet gir Stykkliste-koder uten tekstmal til 1.8 legger dem inn (`deferred-work.md`).
 - Meldingen «etter horisonten» sier ikke hva H er. Krever et felt i `Valideringsfeil` (PR for `typer.ts`), eller at 1.12 viser H (`deferred-work.md`).
