@@ -127,6 +127,27 @@ describe('kontrast (WCAG 2.1 AA)', () => {
   })
 })
 
+// Introflaten er accent-soft i lys visning og summary-bg i mørk visning (DESIGN.md › Components › Introduksjonsside).
+// Parene for lys visning er alt i PAR (accent-soft). Her er de for mørk visning.
+const PAR_INTRO_MORK: [forgrunn: string, bakgrunn: string, krav: number][] = [
+  ['ink-primary', 'summary-bg', 4.5],
+  ['ink-secondary', 'summary-bg', 4.5],
+  ['accent', 'summary-bg', 4.5],
+]
+
+describe('introflaten i mørk visning (DESIGN.md: summary-bg-dark)', () => {
+  it.each(PAR_INTRO_MORK)('mørk visning: %s på %s er minst %s:1', (forgrunn, bakgrunn, krav) => {
+    expect(kontrast(MORK[forgrunn]!, MORK[bakgrunn]!)).toBeGreaterThanOrEqual(krav)
+  })
+
+  it('er summary-bg-dark i DESIGN.md, og stilen bruker summary-bg bare i mørk visning', () => {
+    expect(MORK['summary-bg']).toBe(DESIGN_FARGER.mork['summary-bg'])
+    const stil = readFileSync(join(ROT, 'src', 'ui', 'felles', 'sider.css'), 'utf8')
+    expect(stil).toMatch(/:root\[data-visning='mork'\] \.intro-flate \{\s*background: var\(--summary-bg\);/)
+    expect(stil).toMatch(/\.intro-flate \{[^}]*background: var\(--accent-soft\);/)
+  })
+})
+
 describe('komponentene bruker bare variablene (UX-DR1)', () => {
   function cssFiler(mappe: string): string[] {
     return readdirSync(mappe).flatMap((navn) => {

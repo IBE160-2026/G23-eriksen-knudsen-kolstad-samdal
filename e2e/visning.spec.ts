@@ -94,6 +94,13 @@ test('siden er mørk før appen er lastet, så den ikke blinker i feil visning',
   await expect(page.locator('body')).toHaveCSS('background-color', BAKGRUNN_MORK)
 })
 
+test('introflaten følger DESIGN.md: accent-soft i lys visning og summary-bg-dark i mørk', async ({ page }) => {
+  await page.goto('/#/introduksjon')
+  await expect(page.locator('.intro-flate')).toHaveCSS('background-color', 'rgb(225, 238, 241)') // #E1EEF1
+  await tilMork(page).click()
+  await expect(page.locator('.intro-flate')).toHaveCSS('background-color', 'rgb(12, 42, 46)') // #0C2A2E
+})
+
 test('knappen virker med tastaturet, og fokus blir på knappen', async ({ page }) => {
   await page.goto('/#/ny-kjoring')
   await tilMork(page).focus()
