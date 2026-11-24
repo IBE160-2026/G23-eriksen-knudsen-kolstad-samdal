@@ -10,6 +10,7 @@ import '@fontsource/ibm-plex-sans-condensed/latin-700.css'
 import '@fontsource/ibm-plex-mono/latin-400.css'
 import './ui/felles/tokens.css'
 import './ui/felles/app.css'
+import './ui/felles/sider.css'
 
 import { App } from './ui/App.tsx'
 

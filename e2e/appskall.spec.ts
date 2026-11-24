@@ -17,10 +17,17 @@ function appmeny(page: Page) {
   return page.getByRole('navigation', { name: 'Appmeny' })
 }
 
+// Introduksjonssiden har overskriften fra designet (Story 1.4, UX-DR6). Menyvalget og sidetittelen heter fortsatt Introduksjon.
+const INTRO_OVERSKRIFT = 'Hele produksjonsplanen. Én Excel-mal.'
+
+function overskriftFor(navn: string): string {
+  return navn === 'Introduksjon' ? INTRO_OVERSKRIFT : navn
+}
+
 async function forventVisning(page: Page, adresse: string, navn: string) {
   await expect(page).toHaveURL(new RegExp(`${adresse}$`))
   await expect(page.getByRole('heading', { level: 1 })).toHaveCount(1)
-  await expect(page.getByRole('heading', { level: 1, name: navn })).toBeVisible()
+  await expect(page.getByRole('heading', { level: 1, name: overskriftFor(navn) })).toBeVisible()
   await expect(page).toHaveTitle(`${navn} – COSI - MRP`)
   await expect(appmeny(page).getByRole('link', { name: navn })).toHaveAttribute('aria-current', 'page')
   await expect(appmeny(page).locator('[aria-current="page"]')).toHaveCount(1)
@@ -214,7 +221,7 @@ test.describe('ruteskifte: fokus til h1 og rulling til toppen', () => {
   }
 
   async function forventFokusOgToppen(page: Page, navn: string) {
-    await expect(page.getByRole('heading', { level: 1, name: navn })).toBeFocused()
+    await expect(page.getByRole('heading', { level: 1, name: overskriftFor(navn) })).toBeFocused()
     await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0)
   }
 

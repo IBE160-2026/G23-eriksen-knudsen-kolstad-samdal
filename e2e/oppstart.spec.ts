@@ -33,7 +33,8 @@ test('appen åpnes uten feil, med CSP-en og sikkerhetshodene fra vercel.json', a
 
   // Første besøk går til introduksjonssiden (FR-27, AD-13).
   await expect(page).toHaveURL(/#\/introduksjon$/)
-  await expect(page.getByRole('heading', { level: 1, name: 'Introduksjon' })).toBeVisible()
+  // Overskriften på introduksjonssiden er fra designet (Story 1.4, UX-DR6).
+  await expect(page.getByRole('heading', { level: 1, name: 'Hele produksjonsplanen. Én Excel-mal.' })).toBeVisible()
 })
 
 test('vakten feiler en test når siden bryter CSP-en', async ({ page }) => {
