@@ -1,7 +1,8 @@
 // Appmenyen (UX-DR3, DESIGN.md › Components): logo og de fem visningene, aktiv side markert.
-// Knappen for lys og mørk visning kommer i Story 1.13.
+// Nederst står knappen for lys og mørk visning (Story 1.13).
 
 import type { ReactNode } from 'react'
+import { useVisning } from '../../app/visning.ts'
 import { felles } from '../../tekster/nb.ts'
 import { RUTER, ruteFor, type RuteId } from '../ruter.ts'
 
@@ -19,7 +20,18 @@ const IKONER: Record<RuteId, ReactNode> = {
   ),
 }
 
+// Månen vises når visningen er lys (knappen bytter til mørk), og solen når den er mørk.
+const MAANE = <path d="M16.5 12A7 7 0 0 1 8 3.5 7 7 0 1 0 16.5 12z" />
+const SOL = (
+  <>
+    <circle cx="10" cy="10" r="3.5" />
+    <path d="M10 2v2M10 16v2M2 10h2M16 10h2M4.3 4.3l1.4 1.4M14.3 14.3l1.4 1.4M4.3 15.7l1.4-1.4M14.3 5.7l1.4-1.4" />
+  </>
+)
+
 export function Appmeny({ aktiv }: { aktiv: RuteId }) {
+  const { visning, bytt } = useVisning()
+  const mork = visning === 'mork'
   return (
     <nav className="appmeny" aria-label={felles.appmeny}>
       <a className="appmeny-logo" href={ruteFor('introduksjon').adresse}>
@@ -50,6 +62,20 @@ export function Appmeny({ aktiv }: { aktiv: RuteId }) {
           </li>
         ))}
       </ul>
+      <button type="button" className="appmeny-visning" onClick={bytt}>
+        <svg
+          className="appmeny-ikon"
+          viewBox="0 0 20 20"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          aria-hidden="true"
+          focusable="false"
+        >
+          {mork ? SOL : MAANE}
+        </svg>
+        {mork ? felles.visningsknapp.tilLys : felles.visningsknapp.tilMork}
+      </button>
     </nav>
   )
 }

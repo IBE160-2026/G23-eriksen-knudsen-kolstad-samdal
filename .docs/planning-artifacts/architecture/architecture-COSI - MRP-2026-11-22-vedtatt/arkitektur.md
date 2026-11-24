@@ -206,7 +206,7 @@ De viktigste typene:
 
 - **Gjelder:** FR-19–FR-21, FR-27, FR-30, NFR-10
 - **Regel:**
-  - Bare `lagring/lagrede-kjoringer.ts` bruker `localStorage`. Hver lesing og skriving står i `try/catch`.
+  - Bare `lagring/lagrede-kjoringer.ts` bruker `localStorage`. Hver lesing og skriving står i `try/catch`. Det eneste unntaket er `public/visning.js`, et lite skript som leser `cosi-mrp:visning` i `<head>` og setter `data-visning` før siden tegnes første gang (AD-1). Det kan ikke ligge i `src/` fordi det må kjøre før stilarket tegnes, og CSP-en tillater ikke inline-skript. `tests/ui/visning.test.ts` sjekker at det bruker samme nøkkel.
   - Nøkkelen er `cosi-mrp:kjoring:<varenummer på nivå 0>`. Det lagres én kjøring per ferdigprodukt, og en ny erstatter den gamle.
   - Utdraget har `schemaVersjon`, varenummer og navn på ferdigproduktet, tidspunkt, delene (varenummer, beskrivelse), bestillingsforslagene (varenummer, frigivelsesuke, mengde) og eksepsjonene (varenummer, uke, type). Excel-filen og resultattabellen lagres aldri.
   - Siden Lagrede kjøringer lager listen ved å gå gjennom nøklene med prefikset `cosi-mrp:kjoring:`. Det er ingen egen indeks.
@@ -461,3 +461,4 @@ Alle ble oppdatert 22.11, etter gruppens ja.
 | 23.11.2026 | Ny filfeilkode `PASSORDBESKYTTET` for passordbeskyttet fil, og alle fem kodene for feil i hele filen er listet i AD-5 (Story 1.2, godkjent av koordinatoren). | AD-5 |
 | 23.11.2026 | Lavnivåkoden i `Struktur` er lengste vei fra ferdigproduktet, ikke største nivåtall delen står på. Det gir samme svar i alle testeksemplene, men sørger for at en del alltid beregnes etter delene den står under, også når en del står på ..2 et sted og på .1 med underdeler et annet (FR-28). PRD FR-28 og ordlisten er oppdatert, og FR-28 har fått en testbar konsekvens om del som står flere ganger under samme overordnede del (Story 1.7, godkjent av gruppen). | AD-6 |
 | 24.11.2026 | Hvor stykklisten slutter (Story 1.5): Excel-delen leser til siste rad med innhold, ikke bare til og med rad 1001, og radene over den tomme raden leses uten grense. Ellers kan ikke V-S03 (1001 rader, feil på rad 1002) testes. Svarer på åpent spørsmål 1 i spesifikasjonen for Story 1.8 (alternativ A). | AD-15 |
+| 24.11.2026 | `public/visning.js` leser `cosi-mrp:visning` før første tegning og er unntaket fra at bare `lagring/` bruker `localStorage`. Primærknappen har fått egen hover-farge, `accent-hover`, i DESIGN.md og `tokens.css`, fordi `summary-hover` ga 1,4:1 i mørk visning. Kontrasten er regnet ut for alle tekstpar i begge visningene (Story 1.13). Unntaket og tokenet er godkjent av Idun (koordinator) 24.11.2026, og gjennomgått av Carmen i PR #32. | AD-1, AD-10 |

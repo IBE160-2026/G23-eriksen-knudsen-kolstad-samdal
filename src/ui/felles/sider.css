@@ -33,8 +33,8 @@
 }
 
 .knapp-primaer:hover {
-  background: var(--summary-hover);
-  border-color: var(--summary-hover);
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
 }
 
 .knapp-rad {
@@ -105,6 +105,11 @@
   padding: 40px;
   border-radius: 12px;
   background: var(--accent-soft);
+}
+
+/* DESIGN.md › Components › Introduksjonsside: lys accent-soft, mørk summary-bg-dark (summary-bg i mørk visning). */
+:root[data-visning='mork'] .intro-flate {
+  background: var(--summary-bg);
 }
 
 .intro-overskrift {
