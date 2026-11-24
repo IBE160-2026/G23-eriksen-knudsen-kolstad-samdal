@@ -40,6 +40,7 @@ Forslaget bygger på Excel-malen for flernivå stykkliste (Sebastian, 2026-10-23
 | Begrep | Definisjon | Ikke bruk |
 |---|---|---|
 | Excel-mal | Den faste filen `COSI-MRP-mal.xlsx` som brukeren fyller ut og laster opp. Arkene som leses inn, er Stykkliste, MPS og Planlagte mottak. | fil, regneark (om malen) |
+| Gammel mal | Den forrige Excel-malen, med arkene Produkt og Komponenter i stedet for Stykkliste. Appen kjenner den igjen og gir feilen «Arket Stykkliste mangler» med beskjed om å laste ned den nye malen (PRD FR-2, valideringskoden `GAMMEL_MAL`, Story 1.6). Lagt inn 24.11. | gammelt format, utdatert mal |
 | Stykkliste (BOM, *multi-level BOM*) | Ferdigproduktet og alle delene det består av, én rad per del, ovenfra og ned. Flernivå (deler kan selv bestå av andre deler), med nivå 0, .1 og ..2 i v1. | – |
 | Del | Én rad i stykklisten, uansett nivå og type. Samlebegrepet i dokumenter, kode og app (besluttet 2026-11-05, se merknad 1). | komponent (som samlebegrep), vare |
 | Ferdigprodukt (*end item*) | Delen på nivå 0, med type Ferdigvare. Ett per fil. | produkt, Produkt A |
@@ -135,6 +136,7 @@ Forslaget bygger på Excel-malen for flernivå stykkliste (Sebastian, 2026-10-23
 | Resultat | Siden som viser én kjøring: tallboksene, kritiske deler, bestillingsforslag, endringer, resultattabellen og produksjonskapasiteten når den er valgt. Menyvalget heter «Resultat». Godkjent av gruppen 22.11. | resultatside, oversikt, dashbord |
 | Lagret kjøring | Den siste vellykkede kjøringen for et ferdigprodukt, som appen husker i nettleseren og sammenligner neste kjøring med (PRD FR-19–FR-21). Kjøringene står på siden «Lagrede kjøringer», der de kan slettes. Godkjent av gruppen 22.11. | historikk, arkiv, tidligere resultater |
 | Valideringsfeil | En feil i filen som appen finner, og som stopper beregningen. Oppgir ark, rad og årsak. | feilmelding |
+| Strukturfeil | En valideringsfeil i malens struktur: et ark som mangler, en kolonneoverskrift som mangler eller er feilstavet, eller en fil etter den gamle malen (PRD FR-2, kodene `ARK_MANGLER`, `OVERSKRIFT_MANGLER` og `GAMMEL_MAL`, Story 1.6). Vises først i feiloppsummeringen, under «Filen følger ikke malen», sammen med kontrollene som er hoppet over. Lagt inn 24.11. | malfeil, formatfeil |
 | Filfeil | En feil i hele filen, så appen ikke kan lese den: ikke .xlsx, tom fil, skadet fil, ikke en Excel-fil eller passordbeskyttet (PRD FR-1, NFR-9, arkitektur AD-5). Gir én melding i opplastingssonen, ikke en liste over valideringsfeil. Koden står i `Filfeil` i `src/domene/typer.ts`. Lagt inn 24.11. | lesefeil, filvalideringsfeil |
 | Resultattabell | MRP-tabellen per del og uke, med eksepsjonene markert. Én seksjon på resultatsiden. | MRP-tabell, resultatside (om tabellen), oversikt |
 | Før/etter-sammenligning | Forskjellen i bestillingsforslag og eksepsjoner mellom forrige og ny kjøring for samme ferdigprodukt. Appen husker siste kjøring per ferdigprodukt (PRD FR-19, besluttet 2026-11-05). | – |
