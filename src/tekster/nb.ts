@@ -21,6 +21,8 @@ export const felles = {
   /** Sidetittelen i nettleserens fane, for eksempel «Veiledning – COSI - MRP». */
   sidetittel: (visning: string) => `${visning} – COSI - MRP`,
   tilNyKjoring: 'Til Ny kjøring',
+  /** Knappen nederst i appmenyen (Story 1.13, UX-DR3). Teksten sier hva som skjer ved klikk. */
+  visningsknapp: { tilMork: 'Bytt til mørk', tilLys: 'Bytt til lys' },
   feilgrense: {
     overskrift: 'Noe gikk galt',
     tekst: 'Siden kunne ikke vises. Du kan gå til Ny kjøring og laste opp filen på nytt.',

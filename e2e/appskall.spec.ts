@@ -183,8 +183,11 @@ for (const vindusbredde of [768, 390, 320]) test(`under 900 px (${vindusbredde} 
       expect(Math.abs(lenker[i].x - lenker[0].x), 'menyvalgene står i samme kolonne').toBeLessThanOrEqual(1)
     }
     expect(lenker[0].bredde, 'menyvalget går over nesten hele bredden').toBeGreaterThanOrEqual(vindusbredde - 40)
-    // Appmenyen strekkes ikke for å fylle skjermen: den slutter rett under siste menyvalg.
-    expect(meny && meny.y + meny.height - lenker[4].bunn <= 24, 'appmenyen er strukket').toBe(true)
+    // Appmenyen strekkes ikke for å fylle skjermen: den slutter rett under det siste i menyen,
+    // som er knappen for lys og mørk visning (Story 1.13).
+    const visningsknapp = await appmeny(page).locator('.appmeny-visning').boundingBox()
+    expect(visningsknapp && visningsknapp.y >= lenker[4].bunn - 1, 'knappen for visning står under siste menyvalg').toBe(true)
+    expect(meny && visningsknapp && meny.y + meny.height - (visningsknapp.y + visningsknapp.height) <= 24, 'appmenyen er strukket').toBe(true)
 
     const bredde = await page.evaluate(() => ({
       scroll: document.documentElement.scrollWidth,
