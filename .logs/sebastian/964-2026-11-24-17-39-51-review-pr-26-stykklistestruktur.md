@@ -11,7 +11,7 @@ Sebastian ba om en review av PR #26, og deretter om å legge funnene inn som kom
 - De viktigste påstandene ble kontrollert mot koden: ordbanken, arkitekturloggen, vaktregexen i testen, `lag_testdata.py` og typen til `Forekomst.underdeler`.
 
 ### Resultat
-23 funn (12 adversarial, 7 edge-case, 4 verification-gap). Ingen kodeendringer, og ingenting er postet på PR-en. De kontrollerte hovedfunnene:
+23 funn (12 adversarial, 7 edge-case, 4 verification-gap). Ingen kodeendringer. De kontrollerte hovedfunnene:
 - Vaktregexen `/\bberegningsrekkefolge\s*[:,}]/` (`struktur.test.ts:306-312`) treffer også destrukturering (`const { deler, beregningsrekkefolge } = s`), så Story 1.9/2.x får rød test når de leser `Struktur` på vanlig måte.
 - Ingen test sjekker at den lengste stien vinner når den kommer fra en senere overordnet del. Fixturen har tilfellet allerede: 300-023 i 04 skal ha ledetid 6 via 200-010, ikke 2. Uavgjort sti (300-002 i 02) er heller ikke testet.
 - `.docs/ordbank.md:81` har fortsatt den gamle definisjonen av lavnivåkode (CLAUDE.md-regel).
