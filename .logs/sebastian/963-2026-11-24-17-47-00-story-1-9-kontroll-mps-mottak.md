@@ -32,7 +32,8 @@ Start Story 1.9 (kontroll av MPS og Planlagte mottak) med `bmad-build`.
   - 8 er rettet, blant annet tester som ellers ville feilet når 1.8 flettes, og en feil i teksten om horisonten når det er et hull.
   - 2 er utsatt: H mangler i meldingen «etter horisonten», og en test som sjekker at alle kodene har en mal, bør komme når 1.8 er flettet.
   - Resten er avvist med begrunnelse i spesifikasjonen.
-- `npm test` (292 tester), lint og bygg er grønne. Commit `c068b87` på `story/1.9-kontroll-mps-mottak`, lokalt og ikke pushet.
+- `npm test` (292 tester), lint og bygg er grønne. Commit `c068b87` på `story/1.9-kontroll-mps-mottak`.
+- Etter at Idun hadde godkjent, ble PR #25 (Story 1.6) flettet til `main` (`717e751`). Grenen for 1.9 er pushet, og [PR #28](https://github.com/IBE160-2026/G23-eriksen-knudsen-kolstad-samdal/pull/28) er opprettet med Carmen som reviewer. Beskrivelsen har fire punkter hun skal svare på, blant annet om `valider()` passer til worker-en i 1.10.
 - Mens 1.9 ble implementert, la en annen Claude-økt i samme mappe tre loggcommits for PR #26 (Story 1.7, Idun) på denne grenen (`408adbb`, `d75d526`, `ed8092c`). De gjelder bare `.logs/` og blir med i PR-en for 1.9.
 
 ### Åpne punkter
