@@ -62,3 +62,6 @@
 - [ ] 2026-11-13 [prd-tilbakemelding-beslutninger](977-2026-11-13-15-28-03-prd-tilbakemelding-beslutninger.md) — lag introduksjonen til brukertesten i UX-steget (PRD §9 nr. 4) før prøvetesten rundt 27.11
 - [ ] 2026-11-13 [prd-tilbakemelding-beslutninger](977-2026-11-13-15-28-03-prd-tilbakemelding-beslutninger.md) — prøvetest av brukertesten med et gruppemedlem rundt 27.11, og opprett `.docs/brukertest/brukertest-resultat.md`
 - [ ] 2026-11-13 [prd-tilbakemelding-beslutninger](977-2026-11-13-15-28-03-prd-tilbakemelding-beslutninger.md) — UJ-5 bruker tallene fra fasit 05 (30 i uke 5, 35 fra uke 7, ryggplate begrenser); rett UJ-5 hvis håndkontrollen av fasit 05 endrer dem
+- [ ] 2026-11-24 [story-1-5-les-excel](966-2026-11-24-16-17-18-story-1-5-les-excel.md) — gruppen avgjør om innhold i selve stopperaden i Stykkliste (Nivå og Varenummer tomme, men andre kolonner fylt ut) skal gi en feil (Story 1.8 eller et felt i `RaaArk`)
+- [ ] 2026-11-24 [story-1-5-les-excel](966-2026-11-24-16-17-18-story-1-5-les-excel.md) — `lag_testdata.py --alle` sletter V-F10 og V-G05 og skriver README-en uten dem; kjør `lag_excelfiler.ps1` på nytt, eller gjør `lag_testdata.py` kjent med filene
+- [ ] 2026-11-24 [story-1-5-les-excel](966-2026-11-24-16-17-18-story-1-5-les-excel.md) — flytt eller slett `.docs/planning-artifacts/architecture/technology.md`, som beskriver et annet prosjekt
