@@ -31,3 +31,22 @@ Start Story 1.6 (kontroll av malens struktur) med `bmad-build`, når alt var kla
 ### Åpne punkter
 - Story 1.8 (Idun) må avgjøre hvilke Stykkliste-regler som hoppes over når overskriften Nivå eller Varenummer mangler. `HoppetOverKontroll` har bare (ark, felt), så delregler krever en endring i `typer.ts`. Se `deferred-work.md`.
 - Gi Idun beskjed om at `heltall.ts`, `hoppesOver`, `valideringsfasit.ts` og underobjektene i `nb.ts` ligger i 1.6. Story 1.8 bør bygge på `story/1.6-kontroll-struktur`, eller på main når 1.5 og 1.6 er flettet.
+
+## 2026-11-24 kl. 17:53 — Sebastian
+
+### Oppgave
+Idun har gått gjennom PR #25. Sebastian ba om en vurdering av hva som må gjøres før fletting, og deretter om å gjøre som anbefalt.
+
+### Plan
+- Lest Iduns to kommentarer på #25 og kontrollert punktene mot spesifikasjonen, EXPERIENCE.md og `les.ts`.
+- Sjekket status: Vercel grønn, ingen konflikter, og main har bare merge-commiten til #24 i tillegg.
+
+### Resultat
+- Iduns funn: ingen feil som stopper fletting. Hun kjørte testene: 176 av 176 grønne, og lint og bygg er også grønne.
+- Punkt 1 (`GAMMEL_MAL` med `some`) beholdes. Spesifikasjonen sier at Produkt *eller* Komponenter skal gi `GAMMEL_MAL`, og teksten er ordrett fra EXPERIENCE.md.
+- Punkt 2 (arknavn sammenlignes nøyaktig) beholdes. Det følger regelen i `les.ts`. Trimming må i så fall gjøres der, for alle ark.
+- Punkt 3 er allerede et åpent punkt for Story 1.8.
+- Ingen kodeendringer. Svaret er lagt inn på #25 (issuecomment-7138357830), med en forespørsel om formell godkjenning. Idun la reviewen som vanlige kommentarer, så PR-en har ingen godkjenning ennå (AD-18).
+
+### Åpne punkter
+- Flett #25 med merge-commit (ikke squash, fordi 1.9 bygger på 1.6) når Idun har godkjent. Push deretter `story/1.9-kontroll-mps-mottak` og åpne PR mot main.
