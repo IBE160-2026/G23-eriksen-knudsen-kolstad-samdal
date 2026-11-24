@@ -26,3 +26,21 @@ Funnene er senere lagt inn som én review-kommentar (COMMENTED, ikke godkjenning
 
 ### Åpne punkter
 Ingen. Idun har fått funnene som review-kommentar på PR #26.
+
+## 2026-11-24 kl. 18:00 — Sebastian
+
+### Oppgave
+Idun svarte på reviewen av PR #26. Sebastian ba om en vurdering av om PR-en er klar til godkjenning, og deretter om å godkjenne den.
+
+### Plan
+- Lest Iduns svar og diffen i `dc2756d` og `7ea4d9f` mot `90af469`.
+- Kjørt tester, lint og bygg på PR-headen i et midlertidig worktree, som er fjernet igjen. Prøveflettet med `story/1.6-kontroll-struktur`.
+
+### Resultat
+- Rettet: testvakten ser nå etter bygging av `Struktur`, ikke etter feltnavnet. Nye tester dekker lengste sti (300-023 = 6), lik ledetid (300-002), underdeler bare under en senere forekomst og at en overordnet del står før underdelene. AD-6-regelen, rekkefølgen i endringsloggen og ordbanken er oppdatert. `struktur.ts` er uendret.
+- På `7ea4d9f` er 127 av 127 tester grønne, og lint og bygg er grønne. Prøveflettingen med #25 ga ingen konflikter.
+- PR #26 er godkjent fra Sebastians konto (reviewDecision APPROVED, mergeStateStatus CLEAN).
+- Flyttet til Story 1.8 etter avtale: sløyfer, tomt antall som blir 0, og hva «like» underdeler betyr (FR-3). Kommentaren i `typer.ts:323` rettes i en egen PR.
+
+### Åpne punkter
+- Før Story 1.8 skrives, må gruppen avgjøre hvordan sløyfer håndteres og hva «like» underdeler betyr i FR-3 (Idun fører dette i sin `issues.md`).

@@ -75,3 +75,4 @@
 - [ ] 2026-11-24 [story-1-9-kontroll-mps-mottak](963-2026-11-24-17-47-00-story-1-9-kontroll-mps-mottak.md) — gi Idun beskjed om at `valider()` har en plassholder for Stykkliste-reglene som 1.8 bytter ut, og at sikkerhetsnettet gir Stykkliste-koder uten tekstmal til 1.8 legger dem inn
 - [ ] 2026-11-24 [story-1-9-kontroll-mps-mottak](963-2026-11-24-17-47-00-story-1-9-kontroll-mps-mottak.md) — meldingen «etter horisonten» sier ikke hva H er: legg til et felt i `Valideringsfeil` (PR for `typer.ts`), eller vis H i feiloppsummeringen (1.12)
 - [ ] 2026-11-24 [story-1-6-kontroll-struktur](965-2026-11-24-17-19-18-story-1-6-kontroll-struktur.md) — flett PR #25 med merge-commit (ikke squash) når Idun har godkjent; deretter push og PR for Story 1.9
+- [ ] 2026-11-24 [review-pr-26-stykklistestruktur](964-2026-11-24-17-39-51-review-pr-26-stykklistestruktur.md) — før Story 1.8: avgjør hvordan sløyfer håndteres og hva «like» underdeler betyr i FR-3 (fra PR #26)
