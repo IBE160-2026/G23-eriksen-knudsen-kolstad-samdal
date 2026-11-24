@@ -31,7 +31,7 @@ context:
   - En uke som ikke er heltall, gir `MOTTAK_UKE_IKKE_HELTALL`. En uke utenfor 1..H gir `MOTTAK_UKE_UTENFOR_HORISONT`.
   - Et antall som ikke er heltall ≥ 1, gir `MOTTAK_ANTALL_UGYLDIG`.
   - Et tomt ark er gyldig.
-- **Hopp over:** kontroller som `hoppesOver(struktur, …)` sier skal hoppes over, kjøres ikke. Er horisonten ugyldig, hoppes uke-kontrollen mot H over (ingen følgefeil), men kontrollen av at uken er et heltall kjøres.
+- **Hopp over:** kontroller som `hoppesOver(struktur, …)` sier skal hoppes over, kjøres ikke. Er horisonten ugyldig, hoppes kontrollen av uken mot H over (ingen følgefeil). Kontrollen av at uken er et heltall ≥ 1 kjøres likevel, fordi uke 0 og negative uker er feil uansett hva H er (endret av Sebastian 24.11 etter review av Carmen i PR #28).
 - **`valider`:** feilene er strukturfeil, så Stykkliste-reglene, så MPS og så Planlagte mottak. Stykkliste-reglene er en lokal funksjon som gir `[]`, med kommentaren «byttes ut med validerStykkliste fra Story 1.8».
 - **Fra stykklisterad til `Stykklisterad`:** når Stykkliste-reglene gir 0 feil, gjøres hver rad om:
   - Nivå blir `'0' | '.1' | '..2'`.
@@ -87,6 +87,12 @@ context:
 ## Implementation Notes
 
 ## Spec Change Log
+
+- **Review i PR #28 (Carmen), punkt 4:**
+  - **Problemet:** med ugyldig horisont ble uke 0 og negative uker i Planlagte mottak ikke avvist.
+  - **Endringen:** Sebastian godkjente at `uke < 1` alltid kontrolleres, og at bare `uke > H` hoppes over når H er ugyldig. Den låste regelen «Hopp over» er endret. Testen med uke 0, −2 og 9 ved H = 7 er lagt til.
+  - **Dette unngås:** at en uke som alltid er feil, slipper gjennom til Kari har rettet MPS.
+  - **KEEP:** alt annet i `validerPlanlagteMottak`.
 
 ## Review Triage Log
 

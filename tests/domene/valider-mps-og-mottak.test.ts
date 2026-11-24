@@ -250,6 +250,16 @@ describe('MPS: horisonten', () => {
     expect(kort(feilI(raa))).toEqual(['MPS_HORISONT_UGYLDIG uke 8'])
   })
 
+  it('ugyldig horisont: uke 0 og negative uker avvises likevel (PR #28, Carmen)', () => {
+    const raa = medMps(TI_UKER.slice(0, 7))
+    raa.planlagteMottak!.rader = mottak(['300-001', 0, 40], ['300-001', -2, 40], ['300-001', 9, 40])
+    expect(kort(feilI(raa))).toEqual([
+      'MPS_HORISONT_UGYLDIG uke 8',
+      'MOTTAK_UKE_UTENFOR_HORISONT B2',
+      'MOTTAK_UKE_UTENFOR_HORISONT B3',
+    ])
+  })
+
   it('ugyldig horisont: uken må fortsatt være et heltall', () => {
     const raa = medMps(TI_UKER.slice(0, 7))
     raa.planlagteMottak!.rader = mottak(['300-001', 'ni', 40])

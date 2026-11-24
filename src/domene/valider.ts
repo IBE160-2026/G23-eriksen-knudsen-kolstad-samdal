@@ -298,7 +298,8 @@ function validerMps({ uker, horisont }: Mps): Valideringsfeil[] {
 /**
  * Hver rad med innhold i Planlagte mottak (FR-3). Et tomt ark er gyldig.
  * `horisont` er null når horisonten er ugyldig. Da hoppes kontrollen av uken mot H over, så det ikke
- * blir følgefeil, men kontrollen av at uken er et heltall kjøres.
+ * blir følgefeil. Kontrollen av at uken er et heltall ≥ 1 kjøres likevel, fordi uke 0 og negative uker
+ * er feil uansett hva H er.
  */
 function validerPlanlagteMottak(raa: RaaArk, struktur: Valideringsresultat, horisont: number | null): Valideringsfeil[] {
   const ark = raa.planlagteMottak
@@ -329,7 +330,7 @@ function validerPlanlagteMottak(raa: RaaArk, struktur: Valideringsresultat, hori
     if (kontroller('Uke')) {
       const uke = tolkHeltall(rad.celler['Uke'] ?? null)
       if (uke === null) legg('MOTTAK_UKE_IKKE_HELTALL', 'Uke')
-      else if (horisont !== null && (uke < 1 || uke > horisont)) legg('MOTTAK_UKE_UTENFOR_HORISONT', 'Uke')
+      else if (uke < 1 || (horisont !== null && uke > horisont)) legg('MOTTAK_UKE_UTENFOR_HORISONT', 'Uke')
     }
     if (kontroller('Antall')) {
       const antall = tolkHeltall(rad.celler['Antall'] ?? null)
