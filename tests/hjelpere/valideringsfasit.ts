@@ -68,13 +68,20 @@ export function stedSomIFasit(sted: Feilsted): string {
 }
 
 /**
- * En valideringsfeil i README-ens form. Felt er «Overskrift» når en overskrift mangler,
- * ellers feltet i feilen. Story 1.9 kan utvide dette for MPS (README: «Antall per uke»).
+ * En valideringsfeil i README-ens form. Felt er «Overskrift» når en overskrift mangler, og
+ * «Antall per uke» for «Antall ferdigprodukter» i arket MPS (Story 1.9), ellers feltet i feilen.
+ * Stedet i MPS er «uke N» (se stedSomIFasit).
  */
 export function somIFasit(feil: Valideringsfeil): { ark: string; sted: string; felt: string } {
   return {
     ark: feil.ark,
     sted: stedSomIFasit(feil.sted),
-    felt: feil.sted.type === 'OVERSKRIFT' ? 'Overskrift' : feil.felt,
+    felt: feltSomIFasit(feil),
   }
+}
+
+function feltSomIFasit(feil: Valideringsfeil): string {
+  if (feil.sted.type === 'OVERSKRIFT') return 'Overskrift'
+  if (feil.ark === 'MPS' && feil.felt === 'Antall ferdigprodukter') return 'Antall per uke'
+  return feil.felt
 }
