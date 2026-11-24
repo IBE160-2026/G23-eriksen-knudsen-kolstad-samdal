@@ -58,12 +58,12 @@ describe('én feil i MPS eller Planlagte mottak: nøyaktig feilen README-en oppg
 })
 
 describe('flere feil (FR-4)', () => {
-  it('V-F05: MPS-feilen i uke 3 og mottaksfeilen i B2 finnes, og ingen andre MPS- eller mottaksfeil', () => {
-    const forventet = fasitliste('V-F05.xlsx')
-    // Bare feilene utenfor Stykkliste: Story 1.8 legger til Stykkliste-reglene (D9, antall mangler).
-    const funnet = ugyldig(join(VALIDERING, 'V-F05.xlsx')).feil.map(somIFasit).filter((f) => f.ark !== 'Stykkliste')
-    expect(funnet).toEqual(forventet.filter((f) => f.ark !== 'Stykkliste'))
+  it('V-F05: feilen i Stykkliste (D9), MPS-feilen i uke 3 og mottaksfeilen i B2, i den rekkefølgen', () => {
+    // Stykkliste-feilen kom med Story 1.8. Her sjekkes alle tre mot README-en.
+    const funnet = ugyldig(join(VALIDERING, 'V-F05.xlsx')).feil.map(somIFasit)
+    expect(funnet).toEqual(fasitliste('V-F05.xlsx'))
     expect(funnet).toEqual([
+      { ark: 'Stykkliste', sted: 'D9', felt: 'Antall' },
       { ark: 'MPS', sted: 'uke 3', felt: 'Antall per uke' },
       { ark: 'Planlagte mottak', sted: 'B2', felt: 'Uke' },
     ])
