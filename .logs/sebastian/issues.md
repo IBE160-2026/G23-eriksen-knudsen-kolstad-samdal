@@ -65,3 +65,5 @@
 - [ ] 2026-11-24 [story-1-5-les-excel](966-2026-11-24-16-17-18-story-1-5-les-excel.md) — gruppen avgjør om innhold i selve stopperaden i Stykkliste (Nivå og Varenummer tomme, men andre kolonner fylt ut) skal gi en feil (Story 1.8 eller et felt i `RaaArk`)
 - [ ] 2026-11-24 [story-1-5-les-excel](966-2026-11-24-16-17-18-story-1-5-les-excel.md) — `lag_testdata.py --alle` sletter V-F10 og V-G05 og skriver README-en uten dem; kjør `lag_excelfiler.ps1` på nytt, eller gjør `lag_testdata.py` kjent med filene
 - [ ] 2026-11-24 [story-1-5-les-excel](966-2026-11-24-16-17-18-story-1-5-les-excel.md) — flytt eller slett `.docs/planning-artifacts/architecture/technology.md`, som beskriver et annet prosjekt
+- [ ] 2026-11-24 [story-1-5-les-excel](966-2026-11-24-16-17-18-story-1-5-les-excel.md) — be eieren av `IBE160-2026` legge inn en regel for `main`: endringer bare via PR og minst 1 godkjenning (AD-18). I dag håndheves det ikke
+- [ ] 2026-11-24 [story-1-5-les-excel](966-2026-11-24-16-17-18-story-1-5-les-excel.md) — avtal med Idun hvem som lager heltallsfunksjonen (epics: 1.6, Iduns spesifikasjon for 1.8: `heltall.ts`) og rekkefølgen for malene i `nb.ts`
