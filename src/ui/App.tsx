@@ -35,6 +35,12 @@ function Skall() {
   const hovedfelt = useRef<HTMLElement>(null)
   const forrigeRute = useRef<RuteId | null>(null)
 
+  // Appen styrer rullingen selv. Ellers gjenoppretter Chromium den gamle rulleposisjonen ved
+  // Tilbake og Frem etter at siden er rullet til toppen, og h1 med fokus havner utenfor skjermen.
+  useEffect(() => {
+    window.history.scrollRestoration = 'manual'
+  }, [])
+
   // Ved ruteskifte går siden til toppen, og fokus flyttes til h1. Ikke ved første tegning,
   // så Tab fra adresselinjen starter i appmenyen.
   useEffect(() => {

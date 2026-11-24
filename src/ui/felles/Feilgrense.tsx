@@ -2,7 +2,7 @@
 // reservemelding med lenke til Ny kjøring, og appmenyen står. Grensen nullstilles når
 // ruten endres, uten at siden lastes på nytt.
 
-import { Component, type ReactNode } from 'react'
+import { Component, type ErrorInfo, type ReactNode } from 'react'
 import { felles } from '../../tekster/nb.ts'
 
 type Props = {
@@ -13,7 +13,9 @@ type Props = {
 
 type State = { nokkel: string; harFeil: boolean }
 
-const NY_KJORING = '#/ny-kjoring'
+/** Ruten lenken i reservemeldingen går til. */
+const NY_KJORING_RUTE = 'ny-kjoring'
+const NY_KJORING = `#/${NY_KJORING_RUTE}`
 
 export class Feilgrense extends Component<Props, State> {
   state: State = { nokkel: this.props.nokkel, harFeil: false }
@@ -26,14 +28,23 @@ export class Feilgrense extends Component<Props, State> {
     return props.nokkel !== state.nokkel ? { nokkel: props.nokkel, harFeil: false } : null
   }
 
-  // Står brukeren allerede på Ny kjøring, endres ikke adressen ved klikk. Da nullstilles grensen her.
-  private provIgjen = () => {
-    if (window.location.hash === NY_KJORING) this.setState({ harFeil: false })
+  // Årsaken skal kunne finnes i konsollen, med komponentstakken (AD-5). React 19 logger også selve
+  // feilen én gang (onCaughtError), men uten komponentstakken.
+  componentDidCatch(error: Error, info: ErrorInfo) {
+    console.error(error, info)
   }
 
-  // Skifter grensen uten ruteskifte (en visning kaster, eller lenken nullstiller den), flytter ikke
-  // App.tsx fokus. Da settes fokus på h1 her, så tastatur- og skjermleserbrukere ikke mister plassen.
+  // Står grensen allerede på Ny kjøring, endrer ikke klikket adressen, og ingen ruteskifte nullstiller
+  // grensen. Da nullstilles den her. Fra en annen rute gjør ruteskiftet det, og en nullstilling her ville
+  // tegnet den feilende visningen én gang til før ruten skifter.
+  private provIgjen = () => {
+    if (this.state.nokkel === NY_KJORING_RUTE) this.setState({ harFeil: false })
+  }
+
+  // Fokus flyttes til h1 bare når grensen skifter uten ruteskifte (en visning kaster, eller lenken
+  // nullstiller den). Ved ruteskifte flytter Skall i App.tsx fokus, så det skjer bare én gang.
   componentDidUpdate(_: Props, forrige: State) {
+    if (forrige.nokkel !== this.state.nokkel) return
     if (forrige.harFeil === this.state.harFeil || typeof document === 'undefined') return
     document.querySelector<HTMLElement>('main h1')?.focus({ preventScroll: true })
   }

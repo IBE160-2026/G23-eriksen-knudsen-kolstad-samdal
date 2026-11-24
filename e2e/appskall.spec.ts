@@ -196,3 +196,59 @@ for (const vindusbredde of [900, 1366]) test(`på bred skjerm (${vindusbredde} p
   const bredde = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)
   expect(bredde, 'siden ruller sideveis').toBeLessThanOrEqual(0)
 })
+
+test.describe('ruteskifte: fokus til h1 og rulling til toppen', () => {
+  // Plassholderne er for korte til å rulle, så testen legger et høyt element utenfor #root.
+  // Høyden settes med CSSOM (el.style), som CSP-en tillater. Vakten i csp-vakt.ts er på som vanlig.
+  async function gjorSidenHoyOgRullNed(page: Page) {
+    await page.evaluate(() => {
+      if (!document.getElementById('test-hoyde')) {
+        const hoyde = document.createElement('div')
+        hoyde.id = 'test-hoyde'
+        hoyde.style.height = '3000px'
+        document.body.append(hoyde)
+      }
+      window.scrollTo(0, 1500)
+    })
+    await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(0)
+  }
+
+  async function forventFokusOgToppen(page: Page, navn: string) {
+    await expect(page.getByRole('heading', { level: 1, name: navn })).toBeFocused()
+    await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0)
+  }
+
+  test('første tegning flytter ikke fokus', async ({ page }) => {
+    await page.goto('/#/ny-kjoring')
+    await expect(page.getByRole('heading', { level: 1, name: 'Ny kjøring' })).toBeVisible()
+    expect(await page.evaluate(() => document.activeElement?.tagName)).toBe('BODY')
+  })
+
+  test('ny adresse, Tilbake og Frem flytter fokus til h1 og ruller til toppen', async ({ page }) => {
+    await page.goto('/#/ny-kjoring')
+
+    await gjorSidenHoyOgRullNed(page)
+    await page.evaluate(() => {
+      location.hash = '#/veiledning'
+    })
+    await forventFokusOgToppen(page, 'Veiledning')
+
+    await gjorSidenHoyOgRullNed(page)
+    await page.goBack()
+    await forventFokusOgToppen(page, 'Ny kjøring')
+
+    await gjorSidenHoyOgRullNed(page)
+    await page.goForward()
+    await forventFokusOgToppen(page, 'Veiledning')
+  })
+
+  test('en ukjent adresse fører til standardruten med fokus på h1', async ({ page }) => {
+    await page.goto('/#/veiledning')
+    await gjorSidenHoyOgRullNed(page)
+    await page.evaluate(() => {
+      location.hash = '#/ukjent'
+    })
+    await expect(page).toHaveURL(/#\/introduksjon$/)
+    await forventFokusOgToppen(page, 'Introduksjon')
+  })
+})
