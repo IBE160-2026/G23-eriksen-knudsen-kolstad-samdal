@@ -194,6 +194,27 @@ h1[tabindex='-1']:focus {
   height: 18px;
 }
 
+/* Knappen for lys og mørk visning står nederst i appmenyen (Story 1.13, UX-DR3). */
+.appmeny-visning {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  margin-top: auto;
+  padding: var(--spacing-2) 10px;
+  border: 0;
+  border-radius: var(--rounded-lg);
+  background: none;
+  color: var(--ink-primary);
+  font-size: var(--typography-body-size);
+  text-align: left;
+  cursor: pointer;
+}
+
+.appmeny-visning:hover {
+  background: var(--surface-sunken);
+}
+
 /* --- Informasjonsboks (DESIGN.md › Components) ----------------------------- */
 
 .informasjonsboks {

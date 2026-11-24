@@ -7,7 +7,7 @@ authors:
   - Sebastian (regler for tall, skrift, minste skjerm og tilgjengelighet, 13.11)
   - Oda (prototypene v1–v4 og avklaringene 22.11)
 created: 2026-11-12
-updated: 2026-11-22
+updated: 2026-11-24
 sources:
   - ../../prds/prd-COSI - MRP-2026-10-19/prd.md
   - ../../../ordbank.md
@@ -28,6 +28,8 @@ colors:
   accent: '#0D5C6E'
   accent-ink: '#FFFFFF'
   accent-soft: '#E1EEF1'
+  # Hover på primærknappen. Egen farge, fordi summary-hover gir 1,4:1 under accent-ink i mørk visning (Story 1.13).
+  accent-hover: '#0A4B5A'
   exc-critical: '#B3261E'
   exc-critical-soft: '#FCEBEA'
   exc-warning: '#8F5A00'
@@ -48,6 +50,7 @@ colors:
   accent-dark: '#62B6C8'
   accent-ink-dark: '#0B1A1F'
   accent-soft-dark: '#16313A'
+  accent-hover-dark: '#7BC4D4'
   exc-critical-dark: '#FF8C82'
   exc-critical-soft-dark: '#3A1A18'
   exc-warning-dark: '#F0B74E'
@@ -295,9 +298,23 @@ Lys visning er standard. Mørk visning er med i v1, og brukeren bytter selv nede
 | `exc-horizon` på `exc-horizon-soft` | 6,2 | 7,7 |
 | `change-new` på `change-new-soft` | 5,3 | 7,8 |
 | `summary-num-overdue` på `summary-bg` (stor tekst, krav 3:1) | 3,5 | 6,3 |
+| `exc-critical` på `surface-raised` | 6,5 | 7,6 |
+| `exc-warning` på `surface-raised` | 5,8 | 9,5 |
+| `exc-info` på `surface-raised` | 6,8 | 8,4 |
+| `exc-horizon` på `surface-raised` | 7,2 | 8,5 |
+| `change-new` på `surface-raised` | 6,2 | 9,4 |
+| `summary-ink` på `summary-bg` | 7,6 | 13,7 |
+| `summary-ink2` på `summary-bg` | 5,8 | 8,6 |
+| `summary-num-critical` på `summary-bg` (stor tekst, krav 3:1) | 4,9 | 6,7 |
+| `summary-ink` på `summary-hover` | 9,7 | 11,4 |
+| `summary-ink2` på `summary-hover` | 7,5 | 7,2 |
+| `summary-num-critical` på `summary-hover` (stor tekst, krav 3:1) | 6,3 | 5,6 |
+| `summary-num-overdue` på `summary-hover` (stor tekst, krav 3:1) | 4,5 | 5,3 |
+| `accent-ink` på `accent` (primærknappen) | 7,6 | 7,7 |
+| `accent-ink` på `accent-hover` (primærknappen ved hover) | 9,7 | 9,0 |
 | `line-faint` på `surface-raised` | 2,5 – **ikke til tekst** | 3,2 – **ikke til tekst** |
 
-Kontrasten for de øvrige `summary-*`-parene og for `exc-*`-fargene som tekst rett på `surface-raised` er ikke regnet ut. Det gjøres før bygging `[ASSUMPTION]`.
+Alle parene over er regnet ut for begge visningene (WCAG 2.1 AA, Story 1.13) og kontrolleres av `tests/ui/tokens.test.ts`. Primærknappen ved hover brukte først `summary-hover`, som ga 1,4:1 i mørk visning. Den har nå eget token, `accent-hover`.
 
 ## Typography
 
