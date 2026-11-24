@@ -1,4 +1,4 @@
-// Validering av Excel-filen (Story 1.6 og 1.9, FR-2, FR-3, FR-4, AD-4, AD-5, AD-9).
+// Validering av Excel-filen (Story 1.6, 1.8 og 1.9, FR-2, FR-3, FR-4, AD-4, AD-5, AD-9).
 //
 // Story 1.6 kontrollerer malens struktur: arkene og kolonneoverskriftene. Verdiene kontrolleres
 // i Story 1.8 (Stykkliste) og 1.9 (MPS og Planlagte mottak), som spør `hoppesOver` om en kontroll
@@ -8,7 +8,9 @@
 // - Kaster aldri unntak for feil i brukerens data, og samler alle feil før den svarer (AD-5).
 // - Gir koder, ark, sted og felt, aldri ferdig tekst. Teksten lages i tekster/nb.ts (AD-9).
 
+import { cellested, tolkNivaa, tolkType, varenummerTekst } from './celler.ts'
 import { tolkHeltall } from './heltall.ts'
+import { validerStykklisteVerdier } from './valider-stykkliste.ts'
 import {
   ARKNAVN,
   MPS_KOLONNER,
@@ -16,13 +18,10 @@ import {
   STYKKLISTE_KOLONNER,
   type Arknavn,
   type Celleverdi,
-  type Delstype,
-  type Feilsted,
   type HoppetOverKontroll,
   type Inndata,
   type Kolonnenavn,
   type MpsKolonne,
-  type Nivaa,
   type PlanlagteMottakKolonne,
   type PlanlagtMottak,
   type RaaArk,
@@ -145,39 +144,25 @@ export function valider(raa: RaaArk): Utfall<Inndata, Valideringsresultat> {
   }
 }
 
-/** Stykkliste-reglene (FR-3) hører til Story 1.8. */
-function validerStykkliste(_raa: RaaArk, _struktur: Valideringsresultat): Valideringsfeil[] {
-  // byttes ut med validerStykkliste fra Story 1.8
-  return []
+/** Verdiene i Stykkliste (FR-3, Story 1.8). Kontroller som hoppesOver sier skal hoppes over, kjøres ikke (FR-2). */
+function validerStykkliste(raa: RaaArk, struktur: Valideringsresultat): Valideringsfeil[] {
+  if (raa.stykkliste === null) return []
+  return validerStykklisteVerdier(raa.stykkliste, (felt) => hoppesOver(struktur, 'Stykkliste', felt))
 }
 
 // ---------------------------------------------------------------------------
 // Fra stykklisterad til Stykklisterad (sikkerhetsnettet)
 // ---------------------------------------------------------------------------
 
-const NIVAAER: readonly Nivaa[] = ['0', '.1', '..2']
-
-/** Teksten i Excel og koden for typen (FR-3). */
-const TYPER: ReadonlyMap<string, Delstype> = new Map<string, Delstype>([
-  ['Ferdigvare', 'FERDIGVARE'],
-  ['Komponent (Kjøpes inn)', 'KJOPES_INN'],
-  ['Komponent (Produseres selv)', 'PRODUSERES_SELV'],
-])
-
 /** `undefined` betyr at cellen ikke kan gjøres om. `null` er en tom celle der det er lov. */
 type Tolk<T> = (verdi: Celleverdi) => T | undefined
 
-const tolkNivaa: Tolk<Nivaa> = (verdi) => {
-  const tekst = typeof verdi === 'number' ? String(verdi) : typeof verdi === 'string' ? verdi.trim() : null
-  return NIVAAER.find((nivaa) => nivaa === tekst)
-}
 const tolkVarenummer: Tolk<string> = (verdi) => varenummerTekst(verdi) ?? undefined
 const tolkBeskrivelse: Tolk<string> = (verdi) => {
   if (typeof verdi === 'number') return String(verdi)
   const tekst = typeof verdi === 'string' ? verdi.trim() : ''
   return tekst !== '' ? tekst : undefined
 }
-const tolkType: Tolk<Delstype> = (verdi) => (typeof verdi === 'string' ? TYPER.get(verdi.trim()) : undefined)
 /** Tallfeltene: en tom celle blir null. Grensene (≥ 0, ≥ 1) er Stykkliste-reglene sine (Story 1.8). */
 const tolkTall: Tolk<number | null> = (verdi) => (verdi === null ? null : (tolkHeltall(verdi) ?? undefined))
 
@@ -343,22 +328,6 @@ function validerPlanlagteMottak(raa: RaaArk, struktur: Valideringsresultat, hori
 // ---------------------------------------------------------------------------
 // Hjelpere
 // ---------------------------------------------------------------------------
-
-/**
- * Varenummeret som tekst (AD-4), eller null når det er tomt. Excel-delen har alt gjort tall om til
- * tekst og trimmet, men et tall gjøres om her også, så 300001 og «300001» er samme varenummer.
- */
-function varenummerTekst(verdi: Celleverdi | undefined): string | null {
-  if (typeof verdi === 'number') return String(verdi)
-  if (typeof verdi !== 'string') return null
-  const tekst = verdi.trim()
-  return tekst === '' ? null : tekst
-}
-
-/** Cellen med kolonnebokstaven fra overskriftene, for eksempel C3. */
-function cellested(kolonne: string | null, excelRad: number): Feilsted {
-  return kolonne === null ? { type: 'RAD', excelRad } : { type: 'CELLE', celle: `${kolonne}${excelRad}`, excelRad }
-}
 
 function overskrifterI(raa: RaaArk, ark: Arknavn): Partial<Record<Kolonnenavn, string | null>> | null {
   switch (ark) {
