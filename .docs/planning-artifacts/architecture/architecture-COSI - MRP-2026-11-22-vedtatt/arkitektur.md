@@ -287,7 +287,8 @@ De viktigste typene:
   - Arkene Veiledning og Veien videre, Kontroll-kolonnen og hjelpekolonnene leses ikke.
   - Excel-delen avgjør aldri om noe er feil. Det gjør valideringen i kjernen.
   - **Hvor stykklisten slutter:** ved første rad der både Nivå og Varenummer er tomme, slik addendumet sier.
-    - Excel-delen leser likevel videre i malens kolonner A–H til og med rad 1001 og tar med om det står noe under den tomme raden. Formlene i hjelpekolonnene telles ikke som innhold.
+    - Excel-delen leser likevel videre i malens kolonner til siste rad med innhold og tar med om det står noe under den tomme raden. Formlene i hjelpekolonnene telles ikke som innhold.
+    - Radene over den tomme raden leses uten grense på 1000 rader, så valideringen kan gi feilen for mer enn 1000 rader på rad 1002 (`testdata/validering/V-S03.xlsx`).
     - Står det innhold under, gir valideringen én feil på den tomme raden (FR-3: «Fra rad 2 og sammenhengende nedover»). Radene under leses ikke inn.
     - Slik gir `testdata/validering/V-S01.xlsx` nøyaktig én feil på rad 9, slik `testdata/validering/README.md` krever.
   - Eksporten bygger arbeidsboka fra `Kjoring`: resultattabellen, bestillingsforslagene, eksepsjonene, ferdigproduktets navn, horisont og tidspunkt, og arket Sammenligning når det finnes (FR-22, FR-23). Filnavnet har ferdigproduktets navn og dato.
@@ -458,3 +459,4 @@ Alle ble oppdatert 22.11, etter gruppens ja.
 | 22.11.2026 | PRD FR-3, EXPERIENCE.md og ordbanken oppdatert etter arkitekturen (kapittel 11). | Kapittel 11 |
 | 23.11.2026 | De fem åpne avklaringene fra Story 1.1 (PR #20 og #22), godkjent av Sebastian 23.11.2026: typepakkene står i kap. 5. `engines` godtar Node 22.12+, 24 og 26, og `.npmrc` har `allow-remote=root`. Alle e2e-tester bruker CSP-vakten, og `test:e2e` kreves før fletting når `ui/`, `worker/` eller `excel/` endres. `vercel.json` setter også `nosniff` og `Referrer-Policy`. SheetJS-unntaket i testene gjelder også `tests/hjelpere/lag-arbeidsbok.ts`. | Kapittel 2 og 5, AD-15, AD-17, AD-18 |
 | 23.11.2026 | Ny filfeilkode `PASSORDBESKYTTET` for passordbeskyttet fil, og alle fem kodene for feil i hele filen er listet i AD-5 (Story 1.2, godkjent av koordinatoren). | AD-5 |
+| 24.11.2026 | Hvor stykklisten slutter (Story 1.5): Excel-delen leser til siste rad med innhold, ikke bare til og med rad 1001, og radene over den tomme raden leses uten grense. Ellers kan ikke V-S03 (1001 rader, feil på rad 1002) testes. Svarer på åpent spørsmål 1 i spesifikasjonen for Story 1.8 (alternativ A). | AD-15 |
