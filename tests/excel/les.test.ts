@@ -60,13 +60,16 @@ describe('les: filene i testdata/', () => {
     expect(ark.stykkliste!.tomRadMedInnholdUnder).toBeNull()
   })
 
-  it('hver fil i testdata/validering/ gir RaaArk eller filfeilen sin', () => {
+  it('testdata/validering/ har mer enn 50 filer, og alle filene med filfeil finnes der', () => {
     expect(valideringsfiler.length).toBeGreaterThan(50)
-    for (const navn of valideringsfiler) {
-      const utfall = lesFil(join(VALIDERING, navn))
-      expect(filfeil(utfall), navn).toBe(FILFEIL[navn] ?? 'ok')
-    }
     expect(Object.keys(FILFEIL).every((f) => valideringsfiler.includes(f))).toBe(true)
+  })
+
+  // Én test per fil, med filnavnet i testnavnet. Hver fil får sin egen tidsgrense, så testen ikke
+  // går over 5000 ms på en treg eller opptatt maskin når det kommer flere valideringsfiler (#29).
+  it.each(valideringsfiler)('%s gir RaaArk eller filfeilen sin', (navn) => {
+    const utfall = lesFil(join(VALIDERING, navn))
+    expect(filfeil(utfall), navn).toBe(FILFEIL[navn] ?? 'ok')
   })
 
   it('V-F03 (gammel mal): ok, uten Stykkliste, og alleArk har Produkt og Komponenter', () => {

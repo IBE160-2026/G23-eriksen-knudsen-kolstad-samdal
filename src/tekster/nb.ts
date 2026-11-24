@@ -10,6 +10,21 @@ import type { Arknavn, Valideringsfeil } from '../domene/typer.ts'
 // --- Felles ---------------------------------------------------------------
 export const felles = {
   appnavn: 'COSI - MRP',
+  appmeny: 'Appmeny',
+  visninger: {
+    introduksjon: 'Introduksjon',
+    nyKjoring: 'Ny kjøring',
+    resultat: 'Resultat',
+    lagredeKjoringer: 'Lagrede kjøringer',
+    veiledning: 'Veiledning',
+  },
+  /** Sidetittelen i nettleserens fane, for eksempel «Veiledning – COSI - MRP». */
+  sidetittel: (visning: string) => `${visning} – COSI - MRP`,
+  tilNyKjoring: 'Til Ny kjøring',
+  feilgrense: {
+    overskrift: 'Noe gikk galt',
+    tekst: 'Siden kunne ikke vises. Du kan gå til Ny kjøring og laste opp filen på nytt.',
+  },
 } as const
 
 // --- Filfeil og validering ------------------------------------------------
@@ -41,7 +56,9 @@ export const eksepsjoner = {} as const
 export const forklaringer = {} as const
 
 // --- Resultat -------------------------------------------------------------
-export const resultat = {} as const
+export const resultat = {
+  utenKjoring: 'Det er ingen kjøring å vise. Resultatet finnes bare til siden lastes på nytt. Last opp filen på Ny kjøring.',
+} as const
 
 // --- Lagring og eksport ---------------------------------------------------
 export const lagringOgEksport = {} as const

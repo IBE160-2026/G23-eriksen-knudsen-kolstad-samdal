@@ -1,7 +1,7 @@
 // Røyktester fra prosjektoppsettet (Story 1.1): appen starter i nettleseren med CSP-en og
 // sikkerhetshodene fra AD-17, og nettleseren stopper et forsøk på å koble til en annen adresse (NFR-4).
 // Vakten i csp-vakt.ts kontrollerer CSP-brudd, konsollfeil og unntak i alle testene.
-// Testene for visningene kommer med Story 1.3 og senere.
+// Testene for visningene står i appskall.spec.ts (Story 1.3).
 
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
@@ -31,7 +31,9 @@ test('appen åpnes uten feil, med CSP-en og sikkerhetshodene fra vercel.json', a
     expect(mottatt[navn], navn).toBe(verdi)
   }
 
-  await expect(page.getByRole('heading', { level: 1, name: 'COSI - MRP' })).toBeVisible()
+  // Første besøk går til introduksjonssiden (FR-27, AD-13).
+  await expect(page).toHaveURL(/#\/introduksjon$/)
+  await expect(page.getByRole('heading', { level: 1, name: 'Introduksjon' })).toBeVisible()
 })
 
 test('vakten feiler en test når siden bryter CSP-en', async ({ page }) => {
