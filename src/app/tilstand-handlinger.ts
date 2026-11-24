@@ -4,6 +4,7 @@
 
 import { createContext, useContext, type Dispatch } from 'react'
 import type { Kjoring } from '../domene/typer.ts'
+import type { Kjorer } from './kjoring.ts'
 
 export type Tilstand = {
   /** Kjøringen som vises på Resultat. Finnes bare i minnet, så den er null etter reload. */
@@ -33,7 +34,8 @@ export function endreTilstand(tilstand: Tilstand, handling: Handling): Tilstand 
   }
 }
 
-export type TilstandKontekst = { tilstand: Tilstand; send: Dispatch<Handling> }
+/** `kjorer` er styringen av en kjøring (AD-12). Én felles, så bare én kjøring pågår om gangen. */
+export type TilstandKontekst = { tilstand: Tilstand; send: Dispatch<Handling>; kjorer: Kjorer }
 
 export const Tilstandskontekst = createContext<TilstandKontekst | null>(null)
 
