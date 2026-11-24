@@ -70,13 +70,18 @@ describe('gyldige filer har malens struktur', () => {
   it.each(gyldige)('%s er gyldig i README-en', (fil) => {
     expect(valideringsfasit(fil).antall).toBe(0)
   })
+})
 
-  it('valideringsfilene for verdier (V-S, V-M, V-P, V-F05) har ingen strukturfeil', () => {
-    const filer = readdirSync(VALIDERING).filter((f) => /^V-(S|M|P)\d+\.xlsx$/.test(f) || f === 'V-F05.xlsx')
+describe('valideringsfilene for verdier (V-S, V-M, V-P, V-F05) har ingen strukturfeil', () => {
+  const filer = readdirSync(VALIDERING).filter((f) => /^V-(S|M|P)\d+\.xlsx$/.test(f) || f === 'V-F05.xlsx')
+
+  it('det er mer enn 30 slike filer', () => {
     expect(filer.length).toBeGreaterThan(30)
-    for (const fil of filer) {
-      expect(validerStruktur(lesFil(join(VALIDERING, fil))), fil).toEqual({ feil: [], hoppetOver: [] })
-    }
+  })
+
+  // Én test per fil, med filnavnet i testnavnet, så hver fil får sin egen tidsgrense (#29).
+  it.each(filer)('%s har ingen strukturfeil', (fil) => {
+    expect(validerStruktur(lesFil(join(VALIDERING, fil))), fil).toEqual({ feil: [], hoppetOver: [] })
   })
 })
 
