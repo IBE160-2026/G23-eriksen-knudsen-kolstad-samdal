@@ -150,6 +150,152 @@
   color: var(--ink-secondary);
 }
 
+/* --- Opplastingssonen (Story 1.11, UX-DR8, DESIGN.md › Components › Opplastingssone) ---------
+ * Mål fra prototypen v3 (.drop): 2 px stiplet ramme, 8 px hjørner, 22 px innvendig avstand og 8 px mellomrom.
+ * Når en fil dras over: accent-soft og hel ramme i accent (valgt-tone). */
+
+.opplastingssone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-2);
+  padding: 22px;
+  border: 2px dashed var(--line);
+  border-radius: 8px;
+  text-align: center;
+}
+
+.opplastingssone-over {
+  border-style: solid;
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.opplastingssone-valg {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-2);
+}
+
+.opplastingssone-eller,
+.opplastingssone-hjelp {
+  color: var(--ink-secondary);
+}
+
+.opplastingssone-hjelp {
+  font-size: 13px;
+}
+
+.opplastingssone-fil {
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+/* Meldingsboks i sonen: feil i hele filen, uventet feil, «Velg en fil først.» og «Slipp bare én fil …». */
+.sonemelding,
+.valideringsboks {
+  padding: var(--spacing-2) var(--spacing-3);
+  border-left: 4px solid var(--exc-critical);
+  border-radius: var(--rounded-md);
+  background: var(--exc-critical-soft);
+  color: var(--ink-primary);
+  text-align: left;
+}
+
+.sonemelding {
+  align-self: stretch;
+}
+
+/* Midlertidig til feiloppsummeringen i Story 1.12. Står over kortene og får fokus.
+ * Ikke en komponent i DESIGN.md. 4 px loddrett avstand (spacing-1), så kort 3 får plass i 1366 × 630
+ * også når en ny fil er valgt (målt 25.11: 626,5 px i Chromium og Firefox). */
+.valideringsboks {
+  max-width: 72ch;
+  padding-block: var(--spacing-1);
+  font-weight: 600;
+}
+
+/* --- Beregn (Story 1.11, UX-DR10). Prototypen v3: valget til venstre, Beregn og statusen til høyre. --- */
+
+.beregn-rad {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--spacing-gutter);
+  align-items: end;
+}
+
+.beregn-rad .kort-tekst {
+  margin-bottom: 0;
+}
+
+.beregn-handling {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--spacing-2);
+}
+
+/* Prototypen: 10 px 22 px på Beregn. */
+.knapp-beregn {
+  padding: 10px 22px;
+}
+
+/* Synlig status ved Beregn. Fast høyde, så kortet ikke hopper når teksten kommer og går. */
+.beregn-status {
+  min-height: 22px;
+  color: var(--ink-secondary);
+  font-size: 14px;
+}
+
+/* --- Resultat: kjøringslinjen (Story 1.11, UX-DR13, DESIGN.md › Components › Kjøringslinje) --- */
+
+.kjoringslinje {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-4);
+  padding: 10px var(--spacing-5);
+  background: var(--surface-raised);
+  border: 1px solid var(--line);
+  border-radius: var(--rounded-lg);
+}
+
+.kjoringslinje-innhold {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.kjoringslinje-produkt {
+  font-family: var(--font-condensed);
+  font-size: var(--typography-product-size);
+  font-weight: var(--typography-product-weight);
+  line-height: var(--typography-product-line-height);
+}
+
+.kjoringslinje-varenummer {
+  font-family: var(--font-mono);
+  font-size: var(--typography-code-size);
+  font-weight: 400;
+  color: var(--ink-secondary);
+}
+
+.kjoringslinje-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-3);
+  font-size: var(--typography-label-size);
+  color: var(--ink-secondary);
+}
+
+.kjoringslinje > .knapp {
+  margin-left: auto;
+}
+
 /* --- Veiledning (UX-DR31) -------------------------------------------------------- */
 
 .tekstside {
@@ -172,8 +318,13 @@
 
 @media (max-width: 899.98px) {
   .steg-rad,
-  .startkort {
+  .startkort,
+  .beregn-rad {
     grid-template-columns: minmax(0, 1fr);
+  }
+
+  .beregn-handling {
+    align-items: flex-start;
   }
 
   .intro-flate {
