@@ -10,7 +10,7 @@
 //
 // Statusmeldingene («Leser filen …» og «Beregner …») og feilmeldingene hører til Story 1.11. Denne fila gir
 // feilene tilbake som en verdi, så skjermen kan vise dem. Lagring og sammenligning med forrige kjøring (AD-12,
-// punkt 3–6) kommer i Epic 3.
+// punkt 3–6) kommer i Epic 4 (Story 4.1 og 4.2).
 
 import type { Dispatch } from 'react'
 import type { Filfeil, Kjoring, Valg, Valideringsresultat } from '../domene/typer.ts'
@@ -142,7 +142,7 @@ function utfallFor(svar: WorkerSvar, { valg, filnavn }: { valg: Valg; filnavn: s
           resultat: svar.resultat,
           kapasitet: svar.kapasitet,
           sammenligning: null,
-          // Midlertidig til lagring av kjøringer er bygd (Epic 3): ingenting lagres ennå.
+          // Midlertidig til lagring av kjøringer er bygd (Story 4.1): ingenting lagres ennå.
           lagring: valg === 'PRODUKSJONSKAPASITET' ? 'IKKE_LAGRET_BARE_KAPASITET' : 'IKKE_LAGRET_BLOKKERT',
         }
         av.send({ type: 'VIS_KJORING', kjoring })
