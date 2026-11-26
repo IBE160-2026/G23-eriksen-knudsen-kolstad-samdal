@@ -747,6 +747,56 @@ export const resultat = {
     bestillingsforslag: 'Bestillingsforslag viser hva du må bestille eller sette i produksjon, og i hvilken uke.',
     resultattabell: 'Resultattabellen viser hele planen per del og uke, med eksepsjonene markert der planen ikke går opp.',
   },
+
+  // Resultattabellen (Story 2.7, UX-DR21–UX-DR24, FR-14–FR-16).
+  tabell: {
+    /** `<caption>`: ferdigproduktet og horisonten (FR-14). */
+    bildetekst: (beskrivelse: string, varenummer: string, horisont: number) =>
+      `Resultattabell for ${beskrivelse} (${varenummer}), horisont ${horisont} ${horisont === 1 ? 'uke' : 'uker'}`,
+    ukeOrd: 'Uke',
+    /** Radnavnene i rekkefølgen fra FR-14. */
+    rader: {
+      bruttobehov: 'Bruttobehov',
+      planlagteMottak: 'Planlagte mottak',
+      forventetLagerbeholdning: 'Forventet lagerbeholdning',
+      nettobehov: 'Nettobehov',
+      planlagteOrdremottak: 'Planlagte ordremottak',
+      planlagteOrdrefrigivelser: 'Planlagte ordrefrigivelser',
+    },
+    delstyper: {
+      FERDIGVARE: 'Ferdigvare',
+      KJOPES_INN: 'Komponent (Kjøpes inn)',
+      PRODUSERES_SELV: 'Komponent (Produseres selv)',
+    } satisfies Record<Delstype, string>,
+    /** Delens felt: kort for øyet, fullt navn for skjermleseren. */
+    felt: {
+      lager: (n: number) => ({ kort: `Lager ${formaterTall(n)}`, lang: `lagerbeholdning ${formaterTall(n)}` }),
+      sikkerhetslager: (n: number) => ({ kort: `SS ${formaterTall(n)}`, lang: `sikkerhetslager ${formaterTall(n)}` }),
+      ledetid: (n: number) => ({
+        kort: `L ${formaterTall(n)}`,
+        lang: `ledetid ${formaterTall(n)} ${n === 1 ? 'uke' : 'uker'}`,
+      }),
+      /** «Antall: 5 per 100-002». */
+      antall: (antall: number, overordnet: string) => `Antall: ${formaterTall(antall)} per ${overordnet}`,
+    },
+    kritiskDel: 'Kritisk del',
+    /** Typenavnene fra ordbanken, i rekkefølgen i PRD §4.3. */
+    eksepsjonsnavn: {
+      LEDETID_OVERSKRIDER_HORISONT: 'Ledetid overskrider horisont',
+      BESTILLING_FORSINKET: 'Bestilling forsinket',
+      BRUK_AV_SIKKERHETSLAGER: 'Bruk av sikkerhetslager',
+      MOTTAK_FORSINKET: 'Mottak forsinket',
+      KANSELLER_MOTTAK: 'Kanseller mottak',
+    } satisfies Record<Eksepsjonskode, string>,
+    /** Det tilgjengelige navnet på markøren: «Bestilling forsinket, uke 1» eller «…, hele delen» (FR-15). */
+    markornavn: (navn: string, uke: number | null) => `${navn}, ${uke === null ? 'hele delen' : `uke ${uke}`}`,
+    tegnforklaring: { navn: 'Tegnforklaring', kritiskDel: 'Kritisk del', valgtCelle: 'Valgt celle' },
+    filter: {
+      bareKritiske: 'Vis bare kritiske deler',
+      viser: (synlige: number, totalt: number) => `Viser ${formaterTall(synlige)} av ${formaterTall(totalt)} deler`,
+      visAlle: 'Vis alle deler',
+    },
+  },
 } as const
 
 /**

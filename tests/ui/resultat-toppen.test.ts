@@ -84,8 +84,10 @@ describe('Resultat med beregnet bestillingsplan: seksjonene (AD-14)', () => {
     expect(html).toContain('<section class="resultat-seksjon" aria-labelledby="seksjon-bestillingsforslag">')
   })
 
-  it('seksjonene er tomme til Story 2.7, 2.10 og 2.11', () => {
-    expect(html).toMatch(/<section class="resultat-seksjon"[^>]*><h2[^>]*>Resultattabell<\/h2><\/section>/)
+  it('Kritiske deler og Bestillingsforslag er tomme til Story 2.10 og 2.11, og Resultattabell har tabellen (Story 2.7)', () => {
+    expect(html).toMatch(/<section class="resultat-seksjon"[^>]*><h2[^>]*>Kritiske deler<\/h2><\/section>/)
+    expect(html).toMatch(/<section class="resultat-seksjon"[^>]*><h2[^>]*>Bestillingsforslag<\/h2><\/section>/)
+    expect(html).toMatch(/<h2[^>]*>Resultattabell<\/h2><div class="resultattabell">/)
   })
 
   it('viser ikke meldingen om at bestillingsplanen ikke er beregnet', () => {

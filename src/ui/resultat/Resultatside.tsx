@@ -5,14 +5,20 @@
 // Hopp til en seksjon: `scrollIntoView` så overskriften står rett under kjøringslinjen, fokus til overskriften,
 // og ingen endring av adressen. Seksjonen som er i bildet, får `aria-current="location"` mens Kari ruller.
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import type { Kjoring, Resultat } from '../../domene/typer.ts'
 import { resultat as tekster } from '../../tekster/nb.ts'
 import { Kjoringslinje } from './Kjoringslinje.tsx'
+import { Resultattabell } from './Resultattabell.tsx'
 import { SlikLeserDu } from './SlikLeserDu.tsx'
 import { Seksjonsmeny } from './Seksjonsmeny.tsx'
 import { Tallbokser } from './Tallbokser.tsx'
 import { finnAktivSeksjon, overskriftId, SEKSJONER, tell, type SeksjonId } from './seksjoner.ts'
+
+/** Innholdet i hver seksjon. Kritiske deler (Story 2.10) og Bestillingsforslag (Story 2.11) fyller sine selv. */
+const INNHOLD: Partial<Record<SeksjonId, (kjoring: Kjoring, resultat: Resultat) => ReactNode>> = {
+  resultattabell: (kjoring, resultat) => <Resultattabell kjoring={kjoring} resultat={resultat} />,
+}
 
 /** Luften mellom kjøringslinjen og overskriften når en seksjon er rullet på plass, i px. */
 const LUFT = 12
@@ -85,6 +91,7 @@ export function Resultatside({ kjoring, resultat }: { kjoring: Kjoring; resultat
           <h2 id={overskriftId(seksjon)} tabIndex={-1}>
             {tekster.seksjoner[seksjon]}
           </h2>
+          {INNHOLD[seksjon]?.(kjoring, resultat)}
         </section>
       ))}
     </div>

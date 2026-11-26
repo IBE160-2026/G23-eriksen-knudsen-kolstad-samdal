@@ -552,6 +552,330 @@ h2[tabindex='-1']:focus {
   outline: none;
 }
 
+/* --- Resultattabellen (Story 2.7, UX-DR21–UX-DR24, DESIGN.md › Layout & Spacing › Tabeller) --- */
+
+.resultattabell {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+}
+
+.tabellverktoy {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-3);
+}
+
+/* Tegnforklaringen: én linje over tabellen i 12,5 px ink-secondary. */
+.tegnforklaring {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 12.5px;
+  color: var(--ink-secondary);
+}
+
+.tegnforklaring li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.tabellfilter {
+  display: inline-flex;
+  margin-left: auto;
+  align-items: center;
+  gap: 6px;
+  font-size: 13.5px;
+  cursor: pointer;
+}
+
+.filterstatus {
+  margin: 0;
+  font-size: 13.5px;
+}
+
+.lenkeknapp {
+  padding: 0;
+  font: inherit;
+  color: var(--accent);
+  text-decoration: underline;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+/* Eksepsjonsmarkør: symbolet i en firkant på 20 × 20 px i eksepsjonsfargen. Rammen gjør at firkanten
+   synes også på cellens lyse bakgrunn, og symbolet bærer meningen, ikke fargen alene (FR-15, NFR-8). */
+.markor {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 20px;
+  height: 20px;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+  border: 1px solid currentColor;
+  border-radius: var(--rounded-sm);
+}
+
+.eks-kritisk {
+  color: var(--exc-critical);
+  background: var(--exc-critical-soft);
+}
+
+.eks-sikkerhetslager,
+.eks-mottak {
+  color: var(--exc-warning);
+  background: var(--exc-warning-soft);
+}
+
+.eks-kanseller {
+  color: var(--exc-info);
+  background: var(--exc-info-soft);
+}
+
+.eks-horisont {
+  color: var(--exc-horizon);
+  background: var(--exc-horizon-soft);
+}
+
+.kritisk-flagg {
+  display: inline-block;
+  align-self: flex-start;
+  padding: 1px 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--exc-critical);
+  background: var(--exc-critical-soft);
+  border-radius: var(--rounded-sm);
+}
+
+.eksempel-valgt-celle {
+  display: inline-block;
+  width: 18px;
+  height: 14px;
+  background: var(--accent-soft);
+  box-shadow: inset 0 0 0 2px var(--accent);
+}
+
+/* Området ruller i begge retninger. Ukeoverskriften står fast ved loddrett rulling, delens felt og radnavnene
+   ved sideveis rulling, alle med ugjennomsiktig bakgrunn (NFR-8). */
+.tabellomrade {
+  --del-bredde: 260px;
+  --rad-bredde: 190px;
+  /* Rulling til en celle (fokus, klikk, hopp) skal ikke legge den bak de faste lagene (WCAG 2.4.11). */
+  scroll-padding: 40px 0 0 calc(var(--del-bredde) + var(--rad-bredde));
+  min-height: 240px;
+  max-height: calc(100vh - var(--kjoringslinje-hoyde, 0px) - 120px);
+  overflow: auto;
+  background: var(--surface-raised);
+  border: 1px solid var(--line);
+  border-radius: var(--rounded-lg);
+}
+
+.resultattabell-tabell {
+  min-width: 100%;
+  font-size: var(--typography-table-size);
+  line-height: var(--typography-table-line-height);
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.resultattabell-tabell caption {
+  padding: 8px 12px;
+  font-size: 12.5px;
+  color: var(--ink-secondary);
+  text-align: left;
+}
+
+.resultattabell-tabell thead th,
+.tabellhjorne {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  min-width: 56px;
+  padding: 6px 10px;
+  font-weight: 400;
+  text-align: right;
+  background: var(--surface-sunken);
+  border-bottom: 1px solid var(--line);
+}
+
+.resultattabell-tabell thead th.uke-1 {
+  background: var(--accent-soft);
+}
+
+.resultattabell-tabell thead th.uke-valgt {
+  font-weight: 700;
+}
+
+.tabellhjorne {
+  left: 0;
+  z-index: 5;
+  min-width: calc(var(--del-bredde) + var(--rad-bredde));
+}
+
+.del > tr:first-child > * {
+  border-top: 2px solid var(--line-faint);
+}
+
+.delfelt {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  box-sizing: border-box;
+  width: var(--del-bredde);
+  min-width: var(--del-bredde);
+  max-width: var(--del-bredde);
+  padding: 8px 12px;
+  font-weight: 400;
+  text-align: left;
+  vertical-align: top;
+  background: var(--surface-sunken);
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+.delfelt-innhold {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+/* 12 px innrykk per nivå (UX-DR21). */
+.innrykk-1 {
+  padding-left: 12px;
+}
+
+.innrykk-2 {
+  padding-left: 24px;
+}
+
+.delfelt-topp {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.nivaamerke {
+  padding: 0 5px;
+  font-family: var(--font-mono);
+  font-size: var(--typography-code-size);
+  border: 1px solid var(--line-faint);
+  border-radius: var(--rounded-sm);
+}
+
+.delfelt-varenummer {
+  font-family: var(--font-mono);
+  font-size: var(--typography-code-size);
+}
+
+.delfelt-beskrivelse {
+  font-weight: 700;
+}
+
+.delfelt-meta {
+  font-size: 12px;
+  color: var(--ink-secondary);
+}
+
+.radnavn {
+  position: sticky;
+  left: var(--del-bredde);
+  z-index: 2;
+  box-sizing: border-box;
+  width: var(--rad-bredde);
+  min-width: var(--rad-bredde);
+  height: var(--spacing-row-height);
+  padding: 0 12px;
+  font-weight: 400;
+  color: var(--ink-secondary);
+  text-align: left;
+  white-space: nowrap;
+  background: var(--surface-raised);
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+.radnavn-valgt {
+  font-weight: 700;
+  color: var(--ink-primary);
+}
+
+.celle {
+  height: var(--spacing-row-height);
+  padding: 0 10px;
+  text-align: right;
+  border-bottom: 1px solid var(--line);
+  cursor: pointer;
+}
+
+.celle-uke1 {
+  background: var(--accent-soft);
+}
+
+/* Peking gjør bare en liten endring i rammen (FR-18). */
+.celle:hover {
+  box-shadow: inset 0 0 0 1px var(--line-faint);
+}
+
+.celle-valgt,
+.celle-valgt:hover {
+  background: var(--accent-soft);
+  box-shadow: inset 0 0 0 2px var(--accent);
+}
+
+/* Eksepsjonens lyse bakgrunn går foran uke 1 og valgt celle, så markøren alltid synes. */
+.eks-kritisk-bakgrunn {
+  background: var(--exc-critical-soft);
+}
+
+.eks-sikkerhetslager-bakgrunn,
+.eks-mottak-bakgrunn {
+  background: var(--exc-warning-soft);
+}
+
+.eks-kanseller-bakgrunn {
+  background: var(--exc-info-soft);
+}
+
+.eks-horisont-bakgrunn {
+  background: var(--exc-horizon-soft);
+}
+
+.celle-innhold {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+}
+
+.tall {
+  font-variant-numeric: tabular-nums;
+}
+
+.tall-null {
+  color: var(--ink-secondary);
+}
+
+.tall-negativ {
+  color: var(--exc-critical);
+}
+
+.celle-sterk .tall {
+  font-weight: 700;
+}
+
 /* --- Veiledning (UX-DR31) -------------------------------------------------------- */
 
 .tekstside {
