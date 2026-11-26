@@ -86,3 +86,95 @@ export function valgEtterFilter(valgt: ValgtCelle | null, synlige: readonly DelR
   if (valgt === null) return null
   return synlige.some((del) => del.del.varenummer === valgt.varenummer) ? valgt : null
 }
+
+// ---------------------------------------------------------------------------
+// Tastaturstyringen: WAI-ARIA grid på den ekte <table> (Story 2.9, UX-DR22)
+// ---------------------------------------------------------------------------
+
+/** Kolonnene i rutenettet: delens felt, radnavnet og så ukene. Uke u står i kolonne u + 1. */
+export const KOLONNE_FELT = 0
+export const KOLONNE_RADNAVN = 1
+export const KOLONNE_FORSTE_UKE = 2
+
+/**
+ * Cellen med fokus. `r` er raden i delen (0–5 i `RADER`). Delens felt spenner over alle seks radene, men
+ * husker raden Kari kom fra, så høyre pil går tilbake til samme rad.
+ */
+export type Rutenettplass = { varenummer: string; r: number; k: number }
+
+export function sisteKolonne(uker: number): number {
+  return uker + 1
+}
+
+/** Cellen tabulatorstoppet står på til Kari har flyttet seg: første uke i første rad i første del som vises. */
+export function forstePlass(varenumre: readonly string[]): Rutenettplass | null {
+  const varenummer = varenumre[0]
+  return varenummer === undefined ? null : { varenummer, r: 0, k: KOLONNE_FORSTE_UKE }
+}
+
+export const NAVIGASJONSTASTER = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Home', 'End', 'PageUp', 'PageDown'] as const
+
+/**
+ * Hvor fokus går ved et tastetrykk, eller null hvis tasten ikke flytter fokus i rutenettet. Ved kanten blir fokus stående.
+ *
+ * - Piltastene flytter én celle. Venstre fra første uke går til radnavnet, og videre til delens felt.
+ *   Opp og ned fra delens felt går til forrige og neste del.
+ * - Home og End går til første og siste uke i raden. Ctrl+Home og Ctrl+End går til første uke i første rad i første
+ *   del og siste uke i siste rad i siste del.
+ * - PgUp og PgDn går til samme rad og kolonne i forrige og neste del.
+ *
+ * @param varenumre delene som vises, i stykklisterekkefølge (filteret skjuler noen)
+ */
+export function flytt(
+  plass: Rutenettplass,
+  tast: string,
+  ctrl: boolean,
+  varenumre: readonly string[],
+  uker: number,
+): Rutenettplass | null {
+  const indeks = varenumre.indexOf(plass.varenummer)
+  if (indeks < 0) return null
+  const siste = sisteKolonne(uker)
+  const sisteRad = RADER.length - 1
+  const iDel = (i: number, endring: Partial<Rutenettplass> = {}): Rutenettplass => {
+    const varenummer = varenumre[i]
+    return varenummer === undefined ? plass : { ...plass, ...endring, varenummer }
+  }
+  const forrige = indeks - 1
+  const neste = indeks + 1
+  const harForrige = forrige >= 0
+  const harNeste = neste < varenumre.length
+
+  switch (tast) {
+    case 'ArrowRight':
+      return { ...plass, k: Math.min(plass.k + 1, siste) }
+    case 'ArrowLeft':
+      return { ...plass, k: Math.max(plass.k - 1, KOLONNE_FELT) }
+    case 'ArrowDown':
+      if (plass.k === KOLONNE_FELT) return harNeste ? iDel(neste) : plass
+      if (plass.r < sisteRad) return { ...plass, r: plass.r + 1 }
+      return harNeste ? iDel(neste, { r: 0 }) : plass
+    case 'ArrowUp':
+      if (plass.k === KOLONNE_FELT) return harForrige ? iDel(forrige) : plass
+      if (plass.r > 0) return { ...plass, r: plass.r - 1 }
+      return harForrige ? iDel(forrige, { r: sisteRad }) : plass
+    case 'Home':
+      return ctrl
+        ? { varenummer: varenumre[0] ?? plass.varenummer, r: 0, k: KOLONNE_FORSTE_UKE }
+        : { ...plass, k: KOLONNE_FORSTE_UKE }
+    case 'End':
+      return ctrl
+        ? { varenummer: varenumre[varenumre.length - 1] ?? plass.varenummer, r: sisteRad, k: siste }
+        : { ...plass, k: siste }
+    case 'PageUp':
+      return harForrige ? iDel(forrige) : plass
+    case 'PageDown':
+      return harNeste ? iDel(neste) : plass
+    default:
+      return null
+  }
+}
+
+export function erLik(a: Rutenettplass | null, b: Rutenettplass | null): boolean {
+  return a === b || (a !== null && b !== null && a.varenummer === b.varenummer && a.r === b.r && a.k === b.k)
+}

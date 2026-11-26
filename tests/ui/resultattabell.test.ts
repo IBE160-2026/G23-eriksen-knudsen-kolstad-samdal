@@ -38,7 +38,7 @@ function tbody(html: string, varenummer: string): string {
 
 /** HTML-en til én celle. */
 function celle(html: string, varenummer: string, rad: string, uke: number): string {
-  return new RegExp(`<td [^>]*data-rad="${rad}" data-uke="${uke}">[\\s\\S]*?</td>`).exec(tbody(html, varenummer))?.[0] ?? ''
+  return new RegExp(`<td [^>]*data-rad="${rad}" data-uke="${uke}"[^>]*>[\\s\\S]*?</td>`).exec(tbody(html, varenummer))?.[0] ?? ''
 }
 
 describe('tabell-modell: hvilken celle en eksepsjon markeres i (UX-DR23)', () => {
@@ -261,7 +261,7 @@ describe('Resultattabell: valgt celle (UX-DR21, FR-18)', () => {
   const markorer = markorerFor(grupperMarkorer(EKSEPSJONER_01), '300-003')
   const tegnDel = (valgtRad: 'nettobehov' | null, valgtUke: number | null) =>
     renderToStaticMarkup(
-      createElement('table', null, createElement(DelTbody, { del, markorer, uker: UKER, valgtRad, valgtUke, onVelg: () => {} })),
+      createElement('table', null, createElement(DelTbody, { del, markorer, uker: UKER, valgtRad, valgtUke, aktivR: null, aktivK: null, onVelg: () => {} })),
     )
 
   it('uten valg har ingen celle ramme, og ingen radnavn er fete', () => {
@@ -275,7 +275,7 @@ describe('Resultattabell: valgt celle (UX-DR21, FR-18)', () => {
     expect(html.match(/celle-valgt/g)).toHaveLength(1)
     expect(html).toMatch(/<td class="celle celle-valgt"[^>]*data-rad="nettobehov" data-uke="3"/)
     expect(html.match(/radnavn-valgt/g)).toHaveLength(1)
-    expect(html).toMatch(/<th scope="row" class="radnavn radnavn-valgt">Nettobehov<\/th>/)
+    expect(html).toMatch(/<th scope="row" class="radnavn radnavn-valgt"[^>]*>Nettobehov<\/th>/)
   })
 })
 
