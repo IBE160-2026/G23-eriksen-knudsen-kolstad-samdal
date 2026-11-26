@@ -52,9 +52,10 @@ Sebastian ba om en review av Iduns Story 1.8 (PR #33, `story/1.8-kontroll-av-ark
   - Typefeil kan fortsatt gi to feil på én celle.
   - En rad rett under seg selv kan bli fasit for beskrivelse og type.
 - Smale grensetilfeller som jeg ikke regner som verdt en ny runde: kolonnerekkefølge ved flyttede kolonner, kommentaren til `radliste`, testen for alle malene, og `TYPE_KJOPES_INN` mot fasittypen.
-- Funnlista ligger i scratchpad: `pr33-runde2-funn.json`. Ingenting er lagt på PR-en ennå.
+- Funnlista ligger i scratchpad: `pr33-runde2-funn.json`.
+- Lagt inn som review-kommentar på PR #33 (COMMENTED): Idun er bedt om å rette de tre funnene og ordbankdatoen før godkjenning. Testen, `antallMedFeil` og de doble typefeilene står som valgfrie.
 
 ### Åpne punkter
-- Gi Idun funnene fra runde 2 på PR #33 (to falske `UNDERDELER_ULIKE`, `0, ..2, ..2`, ordbankdatoen og testen), og avgjør om du godkjenner nå eller etter rettelsene.
+- Godkjenn PR #33 når Idun har rettet de to falske `UNDERDELER_ULIKE`, `0, ..2, ..2` og ordbankdatoen.
 - Testene for sikkerhetsnettet i `tests/domene/valider-mps-og-mottak.test.ts` (531–602) tester nå reglene, ikke sikkerhetsnettet: test `tilStykklisterader` direkte, eller fjern sikkerhetsnettet (min kode fra 1.9).
 - Gruppa bør godkjenne Iduns forslag i PR #33: sløyfer gir `VARENUMMER_UNDER_SEG_SELV`, og `[X:1, X:1]` er det samme som `[X:2]`. `lag_testdata.py` (linje 362–372) bruker en annen regel.
