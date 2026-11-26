@@ -7,7 +7,7 @@
 //   Kapasiteten (Epic 5) kjøres her når den finnes. Til da er `kapasitet` null.
 
 import { beregnBestillingsplan } from '../domene/beregn.ts'
-import { finnEksepsjoner } from '../domene/eksepsjoner.ts'
+import { leggTilEksepsjoner } from '../domene/eksepsjoner.ts'
 import { byggStruktur } from '../domene/struktur.ts'
 import type { Inndata, Resultat } from '../domene/typer.ts'
 import { valider } from '../domene/valider.ts'
@@ -16,19 +16,13 @@ import type { WorkerInn, WorkerSvar } from './meldinger.ts'
 
 /**
  * Bestillingsplanen for en gyldig fil: stykklistestrukturen (AD-6), beregningen nivå for nivå (AD-7, AD-8) og eksepsjonene
- * (FR-9–FR-13, FR-29). De kritiske delene er delene med minst én eksepsjon. Samme inndata gir alltid samme resultat (FR-8).
+ * (FR-9–FR-13, FR-29). Worker-en setter bare sammen kallene. Regnearbeidet og markeringen av kritiske deler står i
+ * domene/ (`leggTilEksepsjoner`, AD-8). Samme inndata gir alltid samme resultat (FR-8).
  * Kaster ved en programfeil. `kjorFil` gjør det om til UVENTET_FEIL.
  */
 export function lagBestillingsplan(inndata: Inndata): Resultat {
-  const plan = beregnBestillingsplan(inndata, byggStruktur(inndata.stykkliste))
-  const { eksepsjoner, kritiskeDeler } = finnEksepsjoner(plan.deler, inndata.planlagteMottak, inndata.horisont)
-  const kritiske = new Set(kritiskeDeler)
-  return {
-    ...plan,
-    deler: plan.deler.map((del) => ({ ...del, kritisk: kritiske.has(del.del.varenummer) })),
-    eksepsjoner,
-    kritiskeDeler,
-  }
+  const beregnet = beregnBestillingsplan(inndata, byggStruktur(inndata.stykkliste))
+  return leggTilEksepsjoner(beregnet, inndata.planlagteMottak, inndata.horisont)
 }
 
 export function kjorFil({ innhold, filnavn, valg }: WorkerInn): WorkerSvar {
