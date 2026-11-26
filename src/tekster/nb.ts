@@ -508,14 +508,8 @@ export type Eksepsjonstekst = {
   hvorfor: string
 }
 
-/**
- * Tall i teksten (UX-DR2): hardt mellomrom (U+00A0) som tusenskille og ekte minus (U+2212). Heltall. Samme regel som
- * `formaterTall` i Story 2.6 (#38). Når den er på `main`, kan denne byttes ut med den.
- */
-const tall = (verdi: number): string => {
-  const heltall = String(Math.abs(verdi)).replace(/\B(?=(\d{3})+(?!\d))/g, '\u00a0')
-  return verdi < 0 ? `\u2212${heltall}` : heltall
-}
+/** Tall i teksten (UX-DR2): hardt mellomrom som tusenskille og ekte minus, som alle andre tall på siden. */
+const tall = (verdi: number): string => formaterTall(verdi)
 const ukerTekst = (n: number): string => `${tall(n)} ${n === 1 ? 'uke' : 'uker'}`
 
 /** «Sete (200-010)», «Sete (200-010) og Rygg (200-011)» og «A, B og C». */
