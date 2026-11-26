@@ -66,9 +66,8 @@ Sebastian ba om en review av Iduns Story 1.8 (PR #33, `story/1.8-kontroll-av-ark
 - Igjen, bare småting:
   - En fasitrad med typefeil mot nivået (Ferdigvare på .1) gir fortsatt `TYPE_ULIK` på neste rad med samme varenummer.
   - Den døde ternæren `i === 0 ? '0' : '1'` står fortsatt i testen.
-- Ingenting er lagt på PR-en ennå.
+- PR #33 er godkjent (Approve på e14a859) med en kort kommentar om de to småtingene.
 
 ### Åpne punkter
-- Godkjenn PR #33 når Idun har rettet de to falske `UNDERDELER_ULIKE`, `0, ..2, ..2` og ordbankdatoen.
 - Testene for sikkerhetsnettet i `tests/domene/valider-mps-og-mottak.test.ts` (531–602) tester nå reglene, ikke sikkerhetsnettet: test `tilStykklisterader` direkte, eller fjern sikkerhetsnettet (min kode fra 1.9).
 - Gruppa bør godkjenne Iduns forslag i PR #33: sløyfer gir `VARENUMMER_UNDER_SEG_SELV`, og `[X:1, X:1]` er det samme som `[X:2]`. `lag_testdata.py` (linje 362–372) bruker en annen regel.
