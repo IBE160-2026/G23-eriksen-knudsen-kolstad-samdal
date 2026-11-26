@@ -74,10 +74,10 @@ export const felles = {
         tekst: 'Du kan laste opp én Excel-fil (.xlsx). Filen blir i nettleseren din.',
       },
       beregn: {
-        // Tittelen er fra akseptkriteriene (Story 1.4). Teksten sier hva Beregn gjør nå: valget av beregning
-        // kommer i Epic 5 og selve beregningen i Epic 2 (deferred-work.md, Story 1.11).
+        // Tittelen er fra akseptkriteriene (Story 1.4). Teksten sier hva Beregn gjør nå (Story 2.5): valget av beregning
+        // (Bestillingsplan, Produksjonskapasitet eller Begge) kommer i Epic 5.
         tittel: 'Velg hva du vil beregne, og beregn',
-        tekst: 'Trykk Beregn når filen er valgt. Foreløpig leser og kontrollerer appen filen. Bestillingsplanen beregnes ikke ennå.',
+        tekst: 'Trykk Beregn når filen er valgt. Appen leser og kontrollerer filen og beregner bestillingsplanen.',
       },
     },
     // Opplastingssonen (Story 1.11, UX-DR8, EXPERIENCE.md › Component Patterns og Voice and Tone).
@@ -95,9 +95,11 @@ export const felles = {
       beregn: 'Beregn',
       leserFilen: 'Leser filen …',
       beregner: 'Beregner …',
-      // Antallene («59 bestillingsforslag, 4 kritiske deler») kommer når beregningen er bygd (Epic 2).
-      // Til da sier meldingen ærlig at bare lesingen og kontrollen er gjort.
-      ferdig: 'Kjøringen er ferdig. Filen er lest og har ingen feil. Bestillingsplanen beregnes ikke ennå.',
+      /** «Kjøringen er ferdig: 59 bestillingsforslag, 4 kritiske deler.» Kunngjøres etter Beregn (Story 2.5, UX-DR4). */
+      ferdig: (bestillingsforslag: number, kritiskeDeler: number) =>
+        `Kjøringen er ferdig: ${bestillingsforslag} bestillingsforslag, ${kritiskeDeler} kritiske deler.`,
+      /** Når bestillingsplanen ikke er beregnet (bare produksjonskapasitet er valgt, Epic 5). */
+      ferdigUtenPlan: 'Kjøringen er ferdig. Filen er lest og har ingen feil.',
     },
   },
   // Veiledning (Story 1.4, UX-DR31): hvordan nettsiden brukes. Utfyllingen av malen står i malens ark Veiledning.
@@ -122,7 +124,7 @@ export const felles = {
         overskrift: '3. Les resultatet',
         avsnitt: [
           'Når filen ikke har feil, går appen til Resultat. Linjen øverst viser ferdigproduktet, horisonten, filen og når den ble lest. «Last opp ny fil» tar deg tilbake til Ny kjøring.',
-          'Selve bestillingsplanen beregnes ikke ennå. Disse seksjonene kommer i en senere versjon av appen:',
+          'Øverst står fire tallbokser og en meny som tar deg til seksjonene. Innholdet i seksjonene kommer i en senere versjon av appen:',
         ],
         punkter: [
           { navn: 'Kritiske deler', tekst: 'delene der planen ikke går opp, og hva du kan gjøre.' },

@@ -6,6 +6,8 @@ import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { kjorFil } from '../../src/worker/kjor.ts'
 import { erWorkerSvar, type WorkerSvar } from '../../src/worker/meldinger.ts'
+import type { Resultat, Valg } from '../../src/domene/typer.ts'
+import { lesFasit, lesFasitEksepsjoner } from '../hjelpere/fasit-leser.ts'
 
 const ROT = join(import.meta.dirname, '..', '..')
 const TESTDATA = join(ROT, 'testdata')
@@ -15,8 +17,8 @@ function innhold(sti: string): ArrayBuffer {
   return bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength) as ArrayBuffer
 }
 
-function svarFor(sti: string): WorkerSvar {
-  return kjorFil({ innhold: innhold(sti), filnavn: sti.split(/[\\/]/).pop()!, valg: 'BESTILLINGSPLAN' })
+function svarFor(sti: string, valg: Valg = 'BESTILLINGSPLAN'): WorkerSvar {
+  return kjorFil({ innhold: innhold(sti), filnavn: sti.split(/[\\/]/).pop()!, valg })
 }
 
 describe('gyldige filer gir GYLDIG', () => {
@@ -29,12 +31,62 @@ describe('gyldige filer gir GYLDIG', () => {
     expect(svar.inndata.stykkliste[0]).toMatchObject({ nivaa: '0', type: 'FERDIGVARE' })
   })
 
-  it('testeksempel 01: Kontorstol Basic (100-002) og H = 10, og resultat og kapasitet er null til Epic 2 og 5', () => {
+  it('testeksempel 01: Kontorstol Basic (100-002) og H = 10, og kapasiteten er null til Epic 5', () => {
     const svar = svarFor(join(TESTDATA, 'testeksempel-01.xlsx'))
-    expect(svar).toMatchObject({ type: 'GYLDIG', resultat: null, kapasitet: null })
+    expect(svar).toMatchObject({ type: 'GYLDIG', kapasitet: null })
     if (svar.type !== 'GYLDIG') return
     expect(svar.inndata.horisont).toBe(10)
     expect(svar.inndata.stykkliste[0]).toMatchObject({ varenummer: '100-002', beskrivelse: 'Kontorstol Basic' })
+  })
+})
+
+/** Resultatet fra en gyldig kjøring, eller en feil hvis svaret ikke er GYLDIG med resultat. */
+function resultatFor(nr: string, valg: Valg = 'BESTILLINGSPLAN'): Resultat {
+  const svar = svarFor(join(TESTDATA, `testeksempel-${nr}.xlsx`), valg)
+  if (svar.type !== 'GYLDIG' || svar.resultat === null) throw new Error(`Testeksempel ${nr} ga ikke resultat: ${svar.type}`)
+  return svar.resultat
+}
+
+describe('bestillingsplanen i svaret (Story 2.5, AD-12)', () => {
+  it('Bestillingsplan og Begge gir resultat, og bare Produksjonskapasitet gir ingen (FR-30)', () => {
+    for (const valg of ['BESTILLINGSPLAN', 'BEGGE'] as const) {
+      expect(svarFor(join(TESTDATA, 'testeksempel-01.xlsx'), valg)).toMatchObject({ type: 'GYLDIG', resultat: expect.any(Object) })
+    }
+    expect(svarFor(join(TESTDATA, 'testeksempel-01.xlsx'), 'PRODUKSJONSKAPASITET')).toMatchObject({ type: 'GYLDIG', resultat: null })
+  })
+
+  it('testeksempel 01: 9 deler, 59 bestillingsforslag, og nøyaktig 300-003, 300-004, 300-005 og 300-006 er kritiske', () => {
+    const resultat = resultatFor('01')
+    expect(resultat.deler).toHaveLength(9)
+    expect(resultat.bestillingsforslag).toHaveLength(59)
+    expect(resultat.kritiskeDeler).toEqual(['300-003', '300-004', '300-005', '300-006'])
+    expect(resultat.eksepsjoner).toHaveLength(4)
+    expect(resultat.deler.filter((d) => d.kritisk).map((d) => d.del.varenummer)).toEqual(resultat.kritiskeDeler)
+  })
+
+  it('bruttobehovet for 300-003 Hjul i testeksempel 01 er 100, 125, 150, 100, 175, 150, 125, 200, 150, 100 (FR-5)', () => {
+    const hjul = resultatFor('01').deler.find((d) => d.del.varenummer === '300-003')!
+    expect(hjul.bruttobehov).toEqual([100, 125, 150, 100, 175, 150, 125, 200, 150, 100])
+  })
+
+  it.each(['01', '02', '03', '04', '05'])('testeksempel %s: bestillingsforslagene og eksepsjonene er lik arkene i fasiten (SM-1, SM-2)', (nr) => {
+    const resultat = resultatFor(nr)
+    expect(resultat.bestillingsforslag).toEqual(lesFasit(nr).bestillingsforslag)
+    expect(resultat.eksepsjoner.map((e) => ({ varenummer: e.varenummer, uke: e.uke, kode: e.kode }))).toEqual(lesFasitEksepsjoner(nr))
+  })
+
+  it('samme fil to ganger gir samme resultat, og svaret kan sendes som en melding (AD-12, FR-8)', () => {
+    const fil = join(TESTDATA, 'testeksempel-01.xlsx')
+    const første = svarFor(fil)
+    expect(svarFor(fil)).toEqual(første)
+    expect(structuredClone(første)).toEqual(første)
+    expect(erWorkerSvar(første)).toBe(true)
+  })
+
+  it('en fil med feil gir ingen resultat, bare feilene (ingen halvt svar, AD-5)', () => {
+    const svar = svarFor(join(TESTDATA, 'validering', 'V-F05.xlsx'))
+    expect(svar.type).toBe('VALIDERINGSFEIL')
+    expect(Object.keys(svar)).toEqual(['type', 'feil'])
   })
 })
 
