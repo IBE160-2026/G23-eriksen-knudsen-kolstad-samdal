@@ -8,6 +8,9 @@
 import type {
   Arknavn,
   Celleverdi,
+  Delstype,
+  Eksepsjon,
+  Eksepsjonskode,
   Feilsted,
   Filfeilkode,
   HoppetOverKontroll,
@@ -479,7 +482,169 @@ function storForbokstav(tekst: string): string {
 }
 
 // --- Eksepsjoner ----------------------------------------------------------
-export const eksepsjoner = {} as const
+
+/** Typenavnene fra ordbanken, i rekkefølgen i PRD §4.3. */
+const TYPENAVN: Record<Eksepsjonskode, string> = {
+  LEDETID_OVERSKRIDER_HORISONT: 'Ledetid overskrider horisont',
+  BESTILLING_FORSINKET: 'Bestilling forsinket',
+  BRUK_AV_SIKKERHETSLAGER: 'Bruk av sikkerhetslager',
+  MOTTAK_FORSINKET: 'Mottak forsinket',
+  KANSELLER_MOTTAK: 'Kanseller mottak',
+}
+
+/** En eksepsjon som tekst i de fire delene fra EXPERIENCE.md (variant B, UX-DR25). */
+export type Eksepsjonstekst = {
+  /** Typenavnet fra ordbanken, for eksempel «Bestilling forsinket». */
+  typenavn: string
+  /** «uke 1», eller «hele delen» for en eksepsjon som gjelder hele delen. */
+  uke: string
+  /** Typenavnet og uken, for eksempel «Bestilling forsinket · uke 1». */
+  merke: string
+  /** Én setning i vanlig språk som sier hva som er galt. Aldri bare typenavnet. */
+  setning: string
+  /** «Melding:» med opplysningene kravet krever. Handlingen står i første eller andre setning. */
+  melding: string
+  /** «Hvorfor:» med regelen og tallene satt inn. */
+  hvorfor: string
+}
+
+const tall = (n: number): string => formaterTall(n)
+const ukerTekst = (n: number): string => `${tall(n)} ${n === 1 ? 'uke' : 'uker'}`
+
+/** «Sete (200-010)», «Sete (200-010) og Rygg (200-011)» og «A, B og C». */
+function delliste(deler: readonly { varenummer: string; beskrivelse: string }[]): string {
+  const navn = deler.map((d) => `${d.beskrivelse} (${d.varenummer})`)
+  return navn.length <= 1 ? (navn[0] ?? '') : `${navn.slice(0, -1).join(', ')} og ${navn[navn.length - 1]}`
+}
+
+/** Ordene for delene som kjøpes inn, og for ferdigvarer og delene som produseres selv (EXPERIENCE.md › Voice and Tone). */
+function ordFor(delstype: Delstype) {
+  return delstype === 'KJOPES_INN'
+    ? {
+        produksjon: false,
+        sendtSetning: 'Bestillingen skulle vært sendt før uke 1',
+        handling: (beskrivelse: string) => `Du må bestille ${beskrivelse} nå`,
+        raskere: 'og bør avtale raskere levering hvis du kan',
+        opp: 'så sikkerhetslageret fylles opp igjen',
+        skulleVaert: 'skulle vært bestilt før uke 1',
+        kommer: 'kommer tidligst i uke',
+        varene: 'kommer varene tidligst i uke',
+        nyOrdre: 'ny bestilling',
+      }
+    : {
+        produksjon: true,
+        sendtSetning: 'Produksjonen skulle vært startet før uke 1',
+        handling: (beskrivelse: string) => `Du må starte produksjonen av ${beskrivelse} nå`,
+        raskere: 'og bør prioritere den hvis du kan',
+        opp: 'så sikkerhetslageret fylles opp igjen',
+        skulleVaert: 'skulle vært satt i produksjon før uke 1',
+        kommer: 'er ferdige tidligst i uke',
+        varene: 'er varene ferdige tidligst i uke',
+        nyOrdre: 'ny produksjonsordre',
+      }
+}
+
+/** Forklaringen på at resultattabellen viser et høyere tall for forventet lagerbeholdning (FR-7). */
+const tabellenRegnerMed = (uke: number, forfalt: number): string =>
+  `Tabellen viser et høyere tall for forventet lagerbeholdning i uke ${uke}, fordi den regner med at de ${tall(forfalt)} kommer i tide.`
+
+function lagMelding(e: Eksepsjon): Pick<Eksepsjonstekst, 'setning' | 'melding' | 'hvorfor'> {
+  const navn = `${e.beskrivelse} (${e.varenummer})`
+  const ord = ordFor(e.delstype)
+  switch (e.kode) {
+    case 'BESTILLING_FORSINKET': {
+      const sluttsetning =
+        e.forsinker.type === 'LEVERANSE_TIL_KUNDE'
+          ? 'Leveranse til kunde blir forsinket.'
+          : `Produksjonen av ${delliste(e.forsinker.av)} blir forsinket.`
+      const ledetid = e.tidligsteMottaksuke - 1
+      return {
+        setning: `${ord.sendtSetning}.`,
+        melding:
+          `Lageret for ${navn} blir ${tall(e.disponibel)} i uke ${e.uke}. ${ord.handling(e.beskrivelse)}, ${ord.raskere}: ` +
+          `${tall(e.forfaltMengde)} ${e.beskrivelse} ${ord.skulleVaert}. De ${tall(e.forfaltMengde)} er lagt til forslaget på ${tall(e.frigivelseUke1)} i uke 1, ` +
+          `men ${ord.kommer} ${e.tidligsteMottaksuke}. ${sluttsetning}`,
+        hvorfor:
+          `Disponibel beholdning i uke ${e.uke} er ${tall(e.disponibel)}, så behovet er større enn lageret og de planlagte mottakene. ` +
+          `Nettobehovet ${ord.skulleVaert}, men planen starter i uke 1, og ledetiden er ${ukerTekst(ledetid)}. ` +
+          `Derfor ${ord.varene} ${e.tidligsteMottaksuke} (uke 1 + ledetid ${tall(ledetid)}). ` +
+          tabellenRegnerMed(e.uke, e.forfaltMengde),
+      }
+    }
+    case 'BRUK_AV_SIKKERHETSLAGER': {
+      const ledetid = e.tidligsteMottaksuke - 1
+      return {
+        setning: `${ord.sendtSetning}, så sikkerhetslageret brukes.`,
+        melding:
+          `Sikkerhetslageret for ${navn} brukes i uke ${e.uke}: lageret blir ${tall(e.disponibel)}, under sikkerhetslageret på ${tall(e.sikkerhetslager)}. ` +
+          `${ord.handling(e.beskrivelse)}, ${ord.opp}: ${tall(e.forfaltMengde)} ${e.beskrivelse} ${ord.skulleVaert}. ` +
+          `De ${tall(e.forfaltMengde)} er lagt til forslaget på ${tall(e.frigivelseUke1)} i uke 1, men ${ord.kommer} ${e.tidligsteMottaksuke}.`,
+        hvorfor:
+          `Disponibel beholdning i uke ${e.uke} er ${tall(e.disponibel)}. Den er ikke under 0, men under sikkerhetslageret på ${tall(e.sikkerhetslager)}, ` +
+          `og nettobehovet ${ord.skulleVaert}. Derfor ${ord.varene} ${e.tidligsteMottaksuke} (uke 1 + ledetid ${tall(ledetid)}). ` +
+          tabellenRegnerMed(e.uke, e.forfaltMengde),
+      }
+    }
+    case 'MOTTAK_FORSINKET': {
+      const under = e.sikkerhetslager > 0 && e.disponibelForFremskynding < e.sikkerhetslager ? `, under sikkerhetslageret på ${tall(e.sikkerhetslager)}` : ''
+      const handling = ord.produksjon
+        ? `Flytt produksjonen av mottaket på ${tall(e.antall)} fra uke ${e.mottaksuke} til uke ${e.uke}`
+        : `Be leverandøren levere mottaket på ${tall(e.antall)} i uke ${e.uke} i stedet for uke ${e.mottaksuke}`
+      return {
+        setning: `Mottaket i uke ${e.mottaksuke} trengs allerede i uke ${e.uke}.`,
+        melding:
+          `Lageret for ${navn} blir ${tall(e.disponibelForFremskynding)} i uke ${e.uke}${under}, før mottaket kommer. ${handling}. ` +
+          `Det lages ingen ${ord.nyOrdre} for behovet mottaket dekker.`,
+        hvorfor:
+          `Behovet i uke ${e.uke} er større enn lageret og mottakene i uke ${e.uke} (disponibel beholdning ${tall(e.disponibelForFremskynding)}, sikkerhetslager ${tall(e.sikkerhetslager)}). ` +
+          `Planen bruker et planlagt mottak før den foreslår en ${ord.nyOrdre}, så mottaket på ${tall(e.antall)} i uke ${e.mottaksuke} er regnet med i uke ${e.uke}. ` +
+          `I tabellen står mottaket fortsatt i uke ${e.mottaksuke}.`,
+      }
+    }
+    case 'LEDETID_OVERSKRIDER_HORISONT': {
+      const sti = e.sti.map((d) => `${d.beskrivelse} ${tall(d.ledetid)}`).join(' + ')
+      const lengde = e.ledetidFraFerdigproduktet === e.horisont ? 'like lang som' : 'lengre enn'
+      return {
+        setning: 'Planen er for kort til å vise alt som må bestilles nå.',
+        melding:
+          `Ledetiden fra ferdigproduktet er ${ukerTekst(e.ledetidFraFerdigproduktet)} (${sti}), ${lengde} horisonten på ${ukerTekst(e.horisont)}. ` +
+          `Bruk en lengre horisont: behov etter uke ${e.horisont} som må bestilles nå, vises ikke. Delen mangler ikke.`,
+        hvorfor:
+          `Ledetiden fra ferdigproduktet er summen av ledetidene langs den lengste stien, og her er den minst like lang som horisonten. ` +
+          `En bestilling i uke 1 kommer tidligst i uke ${e.ledetidFraFerdigproduktet + 1}, etter uke ${e.horisont}. ` +
+          `Eksepsjonen gjelder hele delen, og bare innenfor horisonten.`,
+      }
+    }
+    case 'KANSELLER_MOTTAK': {
+      const periode = e.uke === e.horisont ? `uke ${e.horisont}` : `uke ${e.uke}–${e.horisont}`
+      return {
+        setning: `Mottaket i uke ${e.uke} trengs ikke innenfor horisonten.`,
+        melding:
+          `Det planlagte mottaket på ${tall(e.antall)} i uke ${e.uke} trengs ikke innenfor horisonten (${periode}). ` +
+          `Vurder å kansellere eller utsette det. Behov etter uke ${e.horisont} er ikke regnet med.`,
+        hvorfor:
+          `Uten mottaket blir det ikke nettobehov fra uke ${e.uke} til uke ${e.horisont}, og mottaket er ikke brukt til å dekke behov før det. ` +
+          `Eksepsjonen gjelder bare innenfor horisonten.`,
+      }
+    }
+  }
+}
+
+export const eksepsjoner = {
+  /** Typenavnene fra ordbanken. Resultattabellen, kritiske deler og meldingene bruker de samme. */
+  typenavn: TYPENAVN,
+  /**
+   * Meldingen for én eksepsjon, i de fire delene fra EXPERIENCE.md (variant B, UX-DR25): typenavnet og uken, én setning i
+   * vanlig språk, «Melding:» og «Hvorfor:». Kjernen gir bare koder og tall (AD-9), så all tekst lages her.
+   * Ordlyden er Sebastians forslag fra EXPERIENCE.md og prøves i prøvetesten. Opplysningene kravene sier, skal alltid med.
+   */
+  melding: (e: Eksepsjon): Eksepsjonstekst => {
+    const uke = e.uke === null ? 'hele delen' : `uke ${e.uke}`
+    return { typenavn: TYPENAVN[e.kode], uke, merke: `${TYPENAVN[e.kode]} · ${uke}`, ...lagMelding(e) }
+  },
+  /** Bare setningen i vanlig språk, til listen over kritiske deler (Story 2.10). */
+  setning: (e: Eksepsjon): string => lagMelding(e).setning,
+} as const
 
 // --- Forklaringer ---------------------------------------------------------
 export const forklaringer = {} as const
