@@ -8,14 +8,14 @@
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
-import { finnEksepsjoner as finnEksepsjonerIResultat } from '../../src/domene/eksepsjoner.ts'
+import { finnEksepsjoner as finnEksepsjonerIResultat, leggTilEksepsjoner } from '../../src/domene/eksepsjoner.ts'
 import { beregnBestillingsplan } from '../../src/domene/beregn.ts'
 import { beregnNetting, type NettingInndata, type Nettingsvar } from '../../src/domene/netting.ts'
 import { byggStruktur } from '../../src/domene/struktur.ts'
-import type { DelResultat, Eksepsjon, Nivaa, PlanlagtMottak, StrukturDel, Utregning } from '../../src/domene/typer.ts'
+import type { DelResultat, Eksepsjon, Inndata, Nivaa, PlanlagtMottak, Resultat, StrukturDel, Utregning } from '../../src/domene/typer.ts'
 import { valider } from '../../src/domene/valider.ts'
 import { les } from '../../src/excel/les.ts'
-import { lesFasitEksepsjoner } from '../hjelpere/fasit-leser.ts'
+import { lesFasitEksepsjoner, tolkFasitEksepsjoner } from '../hjelpere/fasit-leser.ts'
 import { EKSEPSJONER_01, KANSELLER_MOTTAK_02, LASESKIVE_04, PRODUKSJON_FORSINKET_04, SIKKERHETSLAGER_02 } from './typer-eksempler.ts'
 
 // ---------------------------------------------------------------------------
@@ -128,7 +128,7 @@ describe('Bestilling forsinket (FR-10)', () => {
 
   it('en uke kan ikke få både Bestilling forsinket og Bruk av sikkerhetslager', () => {
     const d = del('300-009', 'X', '.1', 5, 10, 3, [{ varenummer: '100-002', antall: 1 }])
-    const { eksepsjoner } = finnEksepsjoner([medNetting(d, [10, 10, 10, 10, 10])], 5)
+    const { eksepsjoner } = finnEksepsjoner([ferdigprodukt(), medNetting(d, [10, 10, 10, 10, 10])], 5)
     const per = new Map<number, string[]>()
     for (const e of eksepsjoner) per.set(e.uke ?? 0, [...(per.get(e.uke ?? 0) ?? []), e.kode])
     for (const koder of per.values()) {
@@ -138,7 +138,7 @@ describe('Bestilling forsinket (FR-10)', () => {
 
   it('forfalt frigivelse i flere uker gir en eksepsjon i hver av dem (L = 3), og total frigivelse i uke 1 har også uke 4 sin vanlige frigivelse', () => {
     const d = del('300-009', 'X', '.1', 0, 0, 3, [{ varenummer: '100-002', antall: 1 }])
-    const { eksepsjoner } = finnEksepsjoner([medNetting(d, [10, 20, 30, 40, 0, 0])], 6)
+    const { eksepsjoner } = finnEksepsjoner([ferdigprodukt(), medNetting(d, [10, 20, 30, 40, 0, 0])], 6)
     expect(eksepsjoner.map((e) => [e.kode, e.uke])).toEqual([
       ['BESTILLING_FORSINKET', 1],
       ['BESTILLING_FORSINKET', 2],
@@ -236,9 +236,14 @@ describe('Mottak forsinket (FR-12)', () => {
   })
 
   it('en del med Bestilling forsinket og Mottak forsinket i samme uke har begge, med ulik disponibel beholdning (300-026)', () => {
+    const sete = del('200-010', 'Sete', '.1', 999, 0, 1, [{ varenummer: '100-002', antall: 1 }])
     const d = del('300-026', 'Låseskive', '..2', 0, 0, 1, [{ varenummer: '200-010', antall: 1 }])
     const brutto = [40, 100, 0, 120, 140, 0, 80, 100, 120, 160, 120, 0]
-    const { eksepsjoner } = finnEksepsjoner([medNetting(d, brutto, mottak('300-026', [3, 30]))], 12)
+    const nul = brutto.map(() => 0)
+    const { eksepsjoner } = finnEksepsjoner(
+      [medNetting(FERDIG, nul), medNetting(sete, nul), medNetting(d, brutto, mottak('300-026', [3, 30]))],
+      12,
+    )
     expect(eksepsjoner.filter((e) => e.uke === 1).map((e) => e.kode)).toEqual(['BESTILLING_FORSINKET', 'MOTTAK_FORSINKET'])
     expect(eksepsjoner[0]).toMatchObject({ disponibel: LASESKIVE_04[0].disponibel })
     expect(eksepsjoner[1]).toMatchObject({ disponibelForFremskynding: LASESKIVE_04[1].disponibelForFremskynding })
@@ -338,6 +343,26 @@ describe('Kanseller mottak (FR-29)', () => {
     expect(kansellert(eksepsjoner)).toEqual([[8, 3]])
   })
 
+  it('mottak lagt inn i omvendt ukerekkefølge i Excel, står likevel i ukerekkefølge (sorteringen trengs)', () => {
+    // Lager 1000, SS 10, behov 10 per uke, H = 8: ingen av mottakene trengs. Uke 5 er Excel-rad 2 og uke 3 er rad 3.
+    const d = del('300-005', 'Gassfjær', '..2', 1000, 10, 1, [{ varenummer: '200-001', antall: 1 }], 2, ['100-001', '200-001', '300-005'])
+    const { eksepsjoner } = finnEksepsjoner([medNetting(d, Array.from({ length: 8 }, () => 10), mottak('300-005', [5, 30], [3, 30]))], 8)
+    expect(kansellert(eksepsjoner)).toEqual([
+      [3, 3],
+      [5, 2],
+    ])
+  })
+
+  it('to mottak i samme uke vurderes ett om gangen: uten det ene står det andre igjen, så begge får eksepsjonen (FR-29)', () => {
+    // Lager 70, SS 10, behov 10 per uke, H = 8, og to mottak på 30 i uke 6. Hvert av dem alene er nok til å dekke resten.
+    const d = del('300-005', 'Gassfjær', '..2', 70, 10, 1, [{ varenummer: '200-001', antall: 1 }], 2, ['100-001', '200-001', '300-005'])
+    const { eksepsjoner } = finnEksepsjoner([medNetting(d, Array.from({ length: 8 }, () => 10), mottak('300-005', [6, 30], [6, 30]))], 8)
+    expect(kansellert(eksepsjoner)).toEqual([
+      [6, 2],
+      [6, 3],
+    ])
+  })
+
   it('en uke utenfor horisonten gir ingen eksepsjon', () => {
     const { eksepsjoner } = finnEksepsjoner([medNetting(gassfjaer, brutto, mottak('300-005', [11, 50]))], 10)
     expect(eksepsjoner).toEqual([])
@@ -372,7 +397,7 @@ describe('Kritiske deler og rekkefølgen (FR-13, arkitektur kap. 4)', () => {
   it('hele delen kommer først, og så uke, og så typen i rekkefølgen i PRD §4.3', () => {
     // 300-006 får Ledetid (hele delen), Bestilling forsinket i uke 1 og Mottak forsinket i uke 1 (to typer i samme uke).
     const d = del('300-006', 'X', '.1', 0, 0, 10, [{ varenummer: '100-002', antall: 1 }], 10, ['100-002', '300-006'])
-    const funn = finnEksepsjoner([medNetting(d, [40, 100, 0, 120, 140, 0, 80, 100, 120, 160], mottak('300-006', [3, 30]))], 10)
+    const funn = finnEksepsjoner([ferdigprodukt(), medNetting(d, [40, 100, 0, 120, 140, 0, 80, 100, 120, 160], mottak('300-006', [3, 30]))], 10)
     expect(funn.eksepsjoner.map((e) => [e.uke, e.kode]).slice(0, 3)).toEqual([
       [null, 'LEDETID_OVERSKRIDER_HORISONT'],
       [1, 'BESTILLING_FORSINKET'],
@@ -393,6 +418,19 @@ describe('Kritiske deler og rekkefølgen (FR-13, arkitektur kap. 4)', () => {
 
   it('uten deler gir ingen eksepsjoner og ingen kritiske deler', () => {
     expect(finnEksepsjoner([], 10)).toEqual({ eksepsjoner: [], kritiskeDeler: [] })
+  })
+})
+
+describe('data som ikke henger sammen er en programfeil og kastes (som i beregn.ts)', () => {
+  it('en sti som viser til en del som ikke finnes, kaster en Error', () => {
+    const d = del('300-006', 'X', '.1', 0, 0, 10, [{ varenummer: '100-002', antall: 1 }], 10, ['100-002', '999-999'])
+    expect(() => finnEksepsjoner([ferdigprodukt(), medNetting(d, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0])], 10)).toThrow(/999-999/)
+  })
+
+  it('en overordnet del som ikke finnes, kaster en Error', () => {
+    const ferdig = del('100-003', 'Kontorstol Ergo', '0', 0, 0, 0, [], 0, ['100-003'], 'FERDIGVARE')
+    const d = del('300-022', 'Y', '..2', 0, 0, 1, [{ varenummer: '200-999', antall: 1 }], 1)
+    expect(() => finnEksepsjoner([medNetting(ferdig, [0, 0]), medNetting(d, [10, 0])], 12)).toThrow(/200-999/)
   })
 })
 
@@ -418,65 +456,127 @@ describe('eksepsjoner.ts er en ren fil i domene/ (AD-2, AD-7)', () => {
 
 const TESTDATA = join(import.meta.dirname, '..', '..', 'testdata')
 
-/** Kjører testeksemplet samme vei som appen: les → valider → byggStruktur → beregn (AD-16). Eksepsjonene finnes etterpå. */
-function kjorTesteksempel(nr: string): { deler: DelResultat[]; mottak: PlanlagtMottak[]; horisont: number } {
-  const fil = readFileSync(join(TESTDATA, `testeksempel-${nr}.xlsx`))
-  const lest = les(fil, `testeksempel-${nr}.xlsx`)
+type Kjoring = { inndata: Inndata; beregnet: Resultat; resultat: Resultat }
+const kjoringer = new Map<string, Kjoring>()
+
+/**
+ * Kjører testeksemplet samme vei som appen: les → valider → byggStruktur → beregnBestillingsplan → leggTilEksepsjoner (AD-16).
+ * Bruttobehovet kommer fra beregningen, ikke fra Fasittabell. Lesingen skjer første gang en test trenger den, så en feil
+ * gir en presis melding i den testen og ikke i innsamlingen av testene.
+ */
+function kjorTesteksempel(nr: string): Kjoring {
+  const alt = kjoringer.get(nr)
+  if (alt) return alt
+  const lest = les(readFileSync(join(TESTDATA, `testeksempel-${nr}.xlsx`)), `testeksempel-${nr}.xlsx`)
   if (!lest.ok) throw new Error(`Testeksempel ${nr} kan ikke leses`)
   const validert = valider(lest.verdi)
   if (!validert.ok) throw new Error(`Testeksempel ${nr} er ugyldig`)
   const inndata = validert.verdi
-  const resultat = beregnBestillingsplan(inndata, byggStruktur(inndata.stykkliste))
-  return { deler: resultat.deler, mottak: inndata.planlagteMottak, horisont: inndata.horisont }
-}
-
-/** Eksepsjonene for et testeksempel, slik Story 2.5 kaller funksjonen. */
-function funnFor(nr: string) {
-  const { deler, mottak, horisont } = kjorTesteksempel(nr)
-  return { deler, funn: finnEksepsjonerIResultat(deler, mottak, horisont) }
+  const beregnet = beregnBestillingsplan(inndata, byggStruktur(inndata.stykkliste))
+  const kjoring = { inndata, beregnet, resultat: leggTilEksepsjoner(beregnet, inndata.planlagteMottak, inndata.horisont) }
+  kjoringer.set(nr, kjoring)
+  return kjoring
 }
 
 describe.each(['01', '02', '03', '04', '05'])('Fasittest: testeksempel %s (SM-2)', (nr) => {
-  const { deler, funn } = funnFor(nr)
-  const fasit = lesFasitEksepsjoner(nr)
-
   it('eksepsjonslisten er identisk med arket Eksepsjoner (varenummer, uke, type), uten andre eksepsjoner', () => {
-    expect(funn.eksepsjoner.map((e) => ({ varenummer: e.varenummer, uke: e.uke, kode: e.kode }))).toEqual(fasit)
+    const { resultat } = kjorTesteksempel(nr)
+    expect(resultat.eksepsjoner.map((e) => ({ varenummer: e.varenummer, uke: e.uke, kode: e.kode }))).toEqual(lesFasitEksepsjoner(nr))
   })
 
   it('de kritiske delene er delene med minst én eksepsjon i fasiten, i stykklisterekkefølge', () => {
-    const iFasit = new Set(fasit.map((e) => e.varenummer))
-    expect(funn.kritiskeDeler).toEqual(deler.map((d) => d.del.varenummer).filter((vn) => iFasit.has(vn)))
+    const { resultat } = kjorTesteksempel(nr)
+    const iFasit = new Set(lesFasitEksepsjoner(nr).map((e) => e.varenummer))
+    expect(resultat.kritiskeDeler).toEqual(resultat.deler.map((d) => d.del.varenummer).filter((vn) => iFasit.has(vn)))
+  })
+
+  it('kritisk er true for nøyaktig delene i kritiskeDeler (FR-13)', () => {
+    const { resultat } = kjorTesteksempel(nr)
+    expect(resultat.deler.filter((d) => d.kritisk).map((d) => d.del.varenummer)).toEqual(resultat.kritiskeDeler)
+    expect(resultat.deler.filter((d) => !d.kritisk).every((d) => !resultat.kritiskeDeler.includes(d.del.varenummer))).toBe(true)
+  })
+})
+
+describe('leggTilEksepsjoner (Story 2.3, beslutning 1A i Story 2.2)', () => {
+  it('endrer ikke Resultat fra beregningen, og alt annet enn eksepsjoner og kritiske deler er uendret', () => {
+    const { inndata, beregnet } = kjorTesteksempel('01')
+    const kopi = structuredClone(beregnet)
+    const ut = leggTilEksepsjoner(beregnet, inndata.planlagteMottak, inndata.horisont)
+    expect(beregnet).toEqual(kopi)
+    expect(beregnet.eksepsjoner).toEqual([])
+    expect(beregnet.deler.every((d) => !d.kritisk)).toBe(true)
+    expect(ut).not.toBe(beregnet)
+    expect(ut.bestillingsforslag).toEqual(beregnet.bestillingsforslag)
+    expect(ut.deler.map((d) => ({ ...d, kritisk: false }))).toEqual(beregnet.deler)
+  })
+
+  it('er ren: samme inndata gir samme resultat (FR-8)', () => {
+    const { inndata, beregnet } = kjorTesteksempel('04')
+    const første = leggTilEksepsjoner(beregnet, inndata.planlagteMottak, inndata.horisont)
+    expect(leggTilEksepsjoner(beregnet, inndata.planlagteMottak, inndata.horisont)).toEqual(første)
   })
 })
 
 describe('Fasittest: testeksempel 01 i detalj (FR-13, FR-9)', () => {
-  const { deler, funn } = funnFor('01')
-
   it('nøyaktig 300-003, 300-004, 300-005 og 300-006 er kritiske', () => {
-    expect(funn.kritiskeDeler).toEqual(['300-003', '300-004', '300-005', '300-006'])
+    expect(kjorTesteksempel('01').resultat.kritiskeDeler).toEqual(['300-003', '300-004', '300-005', '300-006'])
   })
 
   it('300-006 Stolfot har Ledetid overskrider horisont selv om nettobehovet er 0 i alle uker', () => {
-    const stolfot = deler.find((d) => d.del.varenummer === '300-006')!
+    const { resultat } = kjorTesteksempel('01')
+    const stolfot = resultat.deler.find((d) => d.del.varenummer === '300-006')!
     expect(stolfot.nettobehov.every((n) => n === 0)).toBe(true)
-    expect(funn.eksepsjoner.filter((e) => e.varenummer === '300-006').map((e) => e.kode)).toEqual(['LEDETID_OVERSKRIDER_HORISONT'])
+    expect(resultat.eksepsjoner.filter((e) => e.varenummer === '300-006').map((e) => e.kode)).toEqual(['LEDETID_OVERSKRIDER_HORISONT'])
+  })
+
+  it('300-007 Skruesett og 300-008 Trekk får ingen eksepsjon og er ikke kritiske', () => {
+    const { resultat } = kjorTesteksempel('01')
+    for (const varenummer of ['300-007', '300-008']) {
+      expect(resultat.eksepsjoner.some((e) => e.varenummer === varenummer)).toBe(false)
+      expect(resultat.deler.find((d) => d.del.varenummer === varenummer)!.kritisk).toBe(false)
+    }
   })
 
   it('opplysningene er de samme som i testene av delene (alle felt, ikke bare kode og uke)', () => {
-    expect(funn.eksepsjoner).toEqual(EKSEPSJONER_01)
+    expect(kjorTesteksempel('01').resultat.eksepsjoner).toEqual(EKSEPSJONER_01)
   })
 })
 
 describe('Fasittest: grensetilfellene i testeksempel 02 og 04', () => {
   it('Kanseller mottak for 300-005 Gassfjær i uke 5 finnes i testeksempel 02', () => {
-    const { funn } = funnFor('02')
-    expect(funn.eksepsjoner).toContainEqual(KANSELLER_MOTTAK_02)
+    expect(kjorTesteksempel('02').resultat.eksepsjoner).toContainEqual(KANSELLER_MOTTAK_02)
   })
 
   it('300-026 i testeksempel 04 har både Bestilling forsinket og Mottak forsinket i uke 1, og 300-022 har produksjon forsinket', () => {
-    const { funn } = funnFor('04')
-    expect(funn.eksepsjoner.filter((e) => e.varenummer === '300-026')).toEqual(LASESKIVE_04)
-    expect(funn.eksepsjoner).toContainEqual(PRODUKSJON_FORSINKET_04)
+    const { resultat } = kjorTesteksempel('04')
+    expect(resultat.eksepsjoner.filter((e) => e.varenummer === '300-026')).toEqual(LASESKIVE_04)
+    expect(resultat.eksepsjoner).toContainEqual(PRODUKSJON_FORSINKET_04)
+  })
+})
+
+describe('tolkFasitEksepsjoner er streng (AD-16)', () => {
+  const OVERSKRIFT = ['Varenummer', 'Uke', 'Eksepsjonstype', 'Melding']
+  const tolk = (...rader: unknown[][]) => tolkFasitEksepsjoner('fasit.xlsx', [OVERSKRIFT, ...rader])
+
+  it('leser varenummer, uke («–» er hele delen) og type', () => {
+    expect(tolk(['300-006', '–', 'Ledetid overskrider horisont', 'tekst'], ['300-003', 1, 'Bestilling forsinket', 'tekst'])).toEqual([
+      { varenummer: '300-006', uke: null, kode: 'LEDETID_OVERSKRIDER_HORISONT' },
+      { varenummer: '300-003', uke: 1, kode: 'BESTILLING_FORSINKET' },
+    ])
+  })
+
+  it('en uke som verken er et heltall eller «–», gir en feil og blir ikke stille til «hele delen»', () => {
+    for (const uke of ['abc', '', null, 1.5, '1', '-']) {
+      expect(() => tolk(['300-003', uke, 'Bestilling forsinket', 'tekst']), String(uke)).toThrow(/uke/)
+    }
+  })
+
+  it('en ukjent eksepsjonstype gir en feil', () => {
+    expect(() => tolk(['300-003', 1, 'Varsel', 'tekst'])).toThrow(/ukjent eksepsjonstype/)
+  })
+
+  it('en uventet overskrift gir en feil, og tomme rader hoppes over', () => {
+    expect(() => tolkFasitEksepsjoner('fasit.xlsx', [['Varenummer', 'Uke'], ['300-003', 1, 'Bestilling forsinket']])).toThrow(/overskrift/)
+    expect(tolk([null, null, null, null], ['300-003', 1, 'Bestilling forsinket', 'tekst'])).toHaveLength(1)
   })
 })
