@@ -2,7 +2,8 @@
 //
 // Med en kjøring i minnet: skjult h1 «Resultat for ‹beskrivelse›» (får fokus etter Beregn, App.tsx),
 // sidetittelen «‹beskrivelse› (‹varenummer›) – Resultat – COSI - MRP» og kjøringslinjen øverst.
-// Beregningen er ikke bygd ennå (Epic 2), så siden sier tydelig at filen bare er lest og kontrollert,
+// Har kjøringen en beregnet bestillingsplan, vises toppen av Resultat (Story 2.6, Resultatside.tsx). Til beregningen
+// er koblet til kjøringen (Story 2.5), er `resultat` null, og siden sier tydelig at filen bare er lest og kontrollert,
 // og viser ingen tall som kan se ut som en plan (deferred-work.md).
 //
 // Uten en kjøring i minnet, for eksempel etter reload eller fra et bokmerke, vises en kort
@@ -12,6 +13,7 @@ import { useTilstand } from '../../app/tilstand-handlinger.ts'
 import { felles, resultat } from '../../tekster/nb.ts'
 import { ruteFor } from '../ruter.ts'
 import { Kjoringslinje } from './Kjoringslinje.tsx'
+import { Resultatside } from './Resultatside.tsx'
 
 export function Resultat() {
   const { tilstand } = useTilstand()
@@ -40,13 +42,19 @@ export function Resultat() {
       <h1 tabIndex={-1} className="skjult-visuelt">
         {resultat.overskrift(beskrivelse)}
       </h1>
-      <Kjoringslinje kjoring={kjoring} />
-      {/* Midlertidig til beregningen er bygd (Epic 2). */}
-      <div className="informasjonsboks">
-        {resultat.ikkeBeregnet.map((avsnitt) => (
-          <p key={avsnitt}>{avsnitt}</p>
-        ))}
-      </div>
+      {kjoring.resultat === null ? (
+        <>
+          <Kjoringslinje kjoring={kjoring} />
+          {/* Midlertidig til beregningen er koblet til kjøringen (Story 2.5). */}
+          <div className="informasjonsboks">
+            {resultat.ikkeBeregnet.map((avsnitt) => (
+              <p key={avsnitt}>{avsnitt}</p>
+            ))}
+          </div>
+        </>
+      ) : (
+        <Resultatside kjoring={kjoring} resultat={kjoring.resultat} />
+      )}
     </section>
   )
 }

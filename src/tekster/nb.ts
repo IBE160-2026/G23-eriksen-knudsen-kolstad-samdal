@@ -510,14 +510,8 @@ export type Eksepsjonstekst = {
   hvorfor: string
 }
 
-/**
- * Tall i teksten (UX-DR2): hardt mellomrom (U+00A0) som tusenskille og ekte minus (U+2212). Heltall. Samme regel som
- * `formaterTall` i Story 2.6 (#38). Når den er på `main`, kan denne byttes ut med den.
- */
-const tall = (verdi: number): string => {
-  const heltall = String(Math.abs(verdi)).replace(/\B(?=(\d{3})+(?!\d))/g, '\u00a0')
-  return verdi < 0 ? `\u2212${heltall}` : heltall
-}
+/** Tall i teksten (UX-DR2): hardt mellomrom som tusenskille og ekte minus, som alle andre tall på siden. */
+const tall = (verdi: number): string => formaterTall(verdi)
 const ukerTekst = (n: number): string => `${tall(n)} ${n === 1 ? 'uke' : 'uker'}`
 
 /** «Sete (200-010)», «Sete (200-010) og Rygg (200-011)» og «A, B og C». */
@@ -717,7 +711,57 @@ export const resultat = {
     'Filen er lest og kontrollert, og den har ingen feil.',
     'Bestillingsplanen beregnes ikke ennå. Bestillingsforslag, kritiske deler og resultattabellen kommer i en senere versjon av appen.',
   ],
+
+  // Toppen av Resultat (Story 2.6, UX-DR14–UX-DR16).
+  /** Seksjonene i fast rekkefølge (AD-14). Overskriftene er h2. */
+  seksjoner: {
+    kritiskeDeler: 'Kritiske deler',
+    bestillingsforslag: 'Bestillingsforslag',
+    resultattabell: 'Resultattabell',
+  },
+  seksjonsmenyNavn: 'Seksjoner i resultatet',
+  tallbokserNavn: 'Nøkkeltall for kjøringen',
+  tallbokser: {
+    kritiskeDeler: {
+      tittel: 'Kritiske deler',
+      forklaring: 'Deler der planen ikke går opp.',
+      forklaringNull: 'Planen går opp for alle delene.',
+    },
+    forslagUke1: {
+      tittel: 'Bestillingsforslag i uke 1',
+      forklaring: 'Skal bestilles eller settes i produksjon denne uka.',
+      forklaringNull: 'Ingenting skal bestilles eller settes i produksjon i uke 1.',
+    },
+    forslagIAlt: {
+      tittel: 'Bestillingsforslag i alt',
+      forklaring: 'Alle forslagene i horisonten.',
+      forklaringNull: 'Kjøringen gir ingen bestillingsforslag.',
+    },
+    forslagForfalt: {
+      tittel: 'Forslag med forfalt mengde',
+      forklaring: 'Noe av mengden skulle vært bestilt før uke 1.',
+      forklaringNull: 'Ingenting skulle vært bestilt før uke 1.',
+    },
+  },
+  slikLeserDu: {
+    overskrift: 'Slik leser du resultatet',
+    kritiskeDeler: 'Kritiske deler er delene der planen ikke går opp. Start her.',
+    bestillingsforslag: 'Bestillingsforslag viser hva du må bestille eller sette i produksjon, og i hvilken uke.',
+    resultattabell: 'Resultattabellen viser hele planen per del og uke, med eksepsjonene markert der planen ikke går opp.',
+  },
 } as const
+
+/**
+ * Et heltall slik det skrives på siden (UX-DR2): hardt mellomrom (U+00A0) som tusenskille og ekte
+ * minustegn «−» (U+2212). Desimaltegnet er komma. Sifrene står like brede i CSS (`tabular-nums`).
+ */
+export function formaterTall(verdi: number): string {
+  if (!Number.isFinite(verdi)) return String(verdi)
+  const [heltall = '0', desimaler] = String(Math.abs(verdi)).split('.')
+  const gruppert = heltall.replace(/\B(?=(\d{3})+(?!\d))/g, ' ')
+  const tekst = desimaler === undefined ? gruppert : `${gruppert},${desimaler}`
+  return verdi < 0 && Number(tekst.replace(/ /g, '').replace(',', '.')) !== 0 ? `−${tekst}` : tekst
+}
 
 /** Tidspunktet som «13.11.2026 kl. 08:04» i nettleserens tidssone (UX-DR2). Tar ISO 8601-tekst. */
 export function formaterTidspunkt(iso: string): string {
