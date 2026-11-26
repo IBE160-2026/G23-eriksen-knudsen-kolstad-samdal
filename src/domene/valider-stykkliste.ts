@@ -117,22 +117,6 @@ export function validerStykklisteVerdier(
   if (forMange) {
     feil.push({ kode: 'RADER_FOR_MANGE', ark: 'Stykkliste', sted: { type: 'RAD', excelRad: forMange.excelRad }, felt: 'Rader' })
   }
-  // «Ingen nivå .1» er bare en feil når alle nivåene kunne tolkes og lesingen ikke stoppet ved en tom rad.
-  // Ellers er den en følge av nivåfeilene eller den tomme raden.
-  if (
-    bruk('Nivå') &&
-    ark.tomRadMedInnholdUnder === null &&
-    tolket.every((t) => t.nivaa !== undefined) &&
-    !tolket.some((t) => t.nivaa === '.1')
-  ) {
-    feil.push({
-      kode: 'RADER_INGEN_NIVAA_1',
-      ark: 'Stykkliste',
-      sted: { type: 'RAD', excelRad: tolket[0]?.rad.excelRad ?? 2 },
-      felt: 'Rader',
-    })
-  }
-
   // --- Rad for rad, kolonne for kolonne -----------------------------------------
   const forste = new Map<string, Tolket>() // første rad med varenummeret (FR-3, FR-28)
   // Referanseradene for «lik beskrivelse» og «lik type»: første rad med varenummeret som har en gyldig verdi.
@@ -184,11 +168,13 @@ export function validerStykklisteVerdier(
     if (bruk('Type')) {
       if (type === undefined) meld('TYPE_UGYLDIG', 'Type', rad)
       else {
+        // Én feil per celle: har typen alt en feil mot nivået, meldes ikke også «ulik type».
+        const feilMotNivaa = (type === 'FERDIGVARE' && nivaa !== undefined && nivaa !== '0') || (nivaa === '0' && type !== 'FERDIGVARE')
         if (type === 'FERDIGVARE' && nivaa !== undefined && nivaa !== '0') meld('TYPE_FERDIGVARE_IKKE_NIVAA_0', 'Type', rad)
         if (nivaa === '0' && type !== 'FERDIGVARE') meld('TYPE_NIVAA_0_IKKE_FERDIGVARE', 'Type', rad)
         const fasit = varenummer === null ? undefined : forsteType.get(varenummer)
         if (varenummer !== null && fasit === undefined) forsteType.set(varenummer, t)
-        else if (varenummer !== null && eier === undefined && fasit?.type !== type) {
+        else if (varenummer !== null && eier === undefined && !feilMotNivaa && fasit?.type !== type) {
           meld('TYPE_ULIK', 'Type', rad, { varenummer, andreRader: [fasit!.rad.excelRad] })
         }
       }
@@ -220,12 +206,36 @@ export function validerStykklisteVerdier(
     }
   })
 
+  // «Ingen nivå .1» er bare en feil når alle nivåene kunne tolkes, lesingen ikke stoppet ved en tom rad og
+  // ..2 ikke alt er meldt som feil rett under ferdigproduktet. Ellers er den en følge av de andre feilene.
+  if (
+    bruk('Nivå') &&
+    ark.tomRadMedInnholdUnder === null &&
+    tolket.every((t) => t.nivaa !== undefined) &&
+    !tolket.some((t) => t.nivaa === '.1') &&
+    !feil.some((f) => f.kode === 'NIVAA_2_UTEN_NIVAA_1_OVER')
+  ) {
+    feil.push({
+      kode: 'RADER_INGEN_NIVAA_1',
+      ark: 'Stykkliste',
+      sted: { type: 'RAD', excelRad: tolket[0]?.rad.excelRad ?? 2 },
+      felt: 'Rader',
+    })
+  }
+
   // --- Underdeler, med strukturen (AD-6) ------------------------------------------
-  // Hierarkiet må være til å stole på. Antall og type sperrer bare delene de gjelder (se validerUnderdeler).
-  const kanBygge = bruk('Nivå') && bruk('Varenummer') && !feil.some((f) => ødelegger(f.kode))
+  // Hierarkiet må være til å stole på. Står en tom rad over innhold, eller er lesingen stoppet ved 1000 rader,
+  // mangler deler av stykklisten, og underdelene kan se ulike ut uten å være det. Antall og type sperrer bare
+  // delene de gjelder (se validerUnderdeler).
+  const kanBygge =
+    bruk('Nivå') &&
+    bruk('Varenummer') &&
+    ark.tomRadMedInnholdUnder === null &&
+    ark.rader.length <= MAKS_RADER &&
+    !feil.some((f) => ødelegger(f.kode))
   if (kanBygge) {
     const cellerMedFeil = new Set(feil.flatMap((f) => (f.sted.type === 'CELLE' ? [`${f.felt}@${f.sted.excelRad}`] : [])))
-    feil.push(...validerUnderdeler(tolket, ark, forste, cellerMedFeil))
+    feil.push(...validerUnderdeler(tolket, ark, forste, cellerMedFeil, bruk('Antall')))
   }
 
   return feil.sort((a, b) => radNummer(a) - radNummer(b) || kolonneRang(a) - kolonneRang(b))
@@ -253,6 +263,7 @@ function validerUnderdeler(
   ark: Stykkliste,
   forste: ReadonlyMap<string, Tolket>,
   cellerMedFeil: ReadonlySet<string>,
+  medAntall: boolean,
 ): Valideringsfeil[] {
   const feil: Valideringsfeil[] = []
   const harFeil = (felt: StykklisteKolonne, excelRad: number) => cellerMedFeil.has(`${felt}@${excelRad}`)
@@ -295,13 +306,15 @@ function validerUnderdeler(
     }
 
     // Underdelene er like under hver forekomst som har underdeler. Står de bare under én, er det greit (FR-3).
-    // Har en underdel et antall med feil, sammenlignes ikke delen: antallet er ukjent, og raden har alt sin feil.
-    const medUnderdeler = del.forekomster.filter((f) => f.underdeler.length > 0)
-    const antallMedFeil = medUnderdeler.some((f) => f.underdeler.some((u) => harFeil('Antall', u.excelRad)))
+    // En forekomst med en underdel som har et antall med feil, sammenlignes ikke: antallet er ukjent, og raden har
+    // alt sin feil. Mangler Antall-overskriften, sammenlignes bare varenumrene.
+    const medUnderdeler = del.forekomster.filter(
+      (f) => f.underdeler.length > 0 && !f.underdeler.some((u) => harFeil('Antall', u.excelRad)),
+    )
     const [fasit, ...andre] = medUnderdeler
-    if (fasit && !antallMedFeil) {
+    if (fasit) {
       // Hver forekomst som avviker fra den første, får sin egen feil, så ingen kommer først ved neste opplasting.
-      for (const avvik of andre.filter((f) => nokkelForUnderdeler(f) !== nokkelForUnderdeler(fasit))) {
+      for (const avvik of andre.filter((f) => nokkelForUnderdeler(f, medAntall) !== nokkelForUnderdeler(fasit, medAntall))) {
         const førsteUnderdel = avvik.underdeler[0]
         if (!førsteUnderdel) continue
         melding('UNDERDELER_ULIKE', 'Underdeler', førsteUnderdel.excelRad, {
@@ -350,10 +363,14 @@ function tallEllerNull(verdi: Celleverdi | undefined): number | null {
 /**
  * Underdelene under én forekomst som en sammenlignbar tekst: antall per varenummer, lagt sammen innenfor
  * forekomsten, i fast rekkefølge. Rekkefølgen på radene spiller ingen rolle (FR-3), og en underdel som står
- * to ganger rett under samme del, telles som summen, slik `byggStruktur` gjør det.
+ * to ganger rett under samme del, telles som summen, slik `byggStruktur` gjør det. Uten antall (Antall-overskriften
+ * mangler) er det bare varenumrene som sammenlignes.
  */
-function nokkelForUnderdeler(forekomst: { underdeler: readonly { varenummer: string; antall: number }[] }): string {
+function nokkelForUnderdeler(
+  forekomst: { underdeler: readonly { varenummer: string; antall: number }[] },
+  medAntall: boolean,
+): string {
   const sum = new Map<string, number>()
-  for (const { varenummer, antall } of forekomst.underdeler) sum.set(varenummer, (sum.get(varenummer) ?? 0) + antall)
+  for (const { varenummer, antall } of forekomst.underdeler) sum.set(varenummer, medAntall ? (sum.get(varenummer) ?? 0) + antall : 1)
   return JSON.stringify([...sum].sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0)))
 }

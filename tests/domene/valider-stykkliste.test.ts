@@ -385,7 +385,27 @@ describe('følgefeil (gjennomgangen av PR #33)', () => {
   it('nivå «1» i stedet for «.1» gir nivåfeilen på raden, ikke også «ingen nivå .1»', () => {
     expect(feilIVerdier(endre(GYLDIG.slice(0, 2), 1, NIVAA, '1'))).toEqual(['NIVAA_UGYLDIG@A3'])
     const alle = GYLDIG.map((v, i) => (i === 0 ? v : ([i === 0 ? '0' : '1', ...v.slice(1)] as Verdier)))
-    expect(feilIVerdier(alle).every((k) => k.startsWith('NIVAA_UGYLDIG'))).toBe(true)
+    const feil = feilIVerdier(alle)
+    expect(feil).toHaveLength(GYLDIG.length - 1)
+    expect(feil.every((k) => k.startsWith('NIVAA_UGYLDIG'))).toBe(true)
+  })
+
+  it('..2 i stedet for .1 rett under ferdigproduktet gir bare nivåfeilen, ikke også «ingen nivå .1»', () => {
+    const rader: Verdier[] = [
+      ['0', '100-001', 'Stol', null, 'Ferdigvare', 0, 0, 0],
+      ['..2', '300-001', 'Plate', 1, 'Komponent (Kjøpes inn)', 10, 0, 1],
+      ['..2', '300-002', 'Skrue', 1, 'Komponent (Kjøpes inn)', 10, 0, 1],
+    ]
+    expect(feilIVerdier(rader)).toEqual(['NIVAA_2_UTEN_NIVAA_1_OVER@A3'])
+  })
+
+  it('en typefeil mot nivået gir ikke også «ulik type» på samme celle', () => {
+    const rader: Verdier[] = [
+      ['0', '100-001', 'Stol', null, 'Ferdigvare', 0, 0, 0],
+      ['.1', '200-001', 'Sete', 1, 'Komponent (Produseres selv)', 10, 0, 1],
+      ['.1', '200-001', 'Sete', 1, 'Ferdigvare', null, null, null],
+    ]
+    expect(feilIVerdier(rader)).toEqual(['TYPE_FERDIGVARE_IKKE_NIVAA_0@E4'])
   })
 
   it('en tom rad som stopper lesingen før første .1-rad, gir bare «ikke sammenhengende»', () => {
@@ -543,5 +563,67 @@ describe('rekkefølgen i en rad med feil i underdelene (gjennomgangen av PR #33)
       ['..2', '300-001', 'Plate', 1, 'Komponent (Kjøpes inn)', 10, 0, 1],
     ]
     expect(feilIVerdier(rader)).toEqual(['TYPE_KJOPES_INN_HAR_UNDERDELER@E3', 'LEDETID_UGYLDIG@H3'])
+  })
+})
+
+// Andre runde av gjennomgangen av PR #33: falske «ulike underdeler».
+describe('ingen falske «ulike underdeler» (andre runde av gjennomgangen av PR #33)', () => {
+  const ferdig: Verdier = ['0', '100-001', 'Stol', null, 'Ferdigvare', 0, 0, 0]
+  const sete = (forste = false): Verdier => [
+    '.1',
+    '200-001',
+    'Sete',
+    1,
+    'Komponent (Produseres selv)',
+    forste ? 10 : null,
+    forste ? 0 : null,
+    forste ? 1 : null,
+  ]
+  const del = (varenummer: string, antall: Celleverdi, forste = false): Verdier => [
+    '..2',
+    varenummer,
+    varenummer,
+    antall,
+    'Komponent (Kjøpes inn)',
+    forste ? 10 : null,
+    forste ? 0 : null,
+    forste ? 1 : null,
+  ]
+
+  /** Som en fil uten Antall-kolonnen: cellene finnes ikke, og kontrollen hoppes over. */
+  const utenAntallkolonne = (rader: Verdier[]) => {
+    const ark = arkFra(rader)
+    for (const rad of ark.rader) delete rad.celler['Antall']
+    return kort(valider(ark, ['Antall']))
+  }
+
+  it('uten Antall-overskriften sammenlignes bare varenumrene: X to ganger (4 + 4) og X én gang (8) er like', () => {
+    const rader: Verdier[] = [ferdig, sete(true), del('300-001', 4, true), del('300-001', 4), sete(), del('300-001', 8)]
+    expect(feilIVerdier(rader)).toEqual([])
+    expect(utenAntallkolonne(rader)).toEqual([])
+  })
+
+  it('uten Antall-overskriften gir en annen underdel fortsatt UNDERDELER_ULIKE', () => {
+    const rader: Verdier[] = [ferdig, sete(true), del('300-001', 4, true), sete(), del('300-002', 4, true)]
+    expect(utenAntallkolonne(rader)).toEqual(['UNDERDELER_ULIKE@rad 6'])
+  })
+
+  it('en tom rad som kutter underdelene til en forekomst, gir bare «ikke sammenhengende»', () => {
+    // Rad 3 og 4 er første forekomst med X og Y, rad 6 og 7 er andre forekomst. Lesingen stoppet ved en tom rad etter rad 7.
+    const rader: Verdier[] = [ferdig, sete(true), del('300-001', 1, true), del('300-002', 1, true), sete(), del('300-001', 1)]
+    const ark = arkFra(rader, { tomRadMedInnholdUnder: 8 })
+    expect(kort(valider(ark))).toEqual(['RADER_IKKE_SAMMENHENGENDE@rad 8'])
+  })
+
+  it('mer enn 1000 rader gir bare «for mange rader», ikke «ulike underdeler»', () => {
+    const rader: Verdier[] = [ferdig, sete(true), del('300-001', 1, true), del('300-002', 1, true), sete(), del('300-001', 1)]
+    while (rader.length <= MAKS_RADER) rader.push(['.1', `400-${rader.length}`, 'Del', 1, 'Komponent (Kjøpes inn)', 1, 0, 1])
+    expect(kort(valider(arkFra(rader)))).toEqual(['RADER_FOR_MANGE@rad 1002'])
+  })
+
+  it('et ugyldig antall sperrer bare forekomsten det står i, ikke hele delen', () => {
+    // Første forekomst er rent. Andre har antall «fem» (egen feil). Tredje avviker fra den første.
+    const rader: Verdier[] = [ferdig, sete(true), del('300-001', 4, true), sete(), del('300-001', 'fem'), sete(), del('300-001', 9)]
+    expect(feilIVerdier(rader)).toEqual(['ANTALL_UGYLDIG@D6', 'UNDERDELER_ULIKE@rad 8'])
   })
 })
