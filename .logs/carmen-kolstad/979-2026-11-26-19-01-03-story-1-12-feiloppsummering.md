@@ -43,3 +43,31 @@ Idun-Samdal som reviewer.
   Krever flere grunner i `HoppetOverKontroll` (egen PR for `typer.ts`).
 - Meldingen for uke etter horisonten sier ikke hva H er (fra Story 1.9). Krever også en endring i `typer.ts`.
 - Kort skjermlesertest med NVDA av feiloppsummeringen er ikke gjort (EXPERIENCE.md › Accessibility).
+
+## 2026-11-26 kl. 19:43 — Carmen Kolstad
+
+### Oppgave
+Ferdigstille PR #37 etter Iduns gjennomgang: føre inn gruppevedtaket om 1366 × 630, sjekke at Iduns punkter er
+håndtert eller dokumentert, teste sammen med siste main (PR #36), og pushe til PR #37 uten å merge.
+
+### Plan
+- Iduns kommentar på PR #37 (ingen formell review, «ingen blokkere», fire små punkter).
+- Carmens beslutninger: sammenslåingsreglene beholdes, NVDA-testen gjøres før levering, og utvidelser av `typer.ts`
+  tas separat.
+- `origin/main` (5a659b7, med PR #36) flettet inn med en merge-commit, uten rebase eller force-push.
+
+### Resultat
+- Merge-commit `1670d97` (origin/main inn i branchen, uten konflikter: PR #36 endret bare `valider-stykkliste.ts` og testen).
+- Commit `2a3d5f3`:
+  - DESIGN.md › Layout & Spacing og UX-DR7 i epics.md: høydekravet gjelder når det ikke vises feil, og med feiloppsummering
+    ruller Kari ned til opplastingen (vedtatt av gruppen 26.11).
+  - deferred-work.md: avklaringen er markert som vedtatt, og Iduns punkt 1 (sammenslått linje uten verdi, beholdt)
+    og punkt 2 (NVDA før levering) er ført inn. Punkt 3 og 4 sto der fra før.
+  - Kommentarer i `sider.css` og e2e viser til vedtaket. Ingen kode eller testlogikk er endret.
+- Tester på den samlede løsningen: vitest 950/950 (949 + 1 fra PR #36), Playwright 160/160 i Chromium og Firefox
+  (CSP-vakttesten er `test.fail()`), oxlint, `tsc -b`, typesjekk av testene og bygg uten feil.
+- Punktet om høydekravet i `issues.md` er lukket.
+
+### Åpne punkter
+- NVDA-testen og de to utvidelsene av `typer.ts` står fortsatt åpne (se `issues.md`). Ingen nye.
+- Idun har ikke sendt inn en formell Approve på PR #37 ennå.
