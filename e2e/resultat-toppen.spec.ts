@@ -11,7 +11,7 @@ import { expect, test } from './csp-vakt.ts'
 const TESTEKSEMPEL_01 = join(import.meta.dirname, '..', 'testdata', 'testeksempel-01.xlsx')
 
 async function beregnTesteksempel01(page: Page) {
-  await page.goto('/')
+  await page.goto('/#/ny-kjoring')
   const dialog = page.waitForEvent('filechooser')
   await page.getByRole('button', { name: 'Velg fil' }).click()
   await (await dialog).setFiles(TESTEKSEMPEL_01)

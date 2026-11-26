@@ -124,6 +124,16 @@ describe('Seksjonsmenyen (UX-DR14)', () => {
     expect(meny).not.toContain('aria-current')
   })
 
+  it('forslag fordelt på flere uker: knappen Bestillingsforslag viser totalen (7), ikke antallet i uke 1 (2)', () => {
+    const fordelt: ResultatData = {
+      ...RESULTAT_01,
+      bestillingsforslag: [forslag(1, 20), forslag(1, 0), forslag(2, 0), forslag(3, 5), forslag(3, 0), forslag(6, 0), forslag(10, 0)],
+    }
+    const fordeltMeny = /<nav[\s\S]*?<\/nav>/.exec(tegn({ ...MED_RESULTAT, resultat: fordelt }))?.[0] ?? ''
+    const knapper = [...fordeltMeny.matchAll(/<button[^>]*>([\s\S]*?)<\/button>/g)].map((m) => tekst(m[1] ?? ''))
+    expect(knapper).toEqual(['Kritiske deler 4', 'Bestillingsforslag 7', 'Resultattabell'])
+  })
+
   it('knappen for kritiske deler står der også uten kritiske deler, med antallet 0', () => {
     const uten = /<nav[\s\S]*?<\/nav>/.exec(tegn({ ...MED_RESULTAT, resultat: UTEN_KRITISKE }))?.[0] ?? ''
     expect(tekst(uten)).toContain('Kritiske deler 0')
@@ -133,6 +143,27 @@ describe('Seksjonsmenyen (UX-DR14)', () => {
 describe('Tallboksene (UX-DR15)', () => {
   const html = tegn(MED_RESULTAT)
   const bokser = [...html.matchAll(/<a class="tallboks"[\s\S]*?<\/a>/g)].map((m) => m[0])
+
+  it('forslag fordelt på flere uker: «i uke 1» teller bare uke 1, «i alt» teller alle, og «forfalt» teller bare de med forfalt mengde', () => {
+    const fordelt: ResultatData = {
+      ...RESULTAT_01,
+      bestillingsforslag: [forslag(1, 20), forslag(1, 0), forslag(2, 0), forslag(3, 5), forslag(3, 0), forslag(6, 0), forslag(10, 0)],
+    }
+    const fordeltHtml = tegn({ ...MED_RESULTAT, resultat: fordelt })
+    const fordelte = [...fordeltHtml.matchAll(/<a class="tallboks"[\s\S]*?<\/a>/g)].map((m) => tekst(m[0]))
+    expect(fordelte[1]).toBe('2 Bestillingsforslag i uke 1 Skal bestilles eller settes i produksjon denne uka.')
+    expect(fordelte[2]).toBe('7 Bestillingsforslag i alt Alle forslagene i horisonten.')
+    expect(fordelte[3]).toBe('! 2 Forslag med forfalt mengde Noe av mengden skulle vært bestilt før uke 1.')
+  })
+
+  it('forslag bare i senere uker gir 0 i uke 1, med forklaring i ord, mens totalen er over 0', () => {
+    const senere: ResultatData = { ...RESULTAT_01, bestillingsforslag: [forslag(2, 0), forslag(4, 0), forslag(4, 0)] }
+    const senereHtml = tegn({ ...MED_RESULTAT, resultat: senere })
+    const bokser2 = [...senereHtml.matchAll(/<a class="tallboks"[\s\S]*?<\/a>/g)].map((m) => tekst(m[0]))
+    expect(bokser2[1]).toBe('0 Bestillingsforslag i uke 1 Ingenting skal bestilles eller settes i produksjon i uke 1.')
+    expect(bokser2[2]).toBe('3 Bestillingsforslag i alt Alle forslagene i horisonten.')
+    expect(bokser2[3]).toBe('0 Forslag med forfalt mengde Ingenting skulle vært bestilt før uke 1.')
+  })
 
   it('er fire bokser i rekkefølgen kritiske deler, uke 1, i alt og forfalt', () => {
     expect(bokser.map(tekst)).toEqual([
