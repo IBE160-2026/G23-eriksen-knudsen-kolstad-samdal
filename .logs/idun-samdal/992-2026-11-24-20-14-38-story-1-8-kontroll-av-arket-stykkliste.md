@@ -27,3 +27,33 @@ Idun ba om å starte på Story 1.8 (kontroll av arket Stykkliste) i `Idun/Branch
 - `lag_testdata.py` (linje 362–372) sammenligner underdeler som sorterte lister slik de står og kaster feil for ulike. Appen legger sammen en underdel som står to ganger rett under samme del, og regner `[X:1, X:1]` likt med `[X:2]`. Ingen testfil har et slikt tilfelle, men generatoren og FR-3 bør bruke samme regel.
 - `UNDERDELER_ULIKE` peker på første underdel i den avvikende forekomsten (V-S22: rad 12). Står en senere forekomst med færre underdeler enn den første, peker den likevel på sin første underdel. Det er greit, men ikke avklart i FR-3.
 - Hjelperne i `celler.ts` kan brukes av neste story som trenger nivå eller type (blant annet Story 2.x).
+
+## 2026-11-26 kl. 17:26 — Idun-Samdal
+
+### Oppgave
+Sebastian la inn én review på PR #33 (Story 1.8, «Commented», ingen blokkere). Idun ba om å gå gjennom den og rette den. Før det ble Carmens PR #35 (Story 1.11) kontrollert og godkjent på Iduns vegne, og `Idun/Branch` hentet inn alt fra main etter at Carmen flettet.
+
+### Plan
+- Dele Sebastians funn i grupper: følgefeil, feil som slapp gjennom til neste opplasting, rekkefølge, tester og dokumenter. Forslaget ble godkjent av Idun: rett alt i de to første gruppene og rekkefølgen, ta tester og dokumenter, og legg det som ikke er billig i `deferred-work.md`.
+- Rette i `Idun/Branch`, så flytte rettelsene til story-branchen med merge av main og cherry-pick, og oppdatere PR-en.
+
+### Resultat
+- **Kontroll av PR #35:** `npm test` 710, lint, `tsc -b`, bygg og e2e 140/140 grønne. Godkjent på GitHub med tre små punkter. Carmen fletter (cf68fb4 i main).
+- **Rettelsene (commit c0b7198 på `Idun/Branch`, f98a509 på `story/1.8-kontroll-av-arket-stykkliste`):**
+  - `valider-stykkliste.ts` er skrevet om: «ingen nivå .1» bare når alle nivåene kunne tolkes, ingen `TYPE_KJOPES_INN_HAR_UNDERDELER` på en celle med typefeil, en del rett under seg selv sammenlignes ikke med tidligere rader, og `..2` etter en ekstra nivå 0-rad gir bare «flere nivå 0».
+  - Antall kontrolleres uten Nivå-overskrift. Lager, sikkerhetslager og ledetid kontrolleres uten Varenummer-overskrift. Ledetid 0 for komponent avvises når nivået er ukjent (første rad regnes som ferdigproduktet).
+  - `UNDERDELER_ULIKE` for hver avvikende forekomst, og første gyldige rad som fasit for beskrivelse og type.
+  - Sperring per del: Antall og Type sperrer bare delen de gjelder, og sløyfekontrollen krever bare Nivå og Varenummer. Feil i Nivå eller Varenummer slår fortsatt av sløyfe- og underdelsreglene for hele filen.
+  - Feilene sorteres på rad og kolonne (Rader først, Underdeler sist).
+  - `beskrivelseTekst` og `NIVAATALL` flyttet til `celler.ts`. `radliste` i `nb.ts` sorterer, kortes ned og tåler tom liste.
+  - 13 nye tester i `valider-stykkliste.test.ts` (alle feilet mot den gamle koden), tester for `radliste`, og en test for at hver kode i `VALIDERINGSKODER` har en mal.
+  - Ordbank: «Forekomst» og «Sløyfe». `deferred-work.md`: punktene om 1.6 og 1.9 fjernet, punktet om 1.5 presisert, nytt punkt for det som ikke ble gjort.
+- **Kontroll på story-branchen (med main flettet inn):** `npm test` 908 grønne, lint, `tsc -b`, bygg og e2e 140/140.
+- **GitHub:** story-branchen pushet, kommentar på PR #33 med gjennomgang og to spørsmål til gruppen, og Sebastian bedt om ny gjennomgang. Ikke flettet.
+
+### Åpne punkter
+- Tom stykkliste får meldingen om at nivå .1 mangler, ikke at stykklisten er tom. Krever egen kode i `typer.ts` (egen PR).
+- `erTom` finnes både i `nb.ts` og `les.ts`. `nb.ts` kan bare importere typer fra `domene/`, og `les.ts` kan flyttes til `celler.ts` senere.
+- En feil i Nivå eller Varenummer slår av sløyfe- og underdelsreglene for hele filen. Kan løses ved å bygge strukturen av gyldige rader.
+- Gruppen må godkjenne at sløyfer gir `VARENUMMER_UNDER_SEG_SELV` og at `[X:1, X:1]` er likt med `[X:2]`. Blir det stående, må `lag_testdata.py` (linje 362–372) bruke samme regel.
+- PR #33 venter på ny gjennomgang av Sebastian. Ikke flett før den er godkjent.
