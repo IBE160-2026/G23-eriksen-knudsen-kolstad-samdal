@@ -6,7 +6,7 @@
 
 import { describe, expect, it } from 'vitest'
 import type { Delstype, Eksepsjon } from '../../src/domene/typer.ts'
-import { eksepsjoner, formaterTall } from '../../src/tekster/nb.ts'
+import { eksepsjoner } from '../../src/tekster/nb.ts'
 import {
   EKSEPSJONER_01,
   KANSELLER_MOTTAK_02,
@@ -14,6 +14,9 @@ import {
   PRODUKSJON_FORSINKET_04,
   SIKKERHETSLAGER_02,
 } from './../domene/typer-eksempler.ts'
+
+/** Tall som i teksten: ekte minus (U+2212). Tallene i disse testene er små, så tusenskille trengs ikke. */
+const tallTekst = (n: number): string => (n < 0 ? `−${Math.abs(n)}` : String(n))
 
 const [HJUL, ARMLENE, GASSFJAER, STOLFOT] = EKSEPSJONER_01 as [Eksepsjon, Eksepsjon, Eksepsjon, Eksepsjon]
 const ALLE: Eksepsjon[] = [...EKSEPSJONER_01, KANSELLER_MOTTAK_02, SIKKERHETSLAGER_02, ...LASESKIVE_04, PRODUKSJON_FORSINKET_04]
@@ -181,10 +184,10 @@ describe('Bestilling forsinket og Bruk av sikkerhetslager: tabellen viser et ann
       const forfalt = (e as { forfaltMengde: number }).forfaltMengde
       // Regnestykket i testen er det samme som i fasiten: tabellverdi = disponibel + forfalt − fremskyndet ikke kommet.
       expect(disponibel + forfalt - fremskyndetIkkeKommet).toBe(tabellverdi)
-      expect(m.hvorfor).toContain(`Tabellen viser ${formaterTall(tabellverdi)} i uke ${(e as { uke: number }).uke}`)
-      expect(m.hvorfor).toContain(tabellverdi > disponibel ? `høyere enn ${formaterTall(disponibel)}` : `lavere enn ${formaterTall(disponibel)}`)
-      expect(m.hvorfor).toContain(`de ${formaterTall(forfalt)} kommer i tide`)
-      if (fremskyndetIkkeKommet > 0) expect(m.hvorfor).toContain(`de ${formaterTall(fremskyndetIkkeKommet)} som er fremskyndet og ikke er kommet ennå`)
+      expect(m.hvorfor).toContain(`Tabellen viser ${tallTekst(tabellverdi)} i uke ${(e as { uke: number }).uke}`)
+      expect(m.hvorfor).toContain(tabellverdi > disponibel ? `høyere enn ${tallTekst(disponibel)}` : `lavere enn ${tallTekst(disponibel)}`)
+      expect(m.hvorfor).toContain(`de ${tallTekst(forfalt)} kommer i tide`)
+      if (fremskyndetIkkeKommet > 0) expect(m.hvorfor).toContain(`de ${tallTekst(fremskyndetIkkeKommet)} som er fremskyndet og ikke er kommet ennå`)
       else expect(m.hvorfor).not.toContain('fremskyndet og ikke er kommet')
     },
   )
