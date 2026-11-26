@@ -8,16 +8,21 @@
 //    arbeider. Ingen overlegg og ingen spinner.
 // 3. Styringen (app/kjoring.ts) gir et utfall. Ved gyldig fil har den allerede gitt kjøringen til tilstanden
 //    og gått til Resultat. Ved feil i hele filen eller uventet feil står meldingen i sonen, og filvalget
-//    nullstilles. Ved valideringsfeil står en foreløpig melding over kortene til Story 1.12.
+//    nullstilles. Ved valideringsfeil står feiloppsummeringen øverst og får fokus (Story 1.12).
+//
+// Feiloppsummeringen (Story 1.12, UX-DR11): overskriften i den er sidens h1, så «Ny kjøring» blir h2 så lenge
+// den vises, og sidetittelen begynner med «Feil:». Gir en ny fil nye feil, oppdateres den, og fokus flyttes dit igjen.
 //
 // Statusen vises ved Beregn (synlig, uten role) og kunngjøres i den ene statusregionen i App.tsx,
 // så skjermleseren ikke får den to ganger.
 //
 // Radiogruppen «Hva vil du beregne?» kommer i Epic 5. Til da gir Beregn bestillingsplanen (UX-DR9).
 
-import { useEffect, useReducer, useRef } from 'react'
+import { useEffect, useMemo, useReducer, useRef } from 'react'
 import { useTilstand } from '../../app/tilstand-handlinger.ts'
 import { felles, filfeilOgValidering } from '../../tekster/nb.ts'
+import { Feiloppsummering } from './Feiloppsummering.tsx'
+import { lagOppsummering } from './feiloppsummering.ts'
 import { endreFilvalg, startFilvalg, type Filvalg, type FilvalgHandling } from './filvalg.ts'
 import { Opplastingssone } from './Opplastingssone.tsx'
 
@@ -36,7 +41,7 @@ export function NyKjoring() {
   const { send, kjorer } = useTilstand()
   const [filvalg, sendFilvalg] = useReducer(redusent, undefined, startFilvalg<File>)
   const velgFilKnapp = useRef<HTMLButtonElement>(null)
-  const valideringsboks = useRef<HTMLDivElement>(null)
+  const feilbrett = useRef<HTMLElement>(null)
   const pagar = useRef(false)
   const kunngjoring = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
 
@@ -47,10 +52,16 @@ export function NyKjoring() {
     kunngjoring.current = setTimeout(() => send({ type: 'VIS_STATUSMELDING', melding }), KUNNGJORING_PAUSE_MS)
   }
 
-  // Den foreløpige meldingen om valideringsfeil får fokus, som feiloppsummeringen skal (UX-DR11).
+  const oppsummering = useMemo(
+    () => (filvalg.valideringsfeil === null ? null : lagOppsummering(filvalg.valideringsfeil)),
+    [filvalg.valideringsfeil],
+  )
+
+  // Feiloppsummeringen får fokus etter hver kjøring med valideringsfeil (UX-DR11). Hvert svar er et nytt objekt,
+  // så fokus flyttes også når en ny fil gir feil mens den forrige oppsummeringen står.
   useEffect(() => {
-    if (filvalg.valideringsfeil !== null) valideringsboks.current?.focus()
-  }, [filvalg.valideringsfeil])
+    if (oppsummering !== null) feilbrett.current?.focus()
+  }, [oppsummering])
 
   // «Velg en fil først.»: fokus til «Velg fil» etter at meldingen er tegnet og koblet til knappen med
   // aria-describedby, så skjermleseren leser meldingen sammen med knappen. Hvert klikk gir et nytt objekt.
@@ -122,15 +133,19 @@ export function NyKjoring() {
 
   return (
     <section className="visning">
-      <title>{felles.sidetittel(felles.visninger.nyKjoring)}</title>
-      <h1 tabIndex={-1}>{felles.visninger.nyKjoring}</h1>
-      <p className="ingress">{tekst.ettFerdigprodukt}</p>
-      {filvalg.valideringsfeil !== null && (
-        // Midlertidig til feiloppsummeringen i Story 1.12 (deferred-work.md).
-        <div ref={valideringsboks} className="valideringsboks" tabIndex={-1}>
-          <p>{tekst.beregning.valideringsfeil(filvalg.valideringsfeil)}</p>
-        </div>
+      {oppsummering === null ? (
+        <>
+          <title>{felles.sidetittel(felles.visninger.nyKjoring)}</title>
+          <h1 tabIndex={-1}>{felles.visninger.nyKjoring}</h1>
+        </>
+      ) : (
+        <>
+          <title>{filfeilOgValidering.feiloppsummering.sidetittel}</title>
+          <Feiloppsummering oppsummering={oppsummering} brett={feilbrett} />
+          <h2 className="visningstittel">{felles.visninger.nyKjoring}</h2>
+        </>
       )}
+      <p className="ingress">{tekst.ettFerdigprodukt}</p>
       <ol className="startkort">
         <li className="kort">
           <h2>{tekst.kort.fyllUt.tittel}</h2>

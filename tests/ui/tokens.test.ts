@@ -92,6 +92,8 @@ const PAR: [forgrunn: string, bakgrunn: string, krav: number][] = [
   ['accent-ink', 'accent', 4.5],
   ['accent-ink', 'accent-hover', 4.5],
   ['exc-critical', 'exc-critical-soft', 4.5],
+  // Feiloppsummeringen (Story 1.12): brødteksten står på exc-critical-soft.
+  ['ink-primary', 'exc-critical-soft', 4.5],
   ['exc-warning', 'exc-warning-soft', 4.5],
   ['exc-info', 'exc-info-soft', 4.5],
   ['exc-horizon', 'exc-horizon-soft', 4.5],

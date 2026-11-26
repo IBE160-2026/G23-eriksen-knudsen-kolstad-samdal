@@ -7,7 +7,7 @@ authors:
   - Sebastian (regler for tall, skrift, minste skjerm og tilgjengelighet, 13.11)
   - Oda (prototypene v1–v4 og avklaringene 22.11)
 created: 2026-11-12
-updated: 2026-11-24
+updated: 2026-11-26
 sources:
   - ../../prds/prd-COSI - MRP-2026-10-19/prd.md
   - ../../../ordbank.md
@@ -343,7 +343,7 @@ Skala: 4 / 8 / 12 / 16 / 20 / 24 px (`{spacing.1}`–`{spacing.6}`). Søskengrup
 - **Minste skjerm** er 1366 × 768 (NFR-6). Med nettleserens faner og adresselinje og Windows' oppgavelinje gir det et vindu på cirka 1366 × 630 px ved 100 % zoom. Alle krav om «uten rulling» gjelder det vinduet.
 - **Siden:** appmenyen står fast til venstre, og hovedfeltet tar resten av bredden med `{spacing.gutter}` på sidene.
 - **Introduksjonsside:** én stor flate øverst med overskrift, to korte avsnitt og «Kom i gang», og under den de tre stegene som tre bokser i én rad.
-- **Startside:** h1 og setningen om ett ferdigprodukt per fil øverst. Under står tre nummererte kort: «Fyll ut Excel-malen» og «Last opp filen» side om side, og «Velg hva du vil beregne, og beregn» over hele bredden, med radiogruppen til venstre og Beregn til høyre. Opplastingssonen, radiogruppen og Beregn er synlige uten rulling i et vindu på 1366 × 630 px. Med valideringsfeil står feiloppsummeringen over kortene.
+- **Startside:** h1 og setningen om ett ferdigprodukt per fil øverst. Under står tre nummererte kort: «Fyll ut Excel-malen» og «Last opp filen» side om side, og «Velg hva du vil beregne, og beregn» over hele bredden, med radiogruppen til venstre og Beregn til høyre. Opplastingssonen, radiogruppen og Beregn er synlige uten rulling i et vindu på 1366 × 630 px når det ikke vises feil. Med valideringsfeil står feiloppsummeringen over kortene, overskriften er synlig og har fokus, og Kari ruller ned til opplastingen og Beregn (vedtatt av gruppen 26.11, Story 1.12). Med flere feil får ikke både oppsummeringen og kortene plass i vinduet.
 - **Resultat:** kjøringslinjen med seksjonsmenyen står fast øverst i hovedfeltet. Under står tallboksene, «Slik leser du resultatet» og seksjonene i én kolonne i fast rekkefølge (se EXPERIENCE.md). Når forklaringspanelet er åpent, blir arbeidsflaten to kolonner: tabellen tar resten, og panelet er `{spacing.panel-width}` bredt og står fast til høyre mens brukeren blar. Panelet skyver tabellen til side og legger seg ikke over den.
 - **Tabeller:** radhøyde `{spacing.row-height}`. Tynne skillelinjer og ingen sebrastriper. Delene skilles med en tykkere linje over delens felt. Radene i en del har bare tynne linjer.
 - **Faste kolonner (NFR-8):** delens felt og radnavnene står fast ved sidescroll, med ugjennomsiktig bakgrunn. Ukeoverskriften står fast ved loddrett rulling i tabellområdet.
