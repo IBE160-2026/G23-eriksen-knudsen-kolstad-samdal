@@ -16,7 +16,7 @@
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { read, utils, type WorkSheet } from 'xlsx'
-import type { Bestillingsforslag } from '../../src/domene/typer.ts'
+import type { Bestillingsforslag, Eksepsjonskode } from '../../src/domene/typer.ts'
 
 const TESTDATA = join(import.meta.dirname, '..', '..', 'testdata')
 
@@ -130,4 +130,47 @@ export function tolkBestillingsforslag(fil: string, rader: readonly (readonly un
 function heltall(verdi: unknown, hvor: string): number {
   if (typeof verdi !== 'number' || !Number.isInteger(verdi)) throw new Error(`${hvor}: ventet heltall, fikk ${String(verdi)}`)
   return verdi
+}
+
+// ---------------------------------------------------------------------------
+// Arket Eksepsjoner (Story 2.3, SM-2)
+// ---------------------------------------------------------------------------
+
+/** Én eksepsjon i arket Eksepsjoner: varenummer, uke (null for «–», hele delen) og type. Ordlyden sammenlignes ikke (AD-16). */
+export type Fasiteksepsjon = { varenummer: string; uke: number | null; kode: Eksepsjonskode }
+
+const KODE_FRA_TYPENAVN: Record<string, Eksepsjonskode> = {
+  'Ledetid overskrider horisont': 'LEDETID_OVERSKRIDER_HORISONT',
+  'Bestilling forsinket': 'BESTILLING_FORSINKET',
+  'Bruk av sikkerhetslager': 'BRUK_AV_SIKKERHETSLAGER',
+  'Mottak forsinket': 'MOTTAK_FORSINKET',
+  'Kanseller mottak': 'KANSELLER_MOTTAK',
+}
+
+const EKSEPSJON_KOLONNER = ['Varenummer', 'Uke', 'Eksepsjonstype', 'Melding']
+
+/** Tolker radene i arket Eksepsjoner (rad 1 er overskriften). Kaster ved ukjent type eller uventet uke. */
+export function tolkFasitEksepsjoner(fil: string, rader: readonly (readonly unknown[])[]): Fasiteksepsjon[] {
+  const [overskrift, ...eksepsjonsrader] = rader
+  if (overskrift === undefined || EKSEPSJON_KOLONNER.some((navn, i) => overskrift[i] !== navn)) {
+    throw new Error(`${fil}: uventet overskrift i Eksepsjoner`)
+  }
+  return eksepsjonsrader
+    .filter((rad) => rad[0] !== null && rad[0] !== undefined && rad[0] !== '')
+    .map((rad): Fasiteksepsjon => {
+      const kode = KODE_FRA_TYPENAVN[String(rad[2])]
+      if (kode === undefined) throw new Error(`${fil}: ukjent eksepsjonstype «${String(rad[2])}»`)
+      // «–» betyr hele delen (Ledetid overskrider horisont). Ellers må uken være et heltall.
+      const uke = rad[1] === '–' ? null : heltall(rad[1], `${fil} uke`)
+      return { varenummer: String(rad[0]).trim(), uke, kode }
+    })
+}
+
+/** Leser arket Eksepsjoner i fasiten for testeksempelet `nr` («01»–«05»), i fasitens rekkefølge. */
+export function lesFasitEksepsjoner(nr: string): Fasiteksepsjon[] {
+  const fil = `testeksempel-${nr}-fasit.xlsx`
+  const bok = read(readFileSync(join(TESTDATA, fil)), { type: 'buffer' })
+  const sheet = bok.Sheets['Eksepsjoner']
+  if (sheet === undefined) throw new Error(`${fil}: arket Eksepsjoner mangler`)
+  return tolkFasitEksepsjoner(fil, utils.sheet_to_json<unknown[]>(sheet, { header: 1, blankrows: false, defval: null }))
 }
