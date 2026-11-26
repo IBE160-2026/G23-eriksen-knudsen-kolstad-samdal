@@ -5,7 +5,7 @@
 // så flere kan legge til tekster samtidig uten flettekonflikter. Lag ikke nye seksjoner
 // uten å avtale det i gruppen.
 
-import type { Arknavn, Celleverdi, Feilsted, Valideringsfeil } from '../domene/typer.ts'
+import type { Arknavn, Celleverdi, Feilsted, Filfeilkode, Valideringsfeil } from '../domene/typer.ts'
 
 // --- Felles ---------------------------------------------------------------
 export const felles = {
@@ -46,7 +46,7 @@ export const felles = {
       },
     ],
   },
-  // Startsiden «Ny kjøring» (Story 1.4, UX-DR7, FR-27). Opplastingen og valget av beregning kommer i Story 1.11.
+  // Startsiden «Ny kjøring» (Story 1.4 og 1.11, UX-DR7, FR-27). Valget av beregning kommer i Epic 5.
   nyKjoring: {
     ettFerdigprodukt:
       'Hver fil gjelder ett ferdigprodukt. Lageret for deler som brukes i flere ferdigprodukter, må du fordele mellom filene selv.',
@@ -63,9 +63,32 @@ export const felles = {
         tekst: 'Du kan laste opp én Excel-fil (.xlsx). Filen blir i nettleseren din.',
       },
       beregn: {
+        // Tittelen er fra akseptkriteriene (Story 1.4). Teksten sier hva Beregn gjør nå: valget av beregning
+        // kommer i Epic 5 og selve beregningen i Epic 2 (deferred-work.md, Story 1.11).
         tittel: 'Velg hva du vil beregne, og beregn',
-        tekst: 'Du velger mellom bestillingsplan, produksjonskapasitet eller begge.',
+        tekst: 'Trykk Beregn når filen er valgt. Foreløpig leser og kontrollerer appen filen. Bestillingsplanen beregnes ikke ennå.',
       },
+    },
+    // Opplastingssonen (Story 1.11, UX-DR8, EXPERIENCE.md › Component Patterns og Voice and Tone).
+    // «Slipp Excel-filen her» er pynt. Instruksjonen står i hjelpeteksten (kort.lastOpp.tekst).
+    opplasting: {
+      slippHer: 'Slipp Excel-filen her',
+      eller: 'eller',
+      velgFil: 'Velg fil',
+      valgtFil: (filnavn: string) => `Valgt fil: ${filnavn}`,
+      flereFiler: 'Slipp bare én fil. Ingen av filene er lest.',
+      velgFilForst: 'Velg en fil først.',
+    },
+    // Beregn og statusene (Story 1.11, UX-DR10). «…» er U+2026 med vanlig mellomrom foran.
+    beregning: {
+      beregn: 'Beregn',
+      leserFilen: 'Leser filen …',
+      beregner: 'Beregner …',
+      // Antallene («59 bestillingsforslag, 4 kritiske deler») kommer når beregningen er bygd (Epic 2).
+      // Til da sier meldingen ærlig at bare lesingen og kontrollen er gjort.
+      ferdig: 'Kjøringen er ferdig. Filen er lest og har ingen feil. Bestillingsplanen beregnes ikke ennå.',
+      // Midlertidig til feiloppsummeringen i Story 1.12 (deferred-work.md).
+      valideringsfeil: (antall: number) => `Filen har ${antall} feil. Ingenting er beregnet.`,
     },
   },
   // Veiledning (Story 1.4, UX-DR31): hvordan nettsiden brukes. Utfyllingen av malen står i malens ark Veiledning.
@@ -73,21 +96,24 @@ export const felles = {
     ingress: 'Slik bruker du nettsiden. Hvordan Excel-malen fylles ut, står i arket Veiledning i malen.',
     deler: [
       {
+        // Del 1–3 beskriver det appen gjør nå (Story 1.11). Del 3–6 beskriver også resultatet slik det blir,
+        // og sier at det kommer senere. Teksten oppdateres når Epic 2–5 bygges (deferred-work.md).
         overskrift: '1. Start en ny kjøring',
         avsnitt: [
-          'Gå til Ny kjøring. Last ned Excel-malen første gang. Når den er fylt ut, drar du filen inn i feltet eller trykker Velg fil. Velg hva du vil beregne, og trykk Beregn. Filen blir i nettleseren din og sendes ikke til noen server.',
+          'Gå til Ny kjøring. Last ned Excel-malen første gang. Når den er fylt ut, drar du filen inn i feltet eller trykker Velg fil, og så trykker du Beregn. Appen leser filen og kontrollerer den. Filen blir i nettleseren din og sendes ikke til noen server.',
         ],
       },
       {
         overskrift: '2. Hvis filen har feil',
         avsnitt: [
-          'Finner appen feil i filen, beregnes ingenting. Alle feilene vises samlet øverst på siden, med ark, rad og felt. Rett dem i Excel, lagre filen og last den opp på nytt. Den lagrede kjøringen endres ikke.',
+          'Finner appen feil i filen, beregnes ingenting, og appen sier hvor mange feil filen har. Kan ikke filen leses i det hele tatt, for eksempel fordi den er tom eller skadet, står meldingen ved opplastingen. Rett filen i Excel, lagre den og last den opp på nytt.',
         ],
       },
       {
         overskrift: '3. Les resultatet',
         avsnitt: [
-          'Resultatet står på én side. Knappene øverst tar deg til hver seksjon og viser hvor du er. «Slik leser du resultatet» forklarer hver av dem.',
+          'Når filen ikke har feil, går appen til Resultat. Linjen øverst viser ferdigproduktet, horisonten, filen og når den ble lest. «Last opp ny fil» tar deg tilbake til Ny kjøring.',
+          'Selve bestillingsplanen beregnes ikke ennå. Disse seksjonene kommer i en senere versjon av appen:',
         ],
         punkter: [
           { navn: 'Kritiske deler', tekst: 'delene der planen ikke går opp, og hva du kan gjøre.' },
@@ -97,27 +123,26 @@ export const felles = {
           },
           { navn: 'Endringer', tekst: 'hva som er nytt eller endret siden forrige kjøring for samme ferdigprodukt.' },
           { navn: 'Resultattabell', tekst: 'hele utregningen per del og uke.' },
-          {
-            navn: 'Produksjonskapasitet',
-            tekst: 'hvor mange ferdigprodukter lageret og planlagte mottak rekker til, uke for uke. Vises bare hvis du valgte det på Ny kjøring.',
-          },
+          // Produksjonskapasitet legges til igjen når valget av beregning finnes (Epic 5).
         ],
       },
       {
         overskrift: '4. Se hvordan et tall er regnet ut',
         avsnitt: [
-          'Klikk på et tall, et radnavn eller en del i resultattabellen. Forklaringen åpnes ved siden av tabellen og står til du trykker Lukk. Med tastaturet flytter du med piltastene, åpner med Enter og lukker med Esc. Velger du en kritisk del, går appen rett til eksepsjonen i tabellen.',
+          'Kommer i en senere versjon av appen. Klikk på et tall, et radnavn eller en del i resultattabellen. Forklaringen åpnes ved siden av tabellen og står til du trykker Lukk. Med tastaturet flytter du med piltastene, åpner med Enter og lukker med Esc. Velger du en kritisk del, går appen rett til eksepsjonen i tabellen.',
         ],
       },
       {
         overskrift: '5. Last opp på nytt og sammenlign',
         avsnitt: [
-          'Appen husker siste kjøring for hvert ferdigprodukt i denne nettleseren. Laster du opp en ny fil for samme ferdigprodukt, viser seksjonen Endringer hva som er endret. Under Lagrede kjøringer kan du slette en kjøring for å starte på nytt uten sammenligning.',
+          'Kommer i en senere versjon av appen. Appen husker siste kjøring for hvert ferdigprodukt i denne nettleseren. Laster du opp en ny fil for samme ferdigprodukt, viser seksjonen Endringer hva som er endret. Under Lagrede kjøringer kan du slette en kjøring for å starte på nytt uten sammenligning.',
         ],
       },
       {
         overskrift: '6. Ta vare på resultatet',
-        avsnitt: ['Trykk Eksporter til Excel øverst i resultatet for å lagre planen som en Excel-fil.'],
+        avsnitt: [
+          'Kommer i en senere versjon av appen. Trykk Eksporter til Excel øverst i resultatet for å lagre planen som en Excel-fil.',
+        ],
       },
     ],
   },
@@ -169,6 +194,17 @@ function uker(antall: number): string {
 }
 
 export const filfeilOgValidering = {
+  // Story 1.11: feil i hele filen og uventet feil, én melding i opplastingssonen (NFR-9, UX-DR12).
+  // Ordrett fra EXPERIENCE.md › Feil i hele filen.
+  heleFilen: {
+    IKKE_XLSX: 'Appen tar bare imot Excel-malen (.xlsx).',
+    SKADET_FIL: 'Filen kan ikke leses. Den er kanskje skadet. Lagre den på nytt fra Excel og prøv igjen.',
+    TOM_FIL: 'Filen er tom. Lagre malen i Excel og last den opp på nytt.',
+    IKKE_EXCEL: 'Filen heter .xlsx, men er ikke en Excel-fil. Åpne malen i Excel og lagre den som Excel-arbeidsbok.',
+    PASSORDBESKYTTET: 'Filen er beskyttet med passord. Fjern passordet i Excel og last den opp på nytt.',
+    UVENTET_FEIL: 'Noe gikk galt under beregningen. Ingenting er vist eller lagret. Prøv igjen, eller last opp filen på nytt.',
+  } satisfies Record<Filfeilkode | 'UVENTET_FEIL', string>,
+
   struktur: {
     ARK_MANGLER: (feil: Valideringsfeil): string =>
       `${feil.ark === 'MPS' ? arkTekst(feil.ark) : `Arket ${feil.ark}`} mangler. Legg det til slik det står i malen, med kolonneoverskriftene i rad 1.`,
@@ -227,7 +263,28 @@ export const forklaringer = {} as const
 // --- Resultat -------------------------------------------------------------
 export const resultat = {
   utenKjoring: 'Det er ingen kjøring å vise. Resultatet finnes bare til siden lastes på nytt. Last opp filen på Ny kjøring.',
+  // Kjøringslinjen og overskriftene (Story 1.11, UX-DR4, UX-DR13).
+  /** Den skjulte h1-en, som får fokus etter Beregn. */
+  overskrift: (beskrivelse: string) => `Resultat for ${beskrivelse}`,
+  /** «Kontorstol Basic (100-002) – Resultat – COSI - MRP». */
+  sidetittel: (beskrivelse: string, varenummer: string) =>
+    felles.sidetittel(`${beskrivelse} (${varenummer}) – ${felles.visninger.resultat}`),
+  horisont: (uker: number) => `Horisont: ${uker} ${uker === 1 ? 'uke' : 'uker'}`,
+  kjort: (tidspunkt: string) => `Kjørt ${tidspunkt}`,
+  lastOppNyFil: 'Last opp ny fil',
+  // Midlertidig til beregningen er bygd (Epic 2, deferred-work.md). Resultat skal ikke se ut som en ferdig plan.
+  ikkeBeregnet: [
+    'Filen er lest og kontrollert, og den har ingen feil.',
+    'Bestillingsplanen beregnes ikke ennå. Bestillingsforslag, kritiske deler og resultattabellen kommer i en senere versjon av appen.',
+  ],
 } as const
+
+/** Tidspunktet som «13.11.2026 kl. 08:04» i nettleserens tidssone (UX-DR2). Tar ISO 8601-tekst. */
+export function formaterTidspunkt(iso: string): string {
+  const d = new Date(iso)
+  const to = (n: number) => String(n).padStart(2, '0')
+  return `${to(d.getDate())}.${to(d.getMonth() + 1)}.${d.getFullYear()} kl. ${to(d.getHours())}:${to(d.getMinutes())}`
+}
 
 // --- Lagring og eksport ---------------------------------------------------
 export const lagringOgEksport = {} as const

@@ -1,20 +1,136 @@
-// Startsiden «Ny kjøring» (Story 1.4, UX-DR7, FR-27): h1, setningen om ett ferdigprodukt per fil
-// og tre nummererte kort. Det første kortet har nedlastingene av malen og testeksempel 01.
-// Opplastingssonen og valget av beregning kommer i Story 1.11. All tekst står i tekster/nb.ts.
+// Startsiden «Ny kjøring» (Story 1.4 og 1.11, UX-DR7–UX-DR10, UX-DR12, FR-1, FR-27).
+// h1, setningen om ett ferdigprodukt per fil og tre nummererte kort: nedlastingene, opplastingssonen og Beregn.
+// All tekst står i tekster/nb.ts.
+//
+// Beregn (Story 1.11, AD-12):
+// 1. Uten valgt fil: «Velg en fil først.» i sonen, og fokus til «Velg fil». Beregn deaktiveres aldri.
+// 2. «Leser filen …» mens filen leses inn i nettleseren (`arrayBuffer()`), så «Beregner …» mens worker-en
+//    arbeider. Ingen overlegg og ingen spinner.
+// 3. Styringen (app/kjoring.ts) gir et utfall. Ved gyldig fil har den allerede gitt kjøringen til tilstanden
+//    og gått til Resultat. Ved feil i hele filen eller uventet feil står meldingen i sonen, og filvalget
+//    nullstilles. Ved valideringsfeil står en foreløpig melding over kortene til Story 1.12.
+//
+// Statusen vises ved Beregn (synlig, uten role) og kunngjøres i den ene statusregionen i App.tsx,
+// så skjermleseren ikke får den to ganger.
+//
+// Radiogruppen «Hva vil du beregne?» kommer i Epic 5. Til da gir Beregn bestillingsplanen (UX-DR9).
 
-import { felles } from '../../tekster/nb.ts'
+import { useEffect, useReducer, useRef } from 'react'
+import { useTilstand } from '../../app/tilstand-handlinger.ts'
+import { felles, filfeilOgValidering } from '../../tekster/nb.ts'
+import { endreFilvalg, startFilvalg, type Filvalg, type FilvalgHandling } from './filvalg.ts'
+import { Opplastingssone } from './Opplastingssone.tsx'
 
 // Filene ligger i public/ og er byte for byte like filene i testdata/ (tests/public-filer.test.ts).
 const MAL = '/COSI-MRP-mal.xlsx'
 const TESTEKSEMPEL_01 = '/testeksempel-01.xlsx'
 
+/** Hvor lenge statusregionen står tom før en ny melding, så samme tekst to ganger også blir lest opp. */
+const KUNNGJORING_PAUSE_MS = 50
+
+const tekst = felles.nyKjoring
+
+const redusent = (tilstand: Filvalg<File>, handling: FilvalgHandling<File>) => endreFilvalg(tilstand, handling)
+
 export function NyKjoring() {
-  const tekst = felles.nyKjoring
+  const { send, kjorer } = useTilstand()
+  const [filvalg, sendFilvalg] = useReducer(redusent, undefined, startFilvalg<File>)
+  const velgFilKnapp = useRef<HTMLButtonElement>(null)
+  const valideringsboks = useRef<HTMLDivElement>(null)
+  const pagar = useRef(false)
+  const kunngjoring = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
+
+  /** Gir teksten til statusregionen. Den tømmes først, så en gjentatt melding også leses opp. */
+  function kunngjor(melding: string) {
+    clearTimeout(kunngjoring.current)
+    send({ type: 'FJERN_STATUSMELDING' })
+    kunngjoring.current = setTimeout(() => send({ type: 'VIS_STATUSMELDING', melding }), KUNNGJORING_PAUSE_MS)
+  }
+
+  // Den foreløpige meldingen om valideringsfeil får fokus, som feiloppsummeringen skal (UX-DR11).
+  useEffect(() => {
+    if (filvalg.valideringsfeil !== null) valideringsboks.current?.focus()
+  }, [filvalg.valideringsfeil])
+
+  // «Velg en fil først.»: fokus til «Velg fil» etter at meldingen er tegnet og koblet til knappen med
+  // aria-describedby, så skjermleseren leser meldingen sammen med knappen. Hvert klikk gir et nytt objekt.
+  useEffect(() => {
+    if (filvalg.melding?.type === 'VELG_FIL_FORST') velgFilKnapp.current?.focus()
+  }, [filvalg.melding])
+
+  function velgFiler(filer: File[]) {
+    if (filvalg.fremdrift !== 'KLAR') return
+    sendFilvalg({ type: 'VELG_FILER', filer })
+    // Etter et slipp står fokus ikke i sonen, så meldingen kunngjøres.
+    if (filer.length > 1) kunngjor(tekst.opplasting.flereFiler)
+  }
+
+  async function beregn() {
+    // Et nytt klikk mens en kjøring pågår, starter ingen ny (AD-12). Styringen sperrer også, men lesingen skjer før den.
+    if (pagar.current) return
+    const fil = filvalg.fil
+    if (!fil) {
+      // Fokus flyttes til «Velg fil» i effekten over, og meldingen leses fordi knappen er beskrevet av den.
+      // Ingen kunngjøring i tillegg.
+      sendFilvalg({ type: 'BEREGN_UTEN_FIL' })
+      return
+    }
+
+    pagar.current = true
+    try {
+      sendFilvalg({ type: 'START_LESING' })
+      kunngjor(tekst.beregning.leserFilen)
+      let innhold: ArrayBuffer
+      try {
+        innhold = await fil.arrayBuffer()
+      } catch {
+        sendFilvalg({ type: 'LESING_FEILET' })
+        kunngjor(filfeilOgValidering.heleFilen.UVENTET_FEIL)
+        return
+      }
+
+      sendFilvalg({ type: 'START_BEREGNING' })
+      kunngjor(tekst.beregning.beregner)
+      const utfall = await kjorer.kjor({ innhold, filnavn: fil.name, valg: 'BESTILLINGSPLAN' })
+      sendFilvalg({ type: 'SVAR', utfall })
+
+      switch (utfall.type) {
+        case 'FERDIG':
+          kunngjor(tekst.beregning.ferdig)
+          break
+        case 'FILFEIL':
+          kunngjor(filfeilOgValidering.heleFilen[utfall.feil.kode])
+          break
+        case 'UVENTET_FEIL':
+          kunngjor(filfeilOgValidering.heleFilen.UVENTET_FEIL)
+          break
+        case 'VALIDERINGSFEIL':
+          // Meldingen får fokus og leses opp derfra. Statusregionen tømmes.
+          clearTimeout(kunngjoring.current)
+          send({ type: 'FJERN_STATUSMELDING' })
+          break
+        case 'OPPTATT':
+          break
+      }
+    } finally {
+      pagar.current = false
+    }
+  }
+
+  const fremdriftstekst =
+    filvalg.fremdrift === 'LESER' ? tekst.beregning.leserFilen : filvalg.fremdrift === 'BEREGNER' ? tekst.beregning.beregner : ''
+
   return (
     <section className="visning">
       <title>{felles.sidetittel(felles.visninger.nyKjoring)}</title>
       <h1 tabIndex={-1}>{felles.visninger.nyKjoring}</h1>
       <p className="ingress">{tekst.ettFerdigprodukt}</p>
+      {filvalg.valideringsfeil !== null && (
+        // Midlertidig til feiloppsummeringen i Story 1.12 (deferred-work.md).
+        <div ref={valideringsboks} className="valideringsboks" tabIndex={-1}>
+          <p>{tekst.beregning.valideringsfeil(filvalg.valideringsfeil)}</p>
+        </div>
+      )}
       <ol className="startkort">
         <li className="kort">
           <h2>{tekst.kort.fyllUt.tittel}</h2>
@@ -30,11 +146,24 @@ export function NyKjoring() {
         </li>
         <li className="kort">
           <h2>{tekst.kort.lastOpp.tittel}</h2>
-          <p className="kort-tekst">{tekst.kort.lastOpp.tekst}</p>
+          <Opplastingssone
+            filnavn={filvalg.fil?.name ?? null}
+            melding={filvalg.melding}
+            velgFiler={velgFiler}
+            velgFilKnapp={velgFilKnapp}
+          />
         </li>
         <li className="kort kort-bred">
           <h2>{tekst.kort.beregn.tittel}</h2>
-          <p className="kort-tekst">{tekst.kort.beregn.tekst}</p>
+          <div className="beregn-rad">
+            <p className="kort-tekst">{tekst.kort.beregn.tekst}</p>
+            <div className="beregn-handling">
+              <button type="button" className="knapp knapp-primaer knapp-beregn" onClick={() => void beregn()}>
+                {tekst.beregning.beregn}
+              </button>
+              <p className="beregn-status">{fremdriftstekst}</p>
+            </div>
+          </div>
         </li>
       </ol>
     </section>
