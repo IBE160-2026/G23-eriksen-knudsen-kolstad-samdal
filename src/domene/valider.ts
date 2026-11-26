@@ -8,7 +8,7 @@
 // - Kaster aldri unntak for feil i brukerens data, og samler alle feil før den svarer (AD-5).
 // - Gir koder, ark, sted og felt, aldri ferdig tekst. Teksten lages i tekster/nb.ts (AD-9).
 
-import { cellested, tolkNivaa, tolkType, varenummerTekst } from './celler.ts'
+import { beskrivelseTekst, cellested, tolkNivaa, tolkType, varenummerTekst } from './celler.ts'
 import { tolkHeltall } from './heltall.ts'
 import { validerStykklisteVerdier } from './valider-stykkliste.ts'
 import {
@@ -158,11 +158,7 @@ function validerStykkliste(raa: RaaArk, struktur: Valideringsresultat): Valideri
 type Tolk<T> = (verdi: Celleverdi) => T | undefined
 
 const tolkVarenummer: Tolk<string> = (verdi) => varenummerTekst(verdi) ?? undefined
-const tolkBeskrivelse: Tolk<string> = (verdi) => {
-  if (typeof verdi === 'number') return String(verdi)
-  const tekst = typeof verdi === 'string' ? verdi.trim() : ''
-  return tekst !== '' ? tekst : undefined
-}
+const tolkBeskrivelse: Tolk<string> = (verdi) => beskrivelseTekst(verdi) ?? undefined
 /** Tallfeltene: en tom celle blir null. Grensene (≥ 0, ≥ 1) er Stykkliste-reglene sine (Story 1.8). */
 const tolkTall: Tolk<number | null> = (verdi) => (verdi === null ? null : (tolkHeltall(verdi) ?? undefined))
 

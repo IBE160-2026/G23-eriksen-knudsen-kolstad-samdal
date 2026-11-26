@@ -193,10 +193,18 @@ function uker(antall: number): string {
   return antall === 1 ? '1 uke' : `${antall} uker`
 }
 
-/** Radene en feil gjelder, skrevet som «rad 3», «rad 3 og 11» eller «rad 4, 5 og 6». */
+/** Flere enn dette nevnes ikke enkeltvis i en melding: «rad 4, 5, 6, 7, 8 og 3 til». */
+const MAKS_NEVNTE_RADER = 5
+
+/**
+ * Radene en feil gjelder, sortert og skrevet som «rad 3», «rad 3 og 11» eller «rad 4, 5 og 6».
+ * Over fem rader nevnes de fem første og så hvor mange som står igjen. Uten rader står «andre rader».
+ */
 function radliste(rader: readonly number[] | undefined): string {
-  const r = rader ?? []
-  if (r.length <= 1) return `rad ${r[0] ?? ''}`
+  const r = [...(rader ?? [])].sort((a, b) => a - b)
+  if (r.length === 0) return 'andre rader'
+  if (r.length === 1) return `rad ${r[0]}`
+  if (r.length > MAKS_NEVNTE_RADER + 1) return `rad ${r.slice(0, MAKS_NEVNTE_RADER).join(', ')} og ${r.length - MAKS_NEVNTE_RADER} til`
   return `rad ${r.slice(0, -1).join(', ')} og ${r[r.length - 1]}`
 }
 

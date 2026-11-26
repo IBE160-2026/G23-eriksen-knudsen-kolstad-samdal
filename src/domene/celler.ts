@@ -6,6 +6,9 @@ import type { Celleverdi, Delstype, Feilsted, Nivaa } from './typer.ts'
 
 export const NIVAAER: readonly Nivaa[] = ['0', '.1', '..2']
 
+/** Nivået som tall: 0, 1 eller 2. Brukes av strukturen og av kontrollene. */
+export const NIVAATALL: Record<Nivaa, number> = { '0': 0, '.1': 1, '..2': 2 }
+
 /** Teksten i Excel og koden for typen (FR-3). */
 export const TYPER: ReadonlyMap<string, Delstype> = new Map<string, Delstype>([
   ['Ferdigvare', 'FERDIGVARE'],
@@ -32,6 +35,13 @@ export function varenummerTekst(verdi: Celleverdi | undefined): string | null {
   if (typeof verdi === 'number') return String(verdi)
   if (typeof verdi !== 'string') return null
   const tekst = verdi.trim()
+  return tekst === '' ? null : tekst
+}
+
+/** Beskrivelsen som tekst, eller null når den er tom. Et tall gjøres om til tekst. */
+export function beskrivelseTekst(verdi: Celleverdi | undefined): string | null {
+  if (typeof verdi === 'number') return String(verdi)
+  const tekst = typeof verdi === 'string' ? verdi.trim() : ''
   return tekst === '' ? null : tekst
 }
 
