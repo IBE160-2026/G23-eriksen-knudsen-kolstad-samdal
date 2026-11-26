@@ -544,11 +544,42 @@ function ordFor(delstype: Delstype) {
       }
 }
 
-/** Forklaringen på at resultattabellen viser et høyere tall for forventet lagerbeholdning (FR-7). */
-const tabellenRegnerMed = (uke: number, forfalt: number): string =>
-  `Tabellen viser et høyere tall for forventet lagerbeholdning i uke ${uke}, fordi den regner med at de ${tall(forfalt)} kommer i tide.`
+/**
+ * Forklaringen på at resultattabellen viser et annet tall for forventet lagerbeholdning enn disponibel beholdning (FR-7).
+ * Tabellen regner med at de forfalte mengdene kommer i tide (+ forfalt), og trekker fra mottak som er fremskyndet til uken
+ * og ikke er kommet ennå (− R). Tallet kan derfor være både høyere og lavere enn disponibel beholdning.
+ *
+ * Er tallet fra tabellen kjent (`tabellverdi`, forventet lagerbeholdning i uken), sier forklaringen om det er høyere eller
+ * lavere og hvorfor, og R er disponibel + forfalt − tabellverdi. Ellers sier den bare at tallet kan avvike.
+ */
+function tabellforklaring(uke: number, disponibel: number, forfalt: number, tabellverdi: number | undefined): string {
+  if (tabellverdi === undefined) {
+    return (
+      `Tabellen viser forventet lagerbeholdning i uke ${uke}. Den regner med at de ${tall(forfalt)} kommer i tide, og trekker fra ` +
+      `mottak som er fremskyndet til uken og ikke er kommet ennå. Tallet i tabellen kan derfor avvike fra ${tall(disponibel)}.`
+    )
+  }
+  const ikkeKommet = disponibel + forfalt - tabellverdi
+  const trekker = `de ${tall(ikkeKommet)} som er fremskyndet og ikke er kommet ennå`
+  if (tabellverdi > disponibel) {
+    return (
+      `Tabellen viser ${tall(tabellverdi)} i uke ${uke}, høyere enn ${tall(disponibel)}, fordi den regner med at de ${tall(forfalt)} kommer i tide.` +
+      (ikkeKommet > 0 ? ` Den trekker samtidig fra ${trekker}.` : '')
+    )
+  }
+  if (tabellverdi < disponibel) {
+    return (
+      `Tabellen viser ${tall(tabellverdi)} i uke ${uke}, lavere enn ${tall(disponibel)}. Den regner med at de ${tall(forfalt)} kommer i tide, ` +
+      `men trekker fra ${trekker}.`
+    )
+  }
+  return (
+    `Tabellen viser det samme tallet, ${tall(tabellverdi)}, i uke ${uke}: den regner med at de ${tall(forfalt)} kommer i tide, ` +
+    `og trekker fra ${trekker}.`
+  )
+}
 
-function lagMelding(e: Eksepsjon): Pick<Eksepsjonstekst, 'setning' | 'melding' | 'hvorfor'> {
+function lagMelding(e: Eksepsjon, tabellverdi: number | undefined): Pick<Eksepsjonstekst, 'setning' | 'melding' | 'hvorfor'> {
   const navn = `${e.beskrivelse} (${e.varenummer})`
   const ord = ordFor(e.delstype)
   switch (e.kode) {
@@ -568,7 +599,7 @@ function lagMelding(e: Eksepsjon): Pick<Eksepsjonstekst, 'setning' | 'melding' |
           `Disponibel beholdning i uke ${e.uke} er ${tall(e.disponibel)}, så behovet er større enn lageret og de planlagte mottakene. ` +
           `Nettobehovet ${ord.skulleVaert}, men planen starter i uke 1, og ledetiden er ${ukerTekst(ledetid)}. ` +
           `Derfor ${ord.varene} ${e.tidligsteMottaksuke} (uke 1 + ledetid ${tall(ledetid)}). ` +
-          tabellenRegnerMed(e.uke, e.forfaltMengde),
+          tabellforklaring(e.uke, e.disponibel, e.forfaltMengde, tabellverdi),
       }
     }
     case 'BRUK_AV_SIKKERHETSLAGER': {
@@ -582,11 +613,16 @@ function lagMelding(e: Eksepsjon): Pick<Eksepsjonstekst, 'setning' | 'melding' |
         hvorfor:
           `Disponibel beholdning i uke ${e.uke} er ${tall(e.disponibel)}. Den er ikke under 0, men under sikkerhetslageret på ${tall(e.sikkerhetslager)}, ` +
           `og nettobehovet ${ord.skulleVaert}. Derfor ${ord.varene} ${e.tidligsteMottaksuke} (uke 1 + ledetid ${tall(ledetid)}). ` +
-          tabellenRegnerMed(e.uke, e.forfaltMengde),
+          tabellforklaring(e.uke, e.disponibel, e.forfaltMengde, tabellverdi),
       }
     }
     case 'MOTTAK_FORSINKET': {
       const under = e.sikkerhetslager > 0 && e.disponibelForFremskynding < e.sikkerhetslager ? `, under sikkerhetslageret på ${tall(e.sikkerhetslager)}` : ''
+      // Hva som utløser behovet: lageret under 0, eller bare under sikkerhetslageret (nettobehovet er maks(0, SS − disponibel)).
+      const behov =
+        e.disponibelForFremskynding < 0
+          ? `Lageret ville gått under 0 i uke ${e.uke} (disponibel beholdning ${tall(e.disponibelForFremskynding)}).`
+          : `Lageret ville kommet under sikkerhetslageret på ${tall(e.sikkerhetslager)} i uke ${e.uke} (disponibel beholdning ${tall(e.disponibelForFremskynding)}).`
       const handling = ord.produksjon
         ? `Flytt produksjonen av mottaket på ${tall(e.antall)} fra uke ${e.mottaksuke} til uke ${e.uke}`
         : `Be leverandøren levere mottaket på ${tall(e.antall)} i uke ${e.uke} i stedet for uke ${e.mottaksuke}`
@@ -596,7 +632,7 @@ function lagMelding(e: Eksepsjon): Pick<Eksepsjonstekst, 'setning' | 'melding' |
           `Lageret for ${navn} blir ${tall(e.disponibelForFremskynding)} i uke ${e.uke}${under}, før mottaket kommer. ${handling}. ` +
           `Det lages ingen ${ord.nyOrdre} for behovet mottaket dekker.`,
         hvorfor:
-          `Behovet i uke ${e.uke} er større enn lageret og mottakene i uke ${e.uke} (disponibel beholdning ${tall(e.disponibelForFremskynding)}, sikkerhetslager ${tall(e.sikkerhetslager)}). ` +
+          `${behov} ` +
           `Planen bruker et planlagt mottak før den foreslår en ${ord.nyOrdre}, så mottaket på ${tall(e.antall)} i uke ${e.mottaksuke} er regnet med i uke ${e.uke}. ` +
           `I tabellen står mottaket fortsatt i uke ${e.mottaksuke}.`,
       }
@@ -608,11 +644,13 @@ function lagMelding(e: Eksepsjon): Pick<Eksepsjonstekst, 'setning' | 'melding' |
         setning: 'Planen er for kort til å vise alt som må bestilles nå.',
         melding:
           `Ledetiden fra ferdigproduktet er ${ukerTekst(e.ledetidFraFerdigproduktet)} (${sti}), ${lengde} horisonten på ${ukerTekst(e.horisont)}. ` +
-          `Bruk en lengre horisont: behov etter uke ${e.horisont} som må bestilles nå, vises ikke. Delen mangler ikke.`,
+          `Bruk en lengre horisont: behov etter uke ${e.horisont} som må bestilles nå, vises ikke. Delen mangler ikke. ` +
+          `Eksepsjonen gjelder bare innenfor horisonten.`,
+        // «Hvorfor:» bruker ikke «horisonten» (EXPERIENCE.md › Voice and Tone).
         hvorfor:
-          `Ledetiden fra ferdigproduktet er summen av ledetidene langs den lengste stien, og her er den minst like lang som horisonten. ` +
-          `En bestilling i uke 1 kommer tidligst i uke ${e.ledetidFraFerdigproduktet + 1}, etter uke ${e.horisont}. ` +
-          `Eksepsjonen gjelder hele delen, og bare innenfor horisonten.`,
+          `Ledetiden fra ferdigproduktet er summen av ledetidene langs den lengste stien, og her er den minst like lang som planen (${ukerTekst(e.horisont)}). ` +
+          `En bestilling i uke 1 kommer tidligst i uke ${e.ledetidFraFerdigproduktet + 1}, etter siste uke i planen (uke ${e.horisont}). ` +
+          `Eksepsjonen gjelder hele delen, uansett behov, og bare for ukene planen viser.`,
       }
     }
     case 'KANSELLER_MOTTAK': {
@@ -624,7 +662,7 @@ function lagMelding(e: Eksepsjon): Pick<Eksepsjonstekst, 'setning' | 'melding' |
           `Vurder å kansellere eller utsette det. Behov etter uke ${e.horisont} er ikke regnet med.`,
         hvorfor:
           `Uten mottaket blir det ikke nettobehov fra uke ${e.uke} til uke ${e.horisont}, og mottaket er ikke brukt til å dekke behov før det. ` +
-          `Eksepsjonen gjelder bare innenfor horisonten.`,
+          `Eksepsjonen gjelder bare ukene planen viser.`,
       }
     }
   }
@@ -637,13 +675,17 @@ export const eksepsjoner = {
    * Meldingen for én eksepsjon, i de fire delene fra EXPERIENCE.md (variant B, UX-DR25): typenavnet og uken, én setning i
    * vanlig språk, «Melding:» og «Hvorfor:». Kjernen gir bare koder og tall (AD-9), så all tekst lages her.
    * Ordlyden er Sebastians forslag fra EXPERIENCE.md og prøves i prøvetesten. Opplysningene kravene sier, skal alltid med.
+   *
+   * @param tabellverdi forventet lagerbeholdning i uken slik resultattabellen viser den (\`DelResultat.forventetLagerbeholdning\`),
+   *   til Bestilling forsinket og Bruk av sikkerhetslager. Med den sier «Hvorfor:» om tabellen viser et høyere eller lavere tall enn
+   *   disponibel beholdning, og hvorfor (fremskyndede mottak trekkes fra). Uten den sier teksten bare at tallet kan avvike (FR-7).
    */
-  melding: (e: Eksepsjon): Eksepsjonstekst => {
+  melding: (e: Eksepsjon, tabellverdi?: number): Eksepsjonstekst => {
     const uke = e.uke === null ? 'hele delen' : `uke ${e.uke}`
-    return { typenavn: TYPENAVN[e.kode], uke, merke: `${TYPENAVN[e.kode]} · ${uke}`, ...lagMelding(e) }
+    return { typenavn: TYPENAVN[e.kode], uke, merke: `${TYPENAVN[e.kode]} · ${uke}`, ...lagMelding(e, tabellverdi) }
   },
   /** Bare setningen i vanlig språk, til listen over kritiske deler (Story 2.10). */
-  setning: (e: Eksepsjon): string => lagMelding(e).setning,
+  setning: (e: Eksepsjon): string => lagMelding(e, undefined).setning,
 } as const
 
 // --- Forklaringer ---------------------------------------------------------

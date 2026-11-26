@@ -6,7 +6,7 @@
 
 import { describe, expect, it } from 'vitest'
 import type { Delstype, Eksepsjon } from '../../src/domene/typer.ts'
-import { eksepsjoner } from '../../src/tekster/nb.ts'
+import { eksepsjoner, formaterTall } from '../../src/tekster/nb.ts'
 import {
   EKSEPSJONER_01,
   KANSELLER_MOTTAK_02,
@@ -162,11 +162,65 @@ describe('Bestilling forsinket: hva som blir forsinket (FR-10)', () => {
 })
 
 describe('Bestilling forsinket og Bruk av sikkerhetslager: tabellen viser et annet tall (FR-7)', () => {
-  it('forklarer at forventet lagerbeholdning i tabellen er høyere fordi de forfalte mengdene regnes som kommet', () => {
-    for (const e of [HJUL, ARMLENE, SIKKERHETSLAGER_02, LASESKIVE_04[0] as Eksepsjon, PRODUKSJON_FORSINKET_04]) {
+  // Forventet lagerbeholdning i uken slik Fasittabell viser den (Fasittabell, rad «Forventet lagerbeholdning»). Tallene er skrevet
+  // av fra fasitene, siden SheetJS ikke er tillatt her (AD-15). R er de fremskyndede mottakene som ikke er kommet ennå:
+  // R = disponibel + forfalt − tabellverdi.
+  const FASIT_TABELLVERDI: { navn: string; e: Eksepsjon; tabellverdi: number; fremskyndetIkkeKommet: number }[] = [
+    { navn: '300-003 Hjul (01, uke 1)', e: HJUL, tabellverdi: 30, fremskyndetIkkeKommet: 0 },
+    { navn: '300-004 Armlene (01, uke 1)', e: ARMLENE, tabellverdi: 20, fremskyndetIkkeKommet: 0 },
+    { navn: '300-003 Ryggtrekk (02, uke 1)', e: SIKKERHETSLAGER_02, tabellverdi: 30, fremskyndetIkkeKommet: 0 },
+    { navn: '300-026 Låseskive (04, uke 1)', e: LASESKIVE_04[0] as Eksepsjon, tabellverdi: -30, fremskyndetIkkeKommet: 30 },
+    { navn: '300-022 Skruesett M8 (04, uke 7)', e: PRODUKSJON_FORSINKET_04, tabellverdi: 0, fremskyndetIkkeKommet: 0 },
+  ]
+
+  it.each(FASIT_TABELLVERDI)(
+    'med tabellens tall sier forklaringen om det er høyere eller lavere, og hvorfor: $navn',
+    ({ e, tabellverdi, fremskyndetIkkeKommet }) => {
+      const m = eksepsjoner.melding(e, tabellverdi)
+      const disponibel = (e as { disponibel: number }).disponibel
+      const forfalt = (e as { forfaltMengde: number }).forfaltMengde
+      // Regnestykket i testen er det samme som i fasiten: tabellverdi = disponibel + forfalt − fremskyndet ikke kommet.
+      expect(disponibel + forfalt - fremskyndetIkkeKommet).toBe(tabellverdi)
+      expect(m.hvorfor).toContain(`Tabellen viser ${formaterTall(tabellverdi)} i uke ${(e as { uke: number }).uke}`)
+      expect(m.hvorfor).toContain(tabellverdi > disponibel ? `høyere enn ${formaterTall(disponibel)}` : `lavere enn ${formaterTall(disponibel)}`)
+      expect(m.hvorfor).toContain(`de ${formaterTall(forfalt)} kommer i tide`)
+      if (fremskyndetIkkeKommet > 0) expect(m.hvorfor).toContain(`de ${formaterTall(fremskyndetIkkeKommet)} som er fremskyndet og ikke er kommet ennå`)
+      else expect(m.hvorfor).not.toContain('fremskyndet og ikke er kommet')
+    },
+  )
+
+  it('300-026 i testeksempel 04: tabellen viser −30, som er LAVERE enn −10, fordi mottaket på 30 er fremskyndet og ikke kommet (F1)', () => {
+    const h = eksepsjoner.melding(LASESKIVE_04[0] as Eksepsjon, -30).hvorfor
+    expect(h).toContain('Tabellen viser −30 i uke 1, lavere enn −10.')
+    expect(h).toContain('men trekker fra de 30 som er fremskyndet og ikke er kommet ennå')
+    expect(h).not.toContain('høyere')
+  })
+
+  it('uten tabellens tall påstår teksten verken «høyere» eller «lavere», bare at tallet kan avvike (FR-7)', () => {
+    for (const { e } of FASIT_TABELLVERDI) {
       const h = eksepsjoner.melding(e).hvorfor
-      expect(h, e.kode).toContain('Tabellen viser et høyere tall for forventet lagerbeholdning')
-      expect(h).toContain('regner med')
+      expect(h).not.toMatch(/høyere|lavere/)
+      expect(h).toContain('Tallet i tabellen kan derfor avvike fra')
+      expect(h).toContain('trekker fra mottak som er fremskyndet til uken og ikke er kommet ennå')
+    }
+  })
+
+  it('høyere enn disponibel beholdning, men lavere enn med alle forfalte mengder: begge deler forklares', () => {
+    // Disponibel −20, 50 forfalt og 20 fremskyndet som ikke er kommet gir 10 i tabellen: høyere enn −20, lavere enn 30.
+    const h = eksepsjoner.melding(HJUL, 10).hvorfor
+    expect(h).toContain('Tabellen viser 10 i uke 1, høyere enn −20, fordi den regner med at de 50 kommer i tide.')
+    expect(h).toContain('Den trekker samtidig fra de 20 som er fremskyndet og ikke er kommet ennå.')
+  })
+
+  it('samme tall i tabellen og som disponibel beholdning forklares også (de forfalte mengdene veies opp av fremskyndede mottak)', () => {
+    const h = eksepsjoner.melding(HJUL, -20).hvorfor
+    expect(h).toContain('Tabellen viser det samme tallet, −20, i uke 1')
+    expect(h).toContain('de 50 som er fremskyndet og ikke er kommet ennå')
+  })
+
+  it('forklaringen er den samme for innkjøp og produksjon (bare tallene avgjør)', () => {
+    for (const delstype of DELSTYPER) {
+      expect(eksepsjoner.melding(medType(LASESKIVE_04[0] as Eksepsjon, delstype), -30).hvorfor).toContain('lavere enn −10')
     }
   })
 
@@ -181,10 +235,23 @@ describe('Bestilling forsinket og Bruk av sikkerhetslager: tabellen viser et ann
 })
 
 describe('Ledetid overskrider horisont og Kanseller mottak: bare innenfor horisonten (FR-9, FR-29)', () => {
-  it('sier at eksepsjonen bare gjelder innenfor horisonten', () => {
-    expect(alt(STOLFOT)).toMatch(/bare innenfor horisonten/)
-    expect(alt(KANSELLER_MOTTAK_02)).toMatch(/innenfor horisonten/)
-    expect(eksepsjoner.melding(KANSELLER_MOTTAK_02).hvorfor).toContain('bare innenfor horisonten')
+  it('Melding sier at eksepsjonen bare gjelder innenfor horisonten', () => {
+    expect(eksepsjoner.melding(STOLFOT).melding).toContain('Eksepsjonen gjelder bare innenfor horisonten.')
+    expect(eksepsjoner.melding(KANSELLER_MOTTAK_02).melding).toContain('trengs ikke innenfor horisonten')
+  })
+
+  it('«Hvorfor:» bruker aldri «horisonten», for noen eksepsjon eller delstype (EXPERIENCE.md › Eksepsjonsmeldinger, F2)', () => {
+    for (const e of ALLE) {
+      for (const delstype of DELSTYPER) {
+        expect(eksepsjoner.melding(medType(e, delstype)).hvorfor, `${e.kode} ${delstype}`).not.toMatch(/horisont/i)
+      }
+    }
+  })
+
+  it('«Hvorfor:» for Ledetid og Kanseller mottak sier det samme uten «horisonten»: planen og ukene den viser', () => {
+    expect(eksepsjoner.melding(STOLFOT).hvorfor).toContain('minst like lang som planen (10 uker)')
+    expect(eksepsjoner.melding(STOLFOT).hvorfor).toContain('bare for ukene planen viser')
+    expect(eksepsjoner.melding(KANSELLER_MOTTAK_02).hvorfor).toContain('bare ukene planen viser')
   })
 
   it('ledetid lengre enn horisonten skrives «lengre enn», og stien kan ha flere deler', () => {
@@ -200,7 +267,7 @@ describe('Ledetid overskrider horisont og Kanseller mottak: bare innenfor horiso
     } as Eksepsjon
     const m = eksepsjoner.melding(lang).melding
     expect(m).toContain('13 uker (Kontorstol Pro 1 + Sete 0 + Gassfjær 12), lengre enn horisonten på 10 uker')
-    expect(eksepsjoner.melding(lang).hvorfor).toContain('tidligst i uke 14, etter uke 10')
+    expect(eksepsjoner.melding(lang).hvorfor).toContain('tidligst i uke 14, etter siste uke i planen (uke 10)')
   })
 
   it('en horisont på 8 eller 12 uker står riktig, og «1 uke» står i entall', () => {
@@ -275,5 +342,33 @@ describe('tall i meldingene (UX-DR2)', () => {
     expect(m).toContain('1 500')
     expect(m).toContain('12 000')
     expect(m).not.toContain('-1')
+  })
+})
+
+describe('Mottak forsinket: hva som utløser behovet (F3)', () => {
+  it('300-005 Gassfjær i testeksempel 01 (lager 0 i uke 3, SS 10): lageret kommer under sikkerhetslageret, ikke under 0', () => {
+    const h = eksepsjoner.melding(GASSFJAER).hvorfor
+    expect(h).toContain('Lageret ville kommet under sikkerhetslageret på 10 i uke 3 (disponibel beholdning 0).')
+    expect(h).not.toContain('større enn lageret')
+    expect(h).not.toContain('gått under 0')
+  })
+
+  it('300-026 i testeksempel 04 (lager −40 i uke 1, SS 0): lageret ville gått under 0', () => {
+    const h = eksepsjoner.melding(LASESKIVE_04[1] as Eksepsjon).hvorfor
+    expect(h).toContain('Lageret ville gått under 0 i uke 1 (disponibel beholdning −40).')
+    expect(h).not.toContain('sikkerhetslageret på')
+  })
+
+  it('under 0 går foran sikkerhetslageret, også når delen har sikkerhetslager', () => {
+    const med = { ...GASSFJAER, disponibelForFremskynding: -5 } as Eksepsjon
+    const h = eksepsjoner.melding(med).hvorfor
+    expect(h).toContain('Lageret ville gått under 0 i uke 3 (disponibel beholdning −5).')
+    expect(h).not.toContain('kommet under sikkerhetslageret')
+  })
+
+  it('«Hvorfor:» for Mottak forsinket sier at mottaket regnes med i uken og at det står i sin egen uke i tabellen', () => {
+    const h = eksepsjoner.melding(GASSFJAER).hvorfor
+    expect(h).toContain('mottaket på 100 i uke 4 er regnet med i uke 3')
+    expect(h).toContain('I tabellen står mottaket fortsatt i uke 4.')
   })
 })
