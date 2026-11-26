@@ -5,22 +5,15 @@
 //   Mottak forsinket (FR-12) og Kanseller mottak (FR-29).
 // Kjernen gir koder og tall, aldri ferdig tekst (AD-9). Teksten lages i `tekster/`.
 //
-// Funksjonen regner ikke MRP selv. Den får nettingen for hver del fra den som kaller (beregningen nivå for nivå,
-// Story 2.2), og bare Kanseller mottak kjører nettingen en gang til per mottak (AD-7). Den er ren: den endrer ikke
-// inndataene og gir samme svar for samme inndata (FR-8).
+// Funksjonen regner ikke MRP selv. Den leser resultatet fra beregningen nivå for nivå (`DelResultat`, Story 2.2) og
+// de planlagte mottakene fra inndataene, og bare Kanseller mottak kjører nettingen en gang til per mottak (AD-7).
+// Den er ren: den endrer ikke inndataene og gir samme svar for samme inndata (FR-8).
 //
 // Rekkefølgen er stykklisterekkefølge, så uke (hele delen først) og så typen i rekkefølgen i PRD §4.3, som er
 // rekkefølgen i `EKSEPSJONSKODER` (arkitektur kap. 4). Er alt likt, kommer mottak i rekkefølgen de ble fremskyndet i.
 
-import { beregnNetting, type NettingInndata, type Nettingsvar } from './netting.ts'
-import { EKSEPSJONSKODER, type DelNavn, type Eksepsjon, type StrukturDel } from './typer.ts'
-
-/** Det eksepsjonene trenger om én del: strukturen, det nettingen fikk inn, og svaret den ga. */
-export type DelMedNetting = {
-  del: StrukturDel
-  inndata: NettingInndata
-  svar: Nettingsvar
-}
+import { beregnNetting, type NettingInndata } from './netting.ts'
+import { EKSEPSJONSKODER, type DelNavn, type DelResultat, type Eksepsjon, type PlanlagtMottak, type StrukturDel } from './typer.ts'
 
 export type Eksepsjonsfunn = {
   /** Sortert på stykklisterekkefølge, uke (hele delen først) og type. */
@@ -32,15 +25,20 @@ export type Eksepsjonsfunn = {
 /**
  * Finner eksepsjonene for alle delene.
  *
- * @param deler alle delene i stykklisterekkefølge (en felles del står én gang), hver med nettingen for delen
+ * @param deler alle delene fra beregningen i stykklisterekkefølge (en felles del står én gang): `Resultat.deler`
+ * @param planlagteMottak mottakene som enkeltlinjer fra inndataene, til Kanseller mottak
  * @param horisont antall uker H
  */
-export function finnEksepsjoner(deler: readonly DelMedNetting[], horisont: number): Eksepsjonsfunn {
+export function finnEksepsjoner(
+  deler: readonly DelResultat[],
+  planlagteMottak: readonly PlanlagtMottak[],
+  horisont: number,
+): Eksepsjonsfunn {
   const navn = new Map<string, StrukturDel>(deler.map((d) => [d.del.varenummer, d.del]))
   const eksepsjoner: Eksepsjon[] = []
   const kritiskeDeler: string[] = []
   for (const del of deler) {
-    const funn = eksepsjonerForDel(del, horisont, navn)
+    const funn = eksepsjonerForDel(del, planlagteMottak, horisont, navn)
     if (funn.length > 0) kritiskeDeler.push(del.del.varenummer)
     eksepsjoner.push(...funn)
   }
@@ -50,10 +48,20 @@ export function finnEksepsjoner(deler: readonly DelMedNetting[], horisont: numbe
 const KODEPLASS = new Map<string, number>(EKSEPSJONSKODER.map((kode, i) => [kode, i]))
 
 function eksepsjonerForDel(
-  { del, inndata, svar }: DelMedNetting,
+  resultat: DelResultat,
+  alleMottak: readonly PlanlagtMottak[],
   horisont: number,
   deler: ReadonlyMap<string, StrukturDel>,
 ): Eksepsjon[] {
+  const { del } = resultat
+  // Det nettingen fikk inn for delen, bygget av resultatet. Brukes bare av Kanseller mottak.
+  const inndata: NettingInndata = {
+    lagerbeholdning: del.lagerbeholdning,
+    sikkerhetslager: del.sikkerhetslager,
+    ledetid: del.ledetid,
+    bruttobehov: resultat.bruttobehov,
+    planlagteMottak: alleMottak.filter((m) => m.varenummer === del.varenummer),
+  }
   const felles = { varenummer: del.varenummer, beskrivelse: del.beskrivelse, delstype: del.type }
   const funn: Eksepsjon[] = []
 
@@ -73,7 +81,7 @@ function eksepsjonerForDel(
   }
 
   const fremskyndede = new Set<number>()
-  for (const uke of svar.uker) {
+  for (const uke of resultat.utregning) {
     for (const mottak of uke.fremskyndedeMottak) fremskyndede.add(mottak.excelRad)
 
     // FR-10 og FR-11: nettobehov med forfalt frigivelse. Disponibel beholdning er verdien etter fremskynding.
@@ -83,7 +91,7 @@ function eksepsjonerForDel(
         disponibel: uke.disponibelEtterFremskynding,
         forfaltMengde: uke.forfaltMengde,
         skulleFrigis: uke.uke - del.ledetid,
-        frigivelseUke1: svar.planlagteOrdrefrigivelser[0] ?? 0,
+        frigivelseUke1: resultat.planlagteOrdrefrigivelser[0] ?? 0,
         tidligsteMottaksuke: 1 + del.ledetid,
       }
       if (uke.disponibelEtterFremskynding < 0) {

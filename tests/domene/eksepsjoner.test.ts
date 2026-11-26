@@ -8,10 +8,10 @@
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
-import { finnEksepsjoner, type DelMedNetting } from '../../src/domene/eksepsjoner.ts'
-import { beregnNetting, type NettingInndata } from '../../src/domene/netting.ts'
+import { finnEksepsjoner as finnEksepsjonerIResultat } from '../../src/domene/eksepsjoner.ts'
+import { beregnNetting, type NettingInndata, type Nettingsvar } from '../../src/domene/netting.ts'
 import { byggStruktur } from '../../src/domene/struktur.ts'
-import type { Eksepsjon, Nivaa, PlanlagtMottak, StrukturDel } from '../../src/domene/typer.ts'
+import type { DelResultat, Eksepsjon, Nivaa, PlanlagtMottak, StrukturDel, Utregning } from '../../src/domene/typer.ts'
 import { valider } from '../../src/domene/valider.ts'
 import { les } from '../../src/excel/les.ts'
 import { lesFasitEksepsjoner, lesFasittabell } from '../hjelpere/fasit-leser.ts'
@@ -57,8 +57,30 @@ function mottak(varenummer: string, ...linjer: [uke: number, antall: number][]):
   return linjer.map(([uke, antall], i) => ({ varenummer, uke, antall, excelRad: i + 2 }))
 }
 
-/** En del med nettingen kjørt på inndataene, slik beregningen nivå for nivå gir den til eksepsjonene. */
-function medNetting(d: StrukturDel, bruttobehov: number[], planlagteMottak: PlanlagtMottak[] = []): DelMedNetting {
+/** En del slik beregningen nivå for nivå gir den (`DelResultat`), med mottakene den ble regnet med. */
+type TestDel = { resultat: DelResultat; mottak: PlanlagtMottak[] }
+
+/** Bygger `DelResultat` fra nettingen for én del, slik beregn.ts gjør det (Story 2.2). */
+function tilDelResultat(d: StrukturDel, bruttobehov: number[], svar: Nettingsvar): DelResultat {
+  return {
+    del: d,
+    bruttobehov,
+    planlagteMottak: svar.planlagteMottak,
+    forventetLagerbeholdning: svar.forventetLagerbeholdning,
+    nettobehov: svar.nettobehov,
+    planlagteOrdremottak: svar.planlagteOrdremottak,
+    planlagteOrdrefrigivelser: svar.planlagteOrdrefrigivelser,
+    forfaltMengde: svar.forfaltMengde,
+    utregning: svar.uker.map((uke): Utregning => {
+      const { planlagtOrdremottak: _ordremottak, forventetLagerbeholdning: _forventet, ...felles } = uke
+      return { ...felles, prognostiserteBehov: null, bruttobehovFra: [] }
+    }),
+    kritisk: false,
+  }
+}
+
+/** En del med nettingen kjørt på inndataene. */
+function medNetting(d: StrukturDel, bruttobehov: number[], planlagteMottak: PlanlagtMottak[] = []): TestDel {
   const inndata: NettingInndata = {
     lagerbeholdning: d.lagerbeholdning,
     sikkerhetslager: d.sikkerhetslager,
@@ -66,7 +88,16 @@ function medNetting(d: StrukturDel, bruttobehov: number[], planlagteMottak: Plan
     bruttobehov,
     planlagteMottak,
   }
-  return { del: d, inndata, svar: beregnNetting(inndata) }
+  return { resultat: tilDelResultat(d, bruttobehov, beregnNetting(inndata)), mottak: planlagteMottak }
+}
+
+/** Kaller finnEksepsjoner slik Story 2.5 gjør: med `Resultat.deler` og mottakene fra inndataene. */
+function finnEksepsjoner(deler: readonly TestDel[], horisont: number) {
+  return finnEksepsjonerIResultat(
+    deler.map((d) => d.resultat),
+    deler.flatMap((d) => d.mottak),
+    horisont,
+  )
 }
 
 const FERDIG = del('100-002', 'Kontorstol Basic', '0', 0, 0, 0, [], 0, ['100-002'], 'FERDIGVARE')
@@ -387,7 +418,7 @@ describe('eksepsjoner.ts er en ren fil i domene/ (AD-2, AD-7)', () => {
 const TESTDATA = join(import.meta.dirname, '..', '..', 'testdata')
 
 /** Leser og validerer testeksemplet, og kjører nettingen for hver del med bruttobehovet fra Fasittabell. */
-function kjorTesteksempel(nr: string): { deler: DelMedNetting[]; horisont: number } {
+function kjorTesteksempel(nr: string): { deler: TestDel[]; horisont: number } {
   const fil = readFileSync(join(TESTDATA, `testeksempel-${nr}.xlsx`))
   const lest = les(fil, `testeksempel-${nr}.xlsx`)
   if (!lest.ok) throw new Error(`Testeksempel ${nr} kan ikke leses`)
@@ -396,7 +427,7 @@ function kjorTesteksempel(nr: string): { deler: DelMedNetting[]; horisont: numbe
   const inndata = validert.verdi
   const struktur = byggStruktur(inndata.stykkliste)
   const fasittabell = lesFasittabell(nr)
-  const deler = struktur.deler.map((d): DelMedNetting => {
+  const deler = struktur.deler.map((d): TestDel => {
     const bruttobehov = fasittabell.get(d.varenummer)?.Bruttobehov
     if (bruttobehov === undefined) throw new Error(`Fasit ${nr} mangler ${d.varenummer}`)
     const nettingInndata: NettingInndata = {
@@ -406,7 +437,7 @@ function kjorTesteksempel(nr: string): { deler: DelMedNetting[]; horisont: numbe
       bruttobehov,
       planlagteMottak: inndata.planlagteMottak.filter((m) => m.varenummer === d.varenummer),
     }
-    return { del: d, inndata: nettingInndata, svar: beregnNetting(nettingInndata) }
+    return { resultat: tilDelResultat(d, bruttobehov, beregnNetting(nettingInndata)), mottak: [...nettingInndata.planlagteMottak] }
   })
   return { deler, horisont: inndata.horisont }
 }
@@ -422,7 +453,7 @@ describe.each(['01', '02', '03', '04', '05'])('Fasittest: testeksempel %s (SM-2)
 
   it('de kritiske delene er delene med minst én eksepsjon i fasiten, i stykklisterekkefølge', () => {
     const iFasit = new Set(fasit.map((e) => e.varenummer))
-    expect(funn.kritiskeDeler).toEqual(deler.map((d) => d.del.varenummer).filter((vn) => iFasit.has(vn)))
+    expect(funn.kritiskeDeler).toEqual(deler.map((d) => d.resultat.del.varenummer).filter((vn) => iFasit.has(vn)))
   })
 })
 
@@ -435,8 +466,8 @@ describe('Fasittest: testeksempel 01 i detalj (FR-13, FR-9)', () => {
   })
 
   it('300-006 Stolfot har Ledetid overskrider horisont selv om nettobehovet er 0 i alle uker', () => {
-    const stolfot = deler.find((d) => d.del.varenummer === '300-006')!
-    expect(stolfot.svar.nettobehov.every((n) => n === 0)).toBe(true)
+    const stolfot = deler.find((d) => d.resultat.del.varenummer === '300-006')!
+    expect(stolfot.resultat.nettobehov.every((n) => n === 0)).toBe(true)
     expect(funn.eksepsjoner.filter((e) => e.varenummer === '300-006').map((e) => e.kode)).toEqual(['LEDETID_OVERSKRIDER_HORISONT'])
   })
 
