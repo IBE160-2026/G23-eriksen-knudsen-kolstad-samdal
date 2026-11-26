@@ -79,3 +79,21 @@ Sebastian la inn en ny review på PR #33 etter rettelsene fra første runde: tre
 
 ### Åpne punkter
 - PR #33 venter på ny gjennomgang av Sebastian, og skal ikke flettes før den er godkjent. Dette står alt i `issues.md`.
+
+## 2026-11-26 kl. 19:00 — Idun-Samdal
+
+### Oppgave
+Sebastian godkjente PR #33 (Story 1.8) etter andre runde, med to småting som ikke måtte rettes før fletting. Idun ba om å flette PR #33, rette de to småtingene og lage en PR for dem med Carmen som reviewer.
+
+### Plan
+- Flette PR #33, så rette småtingene på en ny branch fra oppdatert main (PR #33 var alt flettet), og hente main inn i `Idun/Branch`.
+
+### Resultat
+- **PR #33 flettet** (merge commit 3f87c98 i main). Sebastians godkjenning kom på e14a859 etter at reviewer var byttet til Carmen og tilbake til Sebastian.
+- **`fix/story-1-8-smaating` (commit 7eb839c, pushet):** en type med feil mot nivået (Ferdigvare på .1) er ikke fasit for de neste radene med varenummeret, så de får ikke `TYPE_ULIK` som følgefeil. Testen for nivå «1» hadde en betingelse (`i === 0`) som aldri var sann, og den er fjernet. Én ny test, som feiler mot den gamle koden. `npm test` 916, lint og `tsc -b` grønne. Bygg og e2e ikke kjørt.
+- **PR #36** laget mot main med Carmen som reviewer. Ikke flettet.
+- **`Idun/Branch`:** main hentet inn uten konflikter. `src` og `tests` er identiske med main, så de to rettelsene ligger bare i PR #36 til den er flettet.
+
+### Åpne punkter
+- PR #36 venter på Carmen, og skal ikke flettes før hun har godkjent. Etter fletting må main hentes inn i `Idun/Branch` igjen.
+- Gruppen må fortsatt godkjenne at sløyfer gir `VARENUMMER_UNDER_SEG_SELV` og at `[X:1, X:1]` er likt med `[X:2]`, og `lag_testdata.py` må bruke samme regel. Dette står alt i `issues.md`.
