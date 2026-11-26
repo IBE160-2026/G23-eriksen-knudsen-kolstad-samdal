@@ -55,6 +55,19 @@ Sebastian ba om en review av Iduns Story 1.8 (PR #33, `story/1.8-kontroll-av-ark
 - Funnlista ligger i scratchpad: `pr33-runde2-funn.json`.
 - Lagt inn som review-kommentar på PR #33 (COMMENTED): Idun er bedt om å rette de tre funnene og ordbankdatoen før godkjenning. Testen, `antallMedFeil` og de doble typefeilene står som valgfrie.
 
+**Runde 3 (Iduns rettelser i e14a859):**
+- Kontrollert direkte, uten subagenter, fordi diffen er liten: `valider-stykkliste.ts`, testene og `updated` i ordbanken. På e14a859 er `npm test` 915 grønne, lint, `tsc -b` og bygg grønne. Branchen inneholder main (cf68fb4), og PR-en kan flettes.
+- Probene bekrefter at alle fire punktene er rettet:
+  - Uten Antall-overskriften gir 4 + 4 mot 8 ingen feil, mens et ekte avvik i varenumrene fortsatt gir `UNDERDELER_ULIKE`.
+  - En tom rad gir bare `RADER_IKKE_SAMMENHENGENDE`.
+  - `0, ..2, ..2` gir bare `NIVAA_2_UTEN_NIVAA_1_OVER`.
+  - `updated` i ordbanken er 2026-11-26.
+- De valgfrie punktene er også rettet: testen sjekker lengden, et antall med feil sperrer bare sin egen forekomst, og samme celle får ikke lenger både typefeil mot nivået og `TYPE_ULIK`.
+- Igjen, bare småting:
+  - En fasitrad med typefeil mot nivået (Ferdigvare på .1) gir fortsatt `TYPE_ULIK` på neste rad med samme varenummer.
+  - Den døde ternæren `i === 0 ? '0' : '1'` står fortsatt i testen.
+- Ingenting er lagt på PR-en ennå.
+
 ### Åpne punkter
 - Godkjenn PR #33 når Idun har rettet de to falske `UNDERDELER_ULIKE`, `0, ..2, ..2` og ordbankdatoen.
 - Testene for sikkerhetsnettet i `tests/domene/valider-mps-og-mottak.test.ts` (531–602) tester nå reglene, ikke sikkerhetsnettet: test `tilStykklisterader` direkte, eller fjern sikkerhetsnettet (min kode fra 1.9).
