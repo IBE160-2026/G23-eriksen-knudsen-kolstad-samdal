@@ -168,14 +168,17 @@ export function validerStykklisteVerdier(
     if (bruk('Type')) {
       if (type === undefined) meld('TYPE_UGYLDIG', 'Type', rad)
       else {
-        // Én feil per celle: har typen alt en feil mot nivået, meldes ikke også «ulik type».
+        // Én feil per celle: har typen alt en feil mot nivået, meldes ikke også «ulik type». En type med slik
+        // feil er heller ikke fasit for de neste radene med varenummeret, så de får ikke en følgefeil.
         const feilMotNivaa = (type === 'FERDIGVARE' && nivaa !== undefined && nivaa !== '0') || (nivaa === '0' && type !== 'FERDIGVARE')
         if (type === 'FERDIGVARE' && nivaa !== undefined && nivaa !== '0') meld('TYPE_FERDIGVARE_IKKE_NIVAA_0', 'Type', rad)
         if (nivaa === '0' && type !== 'FERDIGVARE') meld('TYPE_NIVAA_0_IKKE_FERDIGVARE', 'Type', rad)
-        const fasit = varenummer === null ? undefined : forsteType.get(varenummer)
-        if (varenummer !== null && fasit === undefined) forsteType.set(varenummer, t)
-        else if (varenummer !== null && eier === undefined && !feilMotNivaa && fasit?.type !== type) {
-          meld('TYPE_ULIK', 'Type', rad, { varenummer, andreRader: [fasit!.rad.excelRad] })
+        if (varenummer !== null && !feilMotNivaa) {
+          const fasit = forsteType.get(varenummer)
+          if (fasit === undefined) forsteType.set(varenummer, t)
+          else if (eier === undefined && fasit.type !== type) {
+            meld('TYPE_ULIK', 'Type', rad, { varenummer, andreRader: [fasit.rad.excelRad] })
+          }
         }
       }
     }
