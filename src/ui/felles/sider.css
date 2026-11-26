@@ -853,6 +853,17 @@ h2[tabindex='-1']:focus {
   background: var(--exc-horizon-soft);
 }
 
+/* Fokus i rutenettet (Story 2.9). Ringen ligger inne i cellen, ellers klippes den av området med rulling. En valgt celle har
+   allerede en ring på 2 px innerst, så fokusringen ligger rett innenfor den. */
+.resultattabell-tabell [tabindex]:focus-visible {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: -2px;
+}
+
+.celle-valgt:focus-visible {
+  outline-offset: -4px;
+}
+
 .celle-innhold {
   display: flex;
   align-items: center;

@@ -587,6 +587,15 @@ export const resultat = {
     /** Det tilgjengelige navnet på markøren: «Bestilling forsinket, uke 1» eller «…, hele delen» (FR-15). */
     markornavn: (navn: string, uke: number | null) => `${navn}, ${uke === null ? 'hele delen' : `uke ${uke}`}`,
     tegnforklaring: { navn: 'Tegnforklaring', kritiskDel: 'Kritisk del', valgtCelle: 'Valgt celle' },
+    /**
+     * Det skjermleseren leser når en celle får fokus (UX-DR22): del, rad, uke og verdi, for eksempel
+     * «300-003 Hjul, Nettobehov, Uke 1, 50», med eksepsjonene til slutt.
+     */
+    celleNavn: (varenummer: string, beskrivelse: string, rad: string, uke: number, verdi: number, eksepsjoner: string[]) =>
+      [`${varenummer} ${beskrivelse}`, rad, `Uke ${uke}`, formaterTall(verdi), ...eksepsjoner].join(', '),
+    radnavnNavn: (varenummer: string, beskrivelse: string, rad: string) => `${varenummer} ${beskrivelse}, ${rad}`,
+    feltNavn: (varenummer: string, beskrivelse: string, type: string, kritisk: boolean, eksepsjoner: string[]) =>
+      [`${varenummer} ${beskrivelse}`, type, ...(kritisk ? ['Kritisk del'] : []), ...eksepsjoner].join(', '),
     filter: {
       bareKritiske: 'Vis bare kritiske deler',
       viser: (synlige: number, totalt: number) => `Viser ${formaterTall(synlige)} av ${formaterTall(totalt)} deler`,
