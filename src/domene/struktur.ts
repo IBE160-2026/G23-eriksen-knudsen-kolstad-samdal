@@ -10,9 +10,8 @@
 //   hver forekomst eller bare under én (FR-3, FR-28).
 // - Lagerbeholdning, sikkerhetslager og ledetid hentes fra første rad med varenummeret (FR-28).
 
-import type { Forekomst, Nivaa, Struktur, StrukturDel, Stykklisterad } from './typer.ts'
-
-const NIVAATALL: Record<Nivaa, number> = { '0': 0, '.1': 1, '..2': 2 }
+import { NIVAATALL } from './celler.ts'
+import type { Forekomst, Struktur, StrukturDel, Stykklisterad } from './typer.ts'
 
 /** Underdelene til én del, slått sammen over forekomstene (hver underdel én gang). */
 type Kant = { underdel: string; antall: number }

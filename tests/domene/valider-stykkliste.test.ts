@@ -379,3 +379,169 @@ describe('rekkefølgen på feilene (FR-4)', () => {
     expect(feilIVerdier(rader)).toEqual(['UNDERDELER_ULIKE@rad 6', 'LEDETID_UGYLDIG@H7'])
   })
 })
+
+// Rettelser etter Sebastians gjennomgang av PR #33: færre følgefeil, og feil som ikke lenger blir stående.
+describe('følgefeil (gjennomgangen av PR #33)', () => {
+  it('nivå «1» i stedet for «.1» gir nivåfeilen på raden, ikke også «ingen nivå .1»', () => {
+    expect(feilIVerdier(endre(GYLDIG.slice(0, 2), 1, NIVAA, '1'))).toEqual(['NIVAA_UGYLDIG@A3'])
+    const alle = GYLDIG.map((v, i) => (i === 0 ? v : ([i === 0 ? '0' : '1', ...v.slice(1)] as Verdier)))
+    expect(feilIVerdier(alle).every((k) => k.startsWith('NIVAA_UGYLDIG'))).toBe(true)
+  })
+
+  it('en tom rad som stopper lesingen før første .1-rad, gir bare «ikke sammenhengende»', () => {
+    const ark = arkFra([GYLDIG[0]!], { tomRadMedInnholdUnder: 3 })
+    expect(kort(valider(ark))).toEqual(['RADER_IKKE_SAMMENHENGENDE@rad 3'])
+  })
+
+  it('en annen type i en senere forekomst som har underdeler, gir bare TYPE_ULIK på cellen', () => {
+    const rader: Verdier[] = [
+      ['0', '100-001', 'Stol', null, 'Ferdigvare', 0, 0, 0],
+      ['.1', '200-001', 'Sete', 1, 'Komponent (Produseres selv)', 10, 0, 1],
+      ['.1', '200-001', 'Sete', 1, 'Komponent (Kjøpes inn)', null, null, null],
+      ['..2', '300-001', 'Plate', 1, 'Komponent (Kjøpes inn)', 10, 0, 1],
+    ]
+    expect(feilIVerdier(rader)).toEqual(['TYPE_ULIK@E4'])
+  })
+
+  it('en del rett under seg selv gir bare VARENUMMER_UNDER_SEG_SELV, også med annen beskrivelse, type og tall', () => {
+    const rader: Verdier[] = [
+      ['0', '100-001', 'Stol', null, 'Ferdigvare', 0, 0, 0],
+      ['.1', '200-001', 'Sete', 1, 'Komponent (Produseres selv)', 10, 0, 1],
+      ['..2', '200-001', 'Noe annet', 1, 'Komponent (Kjøpes inn)', 5, 1, 3],
+    ]
+    expect(feilIVerdier(rader)).toEqual(['VARENUMMER_UNDER_SEG_SELV@B4'])
+  })
+
+  it('..2 rett etter en ekstra nivå 0-rad gir bare «flere nivå 0»', () => {
+    const rader: Verdier[] = [
+      ...GYLDIG.slice(0, 2),
+      ['0', '100-002', 'Stol 2', null, 'Ferdigvare', 0, 0, 0],
+      ['..2', '300-001', 'Plate', 1, 'Komponent (Kjøpes inn)', 10, 0, 1],
+    ]
+    expect(feilIVerdier(rader)).toEqual(['NIVAA_FLERE_NIVAA_0@A4'])
+  })
+})
+
+describe('feil som ikke skal bli stående til neste opplasting (gjennomgangen av PR #33)', () => {
+  const ferdig: Verdier = ['0', '100-001', 'Stol', null, 'Ferdigvare', 0, 0, 0]
+  const sete = (type = 'Komponent (Produseres selv)', forste = false): Verdier => [
+    '.1',
+    '200-001',
+    'Sete',
+    1,
+    type,
+    forste ? 10 : null,
+    forste ? 0 : null,
+    forste ? 1 : null,
+  ]
+  const skrue = (antall: Celleverdi, forste = false): Verdier => [
+    '..2',
+    '300-002',
+    'Skrue',
+    antall,
+    'Komponent (Kjøpes inn)',
+    forste ? 10 : null,
+    forste ? 0 : null,
+    forste ? 1 : null,
+  ]
+
+  it('antall som ikke er et heltall på 1 eller mer, er feil også uten Nivå-overskriften', () => {
+    expect(feilIVerdier(endre(GYLDIG, 7, ANTALL, 'fem'), ['Nivå'])).toEqual(['ANTALL_UGYLDIG@D9'])
+    expect(feilIVerdier(endre(GYLDIG, 7, ANTALL, 0), ['Nivå'])).toEqual(['ANTALL_UGYLDIG@D9'])
+    expect(feilIVerdier(GYLDIG, ['Nivå'])).toEqual([])
+  })
+
+  it('lager, sikkerhetslager og ledetid som ikke er heltall, er feil også uten Varenummer-overskriften', () => {
+    expect(feilIVerdier(endre(GYLDIG, 1, LAGER, -5), ['Varenummer'])).toEqual(['LAGERBEHOLDNING_UGYLDIG@F3'])
+    expect(feilIVerdier(endre(GYLDIG, 1, SS, 2.5), ['Varenummer'])).toEqual(['SIKKERHETSLAGER_UGYLDIG@G3'])
+    expect(feilIVerdier(endre(GYLDIG, 1, LEDETID, 'to'), ['Varenummer'])).toEqual(['LEDETID_UGYLDIG@H3'])
+    // Tomme celler og «første gang» kontrolleres ikke uten varenummer.
+    expect(feilIVerdier(GYLDIG, ['Varenummer'])).toEqual([])
+  })
+
+  it('ledetid 0 for en komponent er feil også når nivået er ukjent, men 0 er greit på første rad', () => {
+    expect(feilIVerdier(endre(GYLDIG, 1, LEDETID, 0), ['Nivå'])).toEqual(['LEDETID_UGYLDIG@H3'])
+    expect(feilIVerdier(endre(GYLDIG, 0, LEDETID, 0), ['Nivå'])).toEqual([])
+    expect(feilIVerdier(endre(endre(GYLDIG, 1, NIVAA, '3'), 1, LEDETID, 0))).toEqual(['NIVAA_UGYLDIG@A3', 'LEDETID_UGYLDIG@H3'])
+  })
+
+  it('et urelatert antall med feil slår ikke av reglene om underdeler for andre deler', () => {
+    const rader: Verdier[] = [
+      ferdig,
+      sete('Komponent (Kjøpes inn)', true),
+      skrue(4, true),
+      ['.1', '300-009', 'Hjul', 'fem', 'Komponent (Kjøpes inn)', 10, 0, 1],
+    ]
+    expect(feilIVerdier(rader)).toEqual(['TYPE_KJOPES_INN_HAR_UNDERDELER@E3', 'ANTALL_UGYLDIG@D5'])
+  })
+
+  it('en sløyfe oppdages også uten Antall- og Type-overskriftene', () => {
+    const sløyfe: Verdier[] = [
+      ferdig,
+      ['.1', '200-001', 'A', 1, 'Komponent (Produseres selv)', 10, 0, 1],
+      ['..2', '200-002', 'B', 1, 'Komponent (Produseres selv)', 10, 0, 1],
+      ['.1', '200-002', 'B', 1, 'Komponent (Produseres selv)', null, null, null],
+      ['..2', '200-001', 'A', 1, 'Komponent (Produseres selv)', null, null, null],
+    ]
+    expect(feilIVerdier(sløyfe, ['Antall', 'Type'])).toEqual(['VARENUMMER_UNDER_SEG_SELV@B6'])
+  })
+
+  it('en sløyfe med tre deler (A→B→C→A) er én feil', () => {
+    const rader: Verdier[] = [
+      ferdig,
+      ['.1', '200-001', 'A', 1, 'Komponent (Produseres selv)', 10, 0, 1],
+      ['..2', '200-002', 'B', 1, 'Komponent (Produseres selv)', 10, 0, 1],
+      ['.1', '200-002', 'B', 1, 'Komponent (Produseres selv)', null, null, null],
+      ['..2', '200-003', 'C', 1, 'Komponent (Produseres selv)', 10, 0, 1],
+      ['.1', '200-003', 'C', 1, 'Komponent (Produseres selv)', null, null, null],
+      ['..2', '200-001', 'A', 1, 'Komponent (Produseres selv)', null, null, null],
+    ]
+    expect(feilIVerdier(rader)).toEqual(['VARENUMMER_UNDER_SEG_SELV@B8'])
+  })
+
+  it('ulike underdeler i flere forekomster: hver forekomst som avviker, får sin feil', () => {
+    const rader: Verdier[] = [ferdig, sete(undefined, true), skrue(4, true), sete(), skrue(3), sete(), skrue(9)]
+    const feil = valider(arkFra(rader))
+    expect(kort(feil)).toEqual(['UNDERDELER_ULIKE@rad 6', 'UNDERDELER_ULIKE@rad 8'])
+    expect(feil.map((f) => f.andreRader)).toEqual([
+      [3, 5],
+      [3, 7],
+    ])
+  })
+
+  it('en del som kjøpes inn, med underdeler under flere forekomster, gir en feil per forekomst', () => {
+    const feil = valider(arkFra([ferdig, sete('Komponent (Kjøpes inn)', true), skrue(4, true), sete('Komponent (Kjøpes inn)'), skrue(4)]))
+    expect(kort(feil)).toEqual(['TYPE_KJOPES_INN_HAR_UNDERDELER@E3', 'TYPE_KJOPES_INN_HAR_UNDERDELER@E5'])
+    expect(feil.map((f) => f.andreRader)).toEqual([[4], [6]])
+  })
+
+  it('er første rad for et varenummer ugyldig eller tom, er første gyldige rad fasit for beskrivelse og type', () => {
+    const rader: Verdier[] = [
+      ferdig,
+      ['.1', '200-001', null, 1, 'Delmontering', 10, 0, 1],
+      ['.1', '200-001', 'Sete', 1, 'Komponent (Produseres selv)', null, null, null],
+      ['.1', '200-001', 'Stol-sete', 1, 'Komponent (Kjøpes inn)', null, null, null],
+    ]
+    const feil = valider(arkFra(rader))
+    expect(kort(feil)).toEqual(['BESKRIVELSE_MANGLER@C3', 'TYPE_UGYLDIG@E3', 'BESKRIVELSE_ULIK@C5', 'TYPE_ULIK@E5'])
+    expect(feil[2]).toMatchObject({ andreRader: [4] })
+    expect(feil[3]).toMatchObject({ andreRader: [4] })
+  })
+
+  it('uten Beskrivelse-overskriften kontrolleres ikke beskrivelsen', () => {
+    const rader = endre(endre(GYLDIG, 5, BESKRIVELSE, 'Noe annet'), 6, BESKRIVELSE, null)
+    expect(feilIVerdier(rader, ['Beskrivelse'])).toEqual([])
+    expect(feilIVerdier(rader)).toEqual(['BESKRIVELSE_ULIK@C7', 'BESKRIVELSE_MANGLER@C8'])
+  })
+})
+
+describe('rekkefølgen i en rad med feil i underdelene (gjennomgangen av PR #33)', () => {
+  it('en cellefeil og en underdelsfeil i samme rad står i kolonnerekkefølge: Type før Ledetid', () => {
+    const rader: Verdier[] = [
+      ['0', '100-001', 'Stol', null, 'Ferdigvare', 0, 0, 0],
+      ['.1', '200-001', 'Sete', 1, 'Komponent (Kjøpes inn)', 10, 0, 'to'],
+      ['..2', '300-001', 'Plate', 1, 'Komponent (Kjøpes inn)', 10, 0, 1],
+    ]
+    expect(feilIVerdier(rader)).toEqual(['TYPE_KJOPES_INN_HAR_UNDERDELER@E3', 'LEDETID_UGYLDIG@H3'])
+  })
+})

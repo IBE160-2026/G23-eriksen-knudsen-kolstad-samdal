@@ -253,4 +253,38 @@ describe('filfeilOgValidering.stykkliste (Story 1.8)', () => {
     }
     expect(mal(feil)).toContain('rad 4, 5 og 6')
   })
+
+  it('radene sorteres, og mange rader kortes ned (gjennomgangen av PR #33)', () => {
+    const medRader = (andreRader: number[]): Valideringsfeil => ({
+      kode: 'TYPE_KJOPES_INN_HAR_UNDERDELER',
+      ark: 'Stykkliste',
+      sted: { type: 'CELLE', celle: 'E3', excelRad: 3 },
+      felt: 'Type',
+      varenummer: '200-001',
+      andreRader,
+    })
+    expect(mal(medRader([9, 4, 6]))).toContain('rad 4, 6 og 9.')
+    expect(mal(medRader([4, 5, 6, 7, 8, 9]))).toContain('rad 4, 5, 6, 7, 8 og 9.')
+    expect(mal(medRader([4, 5, 6, 7, 8, 9, 10, 11]))).toContain('rad 4, 5, 6, 7, 8 og 3 til.')
+    // Uten rader står ikke «rad » alene.
+    expect(mal(medRader([]))).toContain('andre rader')
+    expect(mal(medRader([]))).not.toMatch(/rad [.,s]/)
+  })
+})
+
+// Hver kode som valideringen kan gi, har en tekstmal (AD-9). Fanger en ny kode uten mal.
+describe('alle valideringskodene har en mal', () => {
+  const alleMaler: Record<string, unknown> = {
+    ...filfeilOgValidering.struktur,
+    ...filfeilOgValidering.stykkliste,
+    ...filfeilOgValidering.mpsOgMottak,
+  }
+
+  it.each(VALIDERINGSKODER.map((kode) => [kode] as const))('%s har en mal', (kode) => {
+    expect(typeof alleMaler[kode], kode).toBe('function')
+  })
+
+  it('ingen mal mangler en kode, og ingen mal står uten kode', () => {
+    expect(Object.keys(alleMaler).sort()).toEqual([...VALIDERINGSKODER].sort())
+  })
 })
