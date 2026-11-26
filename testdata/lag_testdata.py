@@ -1,8 +1,9 @@
 """Lager Excel-mal, testeksempel og fasit for COSI - MRP.
 
-Bruk: uv run --with openpyxl python lag_testdata.py <testdata-mappe> [--alle]
+Bruk: uv run --with openpyxl python lag_testdata.py <testdata-mappe> [--alle] [--ytelse]
 
-Uten --alle lages bare malen. Med --alle lages også testeksempel 01–05 med fasit og valideringsfilene.
+Uten flagg lages bare malen. Med --alle lages også testeksempel 01–05 med fasit og valideringsfilene.
+Med --ytelse lages ytelse-1000.xlsx: 1000 stykklisterader, tre nivåer, felles deler og 12 uker (NFR-5, Story 2.8).
 """
 import datetime
 import io
@@ -1616,8 +1617,54 @@ TESTEKSEMPLER = [
 ]
 KAPASITET_UTREGNING = {"05": KAPASITET_UTREGNING_05}  # testeksempler med arket Kapasitet i fasiten
 
+# ---------- Ytelsesfil: 1000 stykklisterader (NFR-5, Story 2.8) ----------
+
+YTELSE_RADER = 1000      # største antall rader malen tar (FR-3)
+YTELSE_MONTASJER = 50    # deler på nivå .1
+YTELSE_UNIKE = 600       # ulike deler på nivå ..2. Resten av ..2-radene er felles deler som står flere steder
+YTELSE_UKER = 12
+
+
+def ytelse_stykkliste():
+    """1000 rader på tre nivåer: ferdigproduktet, 50 montasjer (.1) og 949 delrader (..2) av 600 ulike deler.
+
+    Uten tilfeldige tall, så en ny kjøring gir samme fil. En felles del har lager, sikkerhetslager og ledetid bare
+    første gang den står, som malen krever (FR-28). Ingen del står to ganger under samme montasje.
+    """
+    rader = [("0", "100-900", "Ytelsestest Kontorstol", None, "Ferdigvare", 0, 0, 0)]
+    delrader = YTELSE_RADER - 1 - YTELSE_MONTASJER
+    sett = set()
+    k = 0
+    for m in range(YTELSE_MONTASJER):
+        rader.append((".1", f"200-{m + 1:03d}", f"Montasje {m + 1}", 1 + m % 3, PROD,
+                      20 + (m * 7) % 60, (m * 3) % 15, 1 + m % 2))
+        under = set()
+        for j in range(delrader // YTELSE_MONTASJER + (1 if m < delrader % YTELSE_MONTASJER else 0)):
+            idx = k if k < YTELSE_UNIKE else (k * 7 + j) % YTELSE_UNIKE
+            while idx in under:
+                idx = (idx + 1) % YTELSE_UNIKE
+            under.add(idx)
+            k += 1
+            vn = f"300-{idx + 1:03d}"
+            typ = PROD if idx % 10 == 0 else KJOPT
+            if vn in sett:
+                rader.append(("..2", vn, f"Del {idx + 1}", 1 + idx % 4, typ, None, None, None))
+            else:
+                sett.add(vn)
+                rader.append(("..2", vn, f"Del {idx + 1}", 1 + idx % 4, typ,
+                              50 + (idx * 37) % 400, (idx * 11) % 40, 1 + idx % 3))
+    assert len(rader) == YTELSE_RADER and len(sett) == YTELSE_UNIKE
+    return rader
+
+
+YTELSE_MPS = [20 + (i * 5) % 20 for i in range(YTELSE_UKER)]
+YTELSE_MOTTAK = [(f"300-{i * 10 + 1:03d}", 2 + i % 8, 20 + (i % 5) * 10) for i in range(60)]
+
+
 if __name__ == "__main__":
     lagre(lag_mal(), UT / "COSI-MRP-mal.xlsx")
+    if "--ytelse" in sys.argv:
+        lagre(lag_mal(YTELSE_MPS, ytelse_stykkliste(), YTELSE_MOTTAK), UT / "ytelse-1000.xlsx")
     if "--alle" in sys.argv:
         kontroller()
         k02 = kjoring(MPS_02, STYKKLISTE_02, MOTTAK_02)
