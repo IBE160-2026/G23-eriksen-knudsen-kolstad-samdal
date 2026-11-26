@@ -39,8 +39,8 @@ function Delfelt({ del, markorer }: { del: DelResultat; markorer: DelensMarkorer
             {nivaa}
           </span>
           <span className="delfelt-varenummer">{varenummer}</span>
-          {markorer.ved.map((eksepsjon) => (
-            <Markor key={eksepsjon.kode} eksepsjon={eksepsjon} />
+          {markorer.ved.map((eksepsjon, i) => (
+            <Markor key={`${eksepsjon.kode}-${i}`} eksepsjon={eksepsjon} />
           ))}
         </div>
         <div className="delfelt-beskrivelse">{beskrivelse}</div>
@@ -99,7 +99,7 @@ export const DelTbody = memo(function DelTbody({ del, markorer, uker, valgtRad, 
               return (
                 <td key={uke} className={klasser.join(' ')} data-rad={rad} data-uke={uke}>
                   <span className="celle-innhold">
-                    {eksepsjoner?.map((eksepsjon) => <Markor key={eksepsjon.kode} eksepsjon={eksepsjon} />)}
+                    {eksepsjoner?.map((eksepsjon, i) => <Markor key={`${eksepsjon.kode}-${i}`} eksepsjon={eksepsjon} />)}
                     <span className={tallKlasse(verdi)}>{formaterTall(verdi)}</span>
                   </span>
                 </td>

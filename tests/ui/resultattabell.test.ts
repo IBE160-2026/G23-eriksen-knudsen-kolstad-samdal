@@ -1,11 +1,12 @@
 // Resultattabellen (Story 2.7, FR-14–FR-16, AD-14, UX-DR21–UX-DR24): modellen og HTML-en, med eksempeldata fra
 // testeksempel 01. Klikk, filter og rulling testes i e2e/resultattabell.spec.ts (venter på Story 2.5).
 
-import { createElement } from 'react'
+import { createElement, isValidElement, type ComponentProps, type ReactElement } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vitest'
 import type { Eksepsjon } from '../../src/domene/typer.ts'
 import { DelTbody } from '../../src/ui/resultat/DelTbody.tsx'
+import { Markor } from '../../src/ui/resultat/Markor.tsx'
 import { Resultattabell } from '../../src/ui/resultat/Resultattabell.tsx'
 import {
   celleNokkel,
@@ -104,7 +105,7 @@ describe('Resultattabell: oppbyggingen (AD-14, UX-DR21)', () => {
 
   it('er én <table> med <caption> for ferdigprodukt og horisont', () => {
     expect(html.match(/<table[\s>]/g)).toHaveLength(1)
-    expect(html).toContain('<caption>Resultattabell for Kontorstol Basic (100-002), horisont 10 uker</caption>')
+    expect(html).toContain('<caption id="resultattabell-bildetekst">Resultattabell for Kontorstol Basic (100-002), horisont 10 uker</caption>')
   })
 
   it('har <th scope="col"> for nøyaktig H uker, og uke 1 har accent-soft', () => {
@@ -162,7 +163,7 @@ describe('Resultattabell: oppbyggingen (AD-14, UX-DR21)', () => {
   })
 
   it('området med rulling er en navngitt region koblet til seksjonsoverskriften', () => {
-    expect(html).toContain('role="region" aria-labelledby="seksjon-resultattabell"')
+    expect(html).toContain('role="region" aria-labelledby="resultattabell-bildetekst"')
   })
 })
 
@@ -293,5 +294,65 @@ describe('Resultattabell: filteret «Vis bare kritiske deler» (FR-16, UX-DR24)'
     const html = tegn({ ...RESULTAT_TABELL, eksepsjoner: [], kritiskeDeler: [] })
     expect(html).not.toContain('Vis bare kritiske deler')
     expect(html.match(/<tbody /g)).toHaveLength(9)
+  })
+})
+
+describe('Resultattabell: unike React-nøkler og landemerker (Carmens F2 og navn på regionen)', () => {
+  // 300-028 i testeksempel 04: to mottak (uke 3 og uke 5) fremskyndes til uke 2, så to Mottak forsinket står i samme celle.
+  const to300028 = (kode: 'MOTTAK_FORSINKET'): Eksepsjon[] =>
+    [
+      { kode, varenummer: '300-003', beskrivelse: 'Hjul', delstype: 'KJOPES_INN', uke: 2, mottaksuke: 3, antall: 10, excelRad: 2, disponibelForFremskynding: -25, sikkerhetslager: 0 },
+      { kode, varenummer: '300-003', beskrivelse: 'Hjul', delstype: 'KJOPES_INN', uke: 2, mottaksuke: 5, antall: 15, excelRad: 3, disponibelForFremskynding: -25, sikkerhetslager: 0 },
+    ] as Eksepsjon[]
+
+  /**
+   * Nøklene til alle markørene i en tegnet del. React advarer om like nøkler først når den oppdaterer DOM-en, så server-
+   * tegning (renderToStaticMarkup) fanger det ikke. Testen går derfor gjennom elementtreet DelTbody gir.
+   */
+  function nokler(node: unknown, funnet: string[] = []): string[] {
+    if (Array.isArray(node)) node.forEach((n) => nokler(n, funnet))
+    else if (isValidElement(node)) {
+      const element = node as ReactElement<{ children?: unknown }>
+      if (element.type === Markor && element.key !== null) funnet.push(String(element.key))
+      nokler(element.props.children, funnet)
+    }
+    return funnet
+  }
+
+  /** DelTbody er memoisert. `.type` er funksjonen inni, som gir elementtreet uten en DOM. */
+  function tegnDelSomTre(eksepsjoner: Eksepsjon[]): ReactElement {
+    const del = DELER_01[3]!
+    const innmat = (DelTbody as unknown as { type: (props: ComponentProps<typeof DelTbody>) => ReactElement }).type
+    return innmat({
+      del,
+      markorer: markorerFor(grupperMarkorer(eksepsjoner), del.del.varenummer),
+      uker: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+      valgtRad: null,
+      valgtUke: null,
+      onVelg: () => {},
+    })
+  }
+
+  it('to eksepsjoner av samme type i samme celle får hver sin nøkkel, og begge markørene står der', () => {
+    const alle = [...EKSEPSJONER_01, ...to300028('MOTTAK_FORSINKET')]
+    const liste = nokler(tegnDelSomTre(alle))
+    expect(liste.length).toBeGreaterThanOrEqual(3)
+    expect(new Set(liste).size).toBe(liste.length)
+    const resultat = { ...RESULTAT_TABELL, eksepsjoner: alle }
+    expect(celle(tegn(resultat), '300-003', 'nettobehov', 2).match(/class="markor /g)).toHaveLength(2)
+  })
+
+  it('nøklene er også unike når delen både har Ledetid overskrider horisont og eksepsjoner i cellene', () => {
+    const ledetid = { ...EKSEPSJONER_01[3]!, varenummer: '300-003' } as Eksepsjon
+    const liste = nokler(tegnDelSomTre([ledetid, ...to300028('MOTTAK_FORSINKET'), EKSEPSJONER_01[0] as Eksepsjon]))
+    expect(new Set(liste).size).toBe(liste.length)
+  })
+
+  it('regionen med rulling heter etter bildeteksten, så siden ikke har to landemerker som heter «Resultattabell»', () => {
+    const html = tegn()
+    expect(html).toContain('<caption id="resultattabell-bildetekst">')
+    expect(html).toContain('role="region" aria-labelledby="resultattabell-bildetekst"')
+    expect(html.match(/id="resultattabell-bildetekst"/g)).toHaveLength(1)
+    expect(html).not.toContain('aria-labelledby="seksjon-resultattabell"')
   })
 })

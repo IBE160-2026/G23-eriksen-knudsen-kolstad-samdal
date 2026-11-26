@@ -147,7 +147,7 @@ test.describe('ny opplasting (UX-DR11)', () => {
     await beregnKnapp(page).click()
 
     await expect(page).toHaveURL(/#\/resultat$/)
-    await expect(page.getByText('Kontorstol Basic (100-002)')).toBeVisible()
+    await expect(page.getByText('Kontorstol Basic (100-002)', { exact: true })).toBeVisible()
     await expect(page.getByText('Horisont: 10 uker')).toBeVisible()
     await expect(brett(page)).toHaveCount(0)
 

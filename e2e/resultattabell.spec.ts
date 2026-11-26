@@ -14,7 +14,7 @@ import { expect, test } from './csp-vakt.ts'
 const TESTEKSEMPEL_01 = join(import.meta.dirname, '..', 'testdata', 'testeksempel-01.xlsx')
 
 async function beregnTesteksempel01(page: Page) {
-  await page.goto('/')
+  await page.goto('/#/ny-kjoring')
   const dialog = page.waitForEvent('filechooser')
   await page.getByRole('button', { name: 'Velg fil' }).click()
   await (await dialog).setFiles(TESTEKSEMPEL_01)
@@ -43,7 +43,7 @@ test.describe('Resultattabellen med testeksempel 01', () => {
     await expect(celle(page, '300-004', 'nettobehov', 1).getByRole('img', { name: 'Bruk av sikkerhetslager, uke 1' })).toBeVisible()
     await expect(celle(page, '300-005', 'nettobehov', 3).getByRole('img', { name: 'Mottak forsinket, uke 3' })).toBeVisible()
     await expect(del(page, '300-006').getByRole('img', { name: 'Ledetid overskrider horisont, hele delen' })).toBeVisible()
-    await expect(page.getByRole('img', { name: /, (uke \d+|hele delen)$/ })).toHaveCount(4)
+    await expect(page.locator('.resultattabell-tabell').getByRole('img', { name: /, (uke \d+|hele delen)$/ })).toHaveCount(4)
   })
 
   test('klikk på en celle velger den, og radnavn og ukeoverskrift blir fete', async ({ page }) => {
@@ -52,7 +52,7 @@ test.describe('Resultattabellen med testeksempel 01', () => {
     await valgt.click()
     await expect(valgt).toHaveClass(/celle-valgt/)
     await expect(del(page, '300-003').getByRole('rowheader', { name: 'Nettobehov' })).toHaveCSS('font-weight', '700')
-    await expect(page.getByRole('columnheader', { name: 'Uke 1' })).toHaveCSS('font-weight', '700')
+    await expect(page.getByRole('columnheader', { name: 'Uke 1', exact: true })).toHaveCSS('font-weight', '700')
     // Valget beholdes til en annen celle velges.
     await celle(page, '300-004', 'bruttobehov', 2).click()
     await expect(page.locator('.celle-valgt')).toHaveCount(1)

@@ -8,8 +8,10 @@ import type { Kjoring, Resultat } from '../../domene/typer.ts'
 import { resultat as tekster } from '../../tekster/nb.ts'
 import { DelTbody } from './DelTbody.tsx'
 import { EKSEPSJONSVISNING, KODER } from './eksepsjonsvisning.ts'
-import { overskriftId } from './seksjoner.ts'
 import { grupperMarkorer, markorerFor, synligeDeler, valgEtterFilter, type ValgtCelle } from './tabell-modell.ts'
+
+/** `id` på bildeteksten, som gir tabellområdet navn. */
+const BILDETEKST_ID = 'resultattabell-bildetekst'
 
 function Tegnforklaring() {
   const t = tekster.tabell
@@ -74,9 +76,10 @@ export function Resultattabell({ kjoring, resultat }: { kjoring: Kjoring; result
         </p>
       )}
       {/* Egen rulling i begge retninger. tabindex="0" lar tastaturet rulle området til rutenettstyringen (Story 2.9) tar over. */}
-      <div className="tabellomrade" role="region" aria-labelledby={overskriftId('resultattabell')} tabIndex={0}>
+      {/* Regionen har navn etter bildeteksten og ikke etter overskriften, så skjermleseren ikke finner to landemerker som heter «Resultattabell». */}
+      <div className="tabellomrade" role="region" aria-labelledby={BILDETEKST_ID} tabIndex={0}>
         <table className="resultattabell-tabell">
-          <caption>{t.bildetekst(beskrivelse, varenummer, kjoring.horisont)}</caption>
+          <caption id={BILDETEKST_ID}>{t.bildetekst(beskrivelse, varenummer, kjoring.horisont)}</caption>
           <thead>
             <tr>
               <td className="tabellhjorne" colSpan={2} />
