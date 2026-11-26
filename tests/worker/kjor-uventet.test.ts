@@ -3,9 +3,10 @@
 
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-const { lesMock, validerMock } = vi.hoisted(() => ({ lesMock: vi.fn(), validerMock: vi.fn() }))
+const { lesMock, validerMock, beregnMock } = vi.hoisted(() => ({ lesMock: vi.fn(), validerMock: vi.fn(), beregnMock: vi.fn() }))
 vi.mock('../../src/excel/les.ts', () => ({ les: lesMock }))
 vi.mock('../../src/domene/valider.ts', () => ({ valider: validerMock }))
+vi.mock('../../src/domene/beregn.ts', () => ({ beregnBestillingsplan: beregnMock }))
 
 import { kjorFil } from '../../src/worker/kjor.ts'
 
@@ -15,6 +16,7 @@ describe('uventede feil i worker-en', () => {
   beforeEach(() => {
     lesMock.mockReset()
     validerMock.mockReset()
+    beregnMock.mockReset()
   })
 
   it('et unntak i lesingen gir UVENTET_FEIL, ikke et unntak', () => {
@@ -33,6 +35,30 @@ describe('uventede feil i worker-en', () => {
     const svar = kjorFil(MELDING)
     expect(svar).toEqual({ type: 'UVENTET_FEIL' })
     expect(Object.keys(svar)).toEqual(['type'])
+  })
+
+  it('et unntak i beregningen gir UVENTET_FEIL uten resultat og uten spor av det som var lest og validert (Story 2.5)', async () => {
+    const GYLDIG_INNDATA = {
+      stykkliste: [],
+      horisont: 8,
+      prognostiserteBehov: [],
+      planlagteMottak: [],
+    }
+    lesMock.mockReturnValue({ ok: true, verdi: { filnavn: 'a.xlsx' } })
+    validerMock.mockReturnValue({ ok: true, verdi: GYLDIG_INNDATA })
+    beregnMock.mockImplementation(() => {
+      throw new Error('uventet i beregningen')
+    })
+    const svar = kjorFil(MELDING)
+    expect(beregnMock).toHaveBeenCalledOnce()
+    expect(svar).toEqual({ type: 'UVENTET_FEIL' })
+    expect(Object.keys(svar)).toEqual(['type'])
+  })
+
+  it('Produksjonskapasitet beregner ikke bestillingsplanen, så beregningen kan ikke feile den kjøringen', () => {
+    lesMock.mockReturnValue({ ok: true, verdi: { filnavn: 'a.xlsx' } })
+    validerMock.mockReturnValue({ ok: true, verdi: { stykkliste: [], horisont: 8, prognostiserteBehov: [], planlagteMottak: [] } })
+    expect(kjorFil({ ...MELDING, valg: 'PRODUKSJONSKAPASITET' })).toMatchObject({ type: 'GYLDIG', resultat: null })
   })
 
   it('en kjøring som går bra etter en som feilet, påvirkes ikke (ingen tilstand mellom kjøringer)', () => {

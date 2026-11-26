@@ -92,9 +92,11 @@ export const felles = {
       beregn: 'Beregn',
       leserFilen: 'Leser filen …',
       beregner: 'Beregner …',
-      // Antallene («59 bestillingsforslag, 4 kritiske deler») kommer når beregningen er bygd (Epic 2).
-      // Til da sier meldingen ærlig at bare lesingen og kontrollen er gjort.
-      ferdig: 'Kjøringen er ferdig. Filen er lest og har ingen feil. Bestillingsplanen beregnes ikke ennå.',
+      /** «Kjøringen er ferdig: 59 bestillingsforslag, 4 kritiske deler.» Kunngjøres etter Beregn (Story 2.5, UX-DR4). */
+      ferdig: (bestillingsforslag: number, kritiskeDeler: number) =>
+        `Kjøringen er ferdig: ${bestillingsforslag} bestillingsforslag, ${kritiskeDeler} kritiske deler.`,
+      /** Når bestillingsplanen ikke er beregnet (bare produksjonskapasitet er valgt, Epic 5). */
+      ferdigUtenPlan: 'Kjøringen er ferdig. Filen er lest og har ingen feil.',
     },
   },
   // Veiledning (Story 1.4, UX-DR31): hvordan nettsiden brukes. Utfyllingen av malen står i malens ark Veiledning.

@@ -95,7 +95,7 @@ test.describe('gyldig fil', () => {
     await expect(h1).toBeFocused()
     await expect(h1).toHaveClass(/skjult-visuelt/)
     await expect(page).toHaveTitle('Kontorstol Basic (100-002) – Resultat – COSI - MRP')
-    await expect(page.getByRole('status')).toHaveText(/^Kjøringen er ferdig\./)
+    await expect(page.getByRole('status')).toHaveText('Kjøringen er ferdig: 59 bestillingsforslag, 4 kritiske deler.')
     await expect(page.getByRole('status')).toHaveCount(1)
   })
 

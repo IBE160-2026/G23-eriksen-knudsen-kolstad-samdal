@@ -106,9 +106,15 @@ export function NyKjoring() {
       sendFilvalg({ type: 'SVAR', utfall })
 
       switch (utfall.type) {
-        case 'FERDIG':
-          kunngjor(tekst.beregning.ferdig)
+        case 'FERDIG': {
+          const plan = utfall.kjoring.resultat
+          kunngjor(
+            plan === null
+              ? tekst.beregning.ferdigUtenPlan
+              : tekst.beregning.ferdig(plan.bestillingsforslag.length, plan.kritiskeDeler.length),
+          )
           break
+        }
         case 'FILFEIL':
           kunngjor(filfeilOgValidering.heleFilen[utfall.feil.kode])
           break

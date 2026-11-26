@@ -52,10 +52,13 @@ describe('opplastingssonen og Beregn (UX-DR8, UX-DR10)', () => {
     expect(felles.nyKjoring.beregning.beregn).toBe('Beregn')
   })
 
-  it('meldingen når kjøringen er ferdig, sier ikke at bestillingsplanen er beregnet', () => {
-    const ferdig = felles.nyKjoring.beregning.ferdig
-    expect(ferdig).toMatch(/^Kjøringen er ferdig\./)
-    expect(ferdig).toContain('beregnes ikke ennå')
+  it('meldingen når kjøringen er ferdig, har antall bestillingsforslag og kritiske deler (Story 2.5, UX-DR4)', () => {
+    expect(felles.nyKjoring.beregning.ferdig(59, 4)).toBe('Kjøringen er ferdig: 59 bestillingsforslag, 4 kritiske deler.')
+    expect(felles.nyKjoring.beregning.ferdig(0, 0)).toBe('Kjøringen er ferdig: 0 bestillingsforslag, 0 kritiske deler.')
+  })
+
+  it('uten beregnet bestillingsplan (bare produksjonskapasitet) sier meldingen bare at filen er lest', () => {
+    expect(felles.nyKjoring.beregning.ferdigUtenPlan).toBe('Kjøringen er ferdig. Filen er lest og har ingen feil.')
   })
 })
 

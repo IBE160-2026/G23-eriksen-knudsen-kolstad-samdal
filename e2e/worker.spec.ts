@@ -64,10 +64,14 @@ test('bygget har worker-en som en egen fil, og den lastes under CSP-en', async (
   expect(svar.headers()['content-type']).toMatch(/javascript/)
 })
 
-test('en gyldig fil gir GYLDIG: Kontorstol Basic (100-002) og horisont 10', async ({ page }) => {
+test('en gyldig fil gir GYLDIG med beregnet bestillingsplan: Kontorstol Basic (100-002), horisont 10 og 4 kritiske deler', async ({ page }) => {
   await page.goto('/')
   const svar = await kjorIWorker(page, await workerAdresse(page), 'testeksempel-01', 'testeksempel-01.xlsx')
-  expect(svar).toMatchObject({ type: 'GYLDIG', resultat: null, kapasitet: null })
+  expect(svar).toMatchObject({ type: 'GYLDIG', kapasitet: null })
+  const resultat = svar['resultat'] as { deler: unknown[]; bestillingsforslag: unknown[]; kritiskeDeler: string[] }
+  expect(resultat.deler).toHaveLength(9)
+  expect(resultat.bestillingsforslag).toHaveLength(59)
+  expect(resultat.kritiskeDeler).toEqual(['300-003', '300-004', '300-005', '300-006'])
   const inndata = svar['inndata'] as { horisont: number; stykkliste: { varenummer: string; beskrivelse: string }[] }
   expect(inndata.horisont).toBe(10)
   expect(inndata.stykkliste[0]).toMatchObject({ varenummer: '100-002', beskrivelse: 'Kontorstol Basic' })
