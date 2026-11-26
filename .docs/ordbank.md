@@ -76,6 +76,8 @@ Forslaget bygger på Excel-malen for flernivå stykkliste (Sebastian, 2026-10-23
 | Bruttobehov (*gross requirements*) | Nivå 0: prognostiserte behov(t). Andre nivåer: summen av planlagt ordrefrigivelse(t) × antall for alle stedene delen står i stykklisten. | behov (alene) |
 | Disponibel beholdning | Beholdning(t−1) + planlagte mottak(t) − bruttobehov(t), der beholdningen er forventet lagerbeholdning(t−1) pluss fremskyndede mottak som ennå ikke er kommet (PRD FR-6). | tilgjengelig, disponibel (alene) |
 | Nettobehov (*net requirements*) | maks(0, SS − disponibel beholdning). | – |
+| Netting (*netting*) | Beregningen for én del uke for uke: disponibel beholdning, fremskynding av planlagte mottak, nettobehov, planlagt ordremottak, forventet lagerbeholdning og planlagt ordrefrigivelse (PRD FR-6–FR-8). Finnes bare i `domene/netting.ts` (arkitektur AD-7). Lagt inn 26.11. | MRP-beregning (om én del), nettoberegning |
+| Nettinginnstillinger | Innstillingene nettingen regner med. Standardinnstillingene gir bestillingsplanen. I v1 bare om planlagte mottak kan fremskyndes, som slås av når «Kanseller mottak» kontrolleres (PRD FR-29). Produksjonskapasitet og fast partistørrelse blir nye innstillinger (arkitektur AD-7). Lagt inn 26.11. | innstillinger (alene), parametere |
 | Planlagt ordremottak (*planned order receipt*) | Mengden en foreslått ordre skal levere i uke t. Beregnet, ikke bestilt. | planlagt mottak (om beregnet mengde) |
 | Planlagt ordrefrigivelse (*planned order release*) | Mengden som må bestilles eller settes i produksjon i uke t − L. | planlagt frigivelse, planlagt bestilling |
 | Frigi | Å sende en ordre: bestille fra leverandør eller starte produksjon internt. | – |
