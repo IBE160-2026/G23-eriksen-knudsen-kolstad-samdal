@@ -2,7 +2,7 @@
 title: COSI - MRP Ordbank
 status: forslag
 created: 2026-10-21
-updated: 2026-11-25
+updated: 2026-11-26
 ---
 
 # Ordbank: COSI - MRP
