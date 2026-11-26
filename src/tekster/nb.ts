@@ -510,8 +510,6 @@ export const resultat = {
     resultattabell: 'Resultattabell',
   },
   seksjonsmenyNavn: 'Seksjoner i resultatet',
-  /** Tilgjengelig navn på en knapp med antall: «Kritiske deler, 4». */
-  seksjonsknapp: (navn: string, antall: number | null) => (antall === null ? navn : `${navn}, ${formaterTall(antall)}`),
   tallbokserNavn: 'Nøkkeltall for kjøringen',
   tallbokser: {
     kritiskeDeler: {
