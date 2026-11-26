@@ -57,3 +57,25 @@ Sebastian la inn én review på PR #33 (Story 1.8, «Commented», ingen blokkere
 - En feil i Nivå eller Varenummer slår av sløyfe- og underdelsreglene for hele filen. Kan løses ved å bygge strukturen av gyldige rader.
 - Gruppen må godkjenne at sløyfer gir `VARENUMMER_UNDER_SEG_SELV` og at `[X:1, X:1]` er likt med `[X:2]`. Blir det stående, må `lag_testdata.py` (linje 362–372) bruke samme regel.
 - PR #33 venter på ny gjennomgang av Sebastian. Ikke flett før den er godkjent.
+
+## 2026-11-26 kl. 18:30 — Idun-Samdal
+
+### Oppgave
+Sebastian la inn en ny review på PR #33 etter rettelsene fra første runde: tre falske eller doble feil og én dato i ordbanken, pluss tre valgfrie punkter. Idun ba om å se på den.
+
+### Plan
+- Rette alle fire punktene og de tre valgfrie i `Idun/Branch`, mutasjonssjekke de nye testene mot forrige versjon, og flytte rettelsen til story-branchen med cherry-pick.
+
+### Resultat
+- **Commit 388014f på `Idun/Branch`, e14a859 på `story/1.8-kontroll-av-arket-stykkliste`.**
+  - `UNDERDELER_ULIKE` sammenligner bare varenumrene når Antall-overskriften mangler.
+  - Sløyfe- og underdelsreglene kjøres ikke når en tom rad kutter stykklisten eller lesingen stoppet ved 1000 rader.
+  - `RADER_INGEN_NIVAA_1` meldes ikke når `NIVAA_2_UTEN_NIVAA_1_OVER` er meldt (flyttet etter løkken).
+  - Et ugyldig antall sperrer bare forekomsten det står i. En typefeil mot nivået gir ikke også `TYPE_ULIK`.
+  - Ordbankens `updated` er 2026-11-26. Testen for nivå «1» sjekker lengden på lista.
+- **Tester:** 7 nye. 6 feilet mot forrige versjon. Min første Antall-test hadde med antallsceller og fanget ikke feilen, så den ble gjort om til en fil uten Antall-kolonnen.
+- **Kontroll på story-branchen:** `npm test` 915, lint, `tsc -b` og bygg grønne. E2e ble ikke kjørt på denne runden (ingen UI-endringer; forrige runde 140/140).
+- **GitHub:** story-branchen pushet, kommentar på PR #33, og Sebastian bedt om ny gjennomgang. Ikke flettet.
+
+### Åpne punkter
+- PR #33 venter på ny gjennomgang av Sebastian, og skal ikke flettes før den er godkjent. Dette står alt i `issues.md`.
