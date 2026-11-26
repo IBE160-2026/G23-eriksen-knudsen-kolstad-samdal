@@ -84,8 +84,8 @@ describe('Resultat med beregnet bestillingsplan: seksjonene (AD-14)', () => {
     expect(html).toContain('<section class="resultat-seksjon" aria-labelledby="seksjon-bestillingsforslag">')
   })
 
-  it('Kritiske deler og Bestillingsforslag er tomme til Story 2.10 og 2.11, og Resultattabell har tabellen (Story 2.7)', () => {
-    expect(html).toMatch(/<section class="resultat-seksjon"[^>]*><h2[^>]*>Kritiske deler<\/h2><\/section>/)
+  it('Bestillingsforslag er tom til Story 2.11, Kritiske deler har linjene (2.10) og Resultattabell har tabellen (2.7)', () => {
+    expect(html).toMatch(/<h2[^>]*>Kritiske deler<\/h2><ul class="kritiske-deler">/)
     expect(html).toMatch(/<section class="resultat-seksjon"[^>]*><h2[^>]*>Bestillingsforslag<\/h2><\/section>/)
     expect(html).toMatch(/<h2[^>]*>Resultattabell<\/h2><div class="resultattabell">/)
   })

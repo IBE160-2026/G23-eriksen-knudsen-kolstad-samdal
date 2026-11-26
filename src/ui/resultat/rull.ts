@@ -32,3 +32,15 @@ export function rullInnIBildet(celle: HTMLElement, omraade: HTMLElement): void {
   if (etterRulling.top < sideToppKant) window.scrollBy(0, etterRulling.top - sideToppKant)
   else if (etterRulling.bottom > window.innerHeight - LUFT) window.scrollBy(0, etterRulling.bottom - (window.innerHeight - LUFT))
 }
+
+/**
+ * Ruller tabellen til en del etter et hopp fra kritiske deler (Story 2.10): delen øverst i området rett under
+ * ukeoverskriften, og området rett under kjøringslinjen, så Kari ser delen uten å rulle mer. Cellen som får fokus,
+ * rulles bort fra de faste lagene etterpå med `rullInnIBildet`.
+ */
+export function rullTilDel(del: HTMLElement, omraade: HTMLElement): void {
+  const oppe = omraade.querySelector('thead')?.getBoundingClientRect().height ?? 0
+  omraade.scrollTop += del.getBoundingClientRect().top - (omraade.getBoundingClientRect().top + oppe + LUFT)
+  const linje = document.querySelector('.kjoringslinje')?.getBoundingClientRect().bottom ?? 0
+  window.scrollBy(0, omraade.getBoundingClientRect().top - (linje + LUFT))
+}

@@ -6,6 +6,9 @@
 // (kolonne: 0 delens felt, 1 radnavn, 2 og utover ukene). Roving tabindex: bare cellen som er aktiv i denne delen,
 // har `tabindex="0"`, og bare den har et navn for skjermleseren. Alle de andre er uten `tabindex`, så 1000 rader
 // ikke får titusener av ekstra attributter. Fokus flyttes av Resultattabell.
+//
+// Etter et hopp fra kritiske deler vises fokusringen på målcellen mens delen er markert (`fokusring`), også når hoppet
+// kom fra et museklikk, der nettleseren ellers ikke viser :focus-visible.
 
 import { memo, type MouseEvent } from 'react'
 import type { DelResultat, Eksepsjon } from '../../domene/typer.ts'
@@ -32,6 +35,8 @@ type Props = {
   /** Cellen i denne delen som har tabulatorstoppet, eller null når den står i en annen del. */
   aktivR: number | null
   aktivK: number | null
+  /** Delen er markert kort etter et hopp fra kritiske deler (Story 2.10). */
+  markert: boolean
   onVelg: (celle: ValgtCelle) => void
 }
 
@@ -44,9 +49,9 @@ function navnPaEksepsjoner(eksepsjoner: readonly Eksepsjon[]): string[] {
   return eksepsjoner.map((e) => tekster.tabell.markornavn(tekster.tabell.eksepsjonsnavn[e.kode], e.uke))
 }
 
-type FeltProps = { del: DelResultat; markorer: DelensMarkorer; aktiv: boolean }
+type FeltProps = { del: DelResultat; markorer: DelensMarkorer; aktiv: boolean; ring: boolean }
 
-function Delfelt({ del, markorer, aktiv }: FeltProps) {
+function Delfelt({ del, markorer, aktiv, ring }: FeltProps) {
   const { varenummer, beskrivelse, type, nivaa, lagerbeholdning, sikkerhetslager, ledetid, overordnede } = del.del
   const t = tekster.tabell
   const lager = t.felt.lager(lagerbeholdning)
@@ -57,7 +62,7 @@ function Delfelt({ del, markorer, aktiv }: FeltProps) {
     <th
       scope="rowgroup"
       rowSpan={RADER.length}
-      className={`delfelt${klasse}`}
+      className={`delfelt${klasse}${ring ? ' fokusring' : ''}`}
       data-r={0}
       data-k={KOLONNE_FELT}
       tabIndex={aktiv ? 0 : undefined}
@@ -101,7 +106,7 @@ function Delfelt({ del, markorer, aktiv }: FeltProps) {
   )
 }
 
-export const DelTbody = memo(function DelTbody({ del, markorer, uker, valgtRad, valgtUke, aktivR, aktivK, onVelg }: Props) {
+export const DelTbody = memo(function DelTbody({ del, markorer, uker, valgtRad, valgtUke, aktivR, aktivK, markert, onVelg }: Props) {
   const { varenummer, beskrivelse } = del.del
 
   function klikk(hendelse: MouseEvent<HTMLTableSectionElement>) {
@@ -111,17 +116,17 @@ export const DelTbody = memo(function DelTbody({ del, markorer, uker, valgtRad, 
   }
 
   return (
-    <tbody className={del.kritisk ? 'del del-kritisk' : 'del'} data-del={varenummer} onClick={klikk}>
+    <tbody className={`del${del.kritisk ? ' del-kritisk' : ''}${markert ? ' del-markert' : ''}`} data-del={varenummer} onClick={klikk}>
       {RADER.map((rad, indeks) => {
         const serie = del[rad]
         const radnavn = tekster.tabell.rader[rad]
         const radnavnAktiv = aktivK === KOLONNE_RADNAVN && aktivR === indeks
         return (
           <tr key={rad}>
-            {indeks === 0 && <Delfelt del={del} markorer={markorer} aktiv={aktivK === KOLONNE_FELT} />}
+            {indeks === 0 && <Delfelt del={del} markorer={markorer} aktiv={aktivK === KOLONNE_FELT} ring={markert && aktivK === KOLONNE_FELT} />}
             <th
               scope="row"
-              className={valgtRad === rad ? 'radnavn radnavn-valgt' : 'radnavn'}
+              className={`radnavn${valgtRad === rad ? ' radnavn-valgt' : ''}${markert && radnavnAktiv ? ' fokusring' : ''}`}
               data-r={indeks}
               data-k={KOLONNE_RADNAVN}
               tabIndex={radnavnAktiv ? 0 : undefined}
@@ -138,6 +143,7 @@ export const DelTbody = memo(function DelTbody({ del, markorer, uker, valgtRad, 
               if (rad === 'planlagteOrdrefrigivelser') klasser.push('celle-sterk')
               if (eksepsjoner?.[0]) klasser.push(`${EKSEPSJONSVISNING[eksepsjoner[0].kode].klasse}-bakgrunn`)
               if (valgt) klasser.push('celle-valgt')
+              if (markert && aktiv) klasser.push('fokusring')
               const verdi = serie[uke - 1] ?? 0
               return (
                 <td

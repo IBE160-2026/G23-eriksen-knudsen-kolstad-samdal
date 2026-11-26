@@ -9,6 +9,7 @@ import type {
   Arknavn,
   Celleverdi,
   Delstype,
+  Eksepsjon,
   Eksepsjonskode,
   Feilsted,
   Filfeilkode,
@@ -481,7 +482,30 @@ function storForbokstav(tekst: string): string {
 }
 
 // --- Eksepsjoner ----------------------------------------------------------
-export const eksepsjoner = {} as const
+export const eksepsjoner = {
+  /**
+   * Én setning i vanlig språk som sier hva som er galt (EXPERIENCE.md › Eksepsjonsmeldinger, del 2). Den er aldri bare
+   * typenavnet. Brukes i listen over kritiske deler (Story 2.10). Story 2.4 bygger ut med «Melding:» og «Hvorfor:» og kan
+   * ta over denne funksjonen. Ordlyden er Sebastians forslag, og endringer prøves i prøvetesten.
+   */
+  setning: (e: Eksepsjon): string => {
+    const produksjon = e.delstype !== 'KJOPES_INN'
+    switch (e.kode) {
+      case 'BESTILLING_FORSINKET':
+        return produksjon ? 'Produksjonen skulle vært startet før uke 1.' : 'Bestillingen skulle vært sendt før uke 1.'
+      case 'BRUK_AV_SIKKERHETSLAGER':
+        return produksjon
+          ? 'Produksjonen skulle vært startet før uke 1, så sikkerhetslageret brukes.'
+          : 'Bestillingen skulle vært sendt før uke 1, så sikkerhetslageret brukes.'
+      case 'MOTTAK_FORSINKET':
+        return `Mottaket i uke ${e.mottaksuke} trengs allerede i uke ${e.uke}.`
+      case 'LEDETID_OVERSKRIDER_HORISONT':
+        return 'Planen er for kort til å vise alt som må bestilles nå.'
+      case 'KANSELLER_MOTTAK':
+        return `Mottaket i uke ${e.uke} trengs ikke innenfor horisonten.`
+    }
+  },
+} as const
 
 // --- Forklaringer ---------------------------------------------------------
 export const forklaringer = {} as const
@@ -601,6 +625,22 @@ export const resultat = {
       viser: (synlige: number, totalt: number) => `Viser ${formaterTall(synlige)} av ${formaterTall(totalt)} deler`,
       visAlle: 'Vis alle deler',
     },
+  },
+
+  // Kritiske deler (Story 2.10, FR-16, UX-DR17).
+  kritiskeDeler: {
+    ingen: 'Ingen kritiske deler. Planen går opp for alle delene.',
+    typeOgNivaa: (type: string, nivaa: string) => `${type} · nivå ${nivaa}`,
+    /** «Bestilling forsinket · uke 1», og «hele delen» for Ledetid overskrider horisont. */
+    merke: (navn: string, uke: number | null) => `${navn} · ${uke === null ? 'hele delen' : `uke ${uke}`}`,
+    /** «Første bestillingsforslag: 175 i uke 1, 50 forfalt · 3 forslag i alt». */
+    forsteForslag: (mengde: number, uke: number, forfalt: number, antall: number) =>
+      `Første bestillingsforslag: ${formaterTall(mengde)} i uke ${uke}${forfalt > 0 ? `, ${formaterTall(forfalt)} forfalt` : ''} · ${formaterTall(antall)} forslag i alt`,
+    ingenForslag: 'Ingen bestillingsforslag',
+    seForklaring: 'Se forklaring →',
+    /** Det tilgjengelige navnet på hele linjen: «300-003 Hjul, Bestilling forsinket, uke 1. Bestillingen skulle vært sendt før uke 1. Se forklaring». */
+    knappNavn: (varenummer: string, beskrivelse: string, merker: string[], setninger: string[]) =>
+      `${varenummer} ${beskrivelse}, ${merker.join(', ')}. ${setninger.join(' ')} Se forklaring`,
   },
 } as const
 

@@ -9,15 +9,23 @@ import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } fro
 import type { Kjoring, Resultat } from '../../domene/typer.ts'
 import { resultat as tekster } from '../../tekster/nb.ts'
 import { Kjoringslinje } from './Kjoringslinje.tsx'
-import { Resultattabell } from './Resultattabell.tsx'
+import { KritiskeDeler } from './KritiskeDeler.tsx'
+import { Resultattabell, type Tabellstyring } from './Resultattabell.tsx'
 import { SlikLeserDu } from './SlikLeserDu.tsx'
 import { Seksjonsmeny } from './Seksjonsmeny.tsx'
 import { Tallbokser } from './Tallbokser.tsx'
 import { finnAktivSeksjon, overskriftId, SEKSJONER, tell, type SeksjonId } from './seksjoner.ts'
 
-/** Innholdet i hver seksjon. Kritiske deler (Story 2.10) og Bestillingsforslag (Story 2.11) fyller sine selv. */
-const INNHOLD: Partial<Record<SeksjonId, (kjoring: Kjoring, resultat: Resultat) => ReactNode>> = {
-  resultattabell: (kjoring, resultat) => <Resultattabell kjoring={kjoring} resultat={resultat} />,
+/** En seksjon med h2. Innholdet kommer som barn. */
+function Seksjon({ seksjon, children }: { seksjon: SeksjonId; children?: ReactNode }) {
+  return (
+    <section className="resultat-seksjon" aria-labelledby={overskriftId(seksjon)}>
+      <h2 id={overskriftId(seksjon)} tabIndex={-1}>
+        {tekster.seksjoner[seksjon]}
+      </h2>
+      {children}
+    </section>
+  )
 }
 
 /** Luften mellom kjøringslinjen og overskriften når en seksjon er rullet på plass, i px. */
@@ -32,6 +40,7 @@ export function Resultatside({ kjoring, resultat }: { kjoring: Kjoring; resultat
   const [aktiv, setAktiv] = useState<SeksjonId | null>(null)
   const side = useRef<HTMLDivElement>(null)
   const linje = useRef<HTMLDivElement>(null)
+  const tabellRef = useRef<Tabellstyring>(null)
 
   // Kjøringslinjen har fast posisjon og skiftende høyde (seksjonsmenyen brytes på smal skjerm).
   // Høyden settes som CSS-variabel, så `scroll-margin-top` på overskriftene alltid stemmer.
@@ -77,6 +86,8 @@ export function Resultatside({ kjoring, resultat }: { kjoring: Kjoring; resultat
     setAktiv(seksjon)
   }, [])
 
+  const hoppTilDel = useCallback((varenummer: string) => tabellRef.current?.hoppTilDel(varenummer), [])
+
   return (
     <div className="resultatside" ref={side}>
       <Kjoringslinje
@@ -86,14 +97,24 @@ export function Resultatside({ kjoring, resultat }: { kjoring: Kjoring; resultat
       />
       <Tallbokser tall={tall} onVelg={gaTil} />
       <SlikLeserDu harKritiskeDeler={tall.kritiskeDeler > 0} />
-      {SEKSJONER.map((seksjon) => (
-        <section key={seksjon} className="resultat-seksjon" aria-labelledby={overskriftId(seksjon)}>
-          <h2 id={overskriftId(seksjon)} tabIndex={-1}>
-            {tekster.seksjoner[seksjon]}
-          </h2>
-          {INNHOLD[seksjon]?.(kjoring, resultat)}
+      {/* Uten kritiske deler står bare en kort melding i en informasjonsboks, uten overskrift og liste (FR-16). Meldingen
+          har id-en til overskriften og kan få fokus, så knappen og tallboksen for kritiske deler fører hit. */}
+      {tall.kritiskeDeler === 0 ? (
+        <section className="resultat-seksjon">
+          <div className="informasjonsboks" id={overskriftId('kritiskeDeler')} tabIndex={-1}>
+            <p>{tekster.kritiskeDeler.ingen}</p>
+          </div>
         </section>
-      ))}
+      ) : (
+        <Seksjon seksjon="kritiskeDeler">
+          <KritiskeDeler resultat={resultat} onHopp={hoppTilDel} />
+        </Seksjon>
+      )}
+      {/* Innholdet kommer i Story 2.11. */}
+      <Seksjon seksjon="bestillingsforslag" />
+      <Seksjon seksjon="resultattabell">
+        <Resultattabell kjoring={kjoring} resultat={resultat} ref={tabellRef} />
+      </Seksjon>
     </div>
   )
 }

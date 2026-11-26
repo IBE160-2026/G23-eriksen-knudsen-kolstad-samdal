@@ -178,3 +178,17 @@ export function flytt(
 export function erLik(a: Rutenettplass | null, b: Rutenettplass | null): boolean {
   return a === b || (a !== null && b !== null && a.varenummer === b.varenummer && a.r === b.r && a.k === b.k)
 }
+
+/**
+ * Cellen et hopp fra kritiske deler lander i: cellen med delens tidligste eksepsjon (Story 2.10, UX-DR17). Eksepsjonene er
+ * sortert på stykklisterekkefølge, uke (hele delen først) og type (arkitektur kap. 4), så den første for delen er den tidligste.
+ * Ledetid overskrider horisont gjelder hele delen og lander i delens felt. Null når delen ikke har eksepsjoner.
+ */
+export function hoppPlass(eksepsjoner: readonly Eksepsjon[], varenummer: string): Rutenettplass | null {
+  const eksepsjon = eksepsjoner.find((e) => e.varenummer === varenummer)
+  if (eksepsjon === undefined) return null
+  const plass = markorplass(eksepsjon)
+  return plass.type === 'DEL'
+    ? { varenummer, r: 0, k: KOLONNE_FELT }
+    : { varenummer, r: RADER.indexOf(plass.rad), k: plass.uke + 1 }
+}

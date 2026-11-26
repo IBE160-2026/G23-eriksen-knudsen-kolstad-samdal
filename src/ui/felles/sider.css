@@ -864,6 +864,16 @@ h2[tabindex='-1']:focus {
   outline-offset: -4px;
 }
 
+/* Etter et hopp fra kritiske deler vises ringen på målcellen mens delen er markert, også etter et museklikk. */
+.resultattabell-tabell .fokusring {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: -2px;
+}
+
+.resultattabell-tabell .celle-valgt.fokusring {
+  outline-offset: -4px;
+}
+
 .celle-innhold {
   display: flex;
   align-items: center;
@@ -885,6 +895,150 @@ h2[tabindex='-1']:focus {
 
 .celle-sterk .tall {
   font-weight: 700;
+}
+
+/* --- Kritiske deler (Story 2.10, UX-DR17, DESIGN.md › Components › Linje i kritiske deler) --- */
+
+.resultat-seksjon {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3);
+}
+
+/* Seksjonen og meldingen uten kritiske deler skal stå rett under kjøringslinjen når Kari hopper hit. */
+.resultat-seksjon > [id^='seksjon-'] {
+  scroll-margin-top: calc(var(--kjoringslinje-hoyde, 0px) + 12px);
+}
+
+.resultat-seksjon > .informasjonsboks:focus {
+  outline: none;
+}
+
+.kritiske-deler {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.kritisk-linje {
+  display: grid;
+  grid-template-columns: minmax(180px, 1fr) minmax(0, 2.4fr) auto;
+  align-items: start;
+  gap: var(--spacing-4);
+  box-sizing: border-box;
+  width: 100%;
+  padding: var(--spacing-3) var(--spacing-4);
+  font: inherit;
+  color: var(--ink-primary);
+  text-align: left;
+  background: var(--surface-raised);
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--exc-critical);
+  border-radius: var(--rounded-lg);
+  cursor: pointer;
+}
+
+/* Venstrekanten har fargen til delens tidligste eksepsjon. */
+.kant-eks-kritisk {
+  border-left-color: var(--exc-critical);
+}
+
+.kant-eks-sikkerhetslager,
+.kant-eks-mottak {
+  border-left-color: var(--exc-warning);
+}
+
+.kant-eks-kanseller {
+  border-left-color: var(--exc-info);
+}
+
+.kant-eks-horisont {
+  border-left-color: var(--exc-horizon);
+}
+
+/* Ved peking får rammen accent. Venstrekanten beholder eksepsjonens farge. */
+.kritisk-linje:hover {
+  border-top-color: var(--accent);
+  border-right-color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+.kritisk-linje-del,
+.kritisk-linje-eksepsjoner {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.kritisk-linje-varenummer {
+  font-family: var(--font-mono);
+  font-size: var(--typography-code-size);
+}
+
+.kritisk-linje-beskrivelse {
+  font-weight: 700;
+}
+
+.kritisk-linje-meta {
+  font-size: 12.5px;
+  color: var(--ink-secondary);
+}
+
+.kritisk-eksepsjon {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.kritisk-eksepsjon-merke {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+}
+
+.kritisk-linje-handling {
+  align-self: center;
+  white-space: nowrap;
+  color: var(--accent);
+}
+
+/* Delen i tabellen er markert kort etter et hopp. Med prefers-reduced-motion står markeringen uten bevegelse. */
+.del-markert .delfelt,
+.del-markert .radnavn {
+  animation: del-markert 1.6s ease-out;
+}
+
+.del-markert > tr:first-child > * {
+  border-top-color: var(--accent);
+}
+
+@keyframes del-markert {
+  from {
+    background: var(--accent-soft);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .del-markert .delfelt,
+  .del-markert .radnavn {
+    animation: none;
+    background: var(--accent-soft);
+  }
+}
+
+@media (max-width: 899.98px) {
+  .kritisk-linje {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .kritisk-linje-handling {
+    align-self: start;
+  }
 }
 
 /* --- Veiledning (UX-DR31) -------------------------------------------------------- */
