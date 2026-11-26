@@ -3,18 +3,30 @@
 // valgt celle og filteret «Vis bare kritiske deler». Tastaturstyringen (Story 2.9) og forklaringen av en celle
 // (Epic 3) kommer senere: peking gjør ingenting annet enn en liten endring i ramme eller bakgrunn (FR-18).
 
-import { useCallback, useLayoutEffect, useMemo, useRef, useState, type KeyboardEvent, type MouseEvent } from 'react'
+import {
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+  type KeyboardEvent,
+  type MouseEvent,
+  type Ref,
+} from 'react'
 import type { Kjoring, Resultat } from '../../domene/typer.ts'
 import { resultat as tekster } from '../../tekster/nb.ts'
 import { DelTbody } from './DelTbody.tsx'
 import { EKSEPSJONSVISNING, KODER } from './eksepsjonsvisning.ts'
 import { overskriftId } from './seksjoner.ts'
-import { rullInnIBildet } from './rull.ts'
+import { rullInnIBildet, rullTilDel } from './rull.ts'
 import {
   erLik,
   flytt,
   forstePlass,
   grupperMarkorer,
+  hoppPlass,
   KOLONNE_FELT,
   KOLONNE_FORSTE_UKE,
   markorerFor,
@@ -49,7 +61,18 @@ function Tegnforklaring() {
   )
 }
 
-export function Resultattabell({ kjoring, resultat }: { kjoring: Kjoring; resultat: Resultat }) {
+/** Det andre deler av siden kan be tabellen om (Story 2.10: hopp fra kritiske deler, og fra forfalt mengde i Story 2.11). */
+export type Tabellstyring = {
+  /** Ruller til delen, flytter fokus til cellen med delens tidligste eksepsjon og markerer delen kort. */
+  hoppTilDel: (varenummer: string) => void
+}
+
+/** Hvor lenge delen er markert etter et hopp, i ms. */
+const MARKERING_MS = 1600
+
+type Props = { kjoring: Kjoring; resultat: Resultat; ref?: Ref<Tabellstyring> }
+
+export function Resultattabell({ kjoring, resultat, ref }: Props) {
   const t = tekster.tabell
   const [bareKritiske, setBareKritiske] = useState(false)
   const [valgt, setValgt] = useState<ValgtCelle | null>(null)
@@ -65,6 +88,8 @@ export function Resultattabell({ kjoring, resultat }: { kjoring: Kjoring; result
   const [aktiv, setAktiv] = useState<Rutenettplass | null>(null)
   const omraade = useRef<HTMLDivElement>(null)
   const skalFokusere = useRef(false)
+  const skalRulleTilDel = useRef(false)
+  const [markert, setMarkert] = useState<string | null>(null)
   const varenumre = useMemo(() => synlige.map((del) => del.del.varenummer), [synlige])
   // Skjules delen med tabulatorstoppet av filteret, flytter stoppet til første del som vises.
   const plass = useMemo(
@@ -81,8 +106,34 @@ export function Resultattabell({ kjoring, resultat }: { kjoring: Kjoring; result
     )
     if (!(celle instanceof HTMLElement)) return
     celle.focus({ preventScroll: true })
+    if (skalRulleTilDel.current && del instanceof HTMLElement) {
+      skalRulleTilDel.current = false
+      rullTilDel(del, omraade.current)
+    }
     rullInnIBildet(celle, omraade.current)
   }, [plass])
+
+  // Delen er markert kort etter et hopp. Tidtakeren ryddes bort når tabellen forsvinner eller en ny markering starter.
+  useEffect(() => {
+    if (markert === null) return
+    const tidtaker = setTimeout(() => setMarkert(null), MARKERING_MS)
+    return () => clearTimeout(tidtaker)
+  }, [markert])
+
+  useImperativeHandle(
+    ref,
+    () => ({
+      hoppTilDel(varenummer) {
+        const mal = hoppPlass(resultat.eksepsjoner, varenummer)
+        if (mal === null) return
+        skalFokusere.current = true
+        skalRulleTilDel.current = true
+        setAktiv(mal)
+        setMarkert(varenummer)
+      },
+    }),
+    [resultat.eksepsjoner],
+  )
 
   /** Cellen et element står i. Delens felt husker raden Kari kom fra. */
   function plassFra(element: Element): Rutenettplass | null {
@@ -176,6 +227,7 @@ export function Resultattabell({ kjoring, resultat }: { kjoring: Kjoring; result
               valgtUke={valgt?.varenummer === del.del.varenummer ? valgt.uke : null}
               aktivR={plass?.varenummer === del.del.varenummer ? plass.r : null}
               aktivK={plass?.varenummer === del.del.varenummer ? plass.k : null}
+              markert={markert === del.del.varenummer}
               onVelg={velg}
             />
           ))}

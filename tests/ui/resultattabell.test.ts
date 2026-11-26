@@ -261,7 +261,7 @@ describe('Resultattabell: valgt celle (UX-DR21, FR-18)', () => {
   const markorer = markorerFor(grupperMarkorer(EKSEPSJONER_01), '300-003')
   const tegnDel = (valgtRad: 'nettobehov' | null, valgtUke: number | null) =>
     renderToStaticMarkup(
-      createElement('table', null, createElement(DelTbody, { del, markorer, uker: UKER, valgtRad, valgtUke, aktivR: null, aktivK: null, onVelg: () => {} })),
+      createElement('table', null, createElement(DelTbody, { del, markorer, uker: UKER, valgtRad, valgtUke, aktivR: null, aktivK: null, markert: false, onVelg: () => {} })),
     )
 
   it('uten valg har ingen celle ramme, og ingen radnavn er fete', () => {
