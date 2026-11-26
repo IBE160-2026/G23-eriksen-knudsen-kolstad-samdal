@@ -74,10 +74,10 @@ export const felles = {
         tekst: 'Du kan laste opp én Excel-fil (.xlsx). Filen blir i nettleseren din.',
       },
       beregn: {
-        // Tittelen er fra akseptkriteriene (Story 1.4). Teksten sier hva Beregn gjør nå: valget av beregning
-        // kommer i Epic 5 og selve beregningen i Epic 2 (deferred-work.md, Story 1.11).
+        // Tittelen er fra akseptkriteriene (Story 1.4). Teksten sier hva Beregn gjør nå (Story 2.5): valget av beregning
+        // (Bestillingsplan, Produksjonskapasitet eller Begge) kommer i Epic 5.
         tittel: 'Velg hva du vil beregne, og beregn',
-        tekst: 'Trykk Beregn når filen er valgt. Foreløpig leser og kontrollerer appen filen. Bestillingsplanen beregnes ikke ennå.',
+        tekst: 'Trykk Beregn når filen er valgt. Appen leser og kontrollerer filen og beregner bestillingsplanen.',
       },
     },
     // Opplastingssonen (Story 1.11, UX-DR8, EXPERIENCE.md › Component Patterns og Voice and Tone).
@@ -124,7 +124,7 @@ export const felles = {
         overskrift: '3. Les resultatet',
         avsnitt: [
           'Når filen ikke har feil, går appen til Resultat. Linjen øverst viser ferdigproduktet, horisonten, filen og når den ble lest. «Last opp ny fil» tar deg tilbake til Ny kjøring.',
-          'Selve bestillingsplanen beregnes ikke ennå. Disse seksjonene kommer i en senere versjon av appen:',
+          'Øverst står fire tallbokser og en meny som tar deg til seksjonene. Innholdet i seksjonene kommer i en senere versjon av appen:',
         ],
         punkter: [
           { navn: 'Kritiske deler', tekst: 'delene der planen ikke går opp, og hva du kan gjøre.' },

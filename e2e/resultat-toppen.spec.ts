@@ -1,8 +1,7 @@
 // Toppen av Resultat gjennom hele appen (Story 2.6, UX-DR14, UX-DR15, AD-13).
 //
-// Testene trenger en kjøring med beregnet bestillingsplan, og den kommer først med Story 2.5 (Beregningen i kjøringen).
-// Til da er `kjoring.resultat` null i den ekte appen, så testene er merket `fixme`. Når Story 2.5 er flettet inn:
-// fjern `fixme`, og godkjenn skjermen mot testeksempel 01 (arkitektur kap. 8).
+// Testene bruker en kjøring med beregnet bestillingsplan (Story 2.5): testeksempel 01 gjennom den ekte appen og worker-en
+// (arkitektur kap. 8).
 
 import { join } from 'node:path'
 import type { Page } from '@playwright/test'
@@ -20,7 +19,6 @@ async function beregnTesteksempel01(page: Page) {
 }
 
 test.describe('Toppen av Resultat med testeksempel 01', () => {
-  test.fixme(true, 'Venter på Story 2.5: kjoring.resultat er null til beregningen er koblet til kjøringen.')
 
   test('tallboksen for kritiske deler viser 4', async ({ page }) => {
     await beregnTesteksempel01(page)
@@ -51,8 +49,11 @@ test.describe('Toppen av Resultat med testeksempel 01', () => {
     await expect(async () => {
       const linje = await page.locator('.kjoringslinje').boundingBox()
       const topp = (await overskrift.boundingBox())?.y ?? Infinity
-      expect(topp).toBeGreaterThanOrEqual((linje?.y ?? 0) + (linje?.height ?? 0))
-      expect(topp).toBeLessThan((linje?.y ?? 0) + (linje?.height ?? 0) + 40)
+      const linjeBunn = (linje?.y ?? 0) + (linje?.height ?? 0)
+      expect(topp).toBeGreaterThanOrEqual(linjeBunn)
+      // Rett under kjøringslinjen, eller så langt opp som siden lar seg rulle når den er kort (seksjonene fylles ut i senere stories).
+      const nederst = await page.evaluate(() => window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 2)
+      if (!nederst) expect(topp).toBeLessThan(linjeBunn + 40)
     }).toPass()
   })
 })

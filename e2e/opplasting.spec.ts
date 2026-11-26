@@ -99,14 +99,15 @@ test.describe('gyldig fil', () => {
     await expect(page.getByRole('status')).toHaveCount(1)
   })
 
-  test('Resultat sier at bestillingsplanen ikke er beregnet ennå', async ({ page }) => {
+  test('Resultat viser den beregnede bestillingsplanen: fire tallbokser og de tre seksjonene (Story 2.5 og 2.6)', async ({ page }) => {
     await forbered(page)
     await velgFil(page, TESTEKSEMPEL_01)
     await beregnKnapp(page).click()
-    const boks = page.getByRole('main').locator('.informasjonsboks')
-    await expect(boks).toContainText('Filen er lest og kontrollert, og den har ingen feil.')
-    await expect(boks).toContainText('Bestillingsplanen beregnes ikke ennå.')
-    await expect(boks).toBeVisible()
+    await expect(page).toHaveURL(/#\/resultat$/)
+    await expect(page.getByRole('main')).not.toContainText('beregnes ikke ennå')
+    await expect(page.locator('.tallboks')).toHaveCount(4)
+    await expect(page.locator('.tallboks', { hasText: 'Kritiske deler' })).toContainText('4')
+    await expect(page.getByRole('heading', { level: 2 })).toHaveText(['Kritiske deler', 'Bestillingsforslag', 'Resultattabell'])
   })
 
   test('statusen viser «Leser filen …» og så «Beregner …» ved Beregn, uten overlegg (UX-DR10)', async ({ page }) => {
@@ -304,7 +305,7 @@ test.describe('fil sluppet utenfor sonen på andre visninger', () => {
     await beregnKnapp(page).click()
     await expect(page.locator('.kjoringslinje')).toContainText('Kontorstol Basic (100-002)')
 
-    for (const velger of ['.kjoringslinje', '.informasjonsboks', 'body']) {
+    for (const velger of ['.kjoringslinje', '.tallbokser', 'body']) {
       expect(await draOgSlippUtenfor(page, velger, 'fil'), velger).toEqual({ over: true, slipp: true })
     }
     await expect(page).toHaveURL(/#\/resultat$/)
