@@ -178,7 +178,7 @@ test.describe('ny opplasting (UX-DR11)', () => {
   })
 })
 
-test.describe('1366 × 630 px med feiloppsummering (avklaring 26.11, deferred-work.md)', () => {
+test.describe('1366 × 630 px med feiloppsummering (vedtatt av gruppen 26.11, DESIGN.md › Layout & Spacing)', () => {
   test.use({ viewport: { width: 1366, height: 630 } })
 
   // Kravet om at sonen og Beregn er synlige uten rulling gjelder startsiden uten feiloppsummering

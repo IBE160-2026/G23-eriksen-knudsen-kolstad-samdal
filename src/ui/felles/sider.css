@@ -210,7 +210,7 @@
  * Rød boks (exc-critical-soft) med «✕» og overskriften (sidens h1) i exc-critical. Brødteksten er ink-primary,
  * og tabellene står på surface-raised, så lang tekst er lett å lese. Kontrasten er testet i begge visningene
  * (tests/ui/tokens.test.ts). Høyden er ikke begrenset: med feil gjelder ikke kravet om 1366 × 630 uten rulling
- * (avklaring i deferred-work.md, Story 1.12). */
+ * (vedtatt av gruppen 26.11, DESIGN.md › Layout & Spacing). */
 .feiloppsummering {
   display: flex;
   flex-direction: column;

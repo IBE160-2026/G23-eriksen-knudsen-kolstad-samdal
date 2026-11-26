@@ -422,7 +422,7 @@ test.describe('1366 × 630 px uten rulling (UX-DR7, DESIGN.md › Layout & Spaci
     await allSynlig(page, '«Slipp bare én fil …»')
   })
 
-  // Med feiloppsummering gjelder ikke kravet om alt uten rulling (avklaring 26.11, Story 1.12, deferred-work.md).
+  // Med feiloppsummering gjelder ikke kravet om alt uten rulling (vedtatt av gruppen 26.11, DESIGN.md › Layout & Spacing).
   // Den tilstanden testes i e2e/feiloppsummering.spec.ts. Når en gyldig fil gir Resultat og Kari går tilbake,
   // er oppsummeringen borte, og alt er synlig igjen.
   test('etter valideringsfeil og så en gyldig fil er alt synlig igjen på startsiden', async ({ page }) => {
