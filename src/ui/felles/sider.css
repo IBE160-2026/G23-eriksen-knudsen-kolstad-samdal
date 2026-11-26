@@ -1041,6 +1041,150 @@ h2[tabindex='-1']:focus {
   }
 }
 
+/* --- Bestillingsforslag (Story 2.11, UX-DR18, UX-DR19, DESIGN.md › Components › Bestillingsforslag og Ukefilter) --- */
+
+.bestillingsforslag {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+}
+
+.forslag-hjelp {
+  max-width: 80ch;
+  margin: 0;
+  font-size: 14px;
+  color: var(--ink-secondary);
+}
+
+/* Ukefilteret: «Alle uker» først, så uke 1 til H, med antall i ink-secondary. Runde knapper er bare for dette og seksjonsmenyen. */
+.ukefilter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-2);
+}
+
+.ukechip {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  padding: 4px 12px;
+  font: inherit;
+  font-size: 13.5px;
+  color: var(--ink-primary);
+  background: var(--surface-raised);
+  border: 1px solid var(--line-faint);
+  border-radius: var(--rounded-full);
+  cursor: pointer;
+}
+
+.ukechip:hover {
+  background: var(--surface-sunken);
+}
+
+.ukechip[aria-pressed='true'] {
+  font-weight: 600;
+  color: var(--surface-raised);
+  background: var(--ink-primary);
+  border-color: var(--ink-primary);
+}
+
+.ukechip-antall {
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-secondary);
+}
+
+.ukechip[aria-pressed='true'] .ukechip-antall {
+  color: inherit;
+}
+
+.filterstatus-plass {
+  min-height: calc(1em * var(--typography-body-line-height));
+}
+
+/* Fast høyde og egen rulling. Høyden regnes ut av alle forslagene (Bestillingsforslag.tsx), så siden ikke hopper ved filter. */
+.forslagomrade {
+  height: min(360px, calc(var(--antall-rader, 10) * var(--spacing-row-height) + 36px));
+  overflow: auto;
+  background: var(--surface-raised);
+  border: 1px solid var(--line);
+  border-radius: var(--rounded-lg);
+}
+
+.forslagtabell {
+  width: 100%;
+  font-size: var(--typography-table-size);
+  line-height: var(--typography-table-line-height);
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.forslagtabell thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  padding: 6px 12px;
+  font-weight: 600;
+  text-align: left;
+  white-space: nowrap;
+  background: var(--surface-sunken);
+  border-bottom: 1px solid var(--line);
+}
+
+.forslagtabell td {
+  height: var(--spacing-row-height);
+  padding: 0 12px;
+  border-bottom: 1px solid var(--line);
+}
+
+.forslagtabell .forslag-tall {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.forslag-mengde {
+  font-weight: 700;
+}
+
+.forslag-varenummer {
+  font-family: var(--font-mono);
+  font-size: var(--typography-code-size);
+}
+
+.forslag-uke1 td {
+  background: var(--accent-soft);
+}
+
+.forslag-beskrivelse {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Merkelappen for innkjøp eller produksjonsordre. */
+.art-merke {
+  display: inline-block;
+  padding: 1px 8px;
+  font-size: 12px;
+  color: var(--ink-secondary);
+  background: var(--surface-sunken);
+  border: 1px solid var(--line);
+  border-radius: var(--rounded-sm);
+}
+
+/* Merket for forfalt mengde: en knapp uten ramme, med fokusring som alle knapper. */
+.forfalt-knapp {
+  padding: 2px 8px;
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--exc-critical);
+  background: var(--exc-critical-soft);
+  border: 0;
+  border-radius: var(--rounded-sm);
+  cursor: pointer;
+}
+
 /* --- Veiledning (UX-DR31) -------------------------------------------------------- */
 
 .tekstside {

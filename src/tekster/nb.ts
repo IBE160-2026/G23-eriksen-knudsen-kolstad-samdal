@@ -627,6 +627,36 @@ export const resultat = {
     },
   },
 
+  // Bestillingsforslag (Story 2.11, FR-17, UX-DR18, UX-DR19).
+  bestillingsforslag: {
+    hjelp:
+      'Frigivelsesuke er uka du må sende bestillingen eller starte produksjonen. Varene kommer ledetiden senere. Forfalt betyr at noe av mengden skulle vært bestilt før uke 1.',
+    ingen: 'Kjøringen gir ingen bestillingsforslag.',
+    listeNavn: 'Liste over bestillingsforslag',
+    filterNavn: 'Filter på frigivelsesuke',
+    kolonner: {
+      uke: 'Frigivelsesuke',
+      varenummer: 'Varenummer',
+      beskrivelse: 'Beskrivelse',
+      mengde: 'Mengde',
+      art: 'Innkjøp eller produksjonsordre',
+      forfalt: 'Forfalt',
+    },
+    art: { INNKJOP: 'Innkjøp', PRODUKSJONSORDRE: 'Produksjonsordre' },
+    alleUker: 'Alle uker',
+    uke: (uke: number) => `Uke ${uke}`,
+    /** Det tilgjengelige navnet på en ukeknapp: «Uke 1, 5 forslag». */
+    ukeknapp: (navn: string, antall: number) => `${navn}, ${formaterTall(antall)} forslag`,
+    viser: (synlige: number, totalt: number) => `Viser ${formaterTall(synlige)} av ${formaterTall(totalt)} forslag`,
+    visAlleUker: 'Vis alle uker',
+    ingenIUke: (uke: number) => `Ingen bestillingsforslag skal frigis i uke ${uke}.`,
+    /** Knappen i kolonnen Forfalt: «! 50 forfalt». Symbolet er skjult for skjermleseren. */
+    forfalt: (mengde: number) => `${formaterTall(mengde)} forfalt`,
+    /** Det tilgjengelige navnet på knappen: «50 forfalt: se eksepsjonen for 300-003 Hjul». */
+    forfaltNavn: (mengde: number, varenummer: string, beskrivelse: string) =>
+      `${formaterTall(mengde)} forfalt: se eksepsjonen for ${varenummer} ${beskrivelse}`,
+  },
+
   // Kritiske deler (Story 2.10, FR-16, UX-DR17).
   kritiskeDeler: {
     ingen: 'Ingen kritiske deler. Planen går opp for alle delene.',

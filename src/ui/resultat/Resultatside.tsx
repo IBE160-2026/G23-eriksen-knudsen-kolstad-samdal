@@ -1,6 +1,6 @@
 // Resultat med en beregnet bestillingsplan (Story 2.6, AD-13, AD-14, UX-DR14–UX-DR16).
 // Kjøringslinjen med seksjonsmenyen, tallboksene, «Slik leser du resultatet» og de tre seksjonene i fast rekkefølge.
-// Innholdet i seksjonene kommer i Story 2.7 (Resultattabell), 2.10 (Kritiske deler) og 2.11 (Bestillingsforslag).
+// Innholdet i seksjonene: Resultattabell (Story 2.7), Kritiske deler (2.10) og Bestillingsforslag (2.11).
 //
 // Hopp til en seksjon: `scrollIntoView` så overskriften står rett under kjøringslinjen, fokus til overskriften,
 // og ingen endring av adressen. Seksjonen som er i bildet, får `aria-current="location"` mens Kari ruller.
@@ -8,6 +8,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import type { Kjoring, Resultat } from '../../domene/typer.ts'
 import { resultat as tekster } from '../../tekster/nb.ts'
+import { Bestillingsforslag } from './Bestillingsforslag.tsx'
 import { Kjoringslinje } from './Kjoringslinje.tsx'
 import { KritiskeDeler } from './KritiskeDeler.tsx'
 import { Resultattabell, type Tabellstyring } from './Resultattabell.tsx'
@@ -110,8 +111,9 @@ export function Resultatside({ kjoring, resultat }: { kjoring: Kjoring; resultat
           <KritiskeDeler resultat={resultat} onHopp={hoppTilDel} />
         </Seksjon>
       )}
-      {/* Innholdet kommer i Story 2.11. */}
-      <Seksjon seksjon="bestillingsforslag" />
+      <Seksjon seksjon="bestillingsforslag">
+        <Bestillingsforslag kjoring={kjoring} resultat={resultat} onHopp={hoppTilDel} />
+      </Seksjon>
       <Seksjon seksjon="resultattabell">
         <Resultattabell kjoring={kjoring} resultat={resultat} ref={tabellRef} />
       </Seksjon>
