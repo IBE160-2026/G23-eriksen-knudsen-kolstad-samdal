@@ -151,3 +151,140 @@ describe('filfeilOgValidering.mpsOgMottak (Story 1.9)', () => {
     expect(mal(FEIL[7])).toContain('mer enn 12 uker')
   })
 })
+
+describe('filfeilOgValidering.stykkliste (Story 1.8)', () => {
+  const stykkliste = filfeilOgValidering.stykkliste
+  type StykklisteKode = keyof typeof stykkliste
+  const mal = (feil: Valideringsfeil): string => stykkliste[feil.kode as StykklisteKode](feil)
+
+  const celle = (c: string, excelRad: number) => ({ type: 'CELLE', celle: c, excelRad }) as const
+  const rad = (excelRad: number) => ({ type: 'RAD', excelRad }) as const
+  const f = (kode: Valideringsfeil['kode'], felt: Valideringsfeil['felt'], sted: Valideringsfeil['sted'], resten: Partial<Valideringsfeil> = {}): Valideringsfeil => ({
+    kode,
+    ark: 'Stykkliste',
+    sted,
+    felt,
+    ...resten,
+  })
+
+  /** Én eksempelfeil per kode, med verdiene fra valideringsfilene (testdata/validering/README.md). */
+  const EKSEMPLER: Valideringsfeil[] = [
+    f('RADER_IKKE_SAMMENHENGENDE', 'Rader', rad(9)),
+    f('RADER_FOR_MANGE', 'Rader', rad(1002)),
+    f('RADER_INGEN_NIVAA_1', 'Rader', rad(2)),
+    f('NIVAA_UGYLDIG', 'Nivå', celle('A8', 8), { verdi: '3' }),
+    f('NIVAA_UGYLDIG', 'Nivå', celle('A8', 8), { verdi: null }),
+    f('NIVAA_FORSTE_RAD_IKKE_0', 'Nivå', celle('A2', 2), { verdi: '.1' }),
+    f('NIVAA_FLERE_NIVAA_0', 'Nivå', celle('A11', 11), { verdi: '0' }),
+    f('NIVAA_2_UTEN_NIVAA_1_OVER', 'Nivå', celle('A3', 3), { verdi: '..2' }),
+    f('VARENUMMER_MANGLER', 'Varenummer', celle('B8', 8), { verdi: null }),
+    f('VARENUMMER_UNDER_SEG_SELV', 'Varenummer', celle('B6', 6), { verdi: '200-001', varenummer: '200-001', andreRader: [3] }),
+    f('BESKRIVELSE_MANGLER', 'Beskrivelse', celle('C9', 9), { verdi: null }),
+    f('BESKRIVELSE_ULIK', 'Beskrivelse', celle('C7', 7), { verdi: 'Skruesett M8', varenummer: '300-002', andreRader: [5] }),
+    f('ANTALL_FYLT_UT_FOR_NIVAA_0', 'Antall', celle('D2', 2), { verdi: 1 }),
+    f('ANTALL_MANGLER', 'Antall', celle('D9', 9), { verdi: null }),
+    f('ANTALL_UGYLDIG', 'Antall', celle('D9', 9), { verdi: 'fem' }),
+    f('ANTALL_UGYLDIG', 'Antall', celle('D4', 4), { verdi: 1.5 }),
+    f('TYPE_UGYLDIG', 'Type', celle('E8', 8), { verdi: 'Råvare (Kjøpes inn)' }),
+    f('TYPE_UGYLDIG', 'Type', celle('E8', 8), { verdi: null }),
+    f('TYPE_FERDIGVARE_IKKE_NIVAA_0', 'Type', celle('E9', 9), { verdi: 'Ferdigvare' }),
+    f('TYPE_NIVAA_0_IKKE_FERDIGVARE', 'Type', celle('E2', 2), { verdi: 'Komponent (Produseres selv)' }),
+    f('TYPE_ULIK', 'Type', celle('E7', 7), { verdi: 'Komponent (Produseres selv)', varenummer: '300-002', andreRader: [5] }),
+    f('TYPE_KJOPES_INN_HAR_UNDERDELER', 'Type', celle('E3', 3), { verdi: 'Komponent (Kjøpes inn)', varenummer: '200-001', andreRader: [4, 5] }),
+    f('UNDERDELER_ULIKE', 'Underdeler', rad(12), { varenummer: '200-001', andreRader: [3, 11] }),
+    f('LAGERBEHOLDNING_MANGLER', 'Lagerbeholdning', celle('F8', 8), { verdi: null }),
+    f('LAGERBEHOLDNING_UGYLDIG', 'Lagerbeholdning', celle('F9', 9), { verdi: -5 }),
+    f('LAGERBEHOLDNING_FYLT_UT_SENERE', 'Lagerbeholdning', celle('F7', 7), { verdi: 10, varenummer: '300-002', andreRader: [5] }),
+    f('SIKKERHETSLAGER_MANGLER', 'Sikkerhetslager', celle('G8', 8), { verdi: null }),
+    f('SIKKERHETSLAGER_UGYLDIG', 'Sikkerhetslager', celle('G4', 4), { verdi: 2.5 }),
+    f('SIKKERHETSLAGER_FYLT_UT_SENERE', 'Sikkerhetslager', celle('G7', 7), { verdi: 5, varenummer: '300-002', andreRader: [5] }),
+    f('LEDETID_MANGLER', 'Ledetid (uker)', celle('H10', 10), { verdi: null }),
+    f('LEDETID_UGYLDIG', 'Ledetid (uker)', celle('H9', 9), { verdi: 0 }),
+    f('LEDETID_FYLT_UT_SENERE', 'Ledetid (uker)', celle('H7', 7), { verdi: 1, varenummer: '300-002', andreRader: [5] }),
+  ]
+
+  const STYKKLISTEKODER = VALIDERINGSKODER.filter((k) => /^(RADER|NIVAA|VARENUMMER|BESKRIVELSE|ANTALL|TYPE|UNDERDELER|LAGERBEHOLDNING|SIKKERHETSLAGER|LEDETID)_/.test(k))
+
+  it('har en mal for hver av de 29 kodene for Stykkliste, og ingen andre', () => {
+    expect(STYKKLISTEKODER).toHaveLength(29)
+    expect(Object.keys(stykkliste).sort()).toEqual([...STYKKLISTEKODER].sort())
+    for (const kode of STYKKLISTEKODER) expect(EKSEMPLER.some((e) => e.kode === kode), kode).toBe(true)
+  })
+
+  it.each(EKSEMPLER.map((feil) => [`${feil.kode} (${String(feil.verdi ?? 'tom')})`, feil] as const))(
+    '%s: ingen kode, og arket, stedet og feltet står først',
+    (_navn, feil) => {
+      const t = mal(feil)
+      for (const kode of VALIDERINGSKODER) expect(t).not.toContain(kode)
+      const rad = feil.sted.type === 'CELLE' || feil.sted.type === 'RAD' ? feil.sted.excelRad : 0
+      expect(t.startsWith(`Stykkliste, rad ${rad}, ${feil.felt}: `)).toBe(true)
+      expect(t).not.toContain('!')
+      expect(t).not.toContain('undefined')
+      expect(t).not.toContain('[object')
+    },
+  )
+
+  it('meldingene nevner varenummeret og radene de gjelder', () => {
+    const tekst = (kode: string) => mal(EKSEMPLER.find((e) => e.kode === kode)!)
+    expect(tekst('UNDERDELER_ULIKE')).toContain('«200-001»')
+    expect(tekst('UNDERDELER_ULIKE')).toContain('rad 3 og 11')
+    expect(tekst('TYPE_KJOPES_INN_HAR_UNDERDELER')).toContain('rad 4 og 5')
+    expect(tekst('BESKRIVELSE_ULIK')).toContain('rad 5 for varenummer 300-002')
+    expect(tekst('VARENUMMER_UNDER_SEG_SELV')).toContain('Se rad 3.')
+  })
+
+  it('verdien skrives med norsk desimaltegn og minustegn, og tomt nivå og tom type har egne tekster', () => {
+    const tekst = (kode: string, verdi: Celleverdi) => mal({ ...EKSEMPLER.find((e) => e.kode === kode)!, verdi })
+    expect(tekst('ANTALL_UGYLDIG', 1.5)).toContain('«1,5»')
+    expect(tekst('LAGERBEHOLDNING_UGYLDIG', -5)).toContain('«−5»')
+    expect(tekst('NIVAA_UGYLDIG', null)).toContain('nivået mangler')
+    expect(tekst('NIVAA_UGYLDIG', '3')).toContain('«3» er ikke et nivå')
+    expect(tekst('TYPE_UGYLDIG', null)).toContain('typen mangler')
+  })
+
+  it('en rad som peker på flere rader, skrives «rad 4, 5 og 6»', () => {
+    const feil: Valideringsfeil = {
+      kode: 'TYPE_KJOPES_INN_HAR_UNDERDELER',
+      ark: 'Stykkliste',
+      sted: { type: 'CELLE', celle: 'E3', excelRad: 3 },
+      felt: 'Type',
+      varenummer: '200-001',
+      andreRader: [4, 5, 6],
+    }
+    expect(mal(feil)).toContain('rad 4, 5 og 6')
+  })
+
+  it('radene sorteres, og mange rader kortes ned (gjennomgangen av PR #33)', () => {
+    const medRader = (andreRader: number[]): Valideringsfeil => ({
+      kode: 'TYPE_KJOPES_INN_HAR_UNDERDELER',
+      ark: 'Stykkliste',
+      sted: { type: 'CELLE', celle: 'E3', excelRad: 3 },
+      felt: 'Type',
+      varenummer: '200-001',
+      andreRader,
+    })
+    expect(mal(medRader([9, 4, 6]))).toContain('rad 4, 6 og 9.')
+    expect(mal(medRader([4, 5, 6, 7, 8, 9]))).toContain('rad 4, 5, 6, 7, 8 og 9.')
+    expect(mal(medRader([4, 5, 6, 7, 8, 9, 10, 11]))).toContain('rad 4, 5, 6, 7, 8 og 3 til.')
+    // Uten rader står ikke «rad » alene.
+    expect(mal(medRader([]))).toContain('andre rader')
+    expect(mal(medRader([]))).not.toMatch(/rad [.,s]/)
+  })
+})
+
+// Hver kode som valideringen kan gi, har en tekstmal (AD-9). Fanger en ny kode uten mal.
+describe('alle valideringskodene har en mal', () => {
+  const alleMaler: Record<string, unknown> = {
+    ...filfeilOgValidering.struktur,
+    ...filfeilOgValidering.stykkliste,
+    ...filfeilOgValidering.mpsOgMottak,
+  }
+
+  it.each(VALIDERINGSKODER.map((kode) => [kode] as const))('%s har en mal', (kode) => {
+    expect(typeof alleMaler[kode], kode).toBe('function')
+  })
+
+  it('ingen mal mangler en kode, og ingen mal står uten kode', () => {
+    expect(Object.keys(alleMaler).sort()).toEqual([...VALIDERINGSKODER].sort())
+  })
+})

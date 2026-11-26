@@ -2,19 +2,11 @@
 
 - source_spec: `.docs/implementation-artifacts/spec-1-5-les-excel-filen.md`
   summary: En stykklisterad der Nivå og Varenummer er tomme, men en annen av malens kolonner er fylt ut (for eksempel Beskrivelse eller Antall), avslutter stykklisten. Innholdet i raden forsvinner uten valideringsfeil hvis ingenting står under den.
-  evidence: PRD FR-3 og AD-15 sier at det bare er innhold «under» den tomme raden som gir feil, og `les.ts` følger det. Gjennomgang 1 av Story 1.5 (Blind Hunter) viste at en siste rad med bare Beskrivelse og Antall gir en gyldig kjøring uten den delen (medium). Gruppen avgjør om innhold i selve stopperaden også skal gi feil. Det kan løses i Story 1.8 eller med et nytt felt i `RaaArk`, som krever en egen PR for `typer.ts`.
-
-- source_spec: `.docs/implementation-artifacts/spec-1-6-kontroll-av-malens-struktur.md`
-  summary: Avhengigheter inne i Stykkliste står ikke i `hoppetOver`. Uten overskriften Varenummer kan reglene «fylt ut første gang, tom de neste», `TYPE_ULIK` og `UNDERDELER_ULIKE` ikke brukes, og uten Nivå kan reglene om nivå, underdeler og ledetid ≥ 0 for nivå 0 ikke brukes.
-  evidence: Gjennomgang 1 av Story 1.6 (Blind Hunter), medium. `HoppetOverKontroll` har bare (ark, felt), så en delregel kan ikke beskrives uten endring i `typer.ts`. Story 1.8 (Idun) må hoppe over disse reglene for å unngå følgefeil (FR-2), og avgjøre om feiloppsummeringen skal nevne dem.
+  evidence: PRD FR-3 og AD-15 sier at det bare er innhold «under» den tomme raden som gir feil, og `les.ts` følger det. Gjennomgang 1 av Story 1.5 (Blind Hunter) viste at en siste rad med bare Beskrivelse og Antall gir en gyldig kjøring uten den delen (medium). Gruppen avgjør om innhold i selve stopperaden også skal gi feil. Det kan løses i Story 1.8 eller med et nytt felt i `RaaArk`, som krever en egen PR for `typer.ts`. Story 1.8 løste det ikke (Sebastians gjennomgang av PR #33, 26.11): det krever fortsatt et valg i gruppen og et nytt felt i `RaaArk`.
 
 - source_spec: `.docs/implementation-artifacts/spec-1-9-kontroll-av-mps-og-planlagte-mottak.md`
   summary: Meldingen for `MOTTAK_UKE_UTENFOR_HORISONT` etter horisonten sier ikke hva horisonten H er, så Kari må telle ukene i Prognostiserte behov selv.
   evidence: Gjennomgang 1 av Story 1.9 (Blind Hunter), low. `Valideringsfeil` har ikke et felt for H, og `typer.ts` endres bare i egen PR (AD-3). Kan løses med et valgfritt felt `horisont`, eller ved at feiloppsummeringen i 1.12 viser H.
-
-- source_spec: `.docs/implementation-artifacts/spec-1-9-kontroll-av-mps-og-planlagte-mottak.md`
-  summary: Sikkerhetsnettet i `valider()` kan gi Stykkliste-koder (`NIVAA_UGYLDIG`, `TYPE_UGYLDIG` med flere) som ikke har en tekstmal i `nb.ts`. Ingen test sjekker at alle kodene `valider` kan gi, har en mal.
-  evidence: Gjennomgang 1 av Story 1.9 (Blind Hunter), medium. Malene for Stykkliste hører til 1.8 (Idun). Når 1.8 er flettet, bør en test sjekke at hver kode i `VALIDERINGSKODER` har en mal i `filfeilOgValidering`, før 1.12 viser feilene.
 
 - source_spec: `.docs/planning-artifacts/epics.md` (Story 1.10)
   summary: `Kjoring.resultat` og `Kjoring.kapasitet` er `null` for alle kjøringer, og worker-en kjører bare lesing og validering. Typen sier at `resultat` bare er `null` når bare produksjonskapasitet er valgt, så dette er en midlertidig avvikelse.
@@ -51,3 +43,7 @@
 - source_spec: `.docs/planning-artifacts/epics.md` (Story 1.11)
   summary: Hele flyten fra skjermen via `app/kjoring.ts` til worker-en er nå testet i nettleseren (punktet fra Story 1.10 over). Tidsgrensen på 30 sekunder er fortsatt bare testet med falske tidtakere.
   evidence: `e2e/opplasting.spec.ts` laster opp testeksempel 01 og V-F04, V-F07, V-F08 og V-F09 gjennom «Velg fil» og dra og slipp, og teller at et dobbeltklikk på Beregn lager én worker. En test av tidsgrensen i nettleseren trenger fortsatt en testkrok som får worker-en til å henge.
+
+- source_spec: `.docs/planning-artifacts/epics.md` (Story 1.8)
+  summary: Story 1.8 er rettet etter Sebastians gjennomgang av PR #33, men fire ting er bevisst ikke gjort. (1) En tom stykkliste får meldingen om at nivå .1 mangler (`RADER_INGEN_NIVAA_1`), ikke at stykklisten er tom. (2) `erTom` finnes både i `nb.ts` og `les.ts`: `tekster/` kan bare importere typer fra `domene/` (arkitekturtesten), så `nb.ts` kan ikke bruke `domene/celler.ts`. `les.ts` kan flyttes til `celler.ts` senere. (3) En feil i Nivå eller Varenummer, hvor som helst i filen, slår av sløyfekontrollen og underdelsreglene for hele filen, fordi hierarkiet da ikke er til å stole på. (4) Antall og Type sperrer bare delen de gjelder.
+  evidence: Story 1.8, PR #33, Sebastians gjennomgang 26.11 (punkt 12 og 14, og beslutningen i punkt 3 om sperring). Punkt 1 kan løses med en egen kode i `typer.ts` (egen PR). Punkt 3 kan løses ved å bygge strukturen av radene som er gyldige, men da må underdelene til en rad med ugyldig nivå utelates riktig.

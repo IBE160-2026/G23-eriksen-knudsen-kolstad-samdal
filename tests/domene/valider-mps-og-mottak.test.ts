@@ -172,14 +172,15 @@ describe('valider: gyldig fil gir Inndata', () => {
 
   it('en tom celle i et tallfelt blir null', () => {
     const raa = gyldig()
-    const [rad] = stykklisterader([['..2', '300-001', 'Skrue', 2, 'Komponent (Kjøpes inn)', null, null, null]])
+    // Andre gang 300-001 står, er lager, sikkerhetslager og ledetid tomme (FR-3). Raden står på nivå .1, under ferdigproduktet.
+    const [rad] = stykklisterader([['.1', '300-001', 'Skrue', 2, 'Komponent (Kjøpes inn)', null, null, null]])
     raa.stykkliste!.rader.push({ ...rad, excelRad: 6 })
     const utfall = valider(raa)
     expect(utfall.ok).toBe(true)
     if (!utfall.ok) return
     expect(utfall.verdi.stykkliste.at(-1)).toEqual({
       excelRad: 6,
-      nivaa: '..2',
+      nivaa: '.1',
       varenummer: '300-001',
       beskrivelse: 'Skrue',
       antall: 2,
@@ -564,14 +565,12 @@ describe('valider: sikkerhetsnettet for Stykklisterad', () => {
     ])
   })
 
-  it('tallfeltene sjekker ikke grensene, de hører til Story 1.8', () => {
+  it('grensene for tallfeltene (antall 0, lager −3) kontrolleres av Stykkliste-reglene (Story 1.8), og gir hver én feil', () => {
     const raa = gyldig()
     raa.stykkliste!.rader[1].celler['Antall'] = 0
     raa.stykkliste!.rader[1].celler['Lagerbeholdning'] = -3
-    // Ikke ok: true: Story 1.8 legger til Stykkliste-reglene, som gir feil for 0 og −3.
-    const koder = feilI(raa).map((f) => f.kode)
-    expect(koder).not.toContain('ANTALL_UGYLDIG')
-    expect(koder).not.toContain('LAGERBEHOLDNING_UGYLDIG')
+    // Sikkerhetsnettet kjøres bare når reglene gir 0 feil, så feilene kommer ikke dobbelt.
+    expect(feilI(raa).map((f) => f.kode)).toEqual(['ANTALL_UGYLDIG', 'LAGERBEHOLDNING_UGYLDIG'])
   })
 
   it('godtar beskrivelse som tall og type med mellomrom bak, og trimmer beskrivelsen', () => {

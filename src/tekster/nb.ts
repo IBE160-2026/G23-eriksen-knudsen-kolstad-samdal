@@ -151,7 +151,7 @@ export const felles = {
 // --- Filfeil og validering ------------------------------------------------
 // Én mal per kode, i du-form og uten koden, med arket og stedet først (AD-9, EXPERIENCE.md › Voice and Tone).
 // Korte setninger: først hva som er galt, så hva Kari gjør.
-// Underobjektene: struktur (Story 1.6) og mpsOgMottak (Story 1.9). Story 1.8 lager sitt eget.
+// Underobjektene: struktur (Story 1.6), stykkliste (Story 1.8) og mpsOgMottak (Story 1.9).
 
 /** Arket slik Kari ser det. MPS skrives «Prognostiserte behov (arket MPS)» (EXPERIENCE.md). */
 function arkTekst(ark: Arknavn): string {
@@ -193,6 +193,21 @@ function uker(antall: number): string {
   return antall === 1 ? '1 uke' : `${antall} uker`
 }
 
+/** Flere enn dette nevnes ikke enkeltvis i en melding: «rad 4, 5, 6, 7, 8 og 3 til». */
+const MAKS_NEVNTE_RADER = 5
+
+/**
+ * Radene en feil gjelder, sortert og skrevet som «rad 3», «rad 3 og 11» eller «rad 4, 5 og 6».
+ * Over fem rader nevnes de fem første og så hvor mange som står igjen. Uten rader står «andre rader».
+ */
+function radliste(rader: readonly number[] | undefined): string {
+  const r = [...(rader ?? [])].sort((a, b) => a - b)
+  if (r.length === 0) return 'andre rader'
+  if (r.length === 1) return `rad ${r[0]}`
+  if (r.length > MAKS_NEVNTE_RADER + 1) return `rad ${r.slice(0, MAKS_NEVNTE_RADER).join(', ')} og ${r.length - MAKS_NEVNTE_RADER} til`
+  return `rad ${r.slice(0, -1).join(', ')} og ${r[r.length - 1]}`
+}
+
 export const filfeilOgValidering = {
   // Story 1.11: feil i hele filen og uventet feil, én melding i opplastingssonen (NFR-9, UX-DR12).
   // Ordrett fra EXPERIENCE.md › Feil i hele filen.
@@ -213,6 +228,83 @@ export const filfeilOgValidering = {
       'Arket Stykkliste mangler. Filen ser ut til å følge en gammel mal (arkene Produkt og Komponenter). Last ned malen fra startsiden og flytt dataene over.',
     OVERSKRIFT_MANGLER: (feil: Valideringsfeil): string =>
       `${arkTekst(feil.ark)}, ${feil.sted.type === 'OVERSKRIFT' ? feil.sted.celle : 'rad 1'}: kolonneoverskriften «${feil.felt}» mangler. Skriv den inn slik den står i malen.`,
+  },
+
+  // Story 1.8: verdiene i Stykkliste (FR-3).
+  stykkliste: {
+    RADER_IKKE_SAMMENHENGENDE: (feil: Valideringsfeil): string =>
+      `${stedOgFelt(feil)} raden er tom, men det står innhold under den. Stykklisten må stå sammenhengende fra rad 2. Fyll ut raden eller fjern den. Radene under er ikke kontrollert.`,
+    RADER_FOR_MANGE: (feil: Valideringsfeil): string =>
+      `${stedOgFelt(feil)} stykklisten har mer enn 1000 rader. Fjern radene fra og med denne.`,
+    RADER_INGEN_NIVAA_1: (feil: Valideringsfeil): string =>
+      `${stedOgFelt(feil)} stykklisten har ingen del på nivå .1. Legg til minst én del rett under ferdigproduktet.`,
+
+    NIVAA_UGYLDIG: (feil: Valideringsfeil): string =>
+      erTom(feil.verdi)
+        ? `${stedOgFelt(feil)} nivået mangler. Velg 0, .1 eller ..2.`
+        : `${stedOgFelt(feil)} «${verdiTekst(feil.verdi)}» er ikke et nivå. Velg 0, .1 eller ..2.`,
+    NIVAA_FORSTE_RAD_IKKE_0: (feil: Valideringsfeil): string =>
+      `${stedOgFelt(feil)} første rad er ferdigproduktet og må ha nivå 0. Her står «${verdiTekst(feil.verdi)}».`,
+    NIVAA_FLERE_NIVAA_0: (feil: Valideringsfeil): string =>
+      `${stedOgFelt(feil)} bare første rad kan ha nivå 0, siden hver fil gjelder ett ferdigprodukt. Bruk .1 eller ..2.`,
+    NIVAA_2_UTEN_NIVAA_1_OVER: (feil: Valideringsfeil): string =>
+      `${stedOgFelt(feil)} nivå ..2 må stå rett under en rad med nivå .1 eller ..2. Flytt raden, eller bruk nivå .1.`,
+
+    VARENUMMER_MANGLER: (feil: Valideringsfeil): string =>
+      `${stedOgFelt(feil)} varenummeret mangler. Skriv varenummeret til delen.`,
+    VARENUMMER_UNDER_SEG_SELV: (feil: Valideringsfeil): string =>
+      `${stedOgFelt(feil)} «${verdiTekst(feil.verdi)}» står under seg selv. En del kan ikke være en del av seg selv, verken direkte eller gjennom andre deler.${
+        feil.andreRader && feil.andreRader.length > 0 ? ` Se ${radliste(feil.andreRader)}.` : ''
+      }`,
+
+    BESKRIVELSE_MANGLER: (feil: Valideringsfeil): string =>
+      `${stedOgFelt(feil)} beskrivelsen mangler. Skriv beskrivelsen av delen.`,
+    BESKRIVELSE_ULIK: (feil: Valideringsfeil): string =>
+      `${stedOgFelt(feil)} «${verdiTekst(feil.verdi)}» er en annen beskrivelse enn i ${radliste(feil.andreRader)} for varenummer ${feil.varenummer ?? ''}. Alle rader med samme varenummer må ha samme beskrivelse.`,
+
+    ANTALL_FYLT_UT_FOR_NIVAA_0: (feil: Valideringsfeil): string =>
+      `${stedOgFelt(feil)} ferdigproduktet har ikke antall. Tøm cellen.`,
+    ANTALL_MANGLER: (feil: Valideringsfeil): string =>
+      `${stedOgFelt(feil)} antallet mangler. Skriv hvor mange av delen som går i den overordnede delen, som et heltall som er 1 eller mer.`,
+    ANTALL_UGYLDIG: (feil: Valideringsfeil): string =>
+      `${stedOgFelt(feil)} «${verdiTekst(feil.verdi)}» er ikke et gyldig antall. Skriv et heltall som er 1 eller mer.`,
+
+    TYPE_UGYLDIG: (feil: Valideringsfeil): string =>
+      erTom(feil.verdi)
+        ? `${stedOgFelt(feil)} typen mangler. Velg Ferdigvare, Komponent (Kjøpes inn) eller Komponent (Produseres selv).`
+        : `${stedOgFelt(feil)} «${verdiTekst(feil.verdi)}» er ikke en type. Velg Ferdigvare, Komponent (Kjøpes inn) eller Komponent (Produseres selv).`,
+    TYPE_FERDIGVARE_IKKE_NIVAA_0: (feil: Valideringsfeil): string =>
+      `${stedOgFelt(feil)} Ferdigvare kan bare stå på nivå 0. Velg Komponent (Kjøpes inn) eller Komponent (Produseres selv).`,
+    TYPE_NIVAA_0_IKKE_FERDIGVARE: (feil: Valideringsfeil): string =>
+      `${stedOgFelt(feil)} raden på nivå 0 er ferdigproduktet og må ha typen Ferdigvare.`,
+    TYPE_ULIK: (feil: Valideringsfeil): string =>
+      `${stedOgFelt(feil)} typen er en annen enn i ${radliste(feil.andreRader)} for varenummer ${feil.varenummer ?? ''}. Alle rader med samme varenummer må ha samme type.`,
+    TYPE_KJOPES_INN_HAR_UNDERDELER: (feil: Valideringsfeil): string =>
+      `${stedOgFelt(feil)} «${feil.varenummer ?? ''}» kjøpes inn, men har underdeler i ${radliste(feil.andreRader)}. Velg Komponent (Produseres selv), eller fjern radene under.`,
+
+    UNDERDELER_ULIKE: (feil: Valideringsfeil): string =>
+      `${stedOgFelt(feil)} «${feil.varenummer ?? ''}» har ulike underdeler i ${radliste(feil.andreRader)}. Underdelene og antallene må være like under hver forekomst, eller stå under bare én. Rett radene under, eller fjern dem fra den ene.`,
+
+    LAGERBEHOLDNING_MANGLER: (feil: Valideringsfeil): string =>
+      `${stedOgFelt(feil)} lagerbeholdningen mangler. Skriv den første gangen varenummeret står, også når den er 0.`,
+    LAGERBEHOLDNING_UGYLDIG: (feil: Valideringsfeil): string =>
+      `${stedOgFelt(feil)} «${verdiTekst(feil.verdi)}» er ikke en gyldig lagerbeholdning. Skriv et heltall som er 0 eller mer.`,
+    LAGERBEHOLDNING_FYLT_UT_SENERE: (feil: Valideringsfeil): string =>
+      `${stedOgFelt(feil)} lagerbeholdningen er allerede fylt ut i ${radliste(feil.andreRader)} for varenummer ${feil.varenummer ?? ''}. Tøm cellen her.`,
+
+    SIKKERHETSLAGER_MANGLER: (feil: Valideringsfeil): string =>
+      `${stedOgFelt(feil)} sikkerhetslageret mangler. Skriv det første gangen varenummeret står, også når det er 0.`,
+    SIKKERHETSLAGER_UGYLDIG: (feil: Valideringsfeil): string =>
+      `${stedOgFelt(feil)} «${verdiTekst(feil.verdi)}» er ikke et gyldig sikkerhetslager. Skriv et heltall som er 0 eller mer.`,
+    SIKKERHETSLAGER_FYLT_UT_SENERE: (feil: Valideringsfeil): string =>
+      `${stedOgFelt(feil)} sikkerhetslageret er allerede fylt ut i ${radliste(feil.andreRader)} for varenummer ${feil.varenummer ?? ''}. Tøm cellen her.`,
+
+    LEDETID_MANGLER: (feil: Valideringsfeil): string =>
+      `${stedOgFelt(feil)} ledetiden mangler. Skriv antall uker første gangen varenummeret står.`,
+    LEDETID_UGYLDIG: (feil: Valideringsfeil): string =>
+      `${stedOgFelt(feil)} «${verdiTekst(feil.verdi)}» er ikke en gyldig ledetid. Skriv et helt antall uker som er 1 eller mer. Ferdigproduktet kan ha 0.`,
+    LEDETID_FYLT_UT_SENERE: (feil: Valideringsfeil): string =>
+      `${stedOgFelt(feil)} ledetiden er allerede fylt ut i ${radliste(feil.andreRader)} for varenummer ${feil.varenummer ?? ''}. Tøm cellen her.`,
   },
 
   // Story 1.9: verdiene i MPS og Planlagte mottak (FR-3).

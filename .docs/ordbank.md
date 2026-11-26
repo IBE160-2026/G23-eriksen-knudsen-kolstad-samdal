@@ -2,7 +2,7 @@
 title: COSI - MRP Ordbank
 status: forslag
 created: 2026-10-21
-updated: 2026-11-25
+updated: 2026-11-26
 ---
 
 # Ordbank: COSI - MRP
@@ -47,6 +47,8 @@ Forslaget bygger på Excel-malen for flernivå stykkliste (Sebastian, 2026-10-23
 | Nivå | Hvor i stykklisten delen står: 0 = ferdigproduktet, .1 = hovedkomponent, ..2 = del under en hovedkomponent. | – |
 | Delen over (overordnet del) | Nærmeste del på nivået over. En del på ..2 tilhører nærmeste .1 over seg. | forelder, parent |
 | Underdel | En del som står rett under en annen del i stykklisten. | underkomponent, barn, child |
+| Forekomst | Én rad for en del i stykklisten. En felles del har én forekomst for hvert sted den står. Underdelene under hver forekomst må være like, eller stå under bare én forekomst (FR-3). Lagt inn 26.11 (Story 1.8). | duplikat, kopi av delen |
+| Sløyfe | At en del står under seg selv gjennom andre deler, for eksempel A under B og B under A. Beregningen går ovenfra og ned og har da ingen rekkefølge å regne i, så filen avvises (kode VARENUMMER_UNDER_SEG_SELV, samme som for en del rett under seg selv). Lagt inn 26.11 (Story 1.8). | syklus, løkke, sirkelreferanse |
 | Felles del | En del som står flere steder i stykklisten, f.eks. skruer i både sete og rygg. Samme varenummer, beskrivelse og type hver gang. Lager, sikkerhetslager og ledetid står bare første gang, og delen beregnes én gang (PRD FR-28). | – |
 | Antall (*quantity per*) | Hvor mange av delen som trengs per enhet av delen over. Heltall ≥ 1. Fylles ikke ut for nivå 0. | antall per ferdigprodukt, antall per A, antall per produkt |
 | Type | Ferdigvare, Komponent (Kjøpes inn) eller Komponent (Produseres selv). Ferdigvare brukes bare på nivå 0. En del som kjøpes inn, kan ikke ha underkomponenter. «Komponent» brukes bare om typen (besluttet 2026-11-05, se merknad 1 og 5). | Delmontering, Råvare (som typer) |
