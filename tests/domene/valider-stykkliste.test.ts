@@ -384,7 +384,7 @@ describe('rekkefølgen på feilene (FR-4)', () => {
 describe('følgefeil (gjennomgangen av PR #33)', () => {
   it('nivå «1» i stedet for «.1» gir nivåfeilen på raden, ikke også «ingen nivå .1»', () => {
     expect(feilIVerdier(endre(GYLDIG.slice(0, 2), 1, NIVAA, '1'))).toEqual(['NIVAA_UGYLDIG@A3'])
-    const alle = GYLDIG.map((v, i) => (i === 0 ? v : ([i === 0 ? '0' : '1', ...v.slice(1)] as Verdier)))
+    const alle = GYLDIG.map((v, i) => (i === 0 ? v : (['1', ...v.slice(1)] as Verdier)))
     const feil = feilIVerdier(alle)
     expect(feil).toHaveLength(GYLDIG.length - 1)
     expect(feil.every((k) => k.startsWith('NIVAA_UGYLDIG'))).toBe(true)
@@ -406,6 +406,15 @@ describe('følgefeil (gjennomgangen av PR #33)', () => {
       ['.1', '200-001', 'Sete', 1, 'Ferdigvare', null, null, null],
     ]
     expect(feilIVerdier(rader)).toEqual(['TYPE_FERDIGVARE_IKKE_NIVAA_0@E4'])
+  })
+
+  it('Ferdigvare på .1 i første rad med varenummeret er ikke fasit: neste rad får ikke «ulik type»', () => {
+    const rader: Verdier[] = [
+      ['0', '100-001', 'Stol', null, 'Ferdigvare', 0, 0, 0],
+      ['.1', '200-001', 'Sete', 1, 'Ferdigvare', 10, 0, 1],
+      ['.1', '200-001', 'Sete', 1, 'Komponent (Produseres selv)', null, null, null],
+    ]
+    expect(feilIVerdier(rader)).toEqual(['TYPE_FERDIGVARE_IKKE_NIVAA_0@E3'])
   })
 
   it('en tom rad som stopper lesingen før første .1-rad, gir bare «ikke sammenhengende»', () => {
