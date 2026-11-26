@@ -34,10 +34,10 @@ Sebastian ba om en review av Iduns Story 1.8 (PR #33, `story/1.8-kontroll-av-ark
 - Forkastet:
   - 0.1 som nivå er et bevisst valg fra 1.5 (`les.test.ts:236`).
   - Tekst med bare mellomrom i sikkerhetsnettet kan ikke komme fra `les.ts`.
-- Funnlista (JSON) ligger i scratchpad for økten: `pr33-funn.json`. Ingen kodeendringer, ingen kommentar lagt på PR-en ennå.
+- Funnlista (JSON) ligger i scratchpad for økten: `pr33-funn.json`. Ingen kodeendringer.
+- Reviewen er lagt inn på PR #33 som review-kommentar (COMMENTED, ikke Approve), gruppert som over. Idun er bedt om ikke å gjøre noe med testene for sikkerhetsnettet.
 - Lukket i `issues.md`: punktet om å gi Idun beskjed om plassholderen i `valider()`. PR #33 bytter den ut og legger inn malene.
 
 ### Åpne punkter
-- Gi Idun review-funnene på PR #33 (følgefeil, skjulte feil, rekkefølge i rad, testhull, ordbank, deferred-work 5 og 17).
 - Testene for sikkerhetsnettet i `tests/domene/valider-mps-og-mottak.test.ts` (531–602) tester nå reglene, ikke sikkerhetsnettet: test `tilStykklisterader` direkte, eller fjern sikkerhetsnettet (min kode fra 1.9).
 - Gruppa bør godkjenne Iduns forslag i PR #33: sløyfer gir `VARENUMMER_UNDER_SEG_SELV`, og `[X:1, X:1]` er det samme som `[X:2]`. `lag_testdata.py` (linje 362–372) bruker en annen regel.
