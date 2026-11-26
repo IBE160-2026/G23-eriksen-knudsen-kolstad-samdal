@@ -97,7 +97,8 @@ export const felles = {
       beregner: 'Beregner …',
       /** «Kjøringen er ferdig: 59 bestillingsforslag, 4 kritiske deler.» Kunngjøres etter Beregn (Story 2.5, UX-DR4). */
       ferdig: (bestillingsforslag: number, kritiskeDeler: number) =>
-        `Kjøringen er ferdig: ${bestillingsforslag} bestillingsforslag, ${kritiskeDeler} kritiske deler.`,
+        `Kjøringen er ferdig: ${tall(bestillingsforslag)} bestillingsforslag, ` +
+        `${tall(kritiskeDeler)} ${kritiskeDeler === 1 ? 'kritisk del' : 'kritiske deler'}.`,
       /** Når bestillingsplanen ikke er beregnet (bare produksjonskapasitet er valgt, Epic 5). */
       ferdigUtenPlan: 'Kjøringen er ferdig. Filen er lest og har ingen feil.',
     },

@@ -57,6 +57,10 @@ describe('opplastingssonen og Beregn (UX-DR8, UX-DR10)', () => {
     expect(felles.nyKjoring.beregning.ferdig(0, 0)).toBe('Kjøringen er ferdig: 0 bestillingsforslag, 0 kritiske deler.')
   })
 
+  it('meldingen bruker tusenskille og entall for én kritisk del', () => {
+    expect(felles.nyKjoring.beregning.ferdig(5406, 1)).toBe('Kjøringen er ferdig: 5 406 bestillingsforslag, 1 kritisk del.')
+  })
+
   it('uten beregnet bestillingsplan (bare produksjonskapasitet) sier meldingen bare at filen er lest', () => {
     expect(felles.nyKjoring.beregning.ferdigUtenPlan).toBe('Kjøringen er ferdig. Filen er lest og har ingen feil.')
   })
