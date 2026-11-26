@@ -13,7 +13,15 @@
 // rekkefølgen i `EKSEPSJONSKODER` (arkitektur kap. 4). Er alt likt, kommer mottak i rekkefølgen de ble fremskyndet i.
 
 import { beregnNetting, type NettingInndata } from './netting.ts'
-import { EKSEPSJONSKODER, type DelNavn, type DelResultat, type Eksepsjon, type PlanlagtMottak, type StrukturDel } from './typer.ts'
+import {
+  EKSEPSJONSKODER,
+  type DelNavn,
+  type DelResultat,
+  type Eksepsjon,
+  type PlanlagtMottak,
+  type Resultat,
+  type StrukturDel,
+} from './typer.ts'
 
 export type Eksepsjonsfunn = {
   /** Sortert på stykklisterekkefølge, uke (hele delen først) og type. */
@@ -35,14 +43,35 @@ export function finnEksepsjoner(
   horisont: number,
 ): Eksepsjonsfunn {
   const navn = new Map<string, StrukturDel>(deler.map((d) => [d.del.varenummer, d.del]))
+  const ferdigprodukt = deler.find((d) => d.del.nivaa === '0')?.del.varenummer
   const eksepsjoner: Eksepsjon[] = []
   const kritiskeDeler: string[] = []
   for (const del of deler) {
-    const funn = eksepsjonerForDel(del, planlagteMottak, horisont, navn)
+    const funn = eksepsjonerForDel(del, planlagteMottak, horisont, navn, ferdigprodukt)
     if (funn.length > 0) kritiskeDeler.push(del.del.varenummer)
     eksepsjoner.push(...funn)
   }
   return { eksepsjoner, kritiskeDeler }
+}
+
+/**
+ * Fyller eksepsjonene og de kritiske delene inn i et `Resultat` fra beregningen nivå for nivå (Story 2.2, beslutning 1A):
+ * `eksepsjoner` og `kritiskeDeler` fylles ut, og `kritisk` er true for nøyaktig delene i `kritiskeDeler` (FR-13). Gir et nytt
+ * `Resultat`, og endrer ikke det som kom inn. Det er denne Story 2.5 kaller, så ingen domenelogikk står i worker-en (AD-8).
+ *
+ * @param resultat `beregnBestillingsplan(inndata, struktur)`
+ * @param planlagteMottak mottakene som enkeltlinjer fra inndataene, til Kanseller mottak
+ * @param horisont antall uker H
+ */
+export function leggTilEksepsjoner(resultat: Resultat, planlagteMottak: readonly PlanlagtMottak[], horisont: number): Resultat {
+  const { eksepsjoner, kritiskeDeler } = finnEksepsjoner(resultat.deler, planlagteMottak, horisont)
+  const kritiske = new Set(kritiskeDeler)
+  return {
+    ...resultat,
+    deler: resultat.deler.map((del) => ({ ...del, kritisk: kritiske.has(del.del.varenummer) })),
+    eksepsjoner,
+    kritiskeDeler,
+  }
 }
 
 const KODEPLASS = new Map<string, number>(EKSEPSJONSKODER.map((kode, i) => [kode, i]))
@@ -52,6 +81,7 @@ function eksepsjonerForDel(
   alleMottak: readonly PlanlagtMottak[],
   horisont: number,
   deler: ReadonlyMap<string, StrukturDel>,
+  ferdigprodukt: string | undefined,
 ): Eksepsjon[] {
   const { del } = resultat
   // Det nettingen fikk inn for delen, bygget av resultatet. Brukes bare av Kanseller mottak.
@@ -73,8 +103,8 @@ function eksepsjonerForDel(
       uke: null,
       ledetidFraFerdigproduktet: del.ledetidFraFerdigproduktet,
       sti: del.stiForLedetid.map((varenummer) => {
-        const d = deler.get(varenummer)
-        return { varenummer, beskrivelse: d?.beskrivelse ?? '', ledetid: d?.ledetid ?? 0 }
+        const d = hentDel(deler, varenummer, del.varenummer)
+        return { varenummer, beskrivelse: d.beskrivelse, ledetid: d.ledetid }
       }),
       horisont,
     })
@@ -95,7 +125,7 @@ function eksepsjonerForDel(
         tidligsteMottaksuke: 1 + del.ledetid,
       }
       if (uke.disponibelEtterFremskynding < 0) {
-        funn.push({ ...felles, ...forfalt, kode: 'BESTILLING_FORSINKET', uke: uke.uke, forsinker: forsinker(del, deler) })
+        funn.push({ ...felles, ...forfalt, kode: 'BESTILLING_FORSINKET', uke: uke.uke, forsinker: forsinker(del, deler, ferdigprodukt) })
       } else {
         // Nettobehov > 0 betyr disponibel < SS, så 0 ≤ disponibel < SS gjelder her.
         funn.push({
@@ -151,15 +181,25 @@ function eksepsjonerForDel(
  * Hva som blir forsinket når bestillingen er forsinket (FR-10): leveransen til kunde for ferdigproduktet, delene på
  * nivå .1 og en felles del som også står rett under ferdigproduktet. Ellers produksjonen av alle de overordnede delene.
  */
-function forsinker(del: StrukturDel, deler: ReadonlyMap<string, StrukturDel>): { type: 'LEVERANSE_TIL_KUNDE' } | { type: 'PRODUKSJON'; av: DelNavn[] } {
-  const ferdigprodukt = [...deler.values()].find((d) => d.nivaa === '0')?.varenummer
+function forsinker(
+  del: StrukturDel,
+  deler: ReadonlyMap<string, StrukturDel>,
+  ferdigprodukt: string | undefined,
+): { type: 'LEVERANSE_TIL_KUNDE' } | { type: 'PRODUKSJON'; av: DelNavn[] } {
   const direkteUnderFerdigprodukt = del.overordnede.some((o) => o.varenummer === ferdigprodukt)
   // En del på nivå .1 har alltid ferdigproduktet som overordnet del, så den er dekket av direkteUnderFerdigprodukt.
   if (del.nivaa === '0' || direkteUnderFerdigprodukt) return { type: 'LEVERANSE_TIL_KUNDE' }
   return {
     type: 'PRODUKSJON',
-    av: del.overordnede.map((o) => ({ varenummer: o.varenummer, beskrivelse: deler.get(o.varenummer)?.beskrivelse ?? '' })),
+    av: del.overordnede.map((o) => ({ varenummer: o.varenummer, beskrivelse: hentDel(deler, o.varenummer, del.varenummer).beskrivelse })),
   }
+}
+
+/** Delen med varenummeret. Mangler den, henger ikke dataene sammen. Det er en programfeil, og den kastes som i beregn.ts. */
+function hentDel(deler: ReadonlyMap<string, StrukturDel>, varenummer: string, fraDel: string): StrukturDel {
+  const del = deler.get(varenummer)
+  if (del === undefined) throw new Error(`${fraDel} viser til ${varenummer}, som ikke finnes blant delene`)
+  return del
 }
 
 /** Uke (hele delen først), så type i rekkefølgen i PRD §4.3. Sorteringen er stabil, så mottak står i fremskyndingsrekkefølge. */
