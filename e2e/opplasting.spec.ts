@@ -365,13 +365,15 @@ test.describe('Beregn og «Velg fil» (UX-DR8, UX-DR10)', () => {
     await expect(sone(page)).toContainText('Valgt fil: testeksempel-01.xlsx')
   })
 
-  test('valideringsfeil: den foreløpige meldingen står over kortene og får fokus (til Story 1.12)', async ({ page }) => {
+  test('valideringsfeil: feiloppsummeringen står over kortene og får fokus (Story 1.12, e2e/feiloppsummering.spec.ts)', async ({ page }) => {
     await forbered(page)
     await velgFil(page, fil('V-M01.xlsx'))
     await beregnKnapp(page).click()
-    const boks = page.locator('.valideringsboks')
-    await expect(boks).toHaveText('Filen har 1 feil. Ingenting er beregnet.')
-    await expect(boks).toBeFocused()
+    const brett = page.locator('.feiloppsummering')
+    await expect(brett.getByRole('heading', { level: 1 })).toHaveText(
+      'Filen har 1 feil. Ingenting er beregnet. Rett feilene i Excel og last opp filen på nytt.',
+    )
+    await expect(brett).toBeFocused()
     await expect(sone(page)).not.toContainText('Valgt fil:')
     await expect(page).toHaveURL(/#\/ny-kjoring$/)
   })
@@ -420,15 +422,19 @@ test.describe('1366 × 630 px uten rulling (UX-DR7, DESIGN.md › Layout & Spaci
     await allSynlig(page, '«Slipp bare én fil …»')
   })
 
-  test('med den foreløpige meldingen om valideringsfeil, også når en ny fil er valgt, er alt synlig', async ({ page }) => {
+  // Med feiloppsummering gjelder ikke kravet om alt uten rulling (avklaring 26.11, Story 1.12, deferred-work.md).
+  // Den tilstanden testes i e2e/feiloppsummering.spec.ts. Når en gyldig fil gir Resultat og Kari går tilbake,
+  // er oppsummeringen borte, og alt er synlig igjen.
+  test('etter valideringsfeil og så en gyldig fil er alt synlig igjen på startsiden', async ({ page }) => {
     await forbered(page)
     await velgFil(page, fil('V-M01.xlsx'))
     await beregnKnapp(page).click()
-    await expect(page.locator('.valideringsboks')).toBeVisible()
-    await allSynlig(page, 'valideringsfeil')
-    // Den høyeste tilstanden: meldingen over kortene og «Valgt fil: …» i sonen (626,5 px målt 25.11).
+    await expect(page.locator('.feiloppsummering')).toBeVisible()
     await velgFil(page, TESTEKSEMPEL_01)
-    await expect(page.locator('.valideringsboks')).toBeInViewport({ ratio: 1 })
-    await allSynlig(page, 'valideringsfeil og ny fil')
+    await beregnKnapp(page).click()
+    await expect(page).toHaveURL(/#\/resultat$/)
+    await page.goto('/#/ny-kjoring')
+    await expect(page.locator('.feiloppsummering')).toHaveCount(0)
+    await allSynlig(page, 'tilbake etter valideringsfeil')
   })
 })

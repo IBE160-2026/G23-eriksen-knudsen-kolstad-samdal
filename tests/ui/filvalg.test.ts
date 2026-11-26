@@ -79,7 +79,7 @@ describe('Beregn (UX-DR10)', () => {
     expect(sonemeldingTekst(tilstand.melding!)).toBe('Velg en fil først.')
   })
 
-  it('med fil: «Leser filen …», så «Beregner …», og meldingen og valideringsfeilene fjernes', () => {
+  it('med fil: «Leser filen …», så «Beregner …», og meldingen fjernes', () => {
     const lesing = etter(velg(A, B), velg(A), { type: 'START_LESING' })
     expect(lesing).toMatchObject({ fremdrift: 'LESER', melding: null, valideringsfeil: null, fil: A })
     expect(endreFilvalg(lesing, { type: 'START_BEREGNING' }).fremdrift).toBe('BEREGNER')
@@ -117,18 +117,47 @@ describe('svaret fra styringen', () => {
     expect(tilstand).toEqual({ fil: null, melding: { type: 'UVENTET_FEIL' }, fremdrift: 'KLAR', valideringsfeil: null })
   })
 
-  it('valideringsfeil: antallet feil (midlertidig til Story 1.12), ingen melding i sonen, og filvalget nullstilles', () => {
-    const tilstand = endreFilvalg(
-      underveis(),
-      svar({ type: 'VALIDERINGSFEIL', feil: { feil: [EN_FEIL, EN_FEIL, EN_FEIL], hoppetOver: [] } }),
-    )
-    expect(tilstand).toEqual({ fil: null, melding: null, fremdrift: 'KLAR', valideringsfeil: 3 })
-    expect(felles.nyKjoring.beregning.valideringsfeil(3)).toBe('Filen har 3 feil. Ingenting er beregnet.')
+  it('valideringsfeil: hele resultatet tas vare på (Story 1.12), ingen melding i sonen, og filvalget nullstilles', () => {
+    const resultat = { feil: [EN_FEIL, EN_FEIL, EN_FEIL], hoppetOver: [] }
+    const tilstand = endreFilvalg(underveis(), svar({ type: 'VALIDERINGSFEIL', feil: resultat }))
+    expect(tilstand).toEqual({ fil: null, melding: null, fremdrift: 'KLAR', valideringsfeil: resultat })
   })
 
-  it('en ny kjøring fjerner den foreløpige meldingen om valideringsfeil', () => {
-    const feil = endreFilvalg(underveis(), svar({ type: 'VALIDERINGSFEIL', feil: { feil: [EN_FEIL], hoppetOver: [] } }))
-    expect(endreFilvalg(endreFilvalg(feil, velg(A)), { type: 'START_LESING' }).valideringsfeil).toBeNull()
+  describe('feiloppsummeringen står til neste svar (Story 1.12)', () => {
+    const forste = { feil: [EN_FEIL], hoppetOver: [] }
+    const medFeil = (): Filvalg => endreFilvalg(underveis(), svar({ type: 'VALIDERINGSFEIL', feil: forste }))
+    const nyKjoring = (): Filvalg =>
+      endreFilvalg(endreFilvalg(endreFilvalg(medFeil(), velg(B)), { type: 'START_LESING' }), { type: 'START_BEREGNING' })
+
+    it('mens en ny fil leses og beregnes, står den, så siden ikke hopper', () => {
+      expect(nyKjoring().valideringsfeil).toBe(forste)
+    })
+
+    it('nye valideringsfeil erstatter den med et nytt objekt, så fokus flyttes dit på nytt', () => {
+      const andre = { feil: [EN_FEIL, EN_FEIL], hoppetOver: [] }
+      expect(endreFilvalg(nyKjoring(), svar({ type: 'VALIDERINGSFEIL', feil: andre })).valideringsfeil).toBe(andre)
+    })
+
+    it('en gyldig fil fjerner den', () => {
+      expect(endreFilvalg(nyKjoring(), svar({ type: 'FERDIG', kjoring: KJORING })).valideringsfeil).toBeNull()
+    })
+
+    it.each([
+      ['feil i hele filen', { type: 'FILFEIL', feil: { kode: 'SKADET_FIL' } }],
+      ['uventet feil', { type: 'UVENTET_FEIL' }],
+    ] as const)('%s fjerner den', (_navn, utfall) => {
+      expect(endreFilvalg(nyKjoring(), svar(utfall)).valideringsfeil).toBeNull()
+    })
+
+    it('filen som ikke kunne leses inn, fjerner den', () => {
+      const lesing = endreFilvalg(endreFilvalg(medFeil(), velg(B)), { type: 'START_LESING' })
+      expect(endreFilvalg(lesing, { type: 'LESING_FEILET' }).valideringsfeil).toBeNull()
+    })
+
+    it('OPPTATT lar den stå', () => {
+      const tilstand = nyKjoring()
+      expect(endreFilvalg(tilstand, svar({ type: 'OPPTATT' })).valideringsfeil).toBe(forste)
+    })
   })
 
   it('OPPTATT endrer ingenting', () => {

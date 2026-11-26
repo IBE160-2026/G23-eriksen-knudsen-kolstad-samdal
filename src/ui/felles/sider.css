@@ -193,8 +193,7 @@
 }
 
 /* Meldingsboks i sonen: feil i hele filen, uventet feil, «Velg en fil først.» og «Slipp bare én fil …». */
-.sonemelding,
-.valideringsboks {
+.sonemelding {
   padding: var(--spacing-2) var(--spacing-3);
   border-left: 4px solid var(--exc-critical);
   border-radius: var(--rounded-md);
@@ -207,13 +206,117 @@
   align-self: stretch;
 }
 
-/* Midlertidig til feiloppsummeringen i Story 1.12. Står over kortene og får fokus.
- * Ikke en komponent i DESIGN.md. 4 px loddrett avstand (spacing-1), så kort 3 får plass i 1366 × 630
- * også når en ny fil er valgt (målt 25.11: 626,5 px i Chromium og Firefox). */
-.valideringsboks {
-  max-width: 72ch;
-  padding-block: var(--spacing-1);
-  font-weight: 600;
+/* --- Feiloppsummering (Story 1.12, UX-DR11, DESIGN.md › components.validation-summary) ---------------------
+ * Rød boks (exc-critical-soft) med «✕» og overskriften (sidens h1) i exc-critical. Brødteksten er ink-primary,
+ * og tabellene står på surface-raised, så lang tekst er lett å lese. Kontrasten er testet i begge visningene
+ * (tests/ui/tokens.test.ts). Høyden er ikke begrenset: med feil gjelder ikke kravet om 1366 × 630 uten rulling
+ * (avklaring i deferred-work.md, Story 1.12). */
+.feiloppsummering {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
+  padding: var(--spacing-4) var(--spacing-5);
+  border: 1px solid var(--exc-critical);
+  border-left-width: 4px;
+  border-radius: var(--rounded-md);
+  background: var(--exc-critical-soft);
+  color: var(--ink-primary);
+}
+
+/* Brettet får fokus med tabindex="-1" og er ikke et mål for tastaturet. Ringen viser likevel hvor fokus står
+ * når Kari bruker tastaturet (:focus-visible), som WCAG 2.4.7 krever. */
+.feiloppsummering:focus {
+  outline: none;
+}
+
+.feiloppsummering:focus-visible {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.feiloppsummering-topp {
+  display: flex;
+  gap: var(--spacing-3);
+  align-items: flex-start;
+}
+
+.feiloppsummering-ikon {
+  flex: none;
+  color: var(--exc-critical);
+  font-size: var(--typography-display-size);
+  font-weight: 700;
+  line-height: var(--typography-display-line-height);
+}
+
+.feiloppsummering h1,
+.feiloppsummering h2 {
+  color: var(--exc-critical);
+}
+
+.feiloppsummering h1 {
+  max-width: 60ch;
+}
+
+.feiloppsummering-urort {
+  margin-top: var(--spacing-1);
+}
+
+.feiloppsummering-gruppe {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+}
+
+.feiloppsummering-hoppet-over ul {
+  margin: var(--spacing-1) 0 0;
+  padding-left: var(--spacing-5);
+}
+
+.feiltabell {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--surface-raised);
+  font-size: var(--typography-table-size);
+  line-height: var(--typography-table-line-height);
+}
+
+.feiltabell th,
+.feiltabell td {
+  padding: var(--spacing-2) var(--spacing-3);
+  border: 1px solid var(--line);
+  text-align: left;
+  vertical-align: top;
+}
+
+.feiltabell th {
+  background: var(--surface-sunken);
+  font-weight: var(--typography-table-strong-weight);
+}
+
+/* Like kolonnebredder i alle gruppene, så tabellene står rett under hverandre. Feil får resten. */
+.feiltabell {
+  table-layout: fixed;
+}
+
+.feiltabell th:nth-child(1) {
+  width: 22%;
+}
+
+.feiltabell th:nth-child(2) {
+  width: 11%;
+}
+
+.feiltabell th:nth-child(3) {
+  width: 17%;
+}
+
+.feiltabell td {
+  overflow-wrap: anywhere;
+}
+
+/* «Ny kjøring» når feiloppsummeringen er sidens h1. */
+.visningstittel {
+  margin-top: var(--spacing-2);
 }
 
 /* --- Beregn (Story 1.11, UX-DR10). Prototypen v3: valget til venstre, Beregn og statusen til høyre. --- */
