@@ -2,7 +2,7 @@
 title: COSI - MRP Ordbank
 status: forslag
 created: 2026-10-21
-updated: 2026-11-24
+updated: 2026-11-25
 ---
 
 # Ordbank: COSI - MRP
@@ -130,6 +130,10 @@ Forslaget bygger på Excel-malen for flernivå stykkliste (Sebastian, 2026-10-23
 | Kontroll | Kolonnen i Stykkliste som viser hva som mangler eller ikke stemmer i hver rad, før opplasting. | – |
 | Hjelpekolonne | En skjult kolonne til høyre i et ark i Excel-malen, med lister og formler som nedtrekkslistene og Kontroll bruker (kolonnene Z–AD i Stykkliste). Appen leser dem ikke (PRD FR-2, arkitektur AD-15). Lagt inn 24.11. | skjult kolonne, listekolonne |
 | Kjøring | Én beregning fra én opplastet Excel-mal. | beregning (om hele kjøringen) |
+| Worker | Den delen av appen (en Web Worker) som leser og kontrollerer Excel-filen, og senere beregner, i en egen tråd, så siden ikke fryser (arkitektur AD-12). Har ingen tilstand mellom kjøringer og ingen tilgang til DOM-en. Koden står i `src/worker/`. Lagt inn 25.11. | bakgrunnstråd |
+| Kjøringsstyring | Den delen av appen (`app/kjoring.ts`) som starter worker-en, venter på svaret og gjør det om til en kjøring eller en feil. Én kjøring om gangen (AD-12). Kalles «styringen» i arkitekturen. Lagt inn 25.11. | – |
+| Tidsgrense | Tiden worker-en har på seg til å svare: 30 sekunder. Utløper den, stopper styringen worker-en og gir uventet feil (AD-5). Lagt inn 25.11. | timeout |
+| Uventet feil | En feil appen ikke har egen melding for, for eksempel at worker-en krasjer eller ikke svarer innen tidsgrensen (kode `UVENTET_FEIL`). Kari får en norsk melding uten tekniske detaljer, og ingenting lagres (AD-5, NFR-9). Ikke det samme som en filfeil eller en valideringsfeil, som skyldes filen. Lagt inn 25.11. | systemfeil, intern feil |
 | Bestillingsplan | Valget under «Hva vil du beregne?» som gir MRP-beregningen: bestillingsforslag, kritiske deler, resultattabell og før/etter-sammenligning (PRD §4.2–4.6, FR-30). Det andre valget er produksjonskapasitet, og brukeren kan velge begge. Lagt inn 22.11. | MRP-plan, innkjøpsplan |
 | Resultat | Siden som viser én kjøring: tallboksene, kritiske deler, bestillingsforslag, endringer, resultattabellen og produksjonskapasiteten når den er valgt. Menyvalget heter «Resultat». Godkjent av gruppen 22.11. | resultatside, oversikt, dashbord |
 | Lagret kjøring | Den siste vellykkede kjøringen for et ferdigprodukt, som appen husker i nettleseren og sammenligner neste kjøring med (PRD FR-19–FR-21). Kjøringene står på siden «Lagrede kjøringer», der de kan slettes. Godkjent av gruppen 22.11. | historikk, arkiv, tidligere resultater |
@@ -150,6 +154,9 @@ Forslaget bygger på Excel-malen for flernivå stykkliste (Sebastian, 2026-10-23
 | Appmeny | Menyen til venstre med Introduksjon, Ny kjøring, Resultat, Lagrede kjøringer og Veiledning, og knappen for lys og mørk visning. Fra de sammenslåtte UX-dokumentene. Godkjent av gruppen 22.11. | sidemeny, navigasjonsrad |
 | Kjøringslinje | Den faste linjen øverst i resultatet med ferdigprodukt, horisont, fil, tidspunkt, lagringsstatus og knappene «Last opp ny fil» og «Eksporter til Excel». Seksjonsmenyen står nederst i den. Fra de sammenslåtte UX-dokumentene. Godkjent av gruppen 22.11. | toppfelt, statuslinje |
 | Opplastingssone | Feltet på startsiden der brukeren drar inn Excel-filen eller trykker «Velg fil». Fra de sammenslåtte UX-dokumentene. Godkjent av gruppen 22.11. | slippsone, dropzone |
+| Valgt-tone | Utseendet opplastingssonen får når en fil dras over den: svak petrolbakgrunn (`accent-soft`) og hel ramme i `accent` i stedet for stiplet (UX-DR8, DESIGN.md). Lagt inn 25.11 (Story 1.11). | hover-farge, aktiv sone |
+| Filvalg | Filen som er valgt i opplastingssonen og vises med navnet. Nullstilles etter feil i hele filen, uventet feil og valideringsfeil, så samme fil kan velges på nytt (NFR-9). Lagt inn 25.11 (Story 1.11). | opplastet fil (før Beregn) |
+| Sonemelding | Den ene meldingen i opplastingssonen: feil i hele filen, uventet feil, «Velg en fil først.» eller «Slipp bare én fil …». Står i sonen, ikke i en popup, og kunngjøres i statusregionen (UX-DR8, UX-DR12). Lagt inn 25.11 (Story 1.11). | toast, varsel, feilpopup |
 | Feiloppsummering | Boksen øverst på startsiden som viser alle valideringsfeilene samlet, med ark, rad eller uke, felt og årsak (PRD FR-4). Fra de sammenslåtte UX-dokumentene. Godkjent av gruppen 22.11. | valideringsoppsummering, feilliste |
 | Delens felt | Feltet til venstre i resultattabellen som spenner over de seks radene for en del, med nivå, varenummer, beskrivelse og type, og merket «Kritisk del». Fra de sammenslåtte UX-dokumentene. Godkjent av gruppen 22.11. | rygg, delens hode |
 | Eksepsjonsmerke | Symbolet i eksepsjonsfargen med typenavnet og uken ved siden av, for eksempel «Bestilling forsinket · uke 1». Brukes i kritiske deler, endringslisten og forklaringspanelet. I tabellen står bare symbolet (eksepsjonsmarkøren). Fra de sammenslåtte UX-dokumentene. Godkjent av gruppen 22.11. | – |

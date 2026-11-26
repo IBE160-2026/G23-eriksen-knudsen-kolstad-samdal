@@ -1,10 +1,14 @@
 /*
- * Tokenene fra DESIGN.md som CSS-variabler (AD-1, UX-DR1). Lys visning.
+ * Tokenene fra DESIGN.md som CSS-variabler (AD-1, UX-DR1). Lys visning er standard.
  * Komponentene bruker bare disse variablene for farger, skrift, avstander og hjørner.
- * Mørk visning (`data-visning="mork"` på <html>) kommer i Story 1.13, med de samme navnene.
+ * Mørk visning settes med `data-visning="mork"` på <html> (Story 1.13) og overstyrer fargene lenger ned,
+ * med de samme variabelnavnene og verdiene fra `-dark`-fargene i DESIGN.md. Skrift, avstander og hjørner er like.
+ * tests/ui/tokens.test.ts sjekker at begge visningene har de samme fargene og stemmer med DESIGN.md.
  */
 
 :root {
+  color-scheme: light;
+
   /* Farger */
   --surface-base: #f4f6f7;
   --surface-raised: #ffffff;
@@ -16,6 +20,7 @@
   --accent: #0d5c6e;
   --accent-ink: #ffffff;
   --accent-soft: #e1eef1;
+  --accent-hover: #0a4b5a;
   --exc-critical: #b3261e;
   --exc-critical-soft: #fcebea;
   --exc-warning: #8f5a00;
@@ -87,4 +92,41 @@
   --focus-ring-width: 2px;
   --focus-ring-offset: 2px;
   --focus-ring-on-summary: var(--summary-ink);
+}
+
+/*
+ * Mørk visning (Story 1.13, DESIGN.md › Colors). Settes med `data-visning="mork"` på <html>, som står
+ * på samme element som :root, så `--focus-ring-color` og `--focus-ring-on-summary` følger med.
+ */
+:root[data-visning='mork'] {
+  color-scheme: dark;
+
+  --surface-base: #0e1317;
+  --surface-raised: #151c22;
+  --surface-sunken: #1b242b;
+  --ink-primary: #e4e9ed;
+  --ink-secondary: #98a6b2;
+  --line: #29343d;
+  --line-faint: #5f6c78;
+  --accent: #62b6c8;
+  --accent-ink: #0b1a1f;
+  --accent-soft: #16313a;
+  --accent-hover: #7bc4d4;
+  --exc-critical: #ff8c82;
+  --exc-critical-soft: #3a1a18;
+  --exc-warning: #f0b74e;
+  --exc-warning-soft: #36290f;
+  --exc-info: #8eb8f0;
+  --exc-info-soft: #15253a;
+  --exc-horizon: #b9aef2;
+  --exc-horizon-soft: #241f40;
+  --change-new: #86cfa0;
+  --change-new-soft: #14301f;
+
+  --summary-bg: #0c2a2e;
+  --summary-hover: #11383d;
+  --summary-ink: #e8f6f5;
+  --summary-ink2: #a9c9c8;
+  --summary-num-critical: #ff8c82;
+  --summary-num-overdue: #ff7ab8;
 }

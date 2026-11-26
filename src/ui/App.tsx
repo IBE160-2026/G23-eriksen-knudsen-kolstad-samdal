@@ -6,6 +6,7 @@ import { TilstandLeverandor } from '../app/tilstand.tsx'
 import { useTilstand } from '../app/tilstand-handlinger.ts'
 import { Appmeny } from './appmeny/Appmeny.tsx'
 import { Feilgrense } from './felles/Feilgrense.tsx'
+import { useSlippsperre } from './felles/slippsperre.ts'
 import { Introduksjon } from './introduksjon/Introduksjon.tsx'
 import { LagredeKjoringer } from './lagrede-kjoringer/LagredeKjoringer.tsx'
 import { NyKjoring } from './ny-kjoring/NyKjoring.tsx'
@@ -35,6 +36,9 @@ function Skall() {
   const hovedfelt = useRef<HTMLElement>(null)
   const forrigeRute = useRef<RuteId | null>(null)
 
+  // En fil som slippes utenfor opplastingssonen, åpnes ikke av nettleseren, på alle visningene (Story 1.11).
+  useSlippsperre()
+
   // Appen styrer rullingen selv. Ellers gjenoppretter Chromium den gamle rulleposisjonen ved
   // Tilbake og Frem etter at siden er rullet til toppen, og h1 med fokus havner utenfor skjermen.
   useEffect(() => {
@@ -61,7 +65,8 @@ function Skall() {
           <Visning />
         </Feilgrense>
       </main>
-      {/* Skjult for øyet til Story 1.11 bestemmer hvor statusmeldingene skal stå. */}
+      {/* Den ene statusregionen (UX-DR4). Skjult for øyet: startsiden viser statusen ved Beregn og
+          meldingene i opplastingssonen uten role, så skjermleseren bare får dem herfra (Story 1.11). */}
       <div role="status" className="skjult-visuelt">
         {tilstand.statusmelding}
       </div>
