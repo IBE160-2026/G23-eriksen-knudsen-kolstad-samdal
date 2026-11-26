@@ -9,12 +9,13 @@ import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { finnEksepsjoner as finnEksepsjonerIResultat } from '../../src/domene/eksepsjoner.ts'
+import { beregnBestillingsplan } from '../../src/domene/beregn.ts'
 import { beregnNetting, type NettingInndata, type Nettingsvar } from '../../src/domene/netting.ts'
 import { byggStruktur } from '../../src/domene/struktur.ts'
 import type { DelResultat, Eksepsjon, Nivaa, PlanlagtMottak, StrukturDel, Utregning } from '../../src/domene/typer.ts'
 import { valider } from '../../src/domene/valider.ts'
 import { les } from '../../src/excel/les.ts'
-import { lesFasitEksepsjoner, lesFasittabell } from '../hjelpere/fasit-leser.ts'
+import { lesFasitEksepsjoner } from '../hjelpere/fasit-leser.ts'
 import { EKSEPSJONER_01, KANSELLER_MOTTAK_02, LASESKIVE_04, PRODUKSJON_FORSINKET_04, SIKKERHETSLAGER_02 } from './typer-eksempler.ts'
 
 // ---------------------------------------------------------------------------
@@ -417,34 +418,26 @@ describe('eksepsjoner.ts er en ren fil i domene/ (AD-2, AD-7)', () => {
 
 const TESTDATA = join(import.meta.dirname, '..', '..', 'testdata')
 
-/** Leser og validerer testeksemplet, og kjører nettingen for hver del med bruttobehovet fra Fasittabell. */
-function kjorTesteksempel(nr: string): { deler: TestDel[]; horisont: number } {
+/** Kjører testeksemplet samme vei som appen: les → valider → byggStruktur → beregn (AD-16). Eksepsjonene finnes etterpå. */
+function kjorTesteksempel(nr: string): { deler: DelResultat[]; mottak: PlanlagtMottak[]; horisont: number } {
   const fil = readFileSync(join(TESTDATA, `testeksempel-${nr}.xlsx`))
   const lest = les(fil, `testeksempel-${nr}.xlsx`)
   if (!lest.ok) throw new Error(`Testeksempel ${nr} kan ikke leses`)
   const validert = valider(lest.verdi)
   if (!validert.ok) throw new Error(`Testeksempel ${nr} er ugyldig`)
   const inndata = validert.verdi
-  const struktur = byggStruktur(inndata.stykkliste)
-  const fasittabell = lesFasittabell(nr)
-  const deler = struktur.deler.map((d): TestDel => {
-    const bruttobehov = fasittabell.get(d.varenummer)?.Bruttobehov
-    if (bruttobehov === undefined) throw new Error(`Fasit ${nr} mangler ${d.varenummer}`)
-    const nettingInndata: NettingInndata = {
-      lagerbeholdning: d.lagerbeholdning,
-      sikkerhetslager: d.sikkerhetslager,
-      ledetid: d.ledetid,
-      bruttobehov,
-      planlagteMottak: inndata.planlagteMottak.filter((m) => m.varenummer === d.varenummer),
-    }
-    return { resultat: tilDelResultat(d, bruttobehov, beregnNetting(nettingInndata)), mottak: [...nettingInndata.planlagteMottak] }
-  })
-  return { deler, horisont: inndata.horisont }
+  const resultat = beregnBestillingsplan(inndata, byggStruktur(inndata.stykkliste))
+  return { deler: resultat.deler, mottak: inndata.planlagteMottak, horisont: inndata.horisont }
+}
+
+/** Eksepsjonene for et testeksempel, slik Story 2.5 kaller funksjonen. */
+function funnFor(nr: string) {
+  const { deler, mottak, horisont } = kjorTesteksempel(nr)
+  return { deler, funn: finnEksepsjonerIResultat(deler, mottak, horisont) }
 }
 
 describe.each(['01', '02', '03', '04', '05'])('Fasittest: testeksempel %s (SM-2)', (nr) => {
-  const { deler, horisont } = kjorTesteksempel(nr)
-  const funn = finnEksepsjoner(deler, horisont)
+  const { deler, funn } = funnFor(nr)
   const fasit = lesFasitEksepsjoner(nr)
 
   it('eksepsjonslisten er identisk med arket Eksepsjoner (varenummer, uke, type), uten andre eksepsjoner', () => {
@@ -453,21 +446,20 @@ describe.each(['01', '02', '03', '04', '05'])('Fasittest: testeksempel %s (SM-2)
 
   it('de kritiske delene er delene med minst én eksepsjon i fasiten, i stykklisterekkefølge', () => {
     const iFasit = new Set(fasit.map((e) => e.varenummer))
-    expect(funn.kritiskeDeler).toEqual(deler.map((d) => d.resultat.del.varenummer).filter((vn) => iFasit.has(vn)))
+    expect(funn.kritiskeDeler).toEqual(deler.map((d) => d.del.varenummer).filter((vn) => iFasit.has(vn)))
   })
 })
 
 describe('Fasittest: testeksempel 01 i detalj (FR-13, FR-9)', () => {
-  const { deler, horisont } = kjorTesteksempel('01')
-  const funn = finnEksepsjoner(deler, horisont)
+  const { deler, funn } = funnFor('01')
 
   it('nøyaktig 300-003, 300-004, 300-005 og 300-006 er kritiske', () => {
     expect(funn.kritiskeDeler).toEqual(['300-003', '300-004', '300-005', '300-006'])
   })
 
   it('300-006 Stolfot har Ledetid overskrider horisont selv om nettobehovet er 0 i alle uker', () => {
-    const stolfot = deler.find((d) => d.resultat.del.varenummer === '300-006')!
-    expect(stolfot.resultat.nettobehov.every((n) => n === 0)).toBe(true)
+    const stolfot = deler.find((d) => d.del.varenummer === '300-006')!
+    expect(stolfot.nettobehov.every((n) => n === 0)).toBe(true)
     expect(funn.eksepsjoner.filter((e) => e.varenummer === '300-006').map((e) => e.kode)).toEqual(['LEDETID_OVERSKRIDER_HORISONT'])
   })
 
@@ -478,14 +470,12 @@ describe('Fasittest: testeksempel 01 i detalj (FR-13, FR-9)', () => {
 
 describe('Fasittest: grensetilfellene i testeksempel 02 og 04', () => {
   it('Kanseller mottak for 300-005 Gassfjær i uke 5 finnes i testeksempel 02', () => {
-    const { deler, horisont } = kjorTesteksempel('02')
-    const funn = finnEksepsjoner(deler, horisont)
+    const { funn } = funnFor('02')
     expect(funn.eksepsjoner).toContainEqual(KANSELLER_MOTTAK_02)
   })
 
   it('300-026 i testeksempel 04 har både Bestilling forsinket og Mottak forsinket i uke 1, og 300-022 har produksjon forsinket', () => {
-    const { deler, horisont } = kjorTesteksempel('04')
-    const funn = finnEksepsjoner(deler, horisont)
+    const { funn } = funnFor('04')
     expect(funn.eksepsjoner.filter((e) => e.varenummer === '300-026')).toEqual(LASESKIVE_04)
     expect(funn.eksepsjoner).toContainEqual(PRODUKSJON_FORSINKET_04)
   })
